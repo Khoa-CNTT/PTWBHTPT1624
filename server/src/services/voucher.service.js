@@ -1,5 +1,5 @@
-"use strict"; 
-const Voucher = require("../models/voucher.model"); 
+"use strict";
+const Voucher = require("../models/voucher.model");
 const { BadRequestError, NotFoundError } = require("../core/error.response");
 const userModel = require("../models/user.model");
 const voucherModel = require("../models/voucher.model");
@@ -15,10 +15,8 @@ class VoucherService {
       !payload.voucher_end_date ||
       !payload.voucher_method ||
       !payload.voucher_value ||
-      !payload.voucher_max_uses ||
-      !payload.voucher_max_uses_per_user ||
-      !payload.voucher_min_order_value ||
-      !payload.voucher_code // Thêm kiểm tra voucher_code
+      !payload.voucher_max_uses || 
+      !payload.voucher_min_order_value 
     ) {
       throw new BadRequestError("Thiếu thông tin bắt buộc!");
     }
