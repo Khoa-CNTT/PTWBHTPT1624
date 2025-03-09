@@ -33,13 +33,11 @@ class UserService {
     static async updateUser(uid, payload) {
         // Bỏ email và mật khẩu ra khỏi payload để tránh cập nhật
         const { user_email, user_password, user_mobile, user_reward_points, ...dataUser } = payload;
-    
         // Tìm user theo ID
         const user = await userModel.findById(uid);
         if (!user) { 
             throw new BadRequestError("Người dùng không tồn tại!", 404);
         }
-    
         // Kiểm tra số điện thoại đã tồn tại (nếu có cập nhật số điện thoại)
         if (user_mobile && user_mobile !== user.user_mobile) {
             const existingMobile = await userModel.findOne({ user_mobile });
@@ -48,7 +46,6 @@ class UserService {
             }
             dataUser.user_mobile = user_mobile;
         }
-    
         // Mã hóa mật khẩu nếu có cập nhật
         if (user_password) {
             const salt = await bcrypt.genSalt(10);
@@ -68,7 +65,6 @@ class UserService {
     
         return updatedUser;
     }
-    
 
     static async deleteUser(uid) {
         const user = await userModel.findByIdAndDelete(uid);
