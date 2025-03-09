@@ -52,7 +52,7 @@ class FavoriteProductService {
         }
 
         const favorites = await FavoriteProduct.findOne({ fp_user_id: userId })
-            .populate("fp_productss")  // Populate toàn bộ mảng fp_products
+            .populate("fp_products")  // Populate toàn bộ mảng fp_products
             .lean();
 
         return favorites || { fp_user_id: userId, fp_products: [] }; // Trả về rỗng nếu không có
