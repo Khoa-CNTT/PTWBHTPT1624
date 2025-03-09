@@ -3,10 +3,9 @@
 const { BadRequestError, NotFoundError, ConflictRequestError } = require("../core/error.response");
 const userModel = require("../models/user.model");
 const voucherModel = require("../models/voucher.model");
-const userVoucherModel = require("../models/userVoucher.model"); // Thêm đúng model
+const userVoucherModel = require("../models/userVoucher.model");
 
-class userVoucherService {
-
+class userVoucherService { 
     // Lưu voucher cho user
     static async saveVoucherForUser(userId, voucherId) {
         if (!userId || !voucherId) throw new BadRequestError("Thiếu thông tin")
@@ -78,12 +77,12 @@ class userVoucherService {
 
     // Lấy danh sách voucher của user
     static async getVoucherByUser(userId) {
-        if (!userId) throw new BadRequestError("Thiếu thông tin người dùng");
+        if (!userId) throw new BadRequestError("Thiếu thông tin người dùng"); 
 
         const userVouchers = await userVoucherModel
             .findOne({ vc_user_id: userId })
             .populate("vc_vouchers");
-
+ 
         if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
             throw new NotFoundError("Người dùng chưa có voucher nào");
         }
@@ -94,7 +93,7 @@ class userVoucherService {
             voucherValue: voucher.voucher_value,
             voucherType: voucher.voucher_method,
             expirationDate: voucher.voucher_end_date
-        }));
+        })); 
     }
 
     // Lấy danh sách voucher còn hạn của user
@@ -105,8 +104,7 @@ class userVoucherService {
             .populate({
                 path: "vc_vouchers",
                 match: { voucher_end_date: { $gte: new Date() } }, // Chỉ lấy voucher còn hạn
-            });
-
+            }); 
         if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
             throw new NotFoundError("Người dùng chưa có voucher nào còn hạn");
         }
@@ -114,4 +112,4 @@ class userVoucherService {
         return userVouchers.vc_vouchers
     }
 }
-module.exports = userVoucherService;
+module.exports = userVoucherService; 
