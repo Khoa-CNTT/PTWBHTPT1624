@@ -66,6 +66,7 @@ class OrderService {
         vc_user_id: userId,
         vc_vouchers: { $in: [order_voucherId] }
       });
+      if (!userVoucher) { throw new NotFoundError("Bạn không sở hữu voucher này"); }
       // Tìm mã giảm giá trong DB
       const voucher = await Voucher.findById(order_voucherId);
       if (!voucher) { throw new NotFoundError("Không tìm thấy voucher"); }
@@ -75,6 +76,10 @@ class OrderService {
       );
       if (hasUserUsedVoucher) {
         throw new BadRequestError("Bạn đã đạt giới hạn số lần sử dụng voucher này");
+      }
+      // Giá trị đơn hàng tối thiểu để áp dụng voucher
+      if (totalPrice < voucher.voucher_min_order_value) {
+        throw new BadRequestError(` Giá trị đơn hàng tối thiểu ${voucher.voucher_min_order_value}`);
       }
       if (voucher.voucher_method === "percent") { // Nếu giảm giá theo phần trăm
         const discount = (totalPrice * voucher.voucher_value) / 100; // Tính số tiền giảm
