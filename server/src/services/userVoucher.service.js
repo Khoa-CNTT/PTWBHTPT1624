@@ -64,7 +64,7 @@ class userVoucherService {
         }
         // Trừ điểm của người dùng
         user.user_reward_points -= voucher.voucher_required_points;
-        // Lưu voucher mới vào danh sách của người dùng
+        // Lưu voucher mới vào danh sách voucher của người dùng
         await userVoucherModel.findOneAndUpdate(
             { vc_user_id: userId },
             { $push: { vc_vouchers: voucherId } },
@@ -87,7 +87,6 @@ class userVoucherService {
         if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
             throw new NotFoundError("Người dùng chưa có voucher nào");
         }
-
         return userVouchers.vc_vouchers.map(voucher => ({
             voucherId: voucher._id,
             voucherName: voucher.voucher_name,

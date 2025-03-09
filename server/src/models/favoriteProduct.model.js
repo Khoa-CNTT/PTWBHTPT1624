@@ -17,4 +17,4 @@ const favoriteProductSchema = new mongoose.Schema(
 );
 
 favoriteProductSchema.index({ fp_user_id: 1 }, { unique: true });
-module.exports = mongoose.models.FavoriteProduct || mongoose.model("FavoriteProduct", favoriteProductSchema);
+module.exports = mongoose.model("favoriteProduct", favoriteProductSchema);
