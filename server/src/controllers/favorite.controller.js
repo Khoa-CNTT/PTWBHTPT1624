@@ -12,11 +12,11 @@ class FavoriteProductService {
         let userFavorites = await FavoriteProduct.findOne({ fp_user_id: userId });
         if (userFavorites) {
             // Kiểm tra xem product đã có trong mảng chưa
-            const productIndex = userFavorites.fp_product.indexOf(productId);
+            const productIndex = userFavorites.fp_products.indexOf(productId);
             if (productIndex > -1) {
                 // Nếu đã tồn tại thì xóa khỏi mảng
-                userFavorites.fp_product.splice(productIndex, 1);
-                if (userFavorites.fp_product.length === 0) {
+                userFavorites.fp_products.splice(productIndex, 1);
+                if (userFavorites.fp_products.length === 0) {
                     // Nếu mảng rỗng thì xóa luôn document
                     await FavoriteProduct.deleteOne({ fp_user_id: userId });
                 } else {
@@ -27,7 +27,7 @@ class FavoriteProductService {
                 };
             } else {
                 // Nếu chưa tồn tại thì thêm vào mảng
-                userFavorites.fp_product.push(productId);
+                userFavorites.fp_products.push(productId);
                 await userFavorites.save();
                 return {
                     message: "Sản phẩm đã được thêm vào danh sách yêu thích",
@@ -37,7 +37,7 @@ class FavoriteProductService {
             // Nếu chưa có document thì tạo mới với mảng chứa productId
             const newFavorite = await FavoriteProduct.create({
                 fp_user_id: userId,
-                fp_product: [productId]
+                fp_products: [productId]
             });
             return {
                 message: "Sản phẩm đã được thêm vào danh sách yêu thích",
@@ -52,10 +52,10 @@ class FavoriteProductService {
         }
 
         const favorites = await FavoriteProduct.findOne({ fp_user_id: userId })
-            .populate("fp_products")  // Populate toàn bộ mảng fp_product
+            .populate("fp_products")  // Populate toàn bộ mảng fp_products
             .lean();
 
-        return favorites || { fp_user_id: userId, fp_product: [] }; // Trả về rỗng nếu không có
+        return favorites || { fp_user_id: userId, fp_products: [] }; // Trả về rỗng nếu không có
     }
 }
 
