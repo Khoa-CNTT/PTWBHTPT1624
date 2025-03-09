@@ -1,7 +1,7 @@
 "use strict";
 
 const mongoose = require("mongoose");
-const { Schema } = mongoose; 
+const { Schema } = mongoose;
 const orderSchema = new mongoose.Schema({
     order_type: {
         type: String,
@@ -22,10 +22,6 @@ const orderSchema = new mongoose.Schema({
     order_payment_method: { type: String, required: true, enum: ["cash", "vnpay", 'momo'] }, // order_payment_method: Phương thức thanh toán
     order_status: { type: String, enum: ["pending", "confirm", "shipped", "delivered", "cancelled"], default: "pending" }, // order_status: Trạng thái đơn hàng hiện tại
     // order_status_history: Lịch sử thay đổi trạng thái cùng thời gian thay đổi
-    order_status_history: [{
-        status: { type: String, enum: ["pending", "confirm", "shipped", "delivered", "cancelled"] },
-        timestamp: { type: Date, default: Date.now }
-    }],
     order_shipping_address: {
         fullName: { type: String, required: true },
         detailAddress: { type: String, required: true },
@@ -41,6 +37,6 @@ const orderSchema = new mongoose.Schema({
     }, //Ngày giao hàng dự kiến (có thể để trống)
     order_shipping_company: { type: mongoose.Schema.Types.ObjectId, ref: "ShippingCompany", required: true },
 }, { timestamps: true }); //tự động thêm createdAt và updatedAt
- 
+
 
 module.exports = mongoose.model("Order", orderSchema);
