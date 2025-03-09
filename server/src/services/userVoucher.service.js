@@ -1,5 +1,4 @@
 "use strict";
-const Voucher = require("../models/voucher.model");
 const { BadRequestError, NotFoundError } = require("../core/error.response");
 const userVoucherModel = require("../models/userVoucher.model");
 const voucherModel = require("../models/voucher.model");
@@ -49,7 +48,7 @@ class UserVoucherService {
     });
     if (existingVoucher) throw new BadRequestError("Bạn đã sở hữu voucher này");
     // Kiểm tra user đã sử dụng hay chưa
-    const userVoucherCount = voucher.voucher_users_used.find(
+    const userVoucherCount = voucher.voucher_users_used.some(
       userUsedId => userUsedId.toString() === userId.toString()
     );
     if (userVoucherCount) {
