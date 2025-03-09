@@ -15,7 +15,6 @@ const VoucherSchema = new Schema({
     voucher_end_date: { type: Date, required: true },
     voucher_max_uses: { type: Number, required: true }, // Số lần tối đa mã giảm giá có thể được sử dụng
     voucher_uses_count: { type: Number, default: 0 }, // Số lần đã sử dụng
-    voucher_max_uses_per_user: { type: Number, required: true }, // Giới hạn số lần một người có thể sử dụng voucher này
     voucher_users_used: [{ type: String }], // danh sách người đã sử dụng
     voucher_max_price: { type: Number, default: null }, // Mức giảm tối đa (nếu là percent)
     voucher_min_order_value: { type: Number, required: true }, // Giá trị đơn hàng tối thiểu để áp dụng voucher
@@ -43,11 +42,6 @@ const checkVoucherUnique = async function (next) {
         const existingVoucherByCode = await mongoose.model('Voucher').findOne({
             voucher_code: voucher.voucher_code
         });
-
-        if (existingVoucherByCode && existingVoucherByCode._id.toString() !== (voucher._id ? voucher._id.toString() : null)) {
-            return next(new Error('Voucher code đã tồn tại!'));
-        }
-
         next(); // Nếu không có lỗi, tiếp tục
     } catch (error) {
         next(error); // Xử lý lỗi

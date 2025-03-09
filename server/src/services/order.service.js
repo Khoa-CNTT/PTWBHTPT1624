@@ -7,6 +7,9 @@ const Product = require("../models/product.model"); // Mô hình sản phẩm
 const Voucher = require("../models/voucher.model"); // Mô hình mã giảm giá
 const Cart = require("../models/cart.model"); // Mô hình giỏ hàng
 const { convertToObjectIdMongodb } = require("../utils"); // Hàm tiện ích chuyển đổi ID sang định dạng ObjectId của MongoDB
+const userVoucherModel = require("../models/userVoucher.model");
+const shippingCompany = require("../models/shippingCompany.model");
+const { default: mongoose } = require("mongoose");
 
 class OrderService {
   // Hàm tạo đơn hàng mới, nhận payload chứa thông tin đơn hàng
@@ -58,8 +61,21 @@ class OrderService {
     );
     // Bước 3: Xử lý mã giảm giá (nếu có)
     if (order_voucherId) {
-      const voucher = await Voucher.findById(order_voucherId); // Tìm mã giảm giá trong DB
-      if (!voucher) throw new NotFoundError("Không tìm thấy voucher"); // Nếu không tìm thấy, báo lỗi
+      // Kiểm tra xem user đã sở hữu voucher chưa
+      const userVoucher = await userVoucherModel.findOne({
+        vc_user_id: userId,
+        vc_vouchers: { $in: [order_voucherId] }
+      });
+      // Tìm mã giảm giá trong DB
+      const voucher = await Voucher.findById(order_voucherId);
+      if (!voucher) { throw new NotFoundError("Không tìm thấy voucher"); }
+      // Kiểm tra xem user đã sử dụng voucher này chưa
+      const hasUserUsedVoucher = voucher.voucher_users_used.some(
+        userUsedId => userUsedId.toString() === userId.toString()
+      );
+      if (hasUserUsedVoucher) {
+        throw new BadRequestError("Bạn đã đạt giới hạn số lần sử dụng voucher này");
+      }
       if (voucher.voucher_method === "percent") { // Nếu giảm giá theo phần trăm
         const discount = (totalPrice * voucher.voucher_value) / 100; // Tính số tiền giảm
         // Áp dụng giảm giá, nhưng không vượt quá giá trị tối đa của voucher
