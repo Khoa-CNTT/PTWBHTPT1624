@@ -1,6 +1,4 @@
 const asyncHandle = require("../helper/asyncHandle");
-const { findUserById } = require("../models/repositories/user.repo");
-const Role = require("../models/role.model");
 const userModel = require("../models/user.model");
 const verifyAccessToken = require("../utils/auth/verifyAccessToken");
 
@@ -20,7 +18,7 @@ const authentication = asyncHandle(async (req, res, next) => {
             message: "Token không hợp lệ",
         });
     }
-    const user = await userModel.findById(decodedToken._id).populate("user_roles"); // Lấy luôn thông tin quyền
+    const user = await userModel.findById(decodedToken._id).populate("user_roles");
     if (!user) {
         return res.status(401).json({
             success: false,
@@ -35,20 +33,20 @@ const restrictTo = (requiredPermission) =>
     asyncHandle(async (req, res, next) => {
         const { user } = req;
 
-        // Nếu người dùng có user_type là 'user', họ không thể truy cập các chức năng của admin
+        // 🚫 Chặn hoàn toàn nếu là khách hàng (user thường)
         if (user.user_type === "user") {
             return res.status(403).json({
                 success: false,
-                message: "Không có quyền truy cập",
+                message: "Bạn không có quyền truy cập chức năng này",
             });
         }
 
-        // Nếu người dùng là admin, cho phép truy cập
+        // ✅ Nếu là admin, cho phép truy cập
         if (user.user_type === "admin") {
             return next();
         }
 
-        // Nếu người dùng không có quyền (user_roles rỗng hoặc không có quyền cụ thể)
+        // 🚫 Nếu không có vai trò hoặc quyền nào, chặn truy cập
         if (!user.user_roles || user.user_roles.length === 0) {
             return res.status(403).json({
                 success: false,
@@ -56,17 +54,16 @@ const restrictTo = (requiredPermission) =>
             });
         }
 
-        // Kiểm tra quyền từ các role của người dùng
+        // 🔍 Kiểm tra quyền trong danh sách quyền của vai trò
         const userPermissions = user.user_roles.flatMap((role) => role.permissions);
         if (!userPermissions.includes(requiredPermission)) {
             return res.status(403).json({
                 success: false,
-                message: `Yêu cầu quyền "${requiredPermission}" để thực hiện hành động này`,
+                message: `Bạn cần quyền "${requiredPermission}" để thực hiện hành động này`,
             });
         }
 
         next();
     });
-
 
 module.exports = { authentication, restrictTo };
