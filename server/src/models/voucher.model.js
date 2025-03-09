@@ -4,58 +4,66 @@ const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const VoucherSchema = new Schema({
-    voucher_name: { type: String, required: true, unique: true },  // Tên voucher, phải duy nhất
-    voucher_description: { type: String, required: true },  // Mô tả voucher
-    voucher_type: { type: String, enum: ["system", "user"], default: "system" }, // "system" (hệ thống) hoặc "user" (do user đổi điểm)
-    voucher_thumb: { type: String, required: true }, // Hình thumbnail
-    voucher_banner_image: { type: String, required: true }, // Hình banner quảng cáo
-    voucher_method: { type: String, enum: ["percent", "fixed"], required: true }, // "percent" hoặc "fixed"
-    voucher_value: { type: Number, required: true }, // Giá trị giảm giá (VD: 10% hoặc 50,000 VND)
+    voucher_name: { type: String, required: true, unique: true },  
+    voucher_code: { type: String, required: true, unique: true }, // 🔹 Bổ sung voucher_code
+    voucher_description: { type: String, required: true },
+    voucher_type: { type: String, enum: ["system", "user"], default: "system" },
+    voucher_thumb: { type: String, required: true },
+    voucher_banner_image: { type: String, required: true },
+    voucher_method: { type: String, enum: ["percent", "fixed"], required: true },
+    voucher_value: { type: Number, required: true },
     voucher_start_date: { type: Date, required: true },
     voucher_end_date: { type: Date, required: true },
-    voucher_max_uses: { type: Number, required: true }, // Số lần tối đa mã giảm giá có thể được sử dụng
-    voucher_uses_count: { type: Number, default: 0 }, // Số lần đã sử dụng
-    voucher_max_uses_per_user: { type: Number, required: true }, // Giới hạn số lần một người có thể sử dụng voucher này
-    voucher_users_used: [{ type: String }], // danh sách người đã sử dụng
-    voucher_max_price: { type: Number, default: null }, // Mức giảm tối đa (nếu là percent)
-    voucher_min_order_value: { type: Number, required: true }, // Giá trị đơn hàng tối thiểu để áp dụng voucher
+    voucher_max_uses: { type: Number, required: true },
+    voucher_uses_count: { type: Number, default: 0 },
+    voucher_max_uses_per_user: { type: Number, required: true },
+    voucher_users_used: [{ type: String }],
+    voucher_max_price: { type: Number, default: null },
+    voucher_min_order_value: { type: Number, required: true },
     voucher_is_active: { type: Boolean, default: true },
-    voucher_required_points: { type: Number, default: 0 } // Điểm tích lũy cần thiết để đổi voucher
+    voucher_required_points: { type: Number, default: 0 }
 }, {
-    timestamps: true // Tự động thêm createdAt, updatedAt
+    timestamps: true
 });
 
-// Middleware kiểm tra trùng lặp voucher_name và voucher_code
+// 🔍 Middleware kiểm tra trùng lặp voucher_code & voucher_name
 const checkVoucherUnique = async function (next) {
-    const voucher = this instanceof mongoose.Document ? this : this._update; // Kiểm tra xem là document hay update operation
-
     try {
-        // Kiểm tra trùng voucher_name
-        const existingVoucherByName = await mongoose.model('Voucher').findOne({
-            voucher_name: voucher.voucher_name
-        });
+        const voucher = this instanceof mongoose.Document ? this : this.getUpdate(); // Xác định kiểu dữ liệu
 
-        if (existingVoucherByName && existingVoucherByName._id.toString() !== (voucher._id ? voucher._id.toString() : null)) {
-            return next(new Error('Voucher name đã tồn tại!'));
+        if (!voucher.voucher_name || !voucher.voucher_code) {
+            return next(); // Nếu không có voucher_name hoặc voucher_code, bỏ qua kiểm tra
         }
 
-        // Kiểm tra trùng voucher_code
-        const existingVoucherByCode = await mongoose.model('Voucher').findOne({
-            voucher_code: voucher.voucher_code
-        });
+        const query = {
+            $or: [
+                { voucher_name: voucher.voucher_name },
+                { voucher_code: voucher.voucher_code }
+            ]
+        };
 
-        if (existingVoucherByCode && existingVoucherByCode._id.toString() !== (voucher._id ? voucher._id.toString() : null)) {
-            return next(new Error('Voucher code đã tồn tại!'));
+        if (this instanceof mongoose.Query) {
+            query._id = { $ne: this.getQuery()._id }; // Nếu update, bỏ qua chính nó
+        } else if (voucher._id) {
+            query._id = { $ne: voucher._id }; // Nếu là document, cũng bỏ qua chính nó
         }
 
-        next(); // Nếu không có lỗi, tiếp tục
+        const existingVoucher = await mongoose.model('Voucher').findOne(query);
+
+        if (existingVoucher) {
+            return next(new Error(existingVoucher.voucher_name === voucher.voucher_name ? 
+                "Voucher name đã tồn tại!" : "Voucher code đã tồn tại!"));
+        }
+
+        next(); // Không có lỗi thì tiếp tục
     } catch (error) {
-        next(error); // Xử lý lỗi
+        next(error);
     }
 };
 
-// Áp dụng middleware cho cả các thao tác save và update
-VoucherSchema.pre(['save', 'findOneAndUpdate', 'updateOne'], checkVoucherUnique);
+// 🔹 Chỉ áp dụng middleware khi tạo mới hoặc update voucher_name, voucher_code
+VoucherSchema.pre('save', checkVoucherUnique);
+VoucherSchema.pre('findOneAndUpdate', checkVoucherUnique);
+VoucherSchema.pre('updateOne', checkVoucherUnique);
 
-// Export model
 module.exports = mongoose.model('Voucher', VoucherSchema);

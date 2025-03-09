@@ -1,88 +1,92 @@
 "use strict";
 
-const { BadRequestError } = require("../core/error.response");
-const bcrypt = require("bcrypt");
-const userModel = require("../models/user.model");
-const RoleModel = require("../models/role.model");
+const { BadRequestError, NotFoundError } = require("../core/error.response");
+const voucherModel = require("../models/voucher.model");
 
-class UserService { 
+class VoucherService {
+    // Tạo voucher mới
+    static async createVoucher(payload) {
+        const {
+            voucher_name,
+            voucher_description,
+            voucher_start_date,
+            voucher_end_date,
+            voucher_method,
+            voucher_value,
+            voucher_max_uses,
+            voucher_max_uses_per_user,
+            voucher_min_order_value,
+            voucher_code,
+        } = payload;
 
-    static async addUser(payload) {
-        const { user_name, user_email, user_password, user_mobile, user_type } = payload;
         // Kiểm tra dữ liệu đầu vào
-        if (!user_name || !user_email || !user_password || !user_mobile || !user_type) {
-            return res.status(400).json({ success: false, message: "Thiếu thông tin bắt buộc!" });
-        }
-        // Kiểm tra email đã tồn tại chưa
-        const existingUser = await User.findOne({ user_email });
-        if (existingUser) { throw new BadRequestError("Email đã tồn tại!", 400); }
-        // Kiểm tra số điện thoại đã tồn tại chưa
-        const existingMobile = await User.findOne({ user_mobile });
-        if (existingMobile) { throw new BadRequestError("Số điện thoại đã tồn tại!", 400); }
-        // Mã hóa mật khẩu
-        const salt = await bcrypt.genSalt(10);
-        const hashedPassword = await bcrypt.hash(user_password, salt);
-        // Tạo user mới
-        const newUser = new User({
-            user_password: hashedPassword,
-            ...payload
-        });
-        // Lưu user vào database
-        return await newUser.save();
-    }
-    static async updateUser(uid, payload) {
-        // Bỏ email ra khỏi payload để tránh cập nhật
-        const { user_email, user_password, user_mobile, ...dataUser } = payload;
-        // Tìm user theo ID
-        const user = await userModel.findById(uid);
-        if (!user) { throw new BadRequestError("Người dùng không tồn tại!", 404) }
-        // Kiểm tra số điện thoại đã tồn tại (nếu có cập nhật số điện thoại)
-        if (user_mobile && user_mobile !== user.user_mobile) {
-            const existingMobile = await userModel.findOne({ user_mobile });
-            if (existingMobile) { throw new BadRequestError("Số điện thoại đã tồn tại!", 400); }
-            dataUser.user_mobile = user_mobile;
-        }
- 
-        // Mã hóa mật khẩu nếu có cập nhật
-        if (user_password) {
-            const salt = await bcrypt.genSalt(10);
-            dataUser.user_password = await bcrypt.hash(user_password, salt);
+        if (!voucher_name || !voucher_description || !voucher_start_date || !voucher_end_date ||
+            !voucher_method || !voucher_value || !voucher_max_uses || !voucher_max_uses_per_user ||
+            !voucher_min_order_value || !voucher_code) {
+            throw new BadRequestError("Thiếu thông tin bắt buộc!");
         }
 
-        const updatedUser = await userModel.findByIdAndUpdate(uid, dataUser, {
+        // Kiểm tra voucher_code đã tồn tại chưa
+        const existingVoucher = await voucherModel.findOne({ voucher_code });
+        if (existingVoucher) {
+            throw new BadRequestError("Voucher code đã tồn tại!");
+        }
+
+        // Tạo voucher mới
+        return await voucherModel.create(payload);
+    }
+
+    // Lấy danh sách tất cả voucher
+    static async getAllVouchers() {
+        return await voucherModel.find();
+    }
+
+    // Lấy voucher theo ID
+    static async getVoucherById(id) {
+        const voucher = await voucherModel.findById(id);
+        if (!voucher) {
+            throw new NotFoundError("Voucher không tồn tại!");
+        }
+        return voucher;
+    }
+
+    // Cập nhật voucher theo ID
+    static async updateVoucher(id, payload) {
+        const updatedVoucher = await voucherModel.findByIdAndUpdate(id, payload, {
             new: true,
             runValidators: true
         });
 
-        return updatedUser;
+        if (!updatedVoucher) {
+            throw new NotFoundError("Voucher không tồn tại!");
+        }
+        return updatedVoucher;
     }
 
-    static async deleteUser(uid) {
-        const user = await userModel.findByIdAndDelete(uid);
-        if (!user) {
-            throw new BadRequestError("Người dùng không tồn tại!", 404);
+    // Xóa voucher theo ID
+    static async deleteVoucher(id) {
+        const voucher = await voucherModel.findByIdAndDelete(id);
+        if (!voucher) {
+            throw new NotFoundError("Voucher không tồn tại!");
         }
         return {
-            _id: user._id,
-            user_name: user.user_name,
-            user_email: user.user_email
+            _id: voucher._id,
+            voucher_name: voucher.voucher_name,
+            voucher_code: voucher.voucher_code
         };
     }
 
-    static async toggleBlockUser(uid, isBlocked) {
-        const user = await userModel.findById(uid);
-        if (!user) {
-            throw new BadRequestError("Người dùng không tồn tại!", 404);
+    // Tìm kiếm voucher theo tên
+    static async searchVoucherByName(name) {
+        const vouchers = await voucherModel.find({
+            voucher_name: { $regex: new RegExp(name, "i") }
+        });
+
+        if (!vouchers.length) {
+            throw new NotFoundError("Không tìm thấy voucher phù hợp!");
         }
-        user.user_isBlocked = isBlocked;
-        await user.save();
-        return isBlocked ? "Đã chặn người dùng thành công!" : "Đã mở chặn người dùng!";
+        return vouchers;
     }
-    //tất cả tk
-    static async getAllUsers() {
-        const users = await userModel.find({}, "-user_password"); // Ẩn mật khẩu
-        return users;
-    }
-    
 }
-module.exports = UserService;
+
+module.exports = VoucherService;
