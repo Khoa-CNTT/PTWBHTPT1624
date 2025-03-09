@@ -49,7 +49,7 @@ class UserVoucherService {
     });
     if (existingVoucher) throw new BadRequestError("Bạn đã sở hữu voucher này");
     // Kiểm tra user đã sử dụng hay chưa
-    const userVoucherCount = voucher.voucher_users_used.find(
+    const userVoucherCount = voucher.voucher_users_used.some(
       userUsedId => userUsedId.toString() === userId.toString()
     );
     if (userVoucherCount) {
