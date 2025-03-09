@@ -1,5 +1,4 @@
 "use strict";
-const Voucher = require("../models/voucher.model");
 const { BadRequestError, NotFoundError } = require("../core/error.response");
 const userVoucherModel = require("../models/userVoucher.model");
 const voucherModel = require("../models/voucher.model");
