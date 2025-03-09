@@ -1,3 +1,4 @@
+"use strict";
 const mongoose = require("mongoose");
 
 const favoriteProductSchema = new mongoose.Schema(
@@ -16,5 +17,6 @@ const favoriteProductSchema = new mongoose.Schema(
     { timestamps: true }
 );
 
+// Chỉ mục để đảm bảo không có product trùng lặp trong mảng của cùng một user
 favoriteProductSchema.index({ fp_user_id: 1 }, { unique: true });
-module.exports = mongoose.model("favoriteProduct", favoriteProductSchema);
+module.exports = mongoose.model("favoriteProduct", favoriteProductSchema); 
