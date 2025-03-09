@@ -6,6 +6,7 @@ const { Schema } = mongoose;
 const VoucherSchema = new Schema({
     voucher_name: { type: String, required: true, unique: true },  // Tên voucher, phải duy nhất
     voucher_description: { type: String, required: true },  // Mô tả voucher
+    voucher_code: { type: String, required: true, unique: true }, // Mã voucher, phải duy nhất
     voucher_type: { type: String, enum: ["system", "user"], default: "system" }, // "system" (hệ thống) hoặc "user" (do user đổi điểm)
     voucher_thumb: { type: String, required: true }, // Hình thumbnail
     voucher_banner_image: { type: String, required: true }, // Hình banner quảng cáo
