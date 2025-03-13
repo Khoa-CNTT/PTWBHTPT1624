@@ -15,12 +15,12 @@ class VoucherService {
       !payload.voucher_end_date ||
       !payload.voucher_method ||
       !payload.voucher_value ||
-      !payload.voucher_max_uses || 
-      !payload.voucher_min_order_value 
+      !payload.voucher_max_uses ||
+      !payload.voucher_min_order_value ||
+      !payload.voucher_code
     ) {
       throw new BadRequestError("Thiếu thông tin bắt buộc!");
     }
-
     // Kiểm tra mã voucher có bị trùng không
     const existingVoucher = await voucherModel.findOne({ voucher_code: payload.voucher_code });
     if (existingVoucher) {
@@ -47,7 +47,7 @@ class VoucherService {
 
     return voucher;
   }
-  
+
   // Lấy danh sách tất cả voucher
   static async getAllVouchers() {
     return await voucherModel.find();

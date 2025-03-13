@@ -39,10 +39,7 @@ const checkVoucherUnique = async function (next) {
             return next(new Error('Voucher name đã tồn tại!'));
         }
 
-        // Kiểm tra trùng voucher_code
-        const existingVoucherByCode = await mongoose.model('Voucher').findOne({
-            voucher_code: voucher.voucher_code
-        });
+
         next(); // Nếu không có lỗi, tiếp tục
     } catch (error) {
         next(error); // Xử lý lỗi

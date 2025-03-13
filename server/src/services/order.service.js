@@ -8,6 +8,8 @@ const { convertToObjectIdMongodb } = require("../utils"); // Hàm tiện ích ch
 const userVoucherModel = require("../models/userVoucher.model");
 const shippingCompany = require("../models/shippingCompany.model");
 const { default: mongoose } = require("mongoose");
+const orderModel = require("../models/order.model");
+const PurchasedProduct = require("../models/PurchasedProduct.model");
 
 class OrderService {
   // Hàm tạo đơn hàng mới, nhận payload chứa thông tin đơn hàng
@@ -170,25 +172,43 @@ class OrderService {
       orders,
     };
   }
+
   static async updateOrderStatus({ orderId, newStatus }) {
-    // Kiểm tra trạng thái mới có hợp lệ không
+    if (!orderId) throw new BadRequestError("Không tìm thấy đơn hàng");
     const validStatuses = ["pending", "confirm", "shipped", "delivered", "cancelled"];
-    if (!validStatuses.includes(newStatus)) throw new BadRequestError("Trạng thái không hợp lệ")
-    // Tìm và cập nhật đơn hàng
-    const updatedOrder = await Order.findOneAndUpdate(
-      { orderId: orderId },
-      {
-        order_status: newStatus,
-        updatedAt: new Date()
-      },
-      { new: true } // Trả về document đã được cập nhật
+    if (!validStatuses.includes(newStatus)) throw new BadRequestError("Trạng thái không hợp lệ");
+    const updatedOrder = await orderModel.findOneAndUpdate(
+      { _id: orderId },
+      { order_status: newStatus, updatedAt: new Date() },
+      { new: true }
     );
-
-    if (!updatedOrder) throw BadRequestError("Không tìm thấy đơn hàng")
-
-    return updatedOrder
+    if (!updatedOrder) throw new BadRequestError("Không tìm thấy đơn hàng");
+    // Nếu đơn hàng được giao thành công, thêm sản phẩm vào model PurchasedProduct
+    if (newStatus === "delivered") {
+      const orderItems = updatedOrder.order_products;
+      for (const item of orderItems) {
+        // Kiểm tra xem sản phẩm đã được mua trước đó chưa
+        const existingProduct = await PurchasedProduct.findOne({
+          pc_userId: updatedOrder.order_user,
+          pc_productId: item.productId
+        });
+        if (existingProduct) {
+          // Nếu sản phẩm đã tồn tại, cập nhật số lượng
+          existingProduct.pc_quantity += item.quantity;
+          await existingProduct.save();
+        } else {
+          // Nếu sản phẩm chưa tồn tại, tạo bản ghi mới
+          const purchasedProduct = new PurchasedProduct({
+            pc_userId: updatedOrder.order_user,
+            pc_productId: item.productId,
+            pc_quantity: item.quantity,
+            pc_purchaseDate: new Date()
+          });
+          await purchasedProduct.save();
+        }
+      }
+    }
   }
-
 }
 
 module.exports = OrderService;  
