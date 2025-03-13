@@ -32,8 +32,7 @@ const authentication = asyncHandle(async (req, res, next) => {
 const restrictTo = (requiredPermission) =>
     asyncHandle(async (req, res, next) => {
         const { user } = req;
-
-        // 🚫 Chặn hoàn toàn nếu là khách hàng (user thường)
+        // Nếu người dùng có user_type là 'user', họ không thể truy cập các chức năng của admin
         if (user.user_type === "user") {
             return res.status(403).json({
                 success: false,
