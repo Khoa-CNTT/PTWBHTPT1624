@@ -1,14 +1,16 @@
 const express = require("express");
 const UserController = require("../../controllers/user.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware"); 
+const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
 const PERMISSIONS = require("../../config/permissions");
 
 const router = express.Router();
 
-// ✅ Xác thực trước rồi mới kiểm tra quyền
+// ✅ Xác thực trước khi truy cập API
 router.use(authentication);
+
 router.get("/profile", asyncHandle(UserController.getProfile));
+router.put("/profile/update", asyncHandle(UserController.updateProfile));
 
 router.use(restrictTo(PERMISSIONS.USER_MANAGE));
 

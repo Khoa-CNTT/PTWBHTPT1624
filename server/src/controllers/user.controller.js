@@ -2,53 +2,70 @@
 
 const UserService = require("../services/user.service");
 
-class AuthController {
+class UserController {
     static async addUser(req, res) {
-        res.status(200).json({
+        const user = await UserService.addUser(req.body);
+        res.status(201).json({
             success: true,
-            message: "Thêm thành công",
-            data: await UserService.addUser(req.body)
-        });
-    }
-    static async updateUser(req, res) {
-        res.status(200).json({
-            success: true,
-            message: "Cập nhật thành công",
-            data: await UserService.updateUser(req.params.uid, req.body)
-        });
-    }
-    static async deleteUser(req, res) {
-        res.status(200).json({
-            success: true,
-            message: "Xóa thành công",
-            data: await UserService.deleteUser(req.params.uid, req.body)
-        });
-    }
-    static async toggleBlockUser(req, res) {
-        const { isBlocked } = req.body
-        res.status(200).json({
-            success: true,
-            message: await UserService.toggleBlockUser(req.params.uid, isBlocked)
+            message: "Thêm người dùng thành công!",
+            data: user
         });
     }
 
-    //lấy all tk 
+    static async updateUser(req, res) {
+        const updatedUser = await UserService.updateUser(req.params.uid, req.body);
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật người dùng thành công!",
+            data: updatedUser
+        });
+    }
+
+    static async deleteUser(req, res) {
+        const deletedUser = await UserService.deleteUser(req.params.uid);
+        res.status(200).json({
+            success: true,
+            message: "Xóa người dùng thành công!",
+            data: deletedUser
+        });
+    }
+
+    static async toggleBlockUser(req, res) {
+        const { isBlocked } = req.body;
+        if (typeof isBlocked !== "boolean") {
+            return res.status(400).json({ success: false, message: "Trạng thái chặn không hợp lệ!" });
+        }
+        const message = await UserService.toggleBlockUser(req.params.uid, isBlocked);
+        res.status(200).json({
+            success: true,
+            message: message
+        });
+    }
+
     static async getAllUsers(req, res) {
+        const users = await UserService.getAllUsers();
         res.status(200).json({
             success: true,
-            message: "Lấy danh sách người dùng thành công",
-            data: await UserService.getAllUsers()
+            message: "Lấy danh sách người dùng thành công!",
+            data: users
         });
     }
-      //lấy all tk 
-      static async getProfile(req, res) {
+
+    static async getProfile(req, res) {
+        const profile = await UserService.getProfile(req.user._id);
         res.status(200).json({
             success: true,
-            message: "Lấy danh sách người dùng thành công",
-            data: await UserService.getProfile(req.user._id)
+            message: "Lấy thông tin cá nhân thành công!",
+            data: profile
         });
     }
-    
+    static async updateProfile(req, res) {
+        res.status(200).json({
+            success: true,
+            message: "Cập nhật thông tin cá nhân thành công",
+            data: await UserService.updateProfile(req.user._id, req.body)
+        });
+    }
 }
 
-module.exports = AuthController;
+module.exports = UserController;
