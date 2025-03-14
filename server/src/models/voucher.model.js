@@ -19,35 +19,43 @@ const VoucherSchema = new Schema({
     voucher_users_used: [{ type: String }], // danh sách người đã sử dụng
     voucher_max_price: { type: Number, default: null }, // Mức giảm tối đa (nếu là percent)
     voucher_min_order_value: { type: Number, required: true }, // Giá trị đơn hàng tối thiểu để áp dụng voucher
-    voucher_is_active: { type: Boolean, default: true },
-    voucher_required_points: { type: Number, default: 0 } // Điểm tích lũy cần thiết để đổi voucher
+ voucher_is_active: { type: Boolean, default: true },
+    voucher_required_points: { type: Number, default: 0 }
 }, {
-    timestamps: true // Tự động thêm createdAt, updatedAt
+    timestamps: true
 });
 
-// Middleware kiểm tra trùng lặp voucher_name và voucher_code
+// 🔍 Middleware kiểm tra trùng lặp voucher_code & voucher_name
 const checkVoucherUnique = async function (next) {
-    const voucher = this instanceof mongoose.Document ? this : this._update; // Kiểm tra xem là document hay update operation
-
     try {
-        // Kiểm tra trùng voucher_name
-        const existingVoucherByName = await mongoose.model('Voucher').findOne({
-            voucher_name: voucher.voucher_name
-        });
+        const voucher = this instanceof mongoose.Document ? this : this.getUpdate(); // Xác định kiểu dữ liệu
 
-        if (existingVoucherByName && existingVoucherByName._id.toString() !== (voucher._id ? voucher._id.toString() : null)) {
-            return next(new Error('Voucher name đã tồn tại!'));
+        if (!voucher.voucher_name || !voucher.voucher_code) {
+            return next(); // Nếu không có voucher_name hoặc voucher_code, bỏ qua kiểm tra
         }
 
+        const query = {
+            $or: [
+                { voucher_name: voucher.voucher_name },
+                { voucher_code: voucher.voucher_code }
+            ]
+        };
 
-        next(); // Nếu không có lỗi, tiếp tục
+        if (this instanceof mongoose.Query) {
+            query._id = { $ne: this.getQuery()._id }; // Nếu update, bỏ qua chính nó
+        } else if (voucher._id) {
+            query._id = { $ne: voucher._id }; // Nếu là document, cũng bỏ qua chính nó
+        }
+
+        next(); // Không có lỗi thì tiếp tục
     } catch (error) {
-        next(error); // Xử lý lỗi
+        next(error);
     }
 };
 
-// Áp dụng middleware cho cả các thao tác save và update
-VoucherSchema.pre(['save', 'findOneAndUpdate', 'updateOne'], checkVoucherUnique);
+// 🔹 Chỉ áp dụng middleware khi tạo mới hoặc update voucher_name, voucher_code
+VoucherSchema.pre('save', checkVoucherUnique);
+VoucherSchema.pre('findOneAndUpdate', checkVoucherUnique);
+VoucherSchema.pre('updateOne', checkVoucherUnique);
 
-// Export model
 module.exports = mongoose.model('Voucher', VoucherSchema);

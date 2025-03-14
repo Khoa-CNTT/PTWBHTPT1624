@@ -8,6 +8,8 @@ const router = express.Router();
 
 // ✅ Xác thực trước rồi mới kiểm tra quyền
 router.use(authentication);
+router.get("/profile", asyncHandle(UserController.getProfile));
+
 router.use(restrictTo(PERMISSIONS.USER_MANAGE));
 
 router.get("/all", asyncHandle(UserController.getAllUsers));

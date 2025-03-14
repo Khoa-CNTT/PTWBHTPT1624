@@ -40,6 +40,14 @@ class AuthController {
             data: await UserService.getAllUsers()
         });
     }
+      //lấy all tk 
+      static async getProfile(req, res) {
+        res.status(200).json({
+            success: true,
+            message: "Lấy danh sách người dùng thành công",
+            data: await UserService.getProfile(req.user._id)
+        });
+    }
     
 }
 

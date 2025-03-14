@@ -92,6 +92,10 @@ class UserService {
         const users = await userModel.find({}, "-user_password"); // Ẩn mật khẩu
         return users;
     }
+    //tất cả tk
+    static async getProfile(userid) {
+        return await userModel.findById(userid); // Ẩn mật khẩu
+    }
     
 }
 module.exports = UserService;

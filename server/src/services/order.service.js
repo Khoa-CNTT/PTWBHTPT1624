@@ -208,7 +208,45 @@ class OrderService {
         }
       }
     }
+    return newOrder
   }
+
+  static async getAllOrdersByUser({ userId, limit = 10, page = 0 }) {
+    const limitNum = parseInt(limit, 10); // Mặc định limit = 10
+    const pageNum = parseInt(page, 10); // Mặc định page = 0
+    const skipNum = pageNum * limitNum;
+    const orders = await Order.find({ order_user: userId })
+      .select("order_code order_total_price order_shipping_price order_total_apply_discount order_payment_method order_status")
+      .skip(skipNum)
+      .limit(limitNum)
+      .lean();
+    const totalOrders = await Order.countDocuments({ order_user: userId });
+    return {
+      totalPage: Math.ceil(totalOrders / limitNum) - 1, // Tổng số trang (0-based)
+      currentPage: pageNum,
+      totalOrders,
+      orders,
+    };
+  }
+  static async updateOrderStatus({ orderId, newStatus }) {
+    // Kiểm tra trạng thái mới có hợp lệ không
+    const validStatuses = ["pending", "confirm", "shipped", "delivered", "cancelled"];
+    if (!validStatuses.includes(newStatus)) throw new BadRequestError("Trạng thái không hợp lệ")
+    // Tìm và cập nhật đơn hàng
+    const updatedOrder = await Order.findOneAndUpdate(
+      { orderId: orderId },
+      {
+        order_status: newStatus,
+        updatedAt: new Date()
+      },
+      { new: true } // Trả về document đã được cập nhật
+    );
+
+    if (!updatedOrder) throw BadRequestError("Không tìm thấy đơn hàng")
+
+    return updatedOrder
+  }
+
 }
 
 module.exports = OrderService;  

@@ -22,7 +22,7 @@ const productSchema = new Schema({
         max: [5, "Rating must be below 5.0"],
         set: (val) => Math.round(val * 10) / 10 // Làm tròn đánh giá
     },
-    product_sold: { type: Number, default: 0 },
+    product_sold: { type: Number, default: 0 },//số lượng đã bán
     product_category_id: { type: Schema.Types.ObjectId, ref: "Category", required: true },
     product_brand_id: { type: Schema.Types.ObjectId, ref: "Brand", required: true },
     product_supplier_id: { type: Schema.Types.ObjectId, ref: "Supplier", required: true }, // ID nhà cung cấp

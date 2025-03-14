@@ -4,6 +4,7 @@ const userVoucherModel = require("../models/userVoucher.model");
 const voucherModel = require("../models/voucher.model");
 const userModel = require("../models/user.model");
 
+
 class UserVoucherService {
   static async saveVoucherForUser(userId, voucherId) {
     if (!userId || !voucherId) throw new BadRequestError("Thiếu thông tin")
@@ -40,7 +41,7 @@ class UserVoucherService {
     const currentDate = new Date();
     if (currentDate < voucher.voucher_start_date || currentDate > voucher.voucher_end_date) {
       throw new BadRequestError("Voucher đã hết hạn sử dụng");
-    }
+   }
     // Kiểm tra xem người dùng đã sở hữu voucher chưa
     const existingVoucher = await userVoucherModel.findOne({
       vc_user_id: userId,
@@ -72,7 +73,6 @@ class UserVoucherService {
       message: "Đổi voucher thành công"
     };
   }
-
   // Lấy danh sách voucher của user
   static async getVoucherByUser(userId) {
     if (!userId) throw new BadRequestError("Thiếu thông tin người dùng");
@@ -112,5 +112,4 @@ class UserVoucherService {
   }
 
 }
-
 module.exports = UserVoucherService;
