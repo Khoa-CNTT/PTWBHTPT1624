@@ -3,12 +3,12 @@ const mongoose = require('mongoose');
 const purchasedProductSchema = new mongoose.Schema({
     pc_userId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Tham chiếu đến model User
+        ref: 'User',
         required: true
     },
     pc_productId: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Product', // Tham chiếu đến model Product
+        ref: 'Product',
         required: true
     },
     pc_quantity: {
@@ -22,10 +22,9 @@ const purchasedProductSchema = new mongoose.Schema({
     },
     pc_isReviewed: {
         type: Boolean,
-        default: false // Mặc định là chưa đánh giá
+        default: false
     },
-});
+}, { timestamps: true });
 
-const PurchasedProduct = mongoose.model('PurchasedProduct', purchasedProductSchema);
-
-module.exports = PurchasedProduct;
+// Check if the model exists before compiling
+module.exports = mongoose.models.purchasedProduct || mongoose.model('purchasedProduct', purchasedProductSchema);

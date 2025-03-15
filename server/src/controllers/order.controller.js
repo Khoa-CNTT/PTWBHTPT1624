@@ -23,6 +23,15 @@ class OrderController {
             message: "Cập nhật trạng thái đơn hàng thành công"
         });
     }
+    static async getOrder(req, res) {
+        res.status(201).json({
+            success: true,
+            data: await OrderService.getOrder(req.params.oid),
+            message: "Thành công"
+        });
+    }
+
+
 }
 
 module.exports = OrderController;

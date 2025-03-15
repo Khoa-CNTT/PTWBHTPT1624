@@ -23,5 +23,6 @@ router.use("/v1/api/order", require("./order/index"))
 router.use("/v1/api/user-voucher", require("./userVoucher/index"))
 router.use("/v1/api/review", require("./review/index"))
 router.use("/v1/api/dashboard", require("./dashboard/index"))
+router.use("/v1/api/purchased", require("./purchased/index"))
 
 module.exports = router

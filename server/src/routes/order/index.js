@@ -6,11 +6,11 @@ const PERMISSIONS = require("../../config/permissions");
 
 const router = express.Router();
 
-router.put('/update-status', asyncHandle(OrderControllers.updateOrderStatus));
+router.get('/:oid/detail', asyncHandle(OrderControllers.getOrder));
 router.use(authentication)
 // Thêm sản phẩm
 router.post("/add", asyncHandle(OrderControllers.createOrder))
 router.get("/by-user", asyncHandle(OrderControllers.getAllOrdersByUser));
 router.use(restrictTo(PERMISSIONS.ORDER_MANAGE));
-;
+router.put('/update-status', asyncHandle(OrderControllers.updateOrderStatus)); 
 module.exports = router;
