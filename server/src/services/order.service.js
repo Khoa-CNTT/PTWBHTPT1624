@@ -1,6 +1,5 @@
 "use strict";
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Order = require("../models/order.model"); // Mô hình đơn hàng
 const Product = require("../models/product.model"); // Mô hình sản phẩm
 const Voucher = require("../models/voucher.model"); // Mô hình mã giảm giá
 const Cart = require("../models/cart.model"); // Mô hình giỏ hàng
@@ -8,6 +7,8 @@ const { convertToObjectIdMongodb } = require("../utils"); // Hàm tiện ích ch
 const userVoucherModel = require("../models/userVoucher.model");
 const shippingCompany = require("../models/shippingCompany.model");
 const { default: mongoose } = require("mongoose");
+const orderModel = require("../models/order.model"); 
+const purchasedProductModel = require("../models/purchasedProduct.model");
 
 class OrderService {
   // Hàm tạo đơn hàng mới, nhận payload chứa thông tin đơn hàng
@@ -104,7 +105,7 @@ class OrderService {
       to: new Date(Date.now() + shipping.sc_delivery_time.to * 24 * 60 * 60 * 1000)
     };
     //Ngày giao hàng dự kiến (có thể để trống)
-    const newOrder = await Order.create(
+    const newOrder = await orderModel.create(
       [{
         order_user: userId, // Người đặt hàng
         order_products: productsToOrder, // Danh sách sản phẩm
@@ -157,12 +158,12 @@ class OrderService {
     const limitNum = parseInt(limit, 10); // Mặc định limit = 10
     const pageNum = parseInt(page, 10); // Mặc định page = 0
     const skipNum = pageNum * limitNum;
-    const orders = await Order.find({ order_user: userId })
+    const orders = await orderModel.find({ order_user: userId })
       .select("order_code order_total_price order_shipping_price order_total_apply_discount order_payment_method order_status")
       .skip(skipNum)
       .limit(limitNum)
       .lean();
-    const totalOrders = await Order.countDocuments({ order_user: userId });
+    const totalOrders = await orderModel.countDocuments({ order_user: userId });
     return {
       totalPage: Math.ceil(totalOrders / limitNum) - 1, // Tổng số trang (0-based)
       currentPage: pageNum,
@@ -170,23 +171,78 @@ class OrderService {
       orders,
     };
   }
+
   static async updateOrderStatus({ orderId, newStatus }) {
-    // Kiểm tra trạng thái mới có hợp lệ không
+    if (!orderId) throw new BadRequestError("Không tìm thấy đơn hàng");
     const validStatuses = ["pending", "confirm", "shipped", "delivered", "cancelled"];
-    if (!validStatuses.includes(newStatus)) throw new BadRequestError("Trạng thái không hợp lệ")
-    // Tìm và cập nhật đơn hàng
-    const updatedOrder = await Order.findOneAndUpdate(
-      { orderId: orderId },
-      {
-        order_status: newStatus,
-        updatedAt: new Date()
-      },
-      { new: true } // Trả về document đã được cập nhật
+    if (!validStatuses.includes(newStatus)) throw new BadRequestError("Trạng thái không hợp lệ");
+    const updatedOrder = await orderModel.findOneAndUpdate(
+      { _id: orderId },
+      { order_status: newStatus, updatedAt: new Date() },
+      { new: true }
     );
-
-    if (!updatedOrder) throw BadRequestError("Không tìm thấy đơn hàng")
-
+    if (!updatedOrder) throw new BadRequestError("Không tìm thấy đơn hàng");
+    // Nếu đơn hàng được giao thành công, thêm sản phẩm vào model PurchasedProduct
+    if (newStatus === "delivered") {
+      const orderItems = updatedOrder.order_products;
+      for (const item of orderItems) {
+        // Kiểm tra xem sản phẩm đã được mua trước đó chưa
+        const existingProduct = await purchasedProductModel.findOne({
+          pc_userId: updatedOrder.order_user,
+          pc_productId: item.productId
+        });
+        if (existingProduct) {
+          // Nếu sản phẩm đã tồn tại, cập nhật số lượng
+          existingProduct.pc_quantity += item.quantity;
+          await existingProduct.save();
+        } else {
+          // Nếu sản phẩm chưa tồn tại, tạo bản ghi mới
+      await purchasedProductModel.create({ pc_userId: updatedOrder.order_user,
+            pc_productId: item.productId,
+            pc_quantity: item.quantity,
+            pc_purchaseDate: new Date()})
+        }
+      }
+    }
     return updatedOrder
+  }
+
+  static async getAllOrdersByUser({ userId, limit = 10, page = 0 }) {
+    const limitNum = parseInt(limit, 10); // Mặc định limit = 10
+    const pageNum = parseInt(page, 10); // Mặc định page = 0
+    const skipNum = pageNum * limitNum;
+    const orders = await orderModel.find({ order_user: userId })
+      .select("order_code order_total_price order_shipping_price order_total_apply_discount order_payment_method order_status")
+      .skip(skipNum)
+      .limit(limitNum)
+      .lean();
+    const totalOrders = await orderModel.countDocuments({ order_user: userId });
+    return {
+      totalPage: Math.ceil(totalOrders / limitNum) - 1, // Tổng số trang (0-based)
+      currentPage: pageNum,
+      totalOrders,
+      orders,
+    };
+  }
+  static async getOrder(orderId) {
+    if (!orderId) throw new BadRequestError("Không tìm thấy đơn hàng")
+    const order = await orderModel.findById(orderId)
+      .populate('order_user', 'user_name')
+      .populate('order_products.productId', 'product_thumb'); // Populate productId with only product_thumb
+    if (!order) throw new BadRequestError("Không tìm thấy đơn hàng");
+    // Transform products array
+    const products = order.order_products.map((p) => ({
+      product_thumb: p.productId.product_thumb,
+      quantity: p.quantity,
+      discount: p.discount,
+      price: p.price
+    }));
+
+    // Convert to plain object and replace order_products
+    const orderObject = order.toObject();
+    orderObject.order_products = products;
+
+    return orderObject;
   }
 
 }

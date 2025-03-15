@@ -10,7 +10,7 @@ class FavoriteProductService {
             throw new BadRequestError("Thiếu thông tin người dùng hoặc sản phẩm");
         }
         // Tìm document của user
-        let userFavorites = await FavoriteProduct.findOne({ fp_user_id: userId });
+        let userFavorites = await FavoriteProduct.findOne({ fp_user_id: userId });   
         if (userFavorites) {
             // Kiểm tra xem product đã có trong mảng chưa
             const productIndex = userFavorites.fp_product.indexOf(productId);

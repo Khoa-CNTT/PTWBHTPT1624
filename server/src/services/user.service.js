@@ -29,7 +29,7 @@ class UserService {
         return await newUser.save();
     }
 
-    static async updateUser(uid, payload) {
+    static async updateUser(uid, payload) { 
         const { user_email, user_password, user_mobile, ...dataUser } = payload;
 
         const user = await UserModel.findById(uid);
@@ -41,15 +41,16 @@ class UserService {
             dataUser.user_mobile = user_mobile;
         }
 
+ 
         if (user_password) {
             const salt = await bcrypt.genSalt(10);
             dataUser.user_password = await bcrypt.hash(user_password, salt);
-        }
-
+        } 
         return await UserModel.findByIdAndUpdate(uid, dataUser, {
             new: true,
             runValidators: true
         });
+ 
     }
 
     static async deleteUser(uid) {
