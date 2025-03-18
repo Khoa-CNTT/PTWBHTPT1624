@@ -1,16 +1,34 @@
 "use strict";
 
 const express = require("express");
-const router = express.Router();
 const NotificationController = require("../../controllers/notification.controller");
-const { authentication } = require("../../middlewares/authMiddleware");
+const asyncHandle = require("../../helper/asyncHandle");
+const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
+const PERMISSIONS = require("../../config/permissions");
 
+const router = express.Router();
 
-// Middleware kiểm tra đăng nhập cho tất cả route
+// Yêu cầu đăng nhập
 router.use(authentication);
-// Lấy danh sách thông báo của người dùng (yêu cầu đăng nhập)
-router.get("/", NotificationController.getUserNotifications);
-// Đánh dấu thông báo là đã đọc
-router.put("/:id/read", NotificationController.markAsRead);
+
+// 🟢 Người dùng: Xem thông báo cá nhân
+router.get("/", asyncHandle(NotificationController.getUserNotifications));
+
+// 🟢 Người dùng: Đánh dấu đã đọc thông báo
+router.put("/:id/read", asyncHandle(NotificationController.markAsRead));
+
+// 🔴 Admin/Staff: Gửi thông báo đến tất cả người dùng
+router.post(
+  "/send-to-all",
+  restrictTo(PERMISSIONS.ADMIN, PERMISSIONS.STAFF),
+  asyncHandle(NotificationController.sendNotificationToAll)
+);
+
+// 🔴 Admin/Staff: Gửi thông báo đến một người dùng cụ thể
+router.post(
+  "/send-to-user/:userId",
+  restrictTo(PERMISSIONS.ADMIN, PERMISSIONS.STAFF),
+  asyncHandle(NotificationController.sendNotificationToUser)
+);
 
 module.exports = router;
