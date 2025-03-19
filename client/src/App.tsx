@@ -1,35 +1,66 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import { BrowserRouter as Router, Routes, Route } from "react-router";
+import Ecommerce from "./pages/system/Dashboard/Ecommerce";
+import SignIn from "./pages/system/AuthPages/SignIn";
+import SignUp from "./pages/system/AuthPages/SignUp";
+import NotFound from "./pages/system/OtherPage/NotFound";
+import UserProfiles from "./pages/system/UserProfiles";
+import Videos from "./pages/system/UiElements/Videos";
+import Images from "./pages/system/UiElements/Images";
+import Alerts from "./pages/system/UiElements/Alerts";
+import Badges from "./pages/system/UiElements/Badges";
+import Avatars from "./pages/system/UiElements/Avatars";
+import Buttons from "./pages/system/UiElements/Buttons";
+import LineChart from "./pages/system/Charts/LineChart";
+import BarChart from "./pages/system/Charts/BarChart";
+import Calendar from "./pages/system/Calendar";
+import BasicTables from "./pages/system/Tables/BasicTables";
+import FormElements from "./pages/system/Forms/FormElements";
+import Blank from "./pages/system/Blank";
+import AppLayout from "./layout/AppLayout";
+import { ScrollToTop } from "./components/common/ScrollToTop";
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
     <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.tsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
-}
+      <Router>
+        <ScrollToTop />
+        <Routes>
+          {/* Dashboard Layout */}
+          <Route element={<AppLayout />}>
+            <Route index path="/" element={<Ecommerce />} />
 
-export default App
+            {/* Others Page */}
+            <Route path="/profile" element={<UserProfiles />} />
+            <Route path="/calendar" element={<Calendar />} />
+            <Route path="/blank" element={<Blank />} />
+
+            {/* Forms */}
+            <Route path="/form-elements" element={<FormElements />} />
+
+            {/* Tables */}
+            <Route path="/basic-tables" element={<BasicTables />} />
+
+            {/* Ui Elements */}
+            <Route path="/alerts" element={<Alerts />} />
+            <Route path="/avatars" element={<Avatars />} />
+            <Route path="/badge" element={<Badges />} />
+            <Route path="/buttons" element={<Buttons />} />
+            <Route path="/images" element={<Images />} />
+            <Route path="/videos" element={<Videos />} />
+
+            {/* Charts */}
+            <Route path="/line-chart" element={<LineChart />} />
+            <Route path="/bar-chart" element={<BarChart />} />
+          </Route>
+
+          {/* Auth Layout */}
+          <Route path="/signin" element={<SignIn />} />
+          <Route path="/signup" element={<SignUp />} />
+
+          {/* Fallback Route */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </Router>
+    </>
+  );
+}
