@@ -9,6 +9,7 @@ import {
   UserCircleIcon,
 } from "../../icons";
 import { useSidebar } from "../../context/SidebarContext";
+import { iconLogo, logo_dpshopvn } from "../../assets";
 
 type NavItem = {
   name: string;
@@ -228,14 +229,7 @@ const AppSidebar: React.FC = () => {
             <>
               <img
                 className="dark:hidden"
-                src="/images/logo/logo.svg"
-                alt="Logo"
-                width={150}
-                height={40}
-              />
-              <img
-                className="hidden dark:block"
-                src="/images/logo/logo-dark.svg"
+                src={logo_dpshopvn}
                 alt="Logo"
                 width={150}
                 height={40}
@@ -243,7 +237,7 @@ const AppSidebar: React.FC = () => {
             </>
           ) : (
             <img
-              src="/images/logo/logo-icon.svg"
+              src={iconLogo}
               alt="Logo"
               width={32}
               height={32}
