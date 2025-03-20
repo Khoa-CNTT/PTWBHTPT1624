@@ -10,6 +10,7 @@ import {
 } from "../../icons";
 import { useSidebar } from "../../context/SidebarContext";
 import { iconLogo, logo_dpshopvn } from "../../assets";
+import { PATH } from "../../utils/const";
 
 type NavItem = {
   name: string;
@@ -22,7 +23,7 @@ const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
     name: "Danh mục",
-    path: "danh-muc",
+    path:  PATH.MANAGE_CATEGORY 
   },
   {
     name: "Forms",
@@ -227,12 +228,7 @@ const AppSidebar: React.FC = () => {
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              <img
-                className="dark:hidden"
-                src={logo_dpshopvn}
-                alt="Logo"
-                width={150}
-                height={40}
+              <img className="dark:hidden" src={logo_dpshopvn} alt="Logo" width={150} height={40}
               />
             </>
           ) : (

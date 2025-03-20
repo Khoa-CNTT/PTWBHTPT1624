@@ -26,11 +26,11 @@ const RouterPage = () => {
 
                 {/* ============= ADMIN =================== */}
                 <Route path={PATH.SYSTEM} element={
-                    <ProtectedRoute allowedRoles={["admin",'employee']} redirectPath={PATH.HOME}>
+                    <ProtectedRoute allowedRoles={["admin",'employee']} redirectPath={PATH.SYSTEM}>
                         <AppLayout />
                     </ProtectedRoute>
                 }>
-                    <Route path="danh-muc" element={<CategoryManage />} />
+                    <Route path={PATH.MANAGE_CATEGORY} element={<CategoryManage />} />
                     <Route path="blank" element={<Blank />} />
                 </Route>
             </Routes>

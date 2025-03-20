@@ -12,10 +12,10 @@ export const PATH = {
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
     // =========== ADMIN ==============
-    SYSTEM:"quan-ly",
-    MANAGE_STATISTICAL:"thong-ke-doanh-thu",
-    MANAGE_USER: "quan-ly-nguoi-dung",
-    MANAGE_CATEGORY: "quan-ly-danh-muc",
+    SYSTEM:"/quan-ly",
+    MANAGE_CATEGORY:"/quan-ly/quan-ly-danh-muc",
+    MANAGE_STATISTICAL:"/thong-ke-doanh-thu",
+    MANAGE_USER: "/quan-ly-nguoi-dung",
 };
 
 export const SEARCH_UTILITY = [

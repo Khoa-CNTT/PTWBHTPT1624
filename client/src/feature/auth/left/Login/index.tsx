@@ -26,6 +26,7 @@ const Login: React.FC = () => {
             showNotification('Đăng nhập thành công!', true);
             dispatch(setOpenFeatureAuth(false));
             dispatch(setIsLoginSuccess(true));
+            window.location.reload();
         } else {
             setError(res.status);
         }
