@@ -53,13 +53,11 @@ class CategoryService {
     static async deleteCategory(categoryId) {
         const deletedCategory = await Category.findById(categoryId);
         if (!deletedCategory) { throw new NotFoundError("Không tìm thấy danh mục"); }
-    
         // Kiểm tra xem danh mục có sản phẩm hay không
-        const totalProducts = await productModel.countDocuments(categoryId);
+        const totalProducts = await productModel.countDocuments({ product_category_id: categoryId}).exec();
         if (totalProducts > 0) {
           throw new BadRequestError(`Danh mục hiện có ${totalProducts} sản phẩm`);
         }
-    
         // Xóa danh mục
         await deletedCategory.deleteOne();
     }
