@@ -90,14 +90,14 @@ const handleImageUpload = async ( type: string,   e: React.ChangeEvent<HTMLInput
                             </label>
                         </div>
                         {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-                       { inputFields.category_thumb&&<img className='h-[200px]' src={inputFields.category_thumb} />}
+                       { inputFields.category_thumb&&<img className='h-[200px] mt-2 rounded-sm' src={inputFields.category_thumb} />}
                         {invalidFields?.some((i) => i.name ==="category_thumb") && (
                 <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>
             )}
         </div>
         <div className="flex justify-end gap-3">
           <Button size="sm" variant="outline" onClick={closeModal}>Hủy</Button>
-       {  inputFields.category_thumb&&inputFields.category_name&& <Button size="sm" onClick={handleSave}>
+       { inputFields.category_thumb&&inputFields.category_name&& <Button size="sm" onClick={handleSave}>
             {category ? "Lưu thay đổi" : "Thêm mới"}
           </Button>}
         </div>
