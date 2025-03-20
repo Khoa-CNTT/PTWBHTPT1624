@@ -12,7 +12,6 @@ const apiSearchProduct = async (keySearch: string) => {
         };
     }
 };
-
 // API lấy tất cả sản phẩm
 const apiGetAllProducts = async () => {
     try {

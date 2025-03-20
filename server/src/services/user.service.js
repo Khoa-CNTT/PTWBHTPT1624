@@ -11,19 +11,15 @@ class UserService {
         if (!user_name || !user_email || !user_password || !user_mobile || !user_type) {
             throw new BadRequestError("Thiếu thông tin bắt buộc!", 400);
         }
-
         const existingUser = await UserModel.findOne({ user_email });
         if (existingUser) throw new BadRequestError("Email đã tồn tại!", 400);
-
         const existingMobile = await UserModel.findOne({ user_mobile });
         if (existingMobile) throw new BadRequestError("Số điện thoại đã tồn tại!", 400);
-
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(user_password, salt);
-
         const newUser = new UserModel({
+            ...payload,
             user_password: hashedPassword,
-            ...payload
         });
 
         return await newUser.save();

@@ -1,13 +1,29 @@
-import { SidebarProvider, useSidebar } from "../context/SidebarContext";
 import { Outlet } from "react-router";
 import AppHeader from "./AppHeader";
 import Backdrop from "./Backdrop";
 import AppSidebar from "./AppSidebar";
-
+import { SidebarProvider, useSidebar } from "../../context/SidebarContext";
+import 'react-toastify/dist/ReactToastify.css';
+import { ToastContainer } from "react-toastify";
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
-
+ const toastContainer = (
+        <ToastContainer
+            position="top-center"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+        />
+    );
   return (
+    <>
+    
     <div className="min-h-screen xl:flex">
       <div>
         <AppSidebar />
@@ -24,10 +40,14 @@ const LayoutContent: React.FC = () => {
         </div>
       </div>
     </div>
+      {toastContainer}
+      </>
+    
   );
 };
 
 const AppLayout: React.FC = () => {
+  
   return (
     <SidebarProvider>
       <LayoutContent />

@@ -11,7 +11,6 @@ const brandSchema = mongoose.Schema({
 })
 brandSchema.pre("save", function (next) {
     this.brand_slug = slugify(this.brand_name, { lower: true })
-
     next();
 })
 module.exports = mongoose.model("Brand", brandSchema)

@@ -1,5 +1,4 @@
 import { axiosJWT, httpRequest } from '../utils/httpRequest';
-
 // Xác thực email khi đăng ký
 const apiSendVerificationEmail = async (email: string) => {
     try {

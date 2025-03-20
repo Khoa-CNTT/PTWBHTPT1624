@@ -1,7 +1,7 @@
 const StatusCode = {
     FORBIDDEN: 403,
     CONFLICT: 409,
-    BAD_REQUEST: 400,  // Thêm mã trạng thái cho BadRequest
+    BAD_REQUEST: 203,  // Thêm mã trạng thái cho BadRequest
     NOT_FOUND: 404     // Thêm mã trạng thái cho NotFound
 }
 

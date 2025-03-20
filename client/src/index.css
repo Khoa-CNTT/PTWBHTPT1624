@@ -3,6 +3,66 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+:root {
+  font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif;
+  line-height: 1.5;
+  font-weight: 400;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.swiper-button-prev:after,
+.swiper-rtl .swiper-button-next:after {
+  font-size: 30px;
+}
+.swiper-button-next:after,
+.swiper-button-prev:after {
+  font-size: 30px;
+}
+
+#sock-discount .swiper-button-next,
+#sock-discount .swiper-button-prev {
+  color: white;
+  background-color: black;
+  opacity: 0.1;
+}
+
+#sock-discount .swiper-button-next {
+  border-radius: 4px 0 4px 0;
+}
+#sock-discount .swiper-button-prev {
+  border-radius: 0 4px 4px 0;
+}
+#sock-discount .swiper-button-next:hover,
+#sock-discount .swiper-button-prev:hover {
+  color: white;
+  background-color: black;
+  opacity: 0.5;
+}
+input[type='number']::-webkit-inner-spin-button,
+input[type='number']::-webkit-outer-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+ 
+.css-1hv8oq8-MuiStepLabel-label.MuiStepLabel-alternativeLabel {
+  margin-top: 3px !important;
+  color: slategrey;
+}
+
+
+input{
+  outline: none
+}
 
 @layer base {
   body {

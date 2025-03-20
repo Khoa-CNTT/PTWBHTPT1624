@@ -58,8 +58,8 @@ class ProductService {
 
     const totalProducts = await Product.countDocuments({ $text: { $search: regexSearch } });
     return {
-      totalPage: Math.ceil(totalProducts / limitNum) - 1, // Tổng số trang (0-based)
-      currentPage: pageNum,
+      totalPage: Math.ceil(totalProducts / limitNum) - 1||0, // Tổng số trang (0-based)
+      currentPage: pageNum||0,
       totalProducts,
       products,
     }; 

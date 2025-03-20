@@ -1,9 +1,11 @@
 import { axiosJWT } from '../utils/httpRequest';
 
 // Lấy tất cả danh mục
-const apiGetAllCategories = async () => {
+const apiGetAllCategories = async (queries:{limit:number,page:number}) => {
     try {
-        const res = await axiosJWT.get('/v1/api/category/all');
+        const res = await axiosJWT.get('/v1/api/category/all',{
+            params:queries
+        });
         return res.data;
     } catch (error) {
         return {
