@@ -5,11 +5,13 @@ const { default: helmet } = require("helmet")
 const morgan = require("morgan")
 const cors = require("cors");
 const cookieParser = require("cookie-parser")
+require("dotenv").config();
+
 const app = express()
 
 // ✅ Middleware
 app.use(cors({
-    origin: ["http://127.0.0.1:5173"],
+    origin: [ process.env.URL_CLIENT,"http://127.0.0.1:5173","http://localhost:5173"],
     credentials: true, 
 })); 
 //init middlewares
@@ -36,7 +38,8 @@ app.use((req, res, next) => {
 app.use((error, req, res, next) => {
     const statusCode = error.status || 500;
     res.status(statusCode).json({
-        status: error.message,
+        success:false,
+        message: error.message,
         code: statusCode
     })
 })

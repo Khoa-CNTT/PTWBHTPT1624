@@ -10,12 +10,16 @@ const Gia_Vi_va_Che_Bien = require("./product/Gia-Vi-va-Che-Bien.json")
 const Sua_va_cac_San_pham_tu_sua = require("./product/Sua-va-cac-San-pham-tu-sua.json")
 const Thuc_pham_DJong_hop_va_Kho = require("./product/Thuc-pham-DJong-hop-va-Kho.json")
 const data = [
-    // Bo_qua_tang,
-    Cham_soc_thu_cung, DJo_An_Vat,
-    DJo_Uong_Khong_Con, DJo_uong_Pha_che_dang_bot,
-    DJo_uong_co_con, Gia_Vi_va_Che_Bien,
-    Sua_va_cac_San_pham_tu_sua, Thuc_pham_DJong_hop_va_Kho,
-    DJau_andamp_Hat_Cac_Loai
+    DJo_An_Vat,
+    Thuc_pham_DJong_hop_va_Kho,
+    DJo_uong_co_con, 
+    Cham_soc_thu_cung,
+    DJo_uong_Pha_che_dang_bot,
+    Sua_va_cac_San_pham_tu_sua, 
+    DJau_andamp_Hat_Cac_Loai,
+    DJo_Uong_Khong_Con, 
+    Bo_qua_tang,
+    Gia_Vi_va_Che_Bien,
 ]
 const mongoose = require('mongoose');
 const convertArrToObject = require("./convertArrToObject")
@@ -30,13 +34,14 @@ const axios = require("axios");
 const categoryModel = require("../src/models/category.model")
 const brandModel = require("../src/models/brand.model")
 const productModel = require("../src/models/product.model")
+const suppliers = require("./nhacungcap")
+const supplierModel = require("../src/models/supplier.model")
 
 const IMAGE_SIZE = 224; // Kích thước chuẩn cho MobileNet
 /** Tải ảnh từ URL và lưu vào thư mục tạm */
 async function downloadImage(url, filePath) {
     const modifiedUrl = url.replace(/\.(JPG)$/, ".jpg");
     const retries = 3;
-
     for (let i = 0; i < retries; i++) {
         try {
             const response = await axios.get(modifiedUrl, { responseType: "arraybuffer" });
@@ -95,11 +100,41 @@ const upsertCategory = async ({ category_name, category_thumb }) => {
     let category = await categoryModel.findOne({ category_name });
     if (!category) {
         category = await categoryModel.create({ category_name, category_thumb });
-        await categoryModell.save();
     }
     console.log("Dữ liệu danh mục:", category);
     return category;
 }
+const upsertSupplier = async ({
+    supplier_name,
+    supplier_contact,
+    supplier_address,
+    supplier_email,
+    supplier_phone,
+    supplier_description
+}) => {
+    try {
+        let supplier = await supplierModel.findOne({ supplier_name });
+
+        if (!supplier) {
+            supplier = await supplierModel.create({
+                supplier_name,
+                supplier_contact,
+                supplier_address,
+                supplier_email,
+                supplier_phone,
+                supplier_description
+            });
+        }
+
+        console.log("Dữ liệu nhà cung cấp:", supplier);
+        return supplier;
+    } catch (error) {
+        console.error("Lỗi khi xử lý nhà cung cấp:", error);
+        throw error;
+    }
+};
+
+
 const upsertBrand = async (brand_name) => {
     let brand = await brandModel.findOne({ brand_name });
     if (!brand) {
@@ -121,6 +156,7 @@ const insertProductsData = async () => {
                 items.map(async (item) => {
                     let tempPath; // Declare tempPath here so it's accessible in finally
                     try {
+                        const ncc= await upsertSupplier(suppliers[Math.floor(Math.random() * suppliers.length)])
                         const brand = await upsertBrand(item.brand);
                         const images = item?.images?.map(i =>
                             i.split(",")[0].replace("100x100", "750x750")
@@ -158,20 +194,19 @@ const insertProductsData = async () => {
                             product_views: 10,
                             product_image_features: featuresArray,
                             product_category_id: item.category_id,
-                            product_brand_id: brand._id
+                            product_brand_id: brand._id,
+                            product_supplier_id:ncc._id
                         });
                     } catch (error) {
-                        errors.push(`Product error: ${item.title} - ${error.message}`);
-                        return null;
+                        return error
+                        
                     }
                 })
             );
         };
         const responses = [];
         for (let i = 0; i < data.length; i++) {
-            const category = await upsertCategory(categories[i]);
-            console.log("category", category);
-
+            const category = await upsertCategory(categories[i]);  
             const products = data[i];
             for (let j = 0; j < products.length; j += BATCH_SIZE) {
                 const batch = products.slice(j, j + BATCH_SIZE).map(item => ({

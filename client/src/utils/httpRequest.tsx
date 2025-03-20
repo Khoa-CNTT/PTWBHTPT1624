@@ -1,31 +1,44 @@
 import axios from 'axios';
-
-// Thiết lập baseURL cho httpRequest
 export const httpRequest = axios.create({
-    baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000', // Đảm bảo baseURL đúng
+    baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000',
 });
-
-// Thiết lập axiosJWT với withCredentials cho cookie
 export const axiosJWT = axios.create({
-    withCredentials: true, // Đảm bảo trình duyệt gửi cookie (nếu có)
-    baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000', // Đảm bảo baseURL đúng
+    withCredentials: true,// không có cái này thì tình duyệt sẽ không nhận được cookie
+    baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000',
 });
-
-// Interceptor cho axiosJWT để thêm Authorization header với access token
 axiosJWT.interceptors.request.use(
     function (config) {
-        // Lấy access token từ localStorage
-        const access_token = localStorage.getItem("access_token");
-
-        // Nếu có access_token, thêm vào header Authorization
-        if (access_token) {
-            config.headers.Authorization = `Bearer ${JSON.parse(access_token)}`;  // Thêm Bearer trước token
+        const access_token=localStorage.getItem("access_token")
+        if(!access_token){
+             return config;
         }
-
+        config.headers.Authorization = `Bearer ${JSON.parse(access_token)}`;
         return config;
     },
     function (error) {
-        // Nếu có lỗi xảy ra khi gọi API, trả lỗi
+        // Do something with request error
         return Promise.reject(error);
     },
-);
+); 
+// // Add a request interceptor
+// axiosJWT.interceptors.request.use(
+//     async (config) => {
+//       const access_token = localStorage.getItem('access_token');
+//       if (!access_token) return config;
+//       const decode: any  = jwt_decode(JSON.parse(access_token));
+//       const currentTime = new Date();
+//       if (decode.exp < currentTime.getTime() / 1000) {
+//         const data = await apiRefreshToken();
+//         console.log(data);
+//         if (data.success) {
+//           localStorage.setItem('access_token', JSON.stringify(data.refresh_token));
+//           config.headers.Authorization = `Bearer ${data.refresh_token}`;
+//         }
+//       }
+//       return config;
+//     },
+//     function (error) {
+//       // Do something with request error
+//       return Promise.reject(error);
+//     },
+//   );

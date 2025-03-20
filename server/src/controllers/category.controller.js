@@ -8,8 +8,8 @@ class CategoryController {
         res.status(201).json({ success: true, data: category });
     }
 
-    static async getAllCategories(req, res, next) {
-        const categories = await CategoryService.getAllCategories();
+    static async getAllCategories(req, res, next) { 
+        const categories = await CategoryService.getAllCategories(req.query);
         res.status(200).json({ success: true, data: categories });
     }
 
@@ -25,7 +25,7 @@ class CategoryController {
 
     static async deleteCategory(req, res, next) {
         await CategoryService.deleteCategory(req.params.id);
-        res.status(200).json({ success: true, message: "Danh mục đã bị xóa" });
+        res.status(200).json({ success: true, message: "Xóa danh mục thành công" });
     }
     //tìm theo tên
     static async searchCategory(req, res, next) {

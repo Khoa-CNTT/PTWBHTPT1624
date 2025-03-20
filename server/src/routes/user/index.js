@@ -11,9 +11,7 @@ router.use(authentication);
 
 router.get("/profile", asyncHandle(UserController.getProfile));
 router.put("/profile/update", asyncHandle(UserController.updateProfile));
-
 router.use(restrictTo(PERMISSIONS.USER_MANAGE));
-
 router.get("/all", asyncHandle(UserController.getAllUsers));
 router.post("/add", asyncHandle(UserController.addUser));
 router.put("/:uid/update", asyncHandle(UserController.updateUser));

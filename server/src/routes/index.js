@@ -5,8 +5,7 @@ const router = express.Router()
 router.use("/v1/api/auth", require("./auth/index"))
 
 // ===============================
-router.use("/v1/api/users", require("./user/index"))
-
+router.use("/v1/api/user", require("./user/index")) 
 router.use("/v1/api/category", require("./category/index"))
 router.use("/v1/api/product", require("./product/index"))
 router.use("/v1/api/brand", require("./brand/index"))
