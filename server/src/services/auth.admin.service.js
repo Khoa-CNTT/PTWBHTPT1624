@@ -14,7 +14,7 @@ class AuthAdminService {
     static async adminLogin({ email, password }, res) {
         const foundAdmin = await adminModel.findOne({ admin_email: email }).lean()
         if (!foundAdmin) {
-            throw new BadRequestError("Tài khoản không tồn tại", 403)
+            throw new BadRequestError("Tài khoản không tồn tại", 203)
         }
         const matchPassword = bcrypt.compareSync(password, foundAdmin.admin_password)
         if (!matchPassword) throw new BadRequestError("Tài khoản hoặc mật khẩu không đúng", 201)
