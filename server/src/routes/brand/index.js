@@ -3,7 +3,6 @@ const BrandController = require("../../controllers/brand.controller");
 const asyncHandle = require("../../helper/asyncHandle");
 const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
-const { adminAuthentication } = require("../../middlewares/auth.admin.middleware");
 
 const router = express.Router(); 
 // Lấy danh sách tất cả thương hiệu

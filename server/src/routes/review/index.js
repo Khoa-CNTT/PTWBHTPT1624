@@ -3,13 +3,13 @@ const ReviewController = require("../../controllers/review.controller");
 const asyncHandle = require("../../helper/asyncHandle");
 const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
-
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 const router = express.Router();
 
 /* ================================
    📌 API Dành cho Người Dùng (Đánh giá sản phẩm)
    ================================ */
-router.post("/add", userAuthentication, asyncHandle(ReviewController.createReview)); // 📝 Tạo đánh giá
+router.post("/add", [userAuthentication], asyncHandle(ReviewController.createReview)); // 📝 Tạo đánh giá
 router.get("/:productId/search", asyncHandle(ReviewController.getReviews)); // 📖 Lấy danh sách đánh giá
 
 /* ================================
