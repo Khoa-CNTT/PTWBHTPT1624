@@ -1,4 +1,4 @@
-import { adminClient, apiClient } from "../utils/httpRequest";
+import { adminClient, apiClient } from "../config/httpRequest";
 
 // Lấy tất cả banners
 const apiGetAllBanners = async (queries:{limit:number,page:number}) => {

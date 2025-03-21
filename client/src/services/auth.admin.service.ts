@@ -1,4 +1,4 @@
-import { adminClient} from '../utils/httpRequest';
+import { adminClient} from '../config/httpRequest';
  
 // Đăng nhập người dùng
 const apiLoginAdmin = async ({ email, password }: { email: string; password: string }) => {

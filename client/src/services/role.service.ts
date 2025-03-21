@@ -1,4 +1,4 @@
-import { adminClient } from '../utils/httpRequest';
+import { adminClient } from '../config/httpRequest';
 
 // API lấy tất cả vai trò
 const apiGetAllRoles = async () => {

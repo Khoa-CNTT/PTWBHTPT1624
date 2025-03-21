@@ -1,4 +1,4 @@
-import { adminClient, apiClient } from '../utils/httpRequest';
+import { adminClient, apiClient } from '../config/httpRequest';
 
 // API tìm kiếm sản phẩm theo từ khóa
 const apiSearchProduct = async (keySearch: string) => {

@@ -1,4 +1,4 @@
-import { apiClient } from '../utils/httpRequest';
+import { apiClient } from '../config/httpRequest';
 
 // API lấy danh sách thông báo của người dùng
 const apiGetUserNotifications = async () => {

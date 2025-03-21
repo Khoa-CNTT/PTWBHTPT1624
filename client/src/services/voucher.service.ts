@@ -1,4 +1,4 @@
-import { axiosJWT } from '../utils/httpRequest';
+import { axiosJWT } from '../config/httpRequest';
 
 // API lấy tất cả voucher
 const apiGetAllVouchers = async () => {

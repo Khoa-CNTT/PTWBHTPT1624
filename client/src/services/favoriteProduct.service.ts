@@ -1,4 +1,4 @@
-import { apiClient  } from '../utils/httpRequest';
+import { apiClient  } from '../config/httpRequest';
 
 // API toggle yêu thích sản phẩm (thêm nếu chưa có, xóa nếu đã tồn tại)
 const apiToggleFavoriteProduct = async (productId: string) => {

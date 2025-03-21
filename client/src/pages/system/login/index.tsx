@@ -22,9 +22,9 @@ const AdminLogin = () => {
 
   const fireConfetti = () => {
     confetti({
-      particleCount: 100,
-      spread: 90,
-      origin: { y: 0.6 },
+      particleCount: 200,
+      spread: 110,
+      origin: { y: 0.8 },
       colors: ["#FFC700", "#FF0000", "#00FF00", "#0000FF"],
     });
   };
@@ -32,13 +32,13 @@ const AdminLogin = () => {
   const onSubmit = async (data: LoginForm) => {
     setLoading(true);
     setErrorMessage("");
-    loginAdmin()
-  
+    
       const res = await apiLoginAdmin(data);
-      console.log(res)
+       
       if (res.success) {
         localStorage.setItem("ad_token", JSON.stringify(res.data.access_token));
-        fireConfetti();
+         loginAdmin()
+         fireConfetti();
         navigate(PATH.ADMIN_DASHBOARD);
       } else {
         setErrorMessage(res.message || "Đăng nhập thất bại");

@@ -1,4 +1,4 @@
-import { adminClient, apiClient } from '../utils/httpRequest';
+import { adminClient, apiClient } from '../config/httpRequest';
 
 // API lấy danh sách tất cả công ty vận chuyển
 const apiGetAllShippingCompanies = async () => {
