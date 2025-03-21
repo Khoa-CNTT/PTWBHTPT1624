@@ -1,7 +1,7 @@
 const express = require("express");
 const VoucherController = require("../../controllers/voucher.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
+const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
 const router = express.Router();
 
@@ -9,7 +9,7 @@ const router = express.Router();
 
 // Lấy danh sách tất cả voucher
 router.get("/all", asyncHandle(VoucherController.getAllVouchers));
-router.use(authentication)
+router.use(adminAuthentication)
 router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE))
 // Tìm kiếm voucher theo tên
 router.get("/search", asyncHandle(VoucherController.searchVoucherByName));

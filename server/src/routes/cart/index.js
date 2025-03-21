@@ -1,12 +1,12 @@
 const express = require("express");
 const CartController = require("../../controllers/cart.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication } = require("../../middlewares/authMiddleware");
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 
 const router = express.Router();
 
-// Sử dụng middleware authentication cho tất cả các route trong cart
-router.use(authentication);
+// Sử dụng middleware userAuthentication cho tất cả các route trong cart
+router.use(userAuthentication);
 
 // Route thêm sản phẩm vào giỏ hàng
 router.post("/add", asyncHandle(CartController.addToCart));

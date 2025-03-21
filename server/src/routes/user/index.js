@@ -1,16 +1,18 @@
 const express = require("express");
 const UserController = require("../../controllers/user.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
+const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 
 const router = express.Router();
 
 // ✅ Xác thực trước khi truy cập API
-router.use(authentication);
 
-router.get("/profile", asyncHandle(UserController.getProfile));
-router.put("/profile/update", asyncHandle(UserController.updateProfile));
+
+router.get("/profile",[userAuthentication], asyncHandle(UserController.getProfile));
+router.put("/profile/update", [userAuthentication],asyncHandle(UserController.updateProfile));
+router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.USER_MANAGE));
 router.get("/all", asyncHandle(UserController.getAllUsers));
 router.post("/add", asyncHandle(UserController.addUser));

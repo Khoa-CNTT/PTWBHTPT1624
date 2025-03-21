@@ -4,7 +4,6 @@ const userSchema = mongoose.Schema({
     user_reward_points: { type: Number, default: 0 }, // Điểm tích lũy khi đánh giá sản phẩm thành công
     user_name: { type: String, default: "" },
     user_email: { type: String, required: true, unique: true },
-    user_type: { type: String, enum: ["admin", "user", "employee"], default: "user" },
     user_roles: [{ type: mongoose.Schema.Types.ObjectId, ref: "Role" }], // Một user có thể có nhiều role
     user_password: { type: String },
     user_address: { type: String },

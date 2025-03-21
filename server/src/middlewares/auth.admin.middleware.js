@@ -1,8 +1,8 @@
 const asyncHandle = require("../helper/asyncHandle");
-const userModel = require("../models/user.model");
+const adminModel = require("../models/admin.model");
 const verifyAccessToken = require("../utils/auth/verifyAccessToken");
 
-const authentication = asyncHandle(async (req, res, next) => {
+const adminAuthentication = asyncHandle(async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
         return res.status(401).json({
@@ -18,35 +18,27 @@ const authentication = asyncHandle(async (req, res, next) => {
             message: "Token không hợp lệ",
         });
     }
-    const user = await userModel.findById(decodedToken._id).populate("user_roles");
-    if (!user) {
+    const admin = await adminModel.findById(decodedToken._id).populate("admin_roles");
+    if (!admin) {
         return res.status(401).json({
             success: false,
             message: "Token truy cập không hợp lệ",
         });
     }
-    req.user = user;
+    req.admin = admin;
     next();
 });
 
 const restrictTo = (requiredPermission) =>
     asyncHandle(async (req, res, next) => {
-        const { user } = req;
-        // Nếu người dùng có user_type là 'user', họ không thể truy cập các chức năng của admin
-        if (user.user_type === "user") {
-            return res.status(403).json({
-                success: false,
-                message: "Bạn không có quyền truy cập chức năng này",
-            });
-        }
-
+        const { admin } = req;
         // ✅ Nếu là admin, cho phép truy cập
-        if (user.user_type === "admin") {
+        if (admin.admin_type === "admin") {
             return next();
         }
 
         // 🚫 Nếu không có vai trò hoặc quyền nào, chặn truy cập
-        if (!user.user_roles || user.user_roles.length === 0) {
+        if (!admin.admin_roles || admin.admin_roles.length === 0) {
             return res.status(403).json({
                 success: false,
                 message: "Không có quyền truy cập",
@@ -54,8 +46,8 @@ const restrictTo = (requiredPermission) =>
         }
 
         // 🔍 Kiểm tra quyền trong danh sách quyền của vai trò
-        const userPermissions = user.user_roles.flatMap((role) => role.permissions);
-        if (!userPermissions.includes(requiredPermission)) {
+        const adminPermissions = admin.admin_roles.flatMap((role) => role.permissions);
+        if (!adminPermissions.includes(requiredPermission)) {
             return res.status(403).json({
                 success: false,
                 message: `Bạn cần quyền "${requiredPermission}" để thực hiện hành động này`,
@@ -65,4 +57,4 @@ const restrictTo = (requiredPermission) =>
         next();
     });
 
-module.exports = { authentication, restrictTo };
+module.exports = { adminAuthentication, restrictTo };

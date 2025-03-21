@@ -1,26 +1,26 @@
 const express = require("express");
-const AuthController = require("../../controllers/auth.controller");
+const AuthUserController = require("../../controllers/auth.user.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication } = require("../../middlewares/authMiddleware");
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 
 const router = express.Router();
 
 // Xác thực email khi đăng ký
-router.post("/email/send-verification", asyncHandle(AuthController.sendVerificationEmail));
-router.put("/email/verify", asyncHandle(AuthController.confirmVerificationEmail));
+router.post("/email/send-verification", asyncHandle(AuthUserController.sendVerificationEmail));
+router.put("/email/verify", asyncHandle(AuthUserController.confirmVerificationEmail));
 // Đăng ký & đăng nhập
-router.post("/signup", asyncHandle(AuthController.userSignup));
-router.post("/login", asyncHandle(AuthController.userLogin));
-router.post("/refreshToken", asyncHandle(AuthController.refreshToken));
+router.post("/signup", asyncHandle(AuthUserController.userSignup));
+router.post("/login", asyncHandle(AuthUserController.userLogin));
+router.post("/refreshToken", asyncHandle(AuthUserController.refreshToken));
 // Chức năng quên mật khẩu
-router.post("/email/send-forgot-password", asyncHandle(AuthController.forgotPassword)); // Gửi mã
-router.post("/verify-reset-password", asyncHandle(AuthController.verifyResetCode)); // Xác nhận mã
-router.post("/reset-password", asyncHandle(AuthController.resetPassword)); // Đổi mật khẩu
+router.post("/email/send-forgot-password", asyncHandle(AuthUserController.forgotPassword)); // Gửi mã
+router.post("/verify-reset-password", asyncHandle(AuthUserController.verifyResetCode)); // Xác nhận mã
+router.post("/reset-password", asyncHandle(AuthUserController.resetPassword)); // Đổi mật khẩu
 
-// Yêu cầu authentication mới có thể logout
-router.use(authentication);
-router.post("/logout", asyncHandle(AuthController.userLogout));
-router.put("/change-password", asyncHandle(AuthController.changePassword));
+// Yêu cầu userAuthentication mới có thể logout
+router.use(userAuthentication);
+router.post("/logout", asyncHandle(AuthUserController.userLogout));
+router.put("/change-password", asyncHandle(AuthUserController.changePassword));
 
 
 module.exports = router;
