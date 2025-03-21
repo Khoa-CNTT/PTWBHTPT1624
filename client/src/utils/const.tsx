@@ -14,6 +14,8 @@ export const PATH = {
     // =========== ADMIN ==============
     SYSTEM:"/quan-ly",
     MANAGE_CATEGORY:"/quan-ly/quan-ly-danh-muc",
+    MANAGE_BRAND:"/quan-ly/quan-ly-thuong-hieu",
+    MANAGE_BANNER:"/quan-ly/quan-ly-banner",
     MANAGE_STATISTICAL:"/thong-ke-doanh-thu",
     MANAGE_USER: "/quan-ly-nguoi-dung",
 };

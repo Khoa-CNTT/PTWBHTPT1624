@@ -1,51 +1,48 @@
 import { useEffect, useState } from "react";
-
-import { apiGetAllCategories, apiCreateCategory, apiUpdateCategory, apiDeleteCategory } from "../../../services/api.category";
-import { ICategory } from "../../../interfaces/category.interfaces";
+import {  apiDeleteCategory } from "../../../services/api.category";
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from "../../../hooks/useModal";
-import CategoryModal from "./CategoryModal";
-import CategoryTable from "./CategoryTable";
-import { showNotification } from "../../../components";
-import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
-import Pagination from "../../../components/pagination";
+import { apiCreateBanner, apiGetAllBanners, apiUpdateBanner } from "../../../services/api.banner";
+import BannerTable from "./BannerTable";
+import BannerModal from "./BannerModal";
+import { Pagination, showNotification } from "../../../components";
 import PageMeta from "../../../components/common/PageMeta";
+import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
+import { IBanner } from "../../../interfaces/banner.interfaces";
 
-export default function CategoryManage() {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+export default function BannerManage() {
+  const [banners, setBanners] = useState<IBanner[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
-  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null);
+  const [selectedBanner, setSelectedCategory] = useState<IBanner | null>(null);
 
   const { openModal, isOpen, closeModal } = useModal();
 
   useEffect(() => {
     const fetchApi = async () => {
-      const res = await apiGetAllCategories({ limit: 5, page: currentPage });
+      const res = await apiGetAllBanners({ limit: 5, page: currentPage });
       console.log(res)
       if (!res.success) return;
       const data = res.data;
-      setCategories(data.categories);
+      setBanners(data.banners);
       setTotalPage(data.totalPage);
     };
     fetchApi();
   }, [currentPage]);
-
   const handleAdd = () => {
     setSelectedCategory(null);
     openModal(); 
   };
-
-  const handleEdit = (category: ICategory) => {
-    setSelectedCategory(category);
+  const handleEdit = (banner: IBanner) => {
+    setSelectedCategory(banner);
     openModal();
   };
-  const handleSave = async (data: ICategory) => {
+  const handleSave = async (data: IBanner) => {
     let res;
     if (data._id) {
-      res = await apiUpdateCategory(data._id, data);
+      res = await apiUpdateBanner(data._id, data);
     } else {
-      res = await apiCreateCategory(data);
+      res = await apiCreateBanner(data);
     }
     if (!res?.success) {
       showNotification(res?.message, false);
@@ -54,7 +51,7 @@ export default function CategoryManage() {
     showNotification(data._id ? "Cập nhật thành công!" : "Thêm thành công!", true);
     closeModal();
     // Cập nhật danh sách danh mục mà không cần reload trang
-    setCategories((prev) =>
+    setBanners((prev) =>
       data._id
         ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật danh mục đã có
         : [res.data,...prev ] // Thêm danh mục mới
@@ -69,7 +66,7 @@ export default function CategoryManage() {
       showNotification(res?.message, false);
       return;
     }
-    setCategories((prev) =>  prev.filter((item) => (item._id !=id))   );
+    setBanners((prev) =>  prev.filter((item) => (item._id !=id))   );
     showNotification("Xóa thành công", true);
   }
   return (
@@ -86,12 +83,12 @@ export default function CategoryManage() {
             Thêm
           </button>
         </div>
-        <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
+        <BannerTable banners={banners} onEdit={handleEdit} onDelete={handleDelete} />
         {totalPage > 0 && (
           <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
         )}
       </div>
-      <CategoryModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} category={selectedCategory} />
+      {/* <BannerModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} banner={selectedBanner} /> */}
     </>
   );
 }

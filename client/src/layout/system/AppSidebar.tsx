@@ -22,8 +22,18 @@ type NavItem = {
 const navItems: NavItem[] = [
   {
     icon: <UserCircleIcon />,
+    name: "Banner",
+    path:  PATH.MANAGE_BANNER
+  },
+  {
+    icon: <UserCircleIcon />,
     name: "Danh mục",
     path:  PATH.MANAGE_CATEGORY 
+  },
+  {
+    icon: <UserCircleIcon />,
+    name: "Thương hiệu",
+    path:  PATH.MANAGE_BRAND 
   },
   {
     name: "Forms",
@@ -37,7 +47,6 @@ const navItems: NavItem[] = [
   },
 ];
 
- 
 const AppSidebar: React.FC = () => {
   const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
   const location = useLocation();

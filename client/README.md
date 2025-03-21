@@ -117,7 +117,7 @@ A major update with comprehensive redesign and modern React patterns implementat
 #### Breaking Changes
 - Updated sidebar component API
 - Migrated charts to ApexCharts
-- Revised authentication system
+- Revised userAuthentication system
 
 [Read more](https://tailadmin.com/docs/update-logs/react) on this release.
 
