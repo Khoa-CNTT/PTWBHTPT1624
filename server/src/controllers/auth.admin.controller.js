@@ -1,5 +1,5 @@
 "use strict";
-const AuthAdminService = require("../services/auth.user.service");
+const AuthAdminService = require("../services/auth.admin.service");
 
 class AuthAdminController {
     static async adminLogin(req, res) {
@@ -18,8 +18,8 @@ class AuthAdminController {
         });
     }
     static async refreshToken(req, res) {
-        const { refresh_token } = req.cookies
-        const access_token = await AuthAdminService.handleRefreshToken(refresh_token, res);
+        const { ad_rf } = req.cookies
+        const access_token = await AuthAdminService.handleRefreshToken(ad_rf, res);
         return res.status(200).json({
             success: true,
             data: { access_token },

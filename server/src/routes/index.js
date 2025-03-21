@@ -2,10 +2,12 @@ const express = require("express")
 const router = express.Router()
 
 // ------- auth ----------
-router.use("/v1/api/auth", require("./auth/index"))
+router.use("/v1/api/auth", require("./auth/user"))
+router.use("/v1/api/admin/auth", require("./auth/admin"))
 
 // ===============================
 router.use("/v1/api/user", require("./user/index")) 
+router.use("/v1/api/admin", require("./admin/index")) 
 router.use("/v1/api/category", require("./category/index"))
 router.use("/v1/api/product", require("./product/index"))
 router.use("/v1/api/brand", require("./brand/index"))
