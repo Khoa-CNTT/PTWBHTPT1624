@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import {  apiDeleteCategory } from "../../../services/api.category";
+import {  apiDeleteCategory } from "../../../services/category.service";
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from "../../../hooks/useModal";
-import { apiCreateBanner, apiGetAllBanners, apiUpdateBanner } from "../../../services/api.banner";
+import { apiCreateBanner, apiGetAllBanners, apiUpdateBanner } from "../../../services/banner.service";
 import BannerTable from "./BannerTable";
 import BannerModal from "./BannerModal";
 import { Pagination, showNotification } from "../../../components";

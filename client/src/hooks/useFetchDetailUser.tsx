@@ -1,6 +1,6 @@
 import { useEffect } from 'react';
 import { useAppDispatch } from '../redux/hooks';
-import { apiGetDetailUser } from '../services/api.user';
+import { apiGetDetailUser } from '../services/user.service';
 import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
 import { setDetailUser } from '../redux/features/user/userSlice';
  

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { apiLogin } from '../../../../services/api.auth';
+import { apiLogin } from '../../../../services/auth.service';
 import { setFeatureAuth, setOpenFeatureAuth } from '../../../../redux/features/action/actionSlice';
 import { setIsLoginSuccess } from '../../../../redux/features/auth/authSlice';
 import { showNotification } from '../../../../components/common/showNotification';

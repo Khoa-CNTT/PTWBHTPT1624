@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 
-import { apiGetAllCategories, apiCreateCategory, apiUpdateCategory, apiDeleteCategory } from "../../../services/api.category";
+import { apiGetAllCategories, apiCreateCategory, apiUpdateCategory, apiDeleteCategory } from "../../../services/category.service";
 import { ICategory } from "../../../interfaces/category.interfaces";
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from "../../../hooks/useModal";
