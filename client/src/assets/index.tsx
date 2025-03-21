@@ -3,7 +3,7 @@ export { default as danhchoban } from './image/danh-cho-ban.png';
 export { default as dealsieuhot } from './image/deal-sieu-hot.png';
 export { default as hangmoi } from './image/hang-moi.png';
 export { default as revodoi } from './image/re-vo-doi.png';
-export { default as admin } from './image/admin.png';
+export { default as LogoAdmin } from './image/admin.png';
 export { default as logo } from './logo/logo.png';
 export { default as logoGoogle } from './logo/logoGoogle.png';
 export { default as logo_dpshopvn } from './logo/logo_dpshopvn.png';

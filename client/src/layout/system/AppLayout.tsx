@@ -5,8 +5,10 @@ import AppSidebar from "./AppSidebar";
 import { SidebarProvider, useSidebar } from "../../context/SidebarContext";
 import 'react-toastify/dist/ReactToastify.css';
 import { ToastContainer } from "react-toastify";
+import useFetchDetailAdmin from "../../hooks/useFetchDetailAdmin";
 const LayoutContent: React.FC = () => {
   const { isExpanded, isHovered, isMobileOpen } = useSidebar();
+  useFetchDetailAdmin()
  const toastContainer = (
         <ToastContainer
             position="top-center"
