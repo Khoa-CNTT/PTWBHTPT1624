@@ -31,8 +31,9 @@ adminClient.interceptors.response.use(
     response => response,
     async (error) => {
       const originalRequest = error.config;
+      console.log("đ")
       // Kiểm tra nếu lỗi là 401 (Unauthorized) và request chưa được thử lại
-      if (error.response?.status === 401 && !originalRequest._retry) {
+      if (error.response?.status === 500 && !originalRequest._retry) {
         originalRequest._retry = true; // Đánh dấu request đã thử lại
         try {
           const accessToken=localStorage.getItem('ad_token');
@@ -40,8 +41,8 @@ adminClient.interceptors.response.use(
           const res = await apiRefreshTokenAdmin(); // Gọi API để lấy access token mới
           if (res) {
             // Cập nhật lại header Authorization với token mới
-            originalRequest.headers['Authorization'] = `Bearer ${res.data.authorization.access_token}`;
-            localStorage.setItem('ad_token', JSON.stringify(res.data.authorization.access_token));
+            originalRequest.headers['Authorization'] = `Bearer ${res.data.access_token}`;
+            localStorage.setItem('ad_token', JSON.stringify(res.data.access_token));
             return adminClient(originalRequest); // Gửi lại request ban đầu với token mới
           }
         } catch (error) {

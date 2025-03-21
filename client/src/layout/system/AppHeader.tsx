@@ -4,7 +4,7 @@ import { Link } from "react-router";
 import { useSidebar } from "../../context/SidebarContext";
 import { ThemeToggleButton } from "../../components/common/ThemeToggleButton";
 import NotificationDropdown from "../../components/header/NotificationDropdown";
-import UserDropdown from "../../components/header/UserDropdown";
+import UserDropdown from "../../components/header/UserDropdown"; 
 
 const AppHeader: React.FC = () => {
   const [isApplicationMenuOpen, setApplicationMenuOpen] = useState(false);
@@ -17,12 +17,10 @@ const AppHeader: React.FC = () => {
     } else {
       toggleMobileSidebar();
     }
-  };
-
+  }; 
   const toggleApplicationMenu = () => {
     setApplicationMenuOpen(!isApplicationMenuOpen);
-  };
-
+  }; 
   const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -31,10 +29,8 @@ const AppHeader: React.FC = () => {
         event.preventDefault();
         inputRef.current?.focus();
       }
-    };
-
-    document.addEventListener("keydown", handleKeyDown);
-
+    }; 
+    document.addEventListener("keydown", handleKeyDown); 
     return () => {
       document.removeEventListener("keydown", handleKeyDown);
     };

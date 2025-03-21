@@ -1,10 +1,7 @@
 import { useEffect } from "react";
 import useAdminStore from "../store/adminStore";
 import { apiGetDetailAdmin } from "../services/admin.service";
-
  
- 
-
 const useFetchDetailAdmin = () => {
     const {setAdmin}= useAdminStore()
     useEffect(() => {
