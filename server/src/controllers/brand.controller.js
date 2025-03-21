@@ -11,7 +11,7 @@ class BrandController {
 
     // Lấy danh sách tất cả thương hiệu
     static async getAllBrands(req, res, next) {
-        const brands = await BrandService.getAllBrands();
+        const brands = await BrandService.getAllBrands(req.query);
         res.status(200).json({ success: true, data: brands });
     }
 

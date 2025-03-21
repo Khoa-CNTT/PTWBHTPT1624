@@ -14,8 +14,18 @@ class BrandService {
   }
 
   // Lấy danh sách tất cả thương hiệu
-  static async getAllBrands() {
-    return await Brand.find();
+  static async getAllBrands({limit,page}) {
+       const limitNum = parseInt(limit, 10); // Mặc định limit = 10
+            const pageNum = parseInt(page, 10); // Mặc định page = 0
+            const skipNum = pageNum * limitNum;
+           const brands= await Brand.find().sort({ createdAt: -1 }).skip(skipNum) .limit(limitNum).lean()
+            const totalBrand= await Brand.countDocuments();
+            return {
+              totalPage: Math.ceil(totalBrand/ limitNum) - 1||0, // Tổng số trang (0-based)
+              currentPage: pageNum||0,
+              totalBrand,
+              brands,
+            }; 
   }
 
   // Lấy thương hiệu theo ID
