@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import validate from '../../../utils/valueDate';
-import { apiUploadImage } from '../../../services/api.uploadPicture';
+import { apiUploadImage } from '../../../services/uploadPicture.service';
 import { ICategory } from '../../../interfaces/category.interfaces';
 import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';

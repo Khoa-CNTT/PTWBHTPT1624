@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
-import {  apiDeleteCategory } from "../../../services/api.category";
+import {  apiDeleteCategory } from "../../../services/category.service";
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from "../../../hooks/useModal";
-import { apiCreateBrand, apiGetAllBrands, apiUpdateBrand } from "../../../services/api.brand";
+import { apiCreateBrand, apiGetAllBrands, apiUpdateBrand } from "../../../services/brand.service";
 import BrandTable from "./BrandTable";
 import { IBrand } from "../../../interfaces/brand.interfaces";
 import BrandModal from "./BrandModal";
