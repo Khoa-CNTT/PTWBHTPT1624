@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { apiRefreshTokenAdmin } from '../services/auth.admin.service';
-
 // Hàm tạo instance Axios với các cấu hình tùy chọn
 const createAxiosInstance = (withAuth = false) => {
     return axios.create({
@@ -8,7 +7,6 @@ const createAxiosInstance = (withAuth = false) => {
         withCredentials: withAuth, // Bật/tắt gửi cookie
     });
 };
-
 // Các instance Axios đặt tên theo thực tế
 export const apiClient = createAxiosInstance(); // API chung, không cần auth
 export const authClient = createAxiosInstance(true); // API yêu cầu auth (JWT)
@@ -16,7 +14,7 @@ export const adminClient = createAxiosInstance(true); // API dành riêng cho ad
 
 adminClient.interceptors.request.use(
     function (config) {
-        const access_token=localStorage.getItem("access_token")
+        const access_token=localStorage.getItem("ad_token")
         if(!access_token){
              return config;
         }
@@ -50,7 +48,6 @@ adminClient.interceptors.response.use(
           console.error('Failed to refresh token:', error);
         }
       }
-  
       // Nếu không phải lỗi 401 hoặc không thể refresh token, trả về lỗi ban đầu
       return Promise.reject(error);
     }

@@ -1,4 +1,4 @@
-import { apiClient, authClient } from "../utils/httpRequest";
+import { apiClient, authClient } from "../config/httpRequest";
 
  
 // Xác thực email khi đăng ký

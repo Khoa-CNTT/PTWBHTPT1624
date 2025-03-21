@@ -1,4 +1,4 @@
-import { adminClient } from '../utils/httpRequest';
+import { adminClient } from '../config/httpRequest';
 
 // API thêm nhà cung cấp mới (Admin Only)
 const apiCreateSupplier = async (supplierData: object) => {
