@@ -1,22 +1,9 @@
-import { axiosJWT } from '../utils/httpRequest';
-
-// API lấy lịch sử nhập hàng
-const apiGetImportHistory = async () => {
-    try {
-        const res = await axiosJWT.get('/v1/api/supplier/import-history');
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
+import { adminClient } from '../utils/httpRequest';
 
 // API thêm nhà cung cấp mới (Admin Only)
 const apiCreateSupplier = async (supplierData: object) => {
     try {
-        const res = await axiosJWT.post('/v1/api/supplier/add', supplierData);
+        const res = await adminClient.post('/v1/api/supplier/add', supplierData);
         return res.data;
     } catch (error) {
         return {
@@ -29,7 +16,7 @@ const apiCreateSupplier = async (supplierData: object) => {
 // API lấy tất cả nhà cung cấp
 const apiGetAllSuppliers = async () => {
     try {
-        const res = await axiosJWT.get('/v1/api/supplier/all');
+        const res = await adminClient.get('/v1/api/supplier/all');
         return res.data;
     } catch (error) {
         return {
@@ -42,7 +29,7 @@ const apiGetAllSuppliers = async () => {
 // API lấy thông tin chi tiết nhà cung cấp theo ID
 const apiGetSupplierById = async (id: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/supplier/${id}`);
+        const res = await adminClient.get(`/v1/api/supplier/${id}`);
         return res.data;
     } catch (error) {
         return {
@@ -55,7 +42,7 @@ const apiGetSupplierById = async (id: string) => {
 // API cập nhật thông tin nhà cung cấp theo ID (Admin Only)
 const apiUpdateSupplier = async (id: string, supplierData: object) => {
     try {
-        const res = await axiosJWT.put(`/v1/api/supplier/update/${id}`, supplierData);
+        const res = await adminClient.put(`/v1/api/supplier/update/${id}`, supplierData);
         return res.data;
     } catch (error) {
         return {
@@ -68,7 +55,7 @@ const apiUpdateSupplier = async (id: string, supplierData: object) => {
 // API xóa nhà cung cấp theo ID (Admin Only)
 const apiDeleteSupplier = async (id: string) => {
     try {
-        const res = await axiosJWT.delete(`/v1/api/supplier/delete/${id}`);
+        const res = await adminClient.delete(`/v1/api/supplier/delete/${id}`);
         return res.data;
     } catch (error) {
         return {
@@ -78,25 +65,12 @@ const apiDeleteSupplier = async (id: string) => {
     }
 };
 
-// API nhập hàng
-const apiRestock = async (restockData: object) => {
-    try {
-        const res = await axiosJWT.post('/v1/api/supplier/restock', restockData);
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
+ 
 
 export {
-    apiGetImportHistory,
     apiCreateSupplier,
     apiGetAllSuppliers,
     apiGetSupplierById,
     apiUpdateSupplier,
-    apiDeleteSupplier,
-    apiRestock
+    apiDeleteSupplier, 
 };

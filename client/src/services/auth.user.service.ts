@@ -1,8 +1,10 @@
-import { axiosJWT, httpRequest } from '../utils/httpRequest';
+import { apiClient, authClient } from "../utils/httpRequest";
+
+ 
 // Xác thực email khi đăng ký
 const apiSendVerificationEmail = async (email: string) => {
     try {
-        const res = await axiosJWT.post('/v1/api/auth/email/send-verification', { email });
+        const res = await apiClient.post('/v1/api/auth/email/send-verification', { email });
         return res.data;
     } catch (error) {
         return {
@@ -15,7 +17,7 @@ const apiSendVerificationEmail = async (email: string) => {
 // Xác nhận email sau khi gửi mã
 const apiConfirmVerificationEmail = async (email: string, token: string) => {
     try {
-        const res = await axiosJWT.put('/v1/api/auth/email/verify', { email, token });
+        const res = await apiClient.put('/v1/api/auth/email/verify', { email, token });
         return res.data;
     } catch (error) {
         return {
@@ -28,7 +30,7 @@ const apiConfirmVerificationEmail = async (email: string, token: string) => {
 // Đăng ký người dùng
 const apiRegister = async (email: string, password: string) => {
     try {
-        const res = await axiosJWT.post('/v1/api/auth/signup', { email, password });
+        const res = await apiClient.post('/v1/api/auth/signup', { email, password });
         return res.data;
     } catch (error) {
         return {
@@ -41,7 +43,7 @@ const apiRegister = async (email: string, password: string) => {
 // Đăng nhập người dùng
 const apiLogin = async (email: string, password: string) => {
     try {
-        const res = await axiosJWT.post('/v1/api/auth/login', { email, password });
+        const res = await apiClient.post('/v1/api/auth/login', { email, password });
         return res.data;
     } catch (error) {
         return {
@@ -54,7 +56,7 @@ const apiLogin = async (email: string, password: string) => {
 // Gửi email quên mật khẩu
 const sendForgotPasswordEmail = async (body: object) => {
     try {
-        const res = await httpRequest.post('/v1/api/auth/email/send-forgot-password', body);
+        const res = await apiClient.post('/v1/api/auth/email/send-forgot-password', body);
         return res.data;
     } catch (error) {
         return {
@@ -67,7 +69,7 @@ const sendForgotPasswordEmail = async (body: object) => {
 // Xác minh mã reset mật khẩu
 const verifyResetPasswordCode = async (resetCode: string) => {
     try {
-        const res = await httpRequest.post('/v1/api/auth/verify-reset-password', { resetCode });
+        const res = await authClient.post('/v1/api/auth/verify-reset-password', { resetCode });
         return res.data;
     } catch (error) {
         return {
@@ -80,7 +82,7 @@ const verifyResetPasswordCode = async (resetCode: string) => {
 // Đặt lại mật khẩu mới
 const resetPassword = async (resetCode: string, newPassword: string) => {
     try {
-        const res = await axiosJWT.put(`/v1/api/auth/reset-password`, { resetCode, newPassword });
+        const res = await authClient.put(`/v1/api/auth/reset-password`, { resetCode, newPassword });
         return res.data;
     } catch (error) {
         return {
@@ -93,7 +95,7 @@ const resetPassword = async (resetCode: string, newPassword: string) => {
 // Đăng xuất người dùng
 const apiLogout = async () => {
     try {
-        const res = await axiosJWT.post('/v1/api/auth/logout');
+        const res = await authClient.post('/v1/api/auth/logout');
         return res.data;
     } catch (error) {
         return {
@@ -106,7 +108,7 @@ const apiLogout = async () => {
 // Lấy refresh token
 const apiRefreshToken = async () => {
     try {
-        const res = await axiosJWT.post('/v1/api/auth/refreshToken', { withCredentials: true });
+        const res = await authClient.post('/v1/api/auth/refreshToken', { withCredentials: true });
         return res.data;
     } catch (error) {
         return {
@@ -119,7 +121,7 @@ const apiRefreshToken = async () => {
 // Đổi mật khẩu
 const apiChangePassword = async (oldPassword: string, newPassword: string) => {
     try {
-        const res = await axiosJWT.put('/v1/api/auth/change-password', { oldPassword, newPassword });
+        const res = await authClient.put('/v1/api/auth/change-password', { oldPassword, newPassword });
         return res.data;
     } catch (error) {
         return {

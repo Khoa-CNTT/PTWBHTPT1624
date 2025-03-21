@@ -1,14 +1,14 @@
 import React, { ReactNode } from 'react';
 import { Navigate } from 'react-router-dom';
-import { useAppSelector } from '../redux/hooks';
+import useAuthStore from '../store/authStore';
 interface ProtectedRouteProps {
   children: ReactNode;
-  allowedRoles: string[]; // Danh sách các quyền được phép truy cập
   redirectPath: string; // Đường dẫn chuyển hướng nếu không có quyền
 }
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, allowedRoles, redirectPath }) => {
-  const { user_type } = useAppSelector((state) => state.user);
-  if (!allowedRoles.includes(user_type)) {
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, redirectPath }) => {
+  const { isAdminLoggedIn } = useAuthStore();
+   
+  if (!isAdminLoggedIn) {
     return <Navigate to={redirectPath} />;
   }
   return <>{children}</>;

@@ -12,7 +12,8 @@ export const PATH = {
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
     // =========== ADMIN ==============
-    SYSTEM:"/quan-ly",
+    ADMIN_DASHBOARD:"/quan-ly",
+    ADMIN_LOGIN:"/dang-nhap",
     MANAGE_CATEGORY:"/quan-ly/quan-ly-danh-muc",
     MANAGE_BRAND:"/quan-ly/quan-ly-thuong-hieu",
     MANAGE_BANNER:"/quan-ly/quan-ly-banner",

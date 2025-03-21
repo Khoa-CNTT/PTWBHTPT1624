@@ -1,9 +1,9 @@
-import { axiosJWT } from '../utils/httpRequest';
+import { adminClient, apiClient } from "../utils/httpRequest";
 
 // Lấy tất cả danh mục
 const apiGetAllCategories = async (queries:{limit:number,page:number}) => {
     try {
-        const res = await axiosJWT.get('/v1/api/category/all',{
+        const res = await apiClient.get('/v1/api/category/all',{
             params:queries
         });
         return res.data;
@@ -18,7 +18,7 @@ const apiGetAllCategories = async (queries:{limit:number,page:number}) => {
 // Tìm kiếm danh mục theo tên
 const apiSearchCategory = async (searchQuery: string) => {
     try {
-        const res = await axiosJWT.get('/v1/api/category/search', {
+        const res = await adminClient.get('/v1/api/category/search', {
             params: { search: searchQuery },
         });
         return res.data;
@@ -33,7 +33,7 @@ const apiSearchCategory = async (searchQuery: string) => {
 // Thêm mới danh mục
 const apiCreateCategory = async (categoryData: object) => {
     try {
-        const res = await axiosJWT.post('/v1/api/category/add', categoryData);
+        const res = await adminClient.post('/v1/api/category/add', categoryData);
         return res.data;
     } catch (error) {
         return {
@@ -46,7 +46,7 @@ const apiCreateCategory = async (categoryData: object) => {
 // Lấy danh mục theo ID
 const apiGetCategoryById = async (id: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/category/${id}/search`);
+        const res = await adminClient.get(`/v1/api/category/${id}/search`);
         return res.data;
     } catch (error) {
         return {
@@ -59,7 +59,7 @@ const apiGetCategoryById = async (id: string) => {
 // Cập nhật danh mục
 const apiUpdateCategory = async (id: string, categoryData: object) => {
     try {
-        const res = await axiosJWT.put(`/v1/api/category/${id}/update`, categoryData);
+        const res = await adminClient.put(`/v1/api/category/${id}/update`, categoryData);
         return res.data;
     } catch (error) {
         return {
@@ -72,7 +72,7 @@ const apiUpdateCategory = async (id: string, categoryData: object) => {
 // Xóa danh mục
 const apiDeleteCategory = async (id: string) => {
     try {
-        const res = await axiosJWT.delete(`/v1/api/category/${id}/delete`);
+        const res = await adminClient.delete(`/v1/api/category/${id}/delete`);
         return res.data;
     } catch (error) {
         return {

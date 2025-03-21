@@ -7,7 +7,6 @@ import { ICategory } from '../../../interfaces/category.interfaces';
 import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
-import { useAppDispatch } from '../../../redux/hooks';
 import ImageCropper from '../../../components/ImageCropper';
 import { countFilledFields } from '../../../utils/countFilledFields';
 
@@ -20,7 +19,6 @@ interface CategoryModalProps {
 
 const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSave, category }) => {
   const [inputFields, setInputFields] = useState<ICategory>({} as ICategory|any);
-  const dispatch = useAppDispatch();
 const [isUploading, setIsUploading] = useState(false);
   const [invalidFields, setInvalidFields] = useState< Array<{  name: string; message: string; }> >([]);
   useEffect(() => {

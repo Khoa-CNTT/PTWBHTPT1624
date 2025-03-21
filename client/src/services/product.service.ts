@@ -1,9 +1,9 @@
-import { axiosJWT } from '../utils/httpRequest';
+import { adminClient, apiClient } from '../utils/httpRequest';
 
 // API tìm kiếm sản phẩm theo từ khóa
 const apiSearchProduct = async (keySearch: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/product/search/${keySearch}`);
+        const res = await apiClient.get(`/v1/api/product/search/${keySearch}`);
         return res.data;
     } catch (error) {
         return {
@@ -15,7 +15,7 @@ const apiSearchProduct = async (keySearch: string) => {
 // API lấy tất cả sản phẩm
 const apiGetAllProducts = async () => {
     try {
-        const res = await axiosJWT.get('/v1/api/product/all');
+        const res = await apiClient.get('/v1/api/product/all');
         return res.data;
     } catch (error) {
         return {
@@ -28,7 +28,7 @@ const apiGetAllProducts = async () => {
 // API lấy danh sách sản phẩm nổi bật
 const apiGetFeaturedProducts = async () => {
     try {
-        const res = await axiosJWT.get('/v1/api/product/featured');
+        const res = await apiClient.get('/v1/api/product/featured');
         return res.data;
     } catch (error) {
         return {
@@ -41,7 +41,7 @@ const apiGetFeaturedProducts = async () => {
 // API lấy danh sách sản phẩm giảm giá sốc
 const apiGetFlashSaleProducts = async () => {
     try {
-        const res = await axiosJWT.get('/v1/api/product/flash-sale');
+        const res = await apiClient.get('/v1/api/product/flash-sale');
         return res.data;
     } catch (error) {
         return {
@@ -54,7 +54,7 @@ const apiGetFlashSaleProducts = async () => {
 // API lấy danh sách sản phẩm mới nhất
 const apiGetNewProducts = async () => {
     try {
-        const res = await axiosJWT.get('/v1/api/product/new-product');
+        const res = await apiClient.get('/v1/api/product/new-product');
         return res.data;
     } catch (error) {
         return {
@@ -67,7 +67,7 @@ const apiGetNewProducts = async () => {
 // API lấy danh sách sản phẩm tương tự theo danh mục
 const apiGetSimilarProductsByCategory = async (id: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/product/${id}/similar`);
+        const res = await apiClient.get(`/v1/api/product/${id}/similar`);
         return res.data;
     } catch (error) {
         return {
@@ -80,7 +80,7 @@ const apiGetSimilarProductsByCategory = async (id: string) => {
 // API thêm sản phẩm mới (Dành cho admin)
 const apiCreateProduct = async (productData: object) => {
     try {
-        const res = await axiosJWT.post('/v1/api/product/add', productData);
+        const res = await adminClient.post('/v1/api/product/add', productData);
         return res.data;
     } catch (error) {
         return {
@@ -93,7 +93,7 @@ const apiCreateProduct = async (productData: object) => {
 // API lấy thông tin sản phẩm theo ID (Dành cho admin)
 const apiGetProductById = async (id: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/product/${id}/search`);
+        const res = await adminClient.get(`/v1/api/product/${id}/search`);
         return res.data;
     } catch (error) {
         return {
@@ -106,7 +106,7 @@ const apiGetProductById = async (id: string) => {
 // API cập nhật thông tin sản phẩm (Dành cho admin)
 const apiUpdateProduct = async (id: string, productData: object) => {
     try {
-        const res = await axiosJWT.put(`/v1/api/product/${id}/update`, productData);
+        const res = await adminClient.put(`/v1/api/product/${id}/update`, productData);
         return res.data;
     } catch (error) {
         return {
@@ -119,7 +119,7 @@ const apiUpdateProduct = async (id: string, productData: object) => {
 // API xóa sản phẩm (Dành cho admin)
 const apiDeleteProduct = async (id: string) => {
     try {
-        const res = await axiosJWT.delete(`/v1/api/product/${id}/delete`);
+        const res = await adminClient.delete(`/v1/api/product/${id}/delete`);
         return res.data;
     } catch (error) {
         return {

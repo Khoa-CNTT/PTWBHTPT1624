@@ -4,18 +4,14 @@ import "./index.css";
 import "swiper/swiper-bundle.css";
 import "simplebar-react/dist/simplebar.min.css";
 import App from "./App.tsx";
-import { ThemeProvider } from "./context/ThemeContext.tsx";
-import { store } from './redux/store';
-import { Provider } from 'react-redux';
+import { ThemeProvider } from "./context/ThemeContext.tsx"; 
 import { AppWrapper } from "./components/common/PageMeta.tsx";
 createRoot(document.getElementById("root")!).render(
-  <StrictMode>
-    <Provider store={store}>
+  <StrictMode> 
         <ThemeProvider>
           <AppWrapper>
             <App />
           </AppWrapper>
-        </ThemeProvider>
-    </Provider>
+        </ThemeProvider> 
   </StrictMode>
 );
