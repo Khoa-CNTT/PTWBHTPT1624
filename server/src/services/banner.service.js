@@ -14,12 +14,17 @@ class BannerService {
 
     // Lấy tất cả banner (hỗ trợ phân trang)
     static async getAllBanners({ limit = 10, page = 1 }) {
-        const banners = await Banner.find()
-            .limit(limit)
-            .skip((page - 1) * limit)
-            .exec();
-
-        return banners;
+           const limitNum = parseInt(limit, 10); // Mặc định limit = 10
+            const pageNum = parseInt(page, 10); // Mặc định page = 0
+            const skipNum = pageNum * limitNum;
+            const banners= await Banner.find().sort({ createdAt: -1 }).skip(skipNum) .limit(limitNum).lean()
+            const totalBanner= await Banner.countDocuments();
+            return {
+              totalPage: Math.ceil(totalBanner/ limitNum) - 1||0, // Tổng số trang (0-based)
+              currentPage: pageNum||0,
+              totalBanner,
+              banners,
+            }; 
     }
 
     // Lấy banner theo ID
