@@ -6,8 +6,8 @@ const AdminModel = require("../models/admin.model");
 
 class AdminService {
     static async addAdmin(payload) {
-        const { admin_name, admin_email, admin_password, admin_mobile  } = payload;
-        if (!admin_name || !admin_email || !admin_password || !admin_mobile||admin_type  ) {
+        const { admin_name, admin_email, admin_password, admin_mobile,admin_type  } = payload;
+        if (!(admin_name ||  admin_email ||  admin_password ||  admin_mobile|| admin_type ) ) {
             throw new BadRequestError("Thiếu thông tin bắt buộc!", 400);
         }
         const existingAdmin = await AdminModel.findOne({ admin_email });

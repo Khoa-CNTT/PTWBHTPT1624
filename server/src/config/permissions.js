@@ -9,6 +9,7 @@ const PERMISSIONS = {
     REVIEW_VIEW_ALL: "review_view_all", // ✅ Mới: Xem tất cả đánh giá (Admin)
     VOUCHER_MANAGE: "voucher_manage", // Quản lý mã giảm giá
     USER_MANAGE: "user_manage", // Quản lý người dùng
+    EMPLOYEE_MANAGE: "employee_manage", // Quản lý người dùng
     ROLE_MANAGE: "role_manage", // Quản lý vai trò và phân quyền
     VIEW_REPORTS: "view_reports", // Xem báo cáo thống kê
     SHIPPING_COMPANY_MANAGE: "shipping_company_manage", // Quản lý công ty vận chuyển

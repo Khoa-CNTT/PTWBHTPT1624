@@ -6,13 +6,13 @@ const crypto = require("crypto")
 const redis = require("../config/redisClient");
 const { randomTokenByCrypto, hashTokenByCrypto } = require("../utils/tokenUtils");
 const sendMail = require("../utils/sendMail");
-const adminModel = require("../models/admin.model");
 const createTokenPairs = require("../utils/auth/createTokenPairs");
 const verifyRefreshToken = require("../utils/auth/verifyRefreshToken");
+const adminModel = require("../models/admin.model");
 
 class AuthAdminService {
     static async adminLogin({ email, password }, res) {
-        const foundAdmin = await adminModel.find({admin_email:email})
+        const foundAdmin = await adminModel.findOne({ admin_email: email }).lean()
         if (!foundAdmin) {
             throw new BadRequestError("Tài khoản không tồn tại", 403)
         }
@@ -32,8 +32,9 @@ class AuthAdminService {
         if (!refreshToken) throw new BadRequestError("Cookie required", 201)
         const response = verifyRefreshToken(refreshToken)
         if (!response) throw new BadRequestError("Verification failed", 201)
-        const foundAdmin = await adminModel.findById(response._id)
+        const foundAdmin = await adminModel.findById(response._id).lean()
         const tokens = await createTokenPairs(foundAdmin)
+        console.log("tokens",tokens)
         res.cookie("ad_rf", `${tokens.refreshToken}`, {
             httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000
         })

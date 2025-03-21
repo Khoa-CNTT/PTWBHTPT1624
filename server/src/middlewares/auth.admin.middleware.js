@@ -44,7 +44,6 @@ const restrictTo = (requiredPermission) =>
                 message: "Không có quyền truy cập",
             });
         }
-
         // 🔍 Kiểm tra quyền trong danh sách quyền của vai trò
         const adminPermissions = admin.admin_roles.flatMap((role) => role.permissions);
         if (!adminPermissions.includes(requiredPermission)) {
