@@ -2,14 +2,14 @@ const express = require("express");
 const ShippingCompanyController = require("../../controllers/shippingCompany.controller");
 const asyncHandle = require("../../helper/asyncHandle");
 const PERMISSIONS = require("../../config/permissions"); 
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware"); 
+const { restrictTo, adminAuthentication } = require("../../middlewares/auth.admin.middleware");
 
 const router = express.Router();
 
 
 // Lấy danh sách tất cả công ty vận chuyển
 router.get("/all", asyncHandle(ShippingCompanyController.getAllShippingCompanies));
-router.use(authentication)
+router.use(adminAuthentication)
 router.use(restrictTo(PERMISSIONS.SHIPPING_COMPANY_MANAGE))
 // Tìm kiếm công ty vận chuyển theo tên
 router.get("/search", asyncHandle(ShippingCompanyController.searchShippingCompanies));

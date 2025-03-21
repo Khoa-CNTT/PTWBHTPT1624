@@ -11,7 +11,7 @@ const userModel = require("../models/user.model");
 const createTokenPairs = require("../utils/auth/createTokenPairs");
 const verifyRefreshToken = require("../utils/auth/verifyRefreshToken");
 
-class AuthService {
+class AuthUserService {
     // gửi mã xác thực 
     static async sendVerificationEmail({ email }) {
         if (!email) throw new BadRequestError("Vui lòng cung cấp email");
@@ -294,4 +294,4 @@ class AuthService {
 
 }
 
-module.exports = AuthService;
+module.exports = AuthUserService;

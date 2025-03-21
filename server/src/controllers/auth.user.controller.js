@@ -1,11 +1,12 @@
 "use strict";
 
-const AuthService = require("../services/auth.service");
+const AuthUserService = require("../services/auth.user.service");
 
-class AuthController {
+
+class AuthUserController {
     // Gửi token xác nhận email
     static async sendVerificationEmail(req, res) {
-        await AuthService.sendVerificationEmail(req.body);
+        await AuthUserService.sendVerificationEmail(req.body);
         return res.status(200).json({
             success: true,
             message: "Mã xác thực đã được gửi thành công!"
@@ -14,7 +15,7 @@ class AuthController {
     }
     // Xác nhận email bằng token
     static async confirmVerificationEmail(req, res) {
-        await AuthService.confirmVerificationEmail(req.body);
+        await AuthUserService.confirmVerificationEmail(req.body);
         return res.status(200).json({
             success: true,
             message: "Email xác thực thành công!"
@@ -22,7 +23,7 @@ class AuthController {
     }
     // thực hiện đăng ký khi xác thực thành công
     static async userSignup(req, res) {
-        const access_token = await AuthService.userSignup(req.body, res);
+        const access_token = await AuthUserService.userSignup(req.body, res);
         return res.status(200).json({
             success: true,
             data: { access_token },
@@ -30,7 +31,7 @@ class AuthController {
         });
     }
     static async userLogin(req, res) {
-        const access_token = await AuthService.userLogin(req.body, res);
+        const access_token = await AuthUserService.userLogin(req.body, res);
         return res.status(200).json({
             success: true,
             data: { access_token },
@@ -38,7 +39,7 @@ class AuthController {
         });
     }
     static async userLogout(req, res) {
-        await AuthService.userLogout(res);
+        await AuthUserService.userLogout(res);
         return res.status(200).json({
             success: true,
             message: "Đăng xuất thành công!"
@@ -46,7 +47,7 @@ class AuthController {
     }
     static async refreshToken(req, res) {
         const { refresh_token } = req.cookies
-        const access_token = await AuthService.handleRefreshToken(refresh_token, res);
+        const access_token = await AuthUserService.handleRefreshToken(refresh_token, res);
         return res.status(200).json({
             success: true,
             data: { access_token },
@@ -56,19 +57,19 @@ class AuthController {
 
     // Gửi mã xác nhận quên mật khẩu
     static async forgotPassword(req, res) {
-        const response = await AuthService.forgotPassword(req.body);
+        const response = await AuthUserService.forgotPassword(req.body);
         res.json(response);
     }
 
     // Xác nhận mã quên mật khẩu
     static async verifyResetCode(req, res) {
-        const response = await AuthService.verifyResetCode(req.body);
+        const response = await AuthUserService.verifyResetCode(req.body);
         res.json(response);
     }
 
     // Đổi mật khẩu mới
     static async resetPassword(req, res) {
-        const response = await AuthService.resetPassword(req.body);
+        const response = await AuthUserService.resetPassword(req.body);
         res.json(response);
     }
 
@@ -84,11 +85,11 @@ class AuthController {
         }
 
         // Gọi service để thực hiện đổi mật khẩu
-        const response = await AuthService.changePassword(req.user._id, currentPassword, newPassword);
+        const response = await AuthUserService.changePassword(req.user._id, currentPassword, newPassword);
 
         res.status(200).json(response);
     }
 
 }
 
-module.exports = AuthController;
+module.exports = AuthUserController;

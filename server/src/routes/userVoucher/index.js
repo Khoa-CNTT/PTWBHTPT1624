@@ -3,11 +3,11 @@
 const express = require("express");
 const router = express.Router();
 const UserVoucherController = require("../../controllers/userVoucher.controller");
-const { authentication } = require("../../middlewares/authMiddleware");
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 const asyncHandle = require("../../helper/asyncHandle");
 
 
-router.use(authentication);
+router.use(userAuthentication);
 // Lưu voucher cho user
 router.post("/vouchers/save", asyncHandle(UserVoucherController.saveVoucherForUser));
 // Đổi voucher bằng điểm

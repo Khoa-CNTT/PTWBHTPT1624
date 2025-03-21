@@ -1,13 +1,13 @@
 const express = require("express");
 const BannerController = require("../../controllers/banner.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
 const PERMISSIONS = require("../../config/permissions");
+const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 
 const router = express.Router();
 
 router.get("/all", asyncHandle(BannerController.getAllBanners));
-router.use(authentication)
+router.use(adminAuthentication)
 router.use(restrictTo(PERMISSIONS.BANNER_MANAGE))
 //tìm theo tên
 router.get("/search", asyncHandle(BannerController.searchBanner));

@@ -1,7 +1,7 @@
 const express = require("express");
 const ProductController = require("../../controllers/product.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
+const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
 
 const router = express.Router();
@@ -30,7 +30,7 @@ router.get("/:id/similar", asyncHandle(ProductController.getSimilarProductsByCat
 /* ================================
    🛡️ API Dành cho Admin (Quản lý Sản Phẩm)
    ================================ */
-router.use(authentication); // ✅ Xác thực người dùng
+router.use(adminAuthentication); // ✅ Xác thực người dùng
 router.use(restrictTo(PERMISSIONS.PRODUCT_MANAGE)); // 🚫 Chỉ admin có quyền quản lý sản phẩm
 
 // ➕ Thêm sản phẩm mới (bao gồm thông tin tồn kho)

@@ -3,10 +3,10 @@
 const express = require("express");
 const router = express.Router();
 const FavoriteProductController = require("../../controllers/favorite.controller");
-const { authentication } = require("../../middlewares/authMiddleware");
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 
 // Middleware kiểm tra đăng nhập cho tất cả route
-router.use(authentication);
+router.use(userAuthentication);
 
 // API toggle yêu thích sản phẩm (thêm nếu chưa có, xóa nếu đã tồn tại)
 router.post("/toggle", FavoriteProductController.toggleFavoriteProduct);

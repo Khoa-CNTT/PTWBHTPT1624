@@ -6,9 +6,8 @@ const UserModel = require("../models/user.model");
 
 class UserService {
     static async addUser(payload) {
-        const { user_name, user_email, user_password, user_mobile, user_type } = payload;
-
-        if (!user_name || !user_email || !user_password || !user_mobile || !user_type) {
+        const { user_name, user_email, user_password, user_mobile  } = payload;
+        if (!user_name || !user_email || !user_password || !user_mobile  ) {
             throw new BadRequestError("Thiếu thông tin bắt buộc!", 400);
         }
         const existingUser = await UserModel.findOne({ user_email });

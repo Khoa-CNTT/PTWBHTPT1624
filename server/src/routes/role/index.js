@@ -2,7 +2,7 @@
 
 const express = require("express");
 const RoleController = require("../../controllers/role.controller");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
+const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
 
 const router = express.Router();
@@ -17,7 +17,7 @@ router.get("/:id/search", RoleController.getRoleById);
 router.get("/search", RoleController.getRoleByName);
 
 // =============== ADMIN ===============
-router.use(authentication);
+router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.ROLE_MANAGE));
 
 // Tạo vai trò mới

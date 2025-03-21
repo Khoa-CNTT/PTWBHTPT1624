@@ -1,13 +1,13 @@
 const express = require("express");
 const SupplierController = require("../../controllers/supplier.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication } = require("../../middlewares/authMiddleware");
+const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 
 const router = express.Router();
 
 
 // Áp dụng middleware xác thực trước khi thực hiện các hành động quản lý nhà cung cấp
-router.use(authentication);
+router.use(userAuthentication);
 
 
 router.post("/add", asyncHandle(SupplierController.createSupplier));

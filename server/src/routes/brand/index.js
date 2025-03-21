@@ -1,14 +1,15 @@
 const express = require("express");
 const BrandController = require("../../controllers/brand.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { authentication, restrictTo } = require("../../middlewares/authMiddleware");
+const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
+const { adminAuthentication } = require("../../middlewares/auth.admin.middleware");
 
 const router = express.Router(); 
 // Lấy danh sách tất cả thương hiệu
 router.get("/all", asyncHandle(BrandController.getAllBrands));
 router.get("/:cid/by-category", asyncHandle(BrandController.getBrandsInCategory)); 
-router.use(authentication)
+router.use(adminAuthentication)
 router.use(restrictTo(PERMISSIONS.BRAND_MANAGE))
 // Lấy danh sách tất cả thương hiệu
 router.get("/all", asyncHandle(BrandController.getAllBrands));
