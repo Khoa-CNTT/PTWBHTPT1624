@@ -1,23 +1,30 @@
 import { useState } from "react";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
-import { Link } from "react-router";
+import {   useNavigate } from "react-router";
 import { Dropdown } from "../ui/dropdown/Dropdown";
 import useAdminStore from "../../store/adminStore";
 import { LogoAdmin } from "../../assets";
+import useAuthStore from "../../store/authStore";
+import { PATH } from "../../utils/const";
+import { apiLogoutAdmin } from "../../services/auth.admin.service";
  
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
+  const navigate=useNavigate()
   const {admin}= useAdminStore()
+  const {logoutAdmin}=useAuthStore()
+  function toggleDropdown() { setIsOpen(!isOpen) }
 
-  function toggleDropdown() {
-    setIsOpen(!isOpen);
-  }
-
-  function closeDropdown() {
-    setIsOpen(false);
-  }
+  function closeDropdown() { setIsOpen(false) }
   
+  const handleLogout = async () => {
+      const res = await apiLogoutAdmin();
+      if (!res.success) return;
+      localStorage.clear();
+      logoutAdmin() 
+      navigate(PATH.ADMIN_LOGIN)
+  } 
   return (
     <div className="relative">
       <button
@@ -137,8 +144,8 @@ export default function UserDropdown() {
             </DropdownItem>
           </li>
         </ul>
-        <Link
-          to="/signin"
+        <button
+        onClick={handleLogout}
           className="flex items-center gap-3 px-3 py-2 mt-3 font-medium text-gray-700 rounded-lg group text-theme-sm hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300"
         >
           <svg
@@ -156,8 +163,8 @@ export default function UserDropdown() {
               fill=""
             />
           </svg>
-          Sign out
-        </Link>
+          Đăng xuất
+        </button>
       </Dropdown>
     </div>
   );
