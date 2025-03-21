@@ -36,6 +36,7 @@
     "react-dnd-html5-backend": "^16.0.1",
     "react-dom": "^18.3.1",
     "react-dropzone": "^14.3.5",
+    "react-easy-crop": "^5.4.1",
     "react-flatpickr": "^3.10.13",
     "react-helmet-async": "^2.0.5",
     "react-redux": "^9.2.0",
@@ -50,8 +51,10 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
+    "@types/node": "^22.13.10",
     "@types/react": "^19.0.8",
     "@types/react-dom": "^19.0.3",
+    "@types/react-easy-crop": "^1.16.0",
     "@types/react-flatpickr": "^3.8.11",
     "@types/socket.io-client": "^1.4.36",
     "@vitejs/plugin-react": "^4.3.4",

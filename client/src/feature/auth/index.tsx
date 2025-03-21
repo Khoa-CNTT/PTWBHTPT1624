@@ -4,7 +4,7 @@ import { useAppDispatch, useAppSelector } from '../../redux/hooks';
 import { setFeatureAuth, setOpenFeatureAuth } from '../../redux/features/action/actionSlice';
 import Login from './left/Login';
 import Right from './Right/Right';
-import Overlay from '../../components/user/common/Overlay';
+import { Overlay } from '../../components';
 
 const Auth: React.FC = () => {
     const { openFeatureAuth, featureAuth } = useAppSelector((state) => state.action);

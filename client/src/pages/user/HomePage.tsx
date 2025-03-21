@@ -2,7 +2,7 @@ import React from 'react'
 import { setOpenFeatureAuth } from '../../redux/features/action/actionSlice';
 import { useAppDispatch } from '../../redux/hooks';
 
-export const HomePage:React.FC = () => {
+ const HomePage:React.FC = () => {
       const dispatch = useAppDispatch();
   return (
     <div className='w-full h-screen flex flex-col justify-center items-center'> 
@@ -20,3 +20,4 @@ export const HomePage:React.FC = () => {
     </div>
   )
 }
+export default HomePage

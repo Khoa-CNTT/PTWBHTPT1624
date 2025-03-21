@@ -1,15 +1,15 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
-import Button from "../../../components/system/ui/button/Button";
-import { Modal } from "../../../components/system/ui/modal";
-import { ICategory } from "../../../interfaces/category.interfaces";
-import { InputForm, showNotification } from '../../../components/user';
 import validate from '../../../utils/valueDate';
-import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
-import { apiUploadImage } from '../../../services/apiUploadPicture';
-import { setIsLoading } from '../../../redux/features/action/actionSlice';
+import { apiUploadImage } from '../../../services/api.uploadPicture';
+import { ICategory } from '../../../interfaces/category.interfaces';
+import { InputForm, showNotification } from '../../../components';
+import { Modal } from '../../../components/ui/modal';
+import Button from '../../../components/ui/button/Button';
 import { useAppDispatch } from '../../../redux/hooks';
+import ImageCropper from '../../../components/ImageCropper';
+import { countFilledFields } from '../../../utils/countFilledFields';
 
 interface CategoryModalProps {
   isOpen: boolean;
@@ -51,19 +51,23 @@ const [isUploading, setIsUploading] = useState(false);
     setInvalidFields((prev: any) => prev.filter((field: { name: string }) => field.name !== type));
 };
 
-const handleImageUpload = async ( type: string,   e: React.ChangeEvent<HTMLInputElement> ): Promise<void> => {
-  setIsUploading(true)
-      const file = e.target.files?.[0]; // Lấy duy nhất 1 ảnh
-      if (!file) return;
-      dispatch(setIsLoading(true));
+
+const handleImageUpload = async (image: string, type: string): Promise<void> => {
+  try {
+      setIsUploading(true);
       const formData:any = new FormData();
-      formData.append('file', file);
-      formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
-        const response = await apiUploadImage(formData);
-       setInputFields((prev) => ({ ...prev, [type]: response.url })); // Chỉ lưu 1 ảnh
+      formData.append("file", image);
+      formData.append("upload_preset", import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+      const response = await apiUploadImage(formData);
+      setInputFields((prev) => ({ ...prev, [type]: response.url }));
       setInvalidFields((prev: any) => prev.filter((field: { name: string }) => field.name !== type));
-      setIsUploading(false)
+  } catch (error) {
+      console.error("Lỗi upload ảnh:", error);
+  } finally {
+      setIsUploading(false);
+  }
 };
+
 
   return (
     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
@@ -82,22 +86,18 @@ const handleImageUpload = async ( type: string,   e: React.ChangeEvent<HTMLInput
                         />
         </div>
         <div className="mb-4">
-          <div className="flex w-full items-center text-secondary text-sm  ">
-                            <input id="comment_input" type="file" multiple hidden onChange={(e)=>handleImageUpload("category_thumb",e)} />
-                            <label htmlFor="comment_input" className="flex w-full gap-2">
-                                Thêm hình ảnh
-                                <InsertPhotoIcon fontSize="medium" style={{ color: 'green' }} />
-                            </label>
-                        </div>
+               <div className="flex w-full items-center text-secondary text-sm  ">
+                       <ImageCropper width={239} height={239} label='Thêm hình ảnh' onCropComplete={handleImageUpload} idName="category_thumb"/>
+               </div>
                         {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                        { inputFields.category_thumb&&<img className='h-[200px] mt-2 rounded-sm' src={inputFields.category_thumb} />}
                         {invalidFields?.some((i) => i.name ==="category_thumb") && (
-                <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>
+         <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>
             )}
         </div>
         <div className="flex justify-end gap-3">
           <Button size="sm" variant="outline" onClick={closeModal}>Hủy</Button>
-       { inputFields.category_thumb&&inputFields.category_name&& <Button size="sm" onClick={handleSave}>
+       {  countFilledFields(inputFields)>=2&& <Button size="sm" onClick={handleSave}>
             {category ? "Lưu thay đổi" : "Thêm mới"}
           </Button>}
         </div>

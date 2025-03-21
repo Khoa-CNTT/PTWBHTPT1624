@@ -1,17 +1,20 @@
 import React, { useState } from 'react';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
-import { apiLogin } from '../../../../services/apiAuth';
+import { apiLogin } from '../../../../services/api.auth';
 import { setFeatureAuth, setOpenFeatureAuth } from '../../../../redux/features/action/actionSlice';
-import { useAppDispatch } from '../../../../redux/hooks';
 import { setIsLoginSuccess } from '../../../../redux/features/auth/authSlice';
-import { showNotification } from '../../../../components/user/common/showNotification';
+import { showNotification } from '../../../../components/common/showNotification';
+import { useAppDispatch } from '../../../../redux/hooks';
+import { useNavigate } from 'react-router';
+import { PATH } from '../../../../utils/const';
 
 const Login: React.FC = () => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [email, setEmail] = useState<string>('');
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
+    const navigate=useNavigate()
     const dispatch = useAppDispatch();
     const handleSummit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -26,7 +29,7 @@ const Login: React.FC = () => {
             showNotification('Đăng nhập thành công!', true);
             dispatch(setOpenFeatureAuth(false));
             dispatch(setIsLoginSuccess(true));
-            window.location.reload();
+            navigate(PATH.SYSTEM)
         } else {
             setError(res.status);
         }

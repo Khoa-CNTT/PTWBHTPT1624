@@ -1,0 +1,108 @@
+// /* eslint-disable @typescript-eslint/no-explicit-any */
+// import React, { useState, useEffect } from 'react';
+// import validate from '../../../utils/valueDate';
+// import { apiUploadImage } from '../../../services/apiUploadPicture';
+// import { InputForm, showNotification } from '../../../components';
+// import { Modal } from '../../../components/ui/modal';
+// import Button from '../../../components/ui/button/Button';
+// import ImageCropper from '../../../components/ImageCropper';
+// import { countFilledFields } from '../../../utils/countFilledFields';
+// import { IBanner } from '../../../interfaces/banner.interfaces';
+
+// interface BannerModalProps {
+//   isOpen: boolean;
+//   closeModal: () => void;
+//   onSave: (data: IBanner) => void;
+//   brand?: IBanner | null;
+// }
+
+// const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, brand }) => {
+//   const [inputFields, setInputFields] = useState<IBanner>({ } as IBanner);
+//   const [isUploading, setIsUploading] = useState(false);
+//   const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
+//   console.log(inputFields)
+//   useEffect(() => {
+//     if (brand) {
+//       setInputFields(brand);
+//     } else {
+//       setInputFields({ banner_description:"" ,banner_endDate:null,banner_isActive:"", ,banner_imageUrl:""  ,banner_link:""  ,banner_title:"" });
+//     }
+//   }, [brand]);
+
+//   const handleSave = () => {
+//     const { brand_banner_image, brand_name, brand_thumb } = inputFields;
+//     const data = { brand_banner_image, brand_name, brand_thumb };
+    
+//     if (!validate(data, setInvalidFields)) {
+//       showNotification('Vui lòng nhập đầy đủ thông tin');
+//       return;
+//     }
+    
+//     if (brand) {
+//       onSave({ _id: brand._id, ...data });
+//     } else {
+//       onSave(data);
+//       setInputFields({ brand_banner_image: '', brand_name: '', brand_thumb: '' });
+//     }
+//   };
+//   const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+//     setInputFields((prev) => ({ ...prev, [type]: e.target.value }));
+//     setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+//   };
+//   const handleImageUpload = async (image: string, type: string): Promise<void> => {
+//     try {
+//       setIsUploading(true);
+//       const formData:any = new FormData();
+//       formData.append('file', image);
+//       formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+//       const response = await apiUploadImage(formData);
+//       setInputFields((prev) => ({ ...prev, [type]: response.url }));
+//       setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+//     } catch (error) {
+//       console.error('Lỗi upload ảnh:', error);
+//     } finally {
+//       setIsUploading(false);
+//     }
+//   };
+//   return (
+//     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
+//       <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
+//         <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">
+//           {brand ? 'Chỉnh sửa thương hiệu' : 'Thêm thương hiệu'}
+//         </h4>
+//         <div className="mb-4">
+//           <InputForm
+//             col
+//             handleOnchange={(e) => handleInputField(e, 'brand_name')}
+//             label="Tên thương hiệu"
+//             name_id="brand_name"
+//             value={inputFields.brand_name}
+//             invalidFields={invalidFields}
+//           />
+//         </div>
+//         <div className="flex">
+//           <div className="w-1/2">
+//             <ImageCropper width={239} height={239} label="Thêm hình ảnh" idName="brand_thumb" onCropComplete={handleImageUpload} />
+//             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+//             {inputFields.brand_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_thumb} alt="Banner Thumbnail" />}
+//             {invalidFields.some((i) => i.name === 'brand_thumb') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
+//           </div>
+//           <div className="w-1/2">
+//             <ImageCropper width={306} height={306} label="Thêm banner" idName="brand_banner_image" onCropComplete={handleImageUpload} />
+//             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+//             {inputFields.brand_banner_image && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_banner_image} alt="Banner Banner" />}
+//             {invalidFields.some((i) => i.name === 'brand_banner_image') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
+//           </div>
+//         </div>
+//         <div className="flex justify-end gap-3">
+//           <Button size="sm" variant="outline" onClick={closeModal}>Hủy</Button>
+//           {countFilledFields(inputFields) >= 3 && (
+//             <Button size="sm" onClick={handleSave}>{brand ? 'Lưu thay đổi' : 'Thêm mới'}</Button>
+//           )}
+//         </div>
+//       </div>
+//     </Modal>
+//   );
+// };
+
+// export default BannerModal;
