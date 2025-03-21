@@ -130,7 +130,7 @@ class AuthUserService {
     static async userLogin({ email, password }, res) {
         const foundUser = await findUserByEmail(email)
         if (!foundUser) {
-            throw new BadRequestError("Tài khoản không tồn tại", 403)
+            throw new BadRequestError("Tài khoản không tồn tại", 203)
         }
         const matchPassword = bcrypt.compareSync(password, foundUser.user_password)
         if (!matchPassword) throw new BadRequestError("Tài khoản hoặc mật khẩu không đúng", 201)
@@ -161,7 +161,7 @@ class AuthUserService {
         if (!email) throw new BadRequestError("Vui lòng cung cấp email");
 
         const user = await findUserByEmail(email);
-        if (!user) throw new BadRequestError("Tài khoản không tồn tại", 404);
+        if (!user) throw new BadRequestError("Tài khoản không tồn tại", 204);
 
         const redisKey = `reset_password:${email}`;
         const token = randomTokenByCrypto(6);

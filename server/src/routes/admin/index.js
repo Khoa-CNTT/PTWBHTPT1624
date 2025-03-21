@@ -9,10 +9,10 @@ const router = express.Router();
 
 // ✅ Xác thực trước khi truy cập API
 
-//  router.use(adminAuthentication);
-router.get("/profile",[userAuthentication], asyncHandle(adminController.getProfile));
-router.put("/profile/update", [userAuthentication],asyncHandle(adminController.updateProfile));
-// router.use(restrictTo(PERMISSIONS.EMPLOYEE_MANAGE));
+ router.use(adminAuthentication);
+router.get("/profile",  asyncHandle(adminController.getProfile));
+router.put("/profile/update" ,asyncHandle(adminController.updateProfile));
+router.use(restrictTo(PERMISSIONS.EMPLOYEE_MANAGE));
 router.get("/all", asyncHandle(adminController.getAllAdmins));
 router.post("/add", asyncHandle(adminController.addAdmin));
 router.put("/:uid/update", asyncHandle(adminController.updateAdmin));
