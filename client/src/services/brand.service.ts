@@ -1,9 +1,9 @@
-import { axiosJWT} from '../utils/httpRequest';
+import { adminClient, apiClient } from "../utils/httpRequest";
 
 // Lấy tất cả thương hiệu
 const apiGetAllBrands = async (queries:{limit:number,page:number}) => {
     try {
-        const res = await axiosJWT.get('/v1/api/brand/all',{
+        const res = await apiClient.get('/v1/api/brand/all',{
             params:queries
         });
         return res.data;
@@ -18,7 +18,7 @@ const apiGetAllBrands = async (queries:{limit:number,page:number}) => {
 // Lấy tất cả thương hiệu theo danh mục
 const apiGetBrandsInCategory = async (categoryId: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/brand/${categoryId}/by-category`);
+        const res = await apiClient.get(`/v1/api/brand/${categoryId}/by-category`);
         return res.data;
     } catch (error) {
         return {
@@ -31,7 +31,7 @@ const apiGetBrandsInCategory = async (categoryId: string) => {
 // Tìm kiếm thương hiệu theo tên
 const apiSearchBrand = async (searchQuery: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/brand/search`, {
+        const res = await adminClient.get(`/v1/api/brand/search`, {
             params: { search: searchQuery },
         });
         return res.data;
@@ -46,7 +46,7 @@ const apiSearchBrand = async (searchQuery: string) => {
 // Thêm mới thương hiệu
 const apiCreateBrand = async (brandData: object) => {
     try {
-        const res = await axiosJWT.post('/v1/api/brand/add', brandData);
+        const res = await adminClient.post('/v1/api/brand/add', brandData);
         return res.data;
     } catch (error) {
         return {
@@ -59,7 +59,7 @@ const apiCreateBrand = async (brandData: object) => {
 // Lấy chi tiết thương hiệu theo ID
 const apiGetBrandById = async (id: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/brand/${id}/search`);
+        const res = await adminClient.get(`/v1/api/brand/${id}/search`);
         return res.data;
     } catch (error) {
         return {
@@ -72,7 +72,7 @@ const apiGetBrandById = async (id: string) => {
 // Cập nhật thương hiệu theo ID
 const apiUpdateBrand = async (id: string, brandData: object) => {
     try {
-        const res = await axiosJWT.put(`/v1/api/brand/${id}/update`, brandData);
+        const res = await adminClient.put(`/v1/api/brand/${id}/update`, brandData);
         return res.data;
     } catch (error) {
         return {
@@ -85,7 +85,7 @@ const apiUpdateBrand = async (id: string, brandData: object) => {
 // Xóa thương hiệu theo ID
 const apiDeleteBrand = async (id: string) => {
     try {
-        const res = await axiosJWT.delete(`/v1/api/brand/${id}/delete`);
+        const res = await adminClient.delete(`/v1/api/brand/${id}/delete`);
         return res.data;
     } catch (error) {
         return {

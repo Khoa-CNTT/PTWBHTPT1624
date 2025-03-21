@@ -9,26 +9,24 @@ import { PATH } from '../utils/const';
 import BrandManage from '../pages/system/brand';
 import HomePage from '../pages/user/HomePage';
 import BannerManage from '../pages/system/banner';
+import AdminLogin from '../pages/system/login';
+import useAuthStore from '../store/authStore';
 
 const RouterPage = () => {
     useFetchDetailUser();
-
+    const { isAdminLoggedIn } = useAuthStore();
     return (
         <>
             <Routes>
                 {/* ============= USER =================== */}
-                <Route path={PATH.HOME} element={  
-                    <ProtectedRoute allowedRoles={["user"]} redirectPath={PATH.SYSTEM}>
-                        <DefaultLayout />
-                    </ProtectedRoute>
-                }>
+                <Route path={PATH.HOME} element={   <DefaultLayout />   }>
                     <Route path="*" element={<Navigate to={PATH.HOME} />} />
                     <Route path={PATH.HOME} element={<HomePage />} />
                 </Route>
 
                 {/* ============= ADMIN =================== */}
-                <Route path={PATH.SYSTEM} element={
-                    <ProtectedRoute allowedRoles={["admin",'employee']} redirectPath={PATH.SYSTEM}>
+                <Route path={PATH.ADMIN_DASHBOARD} element={
+                    <ProtectedRoute redirectPath={PATH.ADMIN_LOGIN}>
                         <AppLayout />
                     </ProtectedRoute>
                 }>
@@ -36,6 +34,7 @@ const RouterPage = () => {
                     <Route path={PATH.MANAGE_BRAND} element={<BrandManage />} />
                     <Route path={PATH.MANAGE_BANNER} element={<BannerManage />} />
                 </Route>
+                <Route  path={PATH.ADMIN_LOGIN}  element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />}/>
             </Routes>
         </>
     );

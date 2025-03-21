@@ -1,12 +1,20 @@
 import axios from 'axios';
-export const httpRequest = axios.create({
-    baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000',
-});
-export const axiosJWT = axios.create({
-    withCredentials: true,// không có cái này thì tình duyệt sẽ không nhận được cookie
-    baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000',
-});
-axiosJWT.interceptors.request.use(
+import { apiRefreshTokenAdmin } from '../services/auth.admin.service';
+
+// Hàm tạo instance Axios với các cấu hình tùy chọn
+const createAxiosInstance = (withAuth = false) => {
+    return axios.create({
+        baseURL: import.meta.env.VITE_REACT_API_BASE_URL || 'http://localhost:4000',
+        withCredentials: withAuth, // Bật/tắt gửi cookie
+    });
+};
+
+// Các instance Axios đặt tên theo thực tế
+export const apiClient = createAxiosInstance(); // API chung, không cần auth
+export const authClient = createAxiosInstance(true); // API yêu cầu auth (JWT)
+export const adminClient = createAxiosInstance(true); // API dành riêng cho admin
+
+adminClient.interceptors.request.use(
     function (config) {
         const access_token=localStorage.getItem("access_token")
         if(!access_token){
@@ -20,25 +28,31 @@ axiosJWT.interceptors.request.use(
         return Promise.reject(error);
     },
 ); 
-// // Add a request interceptor
-// axiosJWT.interceptors.request.use(
-//     async (config) => {
-//       const access_token = localStorage.getItem('access_token');
-//       if (!access_token) return config;
-//       const decode: any  = jwt_decode(JSON.parse(access_token));
-//       const currentTime = new Date();
-//       if (decode.exp < currentTime.getTime() / 1000) {
-//         const data = await apiRefreshToken();
-//         console.log(data);
-//         if (data.success) {
-//           localStorage.setItem('access_token', JSON.stringify(data.refresh_token));
-//           config.headers.Authorization = `Bearer ${data.refresh_token}`;
-//         }
-//       }
-//       return config;
-//     },
-//     function (error) {
-//       // Do something with request error
-//       return Promise.reject(error);
-//     },
-//   );
+// Add a request interceptor
+adminClient.interceptors.response.use(
+    response => response,
+    async (error) => {
+      const originalRequest = error.config;
+      // Kiểm tra nếu lỗi là 401 (Unauthorized) và request chưa được thử lại
+      if (error.response?.status === 401 && !originalRequest._retry) {
+        originalRequest._retry = true; // Đánh dấu request đã thử lại
+        try {
+          const accessToken=localStorage.getItem('ad_token');
+          if(!accessToken) return;
+          const res = await apiRefreshTokenAdmin(); // Gọi API để lấy access token mới
+          if (res) {
+            // Cập nhật lại header Authorization với token mới
+            originalRequest.headers['Authorization'] = `Bearer ${res.data.authorization.access_token}`;
+            localStorage.setItem('ad_token', JSON.stringify(res.data.authorization.access_token));
+            return adminClient(originalRequest); // Gửi lại request ban đầu với token mới
+          }
+        } catch (error) {
+          console.error('Failed to refresh token:', error);
+        }
+      }
+  
+      // Nếu không phải lỗi 401 hoặc không thể refresh token, trả về lỗi ban đầu
+      return Promise.reject(error);
+    }
+  );
+  

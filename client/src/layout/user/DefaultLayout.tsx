@@ -1,8 +1,8 @@
 import React  from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import { Auth } from '../../feature';
 import { Outlet } from 'react-router';
 import { ToastContainer } from 'react-toastify';
+import useFetchDetailUser from '../../hooks/useFetchDetailUser';
 
 // import { Auth } from '../feature';
 // import { useAppDispatch, useAppSelector } from '../redux/hooks';
@@ -15,6 +15,7 @@ import { ToastContainer } from 'react-toastify';
 // import { BottomNavigate } from '../component/mobile/BottomNavigate';
 // import Chat from '../component/chat';
 const DefaultLayout = ( ) => {
+    useFetchDetailUser();
     // const dispatch = useAppDispatch();
     // // chi tiết user
 
@@ -53,7 +54,7 @@ const DefaultLayout = ( ) => {
                 <main className="flex flex-col tablet:pb-20 tablet:bg-white  bg-background_primary  h-full w-full max-w-[1280px] tablet:px-0 px-5  mx-auto  ">
                 <Outlet/>
                 </main>
-                <Auth />
+                {/* <Auth /> */}
 
                 {/* {!mobile_ui ||!location.pathname.includes(path.PAGE_PAYPAL) &&<Footer />}
                 <Auth />

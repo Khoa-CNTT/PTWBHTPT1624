@@ -3,13 +3,11 @@ import { admin } from "../../assets";
 import { DropdownItem } from "../ui/dropdown/DropdownItem";
 import { Link } from "react-router";
 import { IIUserDetail } from "../../interfaces/user.interfaces";
-import { useAppSelector } from "../../redux/hooks";
 import { Dropdown } from "../ui/dropdown/Dropdown";
  
 
 export default function UserDropdown() {
   const [isOpen, setIsOpen] = useState(false);
-  const currenUser:IIUserDetail = useAppSelector((state) => state.user);
 
   function toggleDropdown() {
     setIsOpen(!isOpen);
@@ -25,10 +23,10 @@ export default function UserDropdown() {
         className="flex items-center text-gray-700 dropdown-toggle dark:text-gray-400"
       >
         <span className="mr-3 overflow-hidden rounded-full h-11 w-11">
-          <img src={currenUser.user_avatar_url||admin} alt={currenUser.user_type} />
+          {/* <img src={currenUser.user_avatar_url||admin} alt={currenUser.user_type} /> */}
         </span>
 
-        <span className="block mr-1 font-medium text-theme-sm">{currenUser.user_name}</span>
+        {/* <span className="block mr-1 font-medium text-theme-sm">{currenUser.user_name}</span> */}
         <svg
           className={`stroke-gray-500 dark:stroke-gray-400 transition-transform duration-200 ${
             isOpen ? "rotate-180" : ""
@@ -56,7 +54,7 @@ export default function UserDropdown() {
       >
         <div>
           <span className="mt-0.5 block text-theme-xs text-gray-500 dark:text-gray-400">
-           {currenUser.user_email}
+           {/* {currenUser.user_email} */}
           </span>
         </div>
 

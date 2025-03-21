@@ -1,9 +1,9 @@
-import { axiosJWT} from '../utils/httpRequest';
+import { adminClient, apiClient } from "../utils/httpRequest";
 
 // Lấy tất cả banners
 const apiGetAllBanners = async (queries:{limit:number,page:number}) => {
     try {
-        const res = await axiosJWT.get('/v1/api/banner/all',{
+        const res = await apiClient.get('/v1/api/banner/all',{
             params:queries
         });
         return res.data;
@@ -18,7 +18,7 @@ const apiGetAllBanners = async (queries:{limit:number,page:number}) => {
 // Tìm banner theo tên
 const apiSearchBanner = async (searchQuery: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/banner/search`, {
+        const res = await adminClient.get(`/v1/api/banner/search`, {
             params: { search: searchQuery },
         });
         return res.data;
@@ -33,7 +33,7 @@ const apiSearchBanner = async (searchQuery: string) => {
 // Thêm banner mới
 const apiCreateBanner = async (bannerData: object) => {
     try {
-        const res = await axiosJWT.post('/v1/api/banner/add', bannerData);
+        const res = await adminClient.post('/v1/api/banner/add', bannerData);
         return res.data;
     } catch (error) {
         return {
@@ -46,7 +46,7 @@ const apiCreateBanner = async (bannerData: object) => {
 // Lấy banner theo ID
 const apiGetBannerById = async (id: string) => {
     try {
-        const res = await axiosJWT.get(`/v1/api/banner/${id}/search`);
+        const res = await adminClient.get(`/v1/api/banner/${id}/search`);
         return res.data;
     } catch (error) {
         return {
@@ -59,7 +59,7 @@ const apiGetBannerById = async (id: string) => {
 // Cập nhật banner theo ID
 const apiUpdateBanner = async (id: string, bannerData: object) => {
     try {
-        const res = await axiosJWT.put(`/v1/api/banner/${id}/update`, bannerData);
+        const res = await adminClient.put(`/v1/api/banner/${id}/update`, bannerData);
         return res.data;
     } catch (error) {
         return {
@@ -72,7 +72,7 @@ const apiUpdateBanner = async (id: string, bannerData: object) => {
 // Xóa banner theo ID
 const apiDeleteBanner = async (id: string) => {
     try {
-        const res = await axiosJWT.delete(`/v1/api/banner/${id}/delete`);
+        const res = await adminClient.delete(`/v1/api/banner/${id}/delete`);
         return res.data;
     } catch (error) {
         return {
