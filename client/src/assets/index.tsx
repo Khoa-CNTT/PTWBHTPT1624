@@ -6,7 +6,6 @@ export { default as revodoi } from './image/re-vo-doi.png';
 export { default as LogoAdmin } from './image/admin.png';
 export { default as logo } from './logo/logo.png';
 export { default as logoGoogle } from './logo/logoGoogle.png';
-export { default as logo_dpshopvn } from './logo/logo_dpshopvn.png';
 export { default as dealFlashIcon } from './logo/dealFlashIcon.svg';
 export { default as dogcute } from './image/dogcute.jpg';
 export { default as noUser } from './image/noUser.png';

@@ -7,8 +7,7 @@ interface ProtectedRouteProps {
 }
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children, redirectPath }) => {
   const { isAdminLoggedIn } = useAuthStore();
-   
-  if (!isAdminLoggedIn) {
+     if (!isAdminLoggedIn) {
     return <Navigate to={redirectPath} />;
   }
   return <>{children}</>;

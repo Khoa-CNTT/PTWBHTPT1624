@@ -26,7 +26,7 @@ const Pagination: React.FC<PaginationProps> = ({ totalPage, currentPage, setCurr
   return (
     <div className="flex w-4/12 mx-auto gap-4 justify-center">
       {/* Left navigation */}
-      <PaginationItem HandleOnClick={() => handleSetPage(currentPage - 1)} currentPage={currentPage} disabled={currentPage === 0}>
+      <PaginationItem HandleOnClick={() => handleSetPage(currentPage - 1)} currentPage={currentPage} >
         <KeyboardArrowLeftIcon />
       </PaginationItem>
 
@@ -60,9 +60,8 @@ const Pagination: React.FC<PaginationProps> = ({ totalPage, currentPage, setCurr
       <PaginationItem HandleOnClick={() => handleSetPage(totalPage)} currentPage={currentPage}>
         {totalPage}
       </PaginationItem>
-
       {/* Right navigation */}
-      <PaginationItem HandleOnClick={() => handleSetPage(currentPage + 1)} currentPage={currentPage} disabled={currentPage === totalPage}>
+      <PaginationItem HandleOnClick={() => handleSetPage(currentPage + 1)} currentPage={currentPage}  >
         <ChevronRightIcon />
       </PaginationItem>
     </div>

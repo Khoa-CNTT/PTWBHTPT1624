@@ -1,8 +1,7 @@
 import { useEffect, useState } from "react";
-import {  apiDeleteCategory } from "../../../services/category.service";
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from "../../../hooks/useModal";
-import { apiCreateBanner, apiGetAllBanners, apiUpdateBanner } from "../../../services/banner.service";
+import { apiCreateBanner, apiDeleteBanner, apiGetAllBanners, apiUpdateBanner } from "../../../services/banner.service";
 import BannerTable from "./BannerTable";
 import BannerModal from "./BannerModal";
 import { Pagination, showNotification } from "../../../components";
@@ -21,7 +20,6 @@ export default function BannerManage() {
   useEffect(() => {
     const fetchApi = async () => {
       const res = await apiGetAllBanners({ limit: 5, page: currentPage });
-      console.log(res)
       if (!res.success) return;
       const data = res.data;
       setBanners(data.banners);
@@ -60,7 +58,7 @@ export default function BannerManage() {
   const handleDelete = async(id:string)=>{
     if(!id) return
     if(!confirm("Bạn có muốn xóa không?"))return
-    const res = await apiDeleteCategory(id);
+    const res = await apiDeleteBanner(id);
     console.log(res)
     if (!res?.success) {
       showNotification(res?.message, false);
@@ -88,7 +86,7 @@ export default function BannerManage() {
           <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
         )}
       </div>
-      {/* <BannerModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} banner={selectedBanner} /> */}
+      <BannerModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} banner={selectedBanner} />
     </>
   );
 }
