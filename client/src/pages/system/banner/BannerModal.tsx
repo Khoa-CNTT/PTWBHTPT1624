@@ -1,108 +1,132 @@
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import React, { useState, useEffect } from 'react';
-// import validate from '../../../utils/valueDate';
-// import { apiUploadImage } from '../../../services/apiUploadPicture';
-// import { InputForm, showNotification } from '../../../components';
-// import { Modal } from '../../../components/ui/modal';
-// import Button from '../../../components/ui/button/Button';
-// import ImageCropper from '../../../components/ImageCropper';
-// import { countFilledFields } from '../../../utils/countFilledFields';
-// import { IBanner } from '../../../interfaces/banner.interfaces';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect } from 'react';
+import validate from '../../../utils/valueDate';
+import { InputForm, showNotification } from '../../../components';
+import { Modal } from '../../../components/ui/modal';
+import Button from '../../../components/ui/button/Button';
+import ImageCropper from '../../../components/ImageCropper';
+import { countFilledFields } from '../../../utils/countFilledFields';
+import { IBanner } from '../../../interfaces/banner.interfaces';
+import { apiUploadImage } from '../../../services/uploadPicture.service';
+import DateComponent from '../../../components/DateFilterComponent';
 
-// interface BannerModalProps {
-//   isOpen: boolean;
-//   closeModal: () => void;
-//   onSave: (data: IBanner) => void;
-//   brand?: IBanner | null;
-// }
+interface BannerModalProps {
+  isOpen: boolean;
+  closeModal: () => void;
+  onSave: (data: IBanner|any) => void;
+  banner?: IBanner | null;
+}
 
-// const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, brand }) => {
-//   const [inputFields, setInputFields] = useState<IBanner>({ } as IBanner);
-//   const [isUploading, setIsUploading] = useState(false);
-//   const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-//   console.log(inputFields)
-//   useEffect(() => {
-//     if (brand) {
-//       setInputFields(brand);
-//     } else {
-//       setInputFields({ banner_description:"" ,banner_endDate:null,banner_isActive:"", ,banner_imageUrl:""  ,banner_link:""  ,banner_title:"" });
-//     }
-//   }, [brand]);
+const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, banner    
+ }) => {
+  const [inputFields, setInputFields] = useState<IBanner|any>({}as IBanner);
+  const [isUploading, setIsUploading] = useState(false);
+  const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
+  useEffect(() => {
+    if (banner) {
+      setInputFields(banner);
+    } else {
+      setInputFields(null);
+    }
+  }, [banner]);
+  const handleSave = () => { 
+    const { banner_description,banner_endDate,banner_imageUrl,banner_link,banner_startDate,banner_title }=  inputFields 
+      const data={banner_description,banner_endDate,banner_imageUrl,banner_link,banner_startDate,banner_title}
+    if (!validate(data, setInvalidFields)) {
+      showNotification('Vui lòng nhập đầy đủ thông tin');
+      return;
+    }
+    if (banner) {
+      onSave({ _id: banner._id, ...inputFields });
+    } else {
+      onSave(inputFields);
+      setInputFields(null);
+    }
+  };
+  console.log("countFilledFields(inputFields)",countFilledFields(inputFields))
+  const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+    setInputFields((prev:any) => ({ ...prev, [type]: e.target.value }));
+    setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+  };
+  const handleImageUpload = async (image: string, type: string): Promise<void> => {
+    try {
+      setIsUploading(true);
+      const formData:any = new FormData();
+      formData.append('file', image);
+      formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+      const response = await apiUploadImage(formData);
+      setInputFields((prev:any) => ({ ...prev, [type]: response.url }));
+      setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+    } catch (error) {
+      console.error('Lỗi upload ảnh:', error);
+    } finally {
+      setIsUploading(false);
+    }
+  };
+  const handleDate=(value:string,type:string)=>{
+    setInputFields((prev:any) => ({ ...prev, [type]:value }));
+    setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+  }
+  console.log("inputFields",inputFields)
+  return (
+    <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
+      <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
+        <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">
+          {banner ? 'Chỉnh sửa thương hiệu' : 'Thêm thương hiệu'}
+        </h4>
+        <div className="mb-4">
+          <InputForm
+            col
+            handleOnchange={(e) => handleInputField(e, 'banner_title')}
+            label="Tên thương hiệu"
+            name_id="banner_title"
+            value={inputFields?.banner_title}
+            invalidFields={invalidFields}
+          />
+        </div>
+        <div className="mb-4">
+          <InputForm
+            col
+            handleOnchange={(e) => handleInputField(e, 'banner_description')}
+            label="Mô tả"
+            name_id="banner_description"
+            value={inputFields?.banner_description}
+            invalidFields={invalidFields}
+          />
+        </div>
+        <div className="mb-4">
+          <InputForm
+            col
+            handleOnchange={(e) => handleInputField(e, 'banner_link')}
+            label="Liên kết"
+            name_id="banner_link"
+            value={inputFields?.banner_link}
+            invalidFields={invalidFields}
+          />
+        </div>
+        <div className="flex gap-4 my-2"> 
+           <div className='w-1/2'>
+                <DateComponent label='Ngày bắt đầu' onChange={handleDate} value={inputFields?.banner_startDate} type="banner_startDate"/>
+           </div>
+           <div className='w-1/2'>
+                <DateComponent label='Ngày kết thúc' onChange={handleDate} value={inputFields?.banner_endDate} type="banner_endDate"/>
+           </div>
+        </div> 
+          <div className="w-full">
+            <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
+            {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+            {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
+            {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
+          </div> 
+        <div className="flex justify-end gap-3">
+          <Button size="sm" variant="outline" onClick={closeModal}>Hủy</Button>
+          {countFilledFields(inputFields) >= 6 && (
+            <Button size="sm" onClick={handleSave}>{banner ? 'Lưu thay đổi' : 'Thêm mới'}</Button>
+          )}
+        </div>
+      </div>
+    </Modal>
+  );
+};
 
-//   const handleSave = () => {
-//     const { brand_banner_image, brand_name, brand_thumb } = inputFields;
-//     const data = { brand_banner_image, brand_name, brand_thumb };
-    
-//     if (!validate(data, setInvalidFields)) {
-//       showNotification('Vui lòng nhập đầy đủ thông tin');
-//       return;
-//     }
-    
-//     if (brand) {
-//       onSave({ _id: brand._id, ...data });
-//     } else {
-//       onSave(data);
-//       setInputFields({ brand_banner_image: '', brand_name: '', brand_thumb: '' });
-//     }
-//   };
-//   const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-//     setInputFields((prev) => ({ ...prev, [type]: e.target.value }));
-//     setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-//   };
-//   const handleImageUpload = async (image: string, type: string): Promise<void> => {
-//     try {
-//       setIsUploading(true);
-//       const formData:any = new FormData();
-//       formData.append('file', image);
-//       formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
-//       const response = await apiUploadImage(formData);
-//       setInputFields((prev) => ({ ...prev, [type]: response.url }));
-//       setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-//     } catch (error) {
-//       console.error('Lỗi upload ảnh:', error);
-//     } finally {
-//       setIsUploading(false);
-//     }
-//   };
-//   return (
-//     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
-//       <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
-//         <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">
-//           {brand ? 'Chỉnh sửa thương hiệu' : 'Thêm thương hiệu'}
-//         </h4>
-//         <div className="mb-4">
-//           <InputForm
-//             col
-//             handleOnchange={(e) => handleInputField(e, 'brand_name')}
-//             label="Tên thương hiệu"
-//             name_id="brand_name"
-//             value={inputFields.brand_name}
-//             invalidFields={invalidFields}
-//           />
-//         </div>
-//         <div className="flex">
-//           <div className="w-1/2">
-//             <ImageCropper width={239} height={239} label="Thêm hình ảnh" idName="brand_thumb" onCropComplete={handleImageUpload} />
-//             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-//             {inputFields.brand_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_thumb} alt="Banner Thumbnail" />}
-//             {invalidFields.some((i) => i.name === 'brand_thumb') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-//           </div>
-//           <div className="w-1/2">
-//             <ImageCropper width={306} height={306} label="Thêm banner" idName="brand_banner_image" onCropComplete={handleImageUpload} />
-//             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-//             {inputFields.brand_banner_image && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_banner_image} alt="Banner Banner" />}
-//             {invalidFields.some((i) => i.name === 'brand_banner_image') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-//           </div>
-//         </div>
-//         <div className="flex justify-end gap-3">
-//           <Button size="sm" variant="outline" onClick={closeModal}>Hủy</Button>
-//           {countFilledFields(inputFields) >= 3 && (
-//             <Button size="sm" onClick={handleSave}>{brand ? 'Lưu thay đổi' : 'Thêm mới'}</Button>
-//           )}
-//         </div>
-//       </div>
-//     </Modal>
-//   );
-// };
-
-// export default BannerModal;
+export default BannerModal;

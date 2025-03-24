@@ -3,7 +3,7 @@ import React from 'react';
 interface InputFormProps {
     name_id: string;
     label?: string;
-    value: string | number;
+    value?: string | number;
     col?: boolean;
     type?: string;
     placeholder?: string;

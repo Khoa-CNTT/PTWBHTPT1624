@@ -9,7 +9,7 @@ import {
   UserCircleIcon,
 } from "../../icons";
 import { useSidebar } from "../../context/SidebarContext";
-import { iconLogo, logo_dpshopvn } from "../../assets";
+import { iconLogo, logo } from "../../assets";
 import { PATH } from "../../utils/const";
 
 type NavItem = {
@@ -230,14 +230,14 @@ const AppSidebar: React.FC = () => {
       onMouseLeave={() => setIsHovered(false)}
     >
       <div
-        className={`py-8 flex ${
+        className={`py-4 flex mx-auto ${
           !isExpanded && !isHovered ? "lg:justify-center" : "justify-start"
         }`}
       >
         <Link to="/">
           {isExpanded || isHovered || isMobileOpen ? (
             <>
-              <img className="dark:hidden" src={logo_dpshopvn} alt="Logo" width={150} height={40}
+              <img className="dark:hidden" src={logo} alt="Logo" width={150} 
               />
             </>
           ) : (

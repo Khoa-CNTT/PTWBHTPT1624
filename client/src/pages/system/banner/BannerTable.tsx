@@ -20,9 +20,6 @@ const BannerTable: React.FC<BannerListProps> = ({ banners, onEdit, onDelete }) =
             {/* Table Header */}
             <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
               <TableRow>
-                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Tên brand
-                </TableCell>
                 <TableCell isHeader className="px-5 py-3 font-medium  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                   Hình ảnh
                 </TableCell>
@@ -47,34 +44,28 @@ const BannerTable: React.FC<BannerListProps> = ({ banners, onEdit, onDelete }) =
             <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
               {banners?.map((c) => (
                 <TableRow key={c._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                  <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300"> 
-                  <span className=" truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                  {c.banner_title}
-                    </span> 
-                    </TableCell>
                   <TableCell className="px-5 py-3">
-                    <div className="w-12 h-12 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                    <div className="w-40  overflow-hidden border border-gray-200 dark:border-gray-700 flex items-center justify-center">
                       <img src={c.banner_imageUrl} alt={c.banner_imageUrl} className="w-full h-full object-cover" />
                     </div>
                   </TableCell>
                   <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
-                  
-                    <span className=" truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                    <span className=" truncate-trailing line-clamp-1    font-medium text-gray-800 text-theme-sm dark:text-white/90">
                     {c.banner_description}
                     </span>
                     </TableCell>
-                  <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
-                  <span className=" truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                    {c.banner_link}
-                    </span>
+                  <TableCell className="px-5 py-3 text-gray-700    dark:text-gray-300">
+                  <a  href={c.banner_link}  target="_blank" rel="noopener noreferrer" className="w-[100px] underline truncate-trailing line-clamp-1  font-medium text-blue-500 text-theme-sm ">
+                    {c.banner_link} 
+                    </a>
                   </TableCell>
                   <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
-                  <span className=" truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                  <span className=" truncate-trailing line-clamp-1     font-medium text-gray-800 text-theme-sm dark:text-white/90">
                   {formatDate(c.banner_startDate)}
                     </span>
                     </TableCell>
                   <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
-                    <span className=" truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                    <span className=" truncate-trailing line-clamp-1  font-medium text-gray-800 text-theme-sm dark:text-white/90">
                     {formatDate(c.banner_endDate)}
                     </span>
                     </TableCell>

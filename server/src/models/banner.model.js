@@ -25,12 +25,7 @@ const bannerSchema = new Schema(
         banner_link: { 
             type: String, 
             default: "", 
-        },
-        // Banner đang hoạt động hay không
-        banner_isActive: { 
-            type: Boolean, 
-            default: true, 
-        },
+        }, 
         // Thời gian bắt đầu hiển thị banner (nếu có)
         banner_startDate: { 
             type: Date, 
