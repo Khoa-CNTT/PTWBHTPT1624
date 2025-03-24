@@ -54,17 +54,17 @@ const BannerTable: React.FC<BannerListProps> = ({ banners, onEdit, onDelete }) =
                     {c.banner_description}
                     </span>
                     </TableCell>
-                  <TableCell className="px-5 py-3 text-gray-700    dark:text-gray-300">
-                  <a  href={c.banner_link}  target="_blank" rel="noopener noreferrer" className="w-[100px] underline truncate-trailing line-clamp-1  font-medium text-blue-500 text-theme-sm ">
+                  <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
+                  <a  href={c.banner_link}  target="_blank" rel="noopener noreferrer" className="w-[100px] underline truncate-trailing line-clamp-1  font-medium  text-blue-500 text-theme-sm ">
                     {c.banner_link} 
                     </a>
                   </TableCell>
-                  <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
+                  <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
                   <span className=" truncate-trailing line-clamp-1     font-medium text-gray-800 text-theme-sm dark:text-white/90">
                   {formatDate(c.banner_startDate)}
                     </span>
                     </TableCell>
-                  <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
+                  <TableCell className="px-5 py-3 text-gray-700 text-center  dark:text-gray-300">
                     <span className=" truncate-trailing line-clamp-1  font-medium text-gray-800 text-theme-sm dark:text-white/90">
                     {formatDate(c.banner_endDate)}
                     </span>
