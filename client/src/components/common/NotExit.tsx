@@ -1,5 +1,5 @@
 import React from 'react';
-import { notExit } from '../../../assets';
+import { notExit } from '../../assets';
 
 const NotExit: React.FC<{ label?: string }> = ({ label = 'Chưa có đơn hàng nào' }) => {
     return (

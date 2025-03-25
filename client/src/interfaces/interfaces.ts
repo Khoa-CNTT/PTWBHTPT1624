@@ -1,5 +1,3 @@
-import { UserProfile } from "./user.interfaces";
-import { IUserDetail } from "./user.interfaces";
 
 interface Category {
     category: string;
@@ -145,7 +143,7 @@ interface INotification {
 interface Conversation {
     _id: '';
     members: Array<{
-        user: UserProfile;
+        // user: UserProfile;
         isWatched: boolean;
     }>;
     updatedAt:string
@@ -153,8 +151,8 @@ interface Conversation {
 export type {
     Conversation,
     Category,
-    UserProfile,
-    IUserDetail,
+    // UserProfile,
+    // IUserDetail,
     IProductItem,
     ProductDetail,
     Review,
