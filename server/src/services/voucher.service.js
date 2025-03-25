@@ -1,7 +1,7 @@
 "use strict";
-const Voucher = require("../models/voucher.model");
+const Voucher = require("../models/voucher.model.js");
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const voucherModel = require("../models/voucher.model");
+const voucherModel = require("../models/voucher.model.js");
 
 class VoucherService {
   // Tạo voucher mới

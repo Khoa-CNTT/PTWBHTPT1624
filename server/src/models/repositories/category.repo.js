@@ -1,5 +1,5 @@
 const { convertToObjectIdMongodb } = require("../../utils")
-const Category = require("../category.model")
+const Category = require("../category.model.js")
 
 
 const findCartById = async (cartId) => {

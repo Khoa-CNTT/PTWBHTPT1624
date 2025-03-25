@@ -1,7 +1,7 @@
 "use strict";
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const ShippingCompany = require("../models/shippingCompany.model");
+const ShippingCompany = require("../models/shippingCompany.model.js");
 
 class ShippingCompanyService {
   // Tạo công ty vận chuyển mới

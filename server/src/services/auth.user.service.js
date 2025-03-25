@@ -7,7 +7,7 @@ const redis = require("../config/redisClient");
 const { findUserByEmail, findUserById } = require("../models/repositories/user.repo")
 const { randomTokenByCrypto, hashTokenByCrypto } = require("../utils/tokenUtils");
 const sendMail = require("../utils/sendMail");
-const userModel = require("../models/user.model");
+const userModel = require("../models/user.model.js");
 const createTokenPairs = require("../utils/auth/createTokenPairs");
 const verifyRefreshToken = require("../utils/auth/verifyRefreshToken");
 

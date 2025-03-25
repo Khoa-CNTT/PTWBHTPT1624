@@ -8,7 +8,7 @@ const { randomTokenByCrypto, hashTokenByCrypto } = require("../utils/tokenUtils"
 const sendMail = require("../utils/sendMail");
 const createTokenPairs = require("../utils/auth/createTokenPairs");
 const verifyRefreshToken = require("../utils/auth/verifyRefreshToken");
-const adminModel = require("../models/admin.model");
+const adminModel = require("../models/admin.model.js");
 
 class AuthAdminService {
     static async adminLogin({ email, password }, res) {

@@ -2,7 +2,7 @@
 
 const { BadRequestError } = require("../core/error.response");
 const bcrypt = require("bcrypt");
-const UserModel = require("../models/user.model");
+const UserModel = require("../models/user.model.js");
 
 class UserService {
     static async addUser(payload) {

@@ -1,7 +1,7 @@
 "use strict";
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Role = require("../models/role.model");
+const Role = require("../models/role.model.js");
 
 class RoleService {
   // Tạo vai trò mới

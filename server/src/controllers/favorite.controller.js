@@ -1,6 +1,6 @@
 "use strict";
 const { BadRequestError } = require("../core/error.response");
-const FavoriteProduct = require("../models/favoriteProduct.model");
+const FavoriteProduct = require("../models/favoriteProduct.model.js");
 
 class FavoriteProductService {
     // Thêm hoặc xóa sản phẩm khỏi danh sách yêu thích

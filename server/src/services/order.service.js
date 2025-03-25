@@ -1,14 +1,14 @@
 "use strict";
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Product = require("../models/product.model"); // Mô hình sản phẩm
-const Voucher = require("../models/voucher.model"); // Mô hình mã giảm giá
-const Cart = require("../models/cart.model"); // Mô hình giỏ hàng
+const Product = require("../models/product.model.js"); // Mô hình sản phẩm
+const Voucher = require("../models/voucher.model.js"); // Mô hình mã giảm giá
+const Cart = require("../models/cart.model.js"); // Mô hình giỏ hàng
 const { convertToObjectIdMongodb } = require("../utils"); // Hàm tiện ích chuyển đổi ID sang định dạng ObjectId của MongoDB
-const userVoucherModel = require("../models/userVoucher.model");
-const shippingCompany = require("../models/shippingCompany.model");
+const userVoucherModel = require("../models/userVoucher.model.js");
+const shippingCompany = require("../models/shippingCompany.model.js");
 const { default: mongoose } = require("mongoose");
-const orderModel = require("../models/order.model"); 
-const purchasedProductModel = require("../models/purchasedProduct.model");
+const orderModel = require("../models/order.model.js"); 
+const purchasedProductModel = require("../models/purchasedProduct.model.js");
 
 class OrderService {
   // Hàm tạo đơn hàng mới, nhận payload chứa thông tin đơn hàng

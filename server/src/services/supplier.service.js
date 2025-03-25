@@ -1,4 +1,4 @@
-const Supplier = require("../models/supplier.model");
+const Supplier = require("../models/supplier.model.js");
 
 class SupplierService {
   // Thêm nhà cung cấp
