@@ -1,7 +1,6 @@
 "use strict";
 const purchasedProductModel = require("../models/purchasedProduct.model");
 
-  
 class PurchasedProductService {
     // 📝 Tạo đánh giá mới
     static async getByUser({ userId, limit = 10, page = 0 }) {
