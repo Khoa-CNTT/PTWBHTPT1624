@@ -7,7 +7,15 @@ const { convertToObjectIdMongodb } = require("../utils"); // Hàm tiện ích ch
 const userVoucherModel = require("../models/userVoucher.model");
 const shippingCompany = require("../models/shippingCompany.model"); 
 const orderModel = require("../models/order.model"); 
-const purchasedProductModel = require("../models/purchasedProduct.model");
+const logger = require("../logger.js");
+
+
+try {
+  const purchasedProductModel = require('../models/purchasedProduct.model.js');
+} catch (error) {
+  logger.error('Lỗi khi require purchasedProduct.model', { stack: error.stack });
+  throw error;
+}
 
 class OrderService {
   // Hàm tạo đơn hàng mới, nhận payload chứa thông tin đơn hàng

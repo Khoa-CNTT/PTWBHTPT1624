@@ -1,5 +1,15 @@
 "use strict";
 const purchasedProductModel = require("../models/purchasedProduct.model");
+const logger = require("../logger.js");
+
+
+try {
+  const purchasedProductModel = require('../models/purchasedProduct.model.js');
+} catch (error) {
+  logger.error('Lỗi khi require purchasedProduct.model', { stack: error.stack });
+  throw error;
+
+}
 
 class PurchasedProductService {
     // 📝 Tạo đánh giá mới

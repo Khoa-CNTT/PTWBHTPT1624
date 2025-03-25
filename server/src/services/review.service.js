@@ -3,6 +3,16 @@
 const { NotFoundError } = require("../core/error.response");
 const Review = require("../models/reviews.model"); 
 const purchasedProductModel = require("../models/purchasedProduct.model");
+const logger = require("../logger.js");
+
+
+try {
+  const purchasedProductModel = require('../models/purchasedProduct.model.js');
+} catch (error) {
+  logger.error('Lỗi khi require purchasedProduct.model', { stack: error.stack });
+  throw error;
+
+}
 class ReviewService {
     // 📝 Tạo đánh giá mới
     static async createReview(payload) {
