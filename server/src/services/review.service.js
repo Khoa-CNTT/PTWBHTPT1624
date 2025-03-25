@@ -2,36 +2,26 @@
 
 const { NotFoundError } = require("../core/error.response");
 const Review = require("../models/reviews.model"); 
-const purchasedProductModel = require("../models/purchasedProduct.model");
-const logger = require("../logger.js");
-
-
-try {
-  const purchasedProductModel = require('../models/purchasedProduct.model.js');
-} catch (error) {
-  logger.error('Lỗi khi require purchasedProduct.model', { stack: error.stack });
-  throw error;
-
-}
+// const purchasedProductModel = require("../models/purchasedProduct.model"); 
 class ReviewService {
     // 📝 Tạo đánh giá mới
     static async createReview(payload) {
         const { userId, review_productId, review_rating, review_comment, review_images } = payload;
         // Kiểm tra xem người dùng mua sản phẩm này chưa
-        const purchasedProduct=await purchasedProductModel.findOne({review_user:userId,review_productId})
-         // Nếu chưa mua thì không cho đánh giá sao & đánh giá phải đợi duyệt
-         const finalRating = purchasedProduct ? review_rating : 0;
-        const isApproved = !!purchasedProduct; // Chuyển object thành true/false
-        // Tạo đánh giá mới
-        const newReview = await Review.create({
-            review_user: userId,
-            review_productId,
-            review_rating: finalRating,
-            review_comment,
-            review_images,
-            isApproved
-        });
-        return  newReview 
+        // const purchasedProduct=await purchasedProductModel.findOne({review_user:userId,review_productId})
+        //  // Nếu chưa mua thì không cho đánh giá sao & đánh giá phải đợi duyệt
+        //  const finalRating = purchasedProduct ? review_rating : 0;
+        // const isApproved = !!purchasedProduct; // Chuyển object thành true/false
+        // // Tạo đánh giá mới
+        // const newReview = await Review.create({
+        //     review_user: userId,
+        //     review_productId,
+        //     review_rating: finalRating,
+        //     review_comment,
+        //     review_images,
+        //     isApproved
+        // });
+        // return  newReview 
     }
 
     // 📖 Lấy danh sách đánh giá (chỉ lấy đánh giá đã duyệt)
