@@ -3,7 +3,7 @@ import { apiRefreshTokenAdmin } from '../services/auth.admin.service';
 // Hàm tạo instance Axios với các cấu hình tùy chọn
 const createAxiosInstance = (withAuth = false) => {
     return axios.create({
-        baseURL: import.meta.env.VITE_REACT_API_BASE_URL || 'http://localhost:4000',
+        baseURL: import.meta.env.VITE_REACT_API_URL_BACKEND || 'http://localhost:4000',
         withCredentials: withAuth, // Bật/tắt gửi cookie
     });
 };

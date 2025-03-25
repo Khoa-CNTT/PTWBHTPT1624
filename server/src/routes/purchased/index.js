@@ -1,6 +1,6 @@
 const express = require("express");
 const asyncHandle = require("../../helper/asyncHandle");
-const PurchasedProductController = require("../../controllers/PurchasedProduct.controller");
+const PurchasedProductController = require("../../controllers/purchasedProduct.controller");
 const { userAuthentication } = require("../../middlewares/auth.user.middleware");
 
 const router = express.Router();
