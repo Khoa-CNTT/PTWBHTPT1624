@@ -15,7 +15,7 @@ interface BannerModalProps {
 }
 
 const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, supplier }) => {
-  const [inputFields, setInputFields] = useState<ISupplier>({} as ISupplier  );
+  const [inputFields, setInputFields] = useState<ISupplier|any>({} as ISupplier  );
   const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
   useEffect(() => {
     if (supplier) {
