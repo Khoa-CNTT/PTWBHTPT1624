@@ -1,5 +1,5 @@
 const asyncHandle = require("../helper/asyncHandle");
-const adminModel = require("../models/admin.model.js");
+const adminModel = require("../models/admin.model");
 const verifyAccessToken = require("../utils/auth/verifyAccessToken");
 
 const adminAuthentication = asyncHandle(async (req, res, next) => {

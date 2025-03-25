@@ -1,8 +1,8 @@
 "use strict";
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Cart = require("../models/cart.model.js");
-const Product = require("../models/product.model.js");
+const Cart = require("../models/cart.model");
+const Product = require("../models/product.model");
 
 class CartService {
   // Thêm sản phẩm vào giỏ hàng

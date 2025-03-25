@@ -1,7 +1,7 @@
 "use strict";
 
 const { NotFoundError } = require("../core/error.response");
-const Product = require("../models/product.model.js");
+const Product = require("../models/product.model");
 const cosineSimilarity = require("../utils/search-image/cosineSimilarity");
 const downloadImage = require("../utils/search-image/downloadImage");
 const extractFeatures = require("../utils/search-image/extractFeatures");

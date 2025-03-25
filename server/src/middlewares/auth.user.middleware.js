@@ -1,5 +1,5 @@
 const asyncHandle = require("../helper/asyncHandle");
-const userModel = require("../models/user.model.js");
+const userModel = require("../models/user.model");
 const verifyAccessToken = require("../utils/auth/verifyAccessToken");
 
 const userAuthentication = asyncHandle(async (req, res, next) => {

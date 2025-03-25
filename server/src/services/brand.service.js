@@ -1,8 +1,8 @@
 "use strict";
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Brand = require("../models/brand.model.js");
-const Product = require("../models/product.model.js");
+const Brand = require("../models/brand.model");
+const Product = require("../models/product.model");
 
 class BrandService {
   // Tạo thương hiệu mới

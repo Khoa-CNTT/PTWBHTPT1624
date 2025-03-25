@@ -1,5 +1,5 @@
 const { convertToObjectIdMongodb } = require("../../utils")
-const User = require("../user.model.js")
+const User = require("../user.model")
 
 
 const findUserByEmail = async (email) => {

@@ -2,7 +2,7 @@
 
 const { BadRequestError } = require("../core/error.response");
 const bcrypt = require("bcrypt");
-const AdminModel = require("../models/admin.model.js");
+const AdminModel = require("../models/admin.model");
 
 class AdminService {
     static async addAdmin(payload) {

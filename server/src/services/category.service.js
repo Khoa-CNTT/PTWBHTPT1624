@@ -1,8 +1,8 @@
 "use strict";
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Category = require("../models/category.model.js");
-const productModel = require("../models/product.model.js");
+const Category = require("../models/category.model");
+const productModel = require("../models/product.model");
 
 class CategoryService {
     // Tạo danh mục mới

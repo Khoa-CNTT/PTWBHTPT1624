@@ -1,8 +1,8 @@
 "use strict";
 
-const Notification = require("../models/notification.model.js");
+const Notification = require("../models/notification.model");
 const { NotFoundError, BadRequestError } = require("../core/error.response");
-const userModel = require("../models/user.model.js");
+const userModel = require("../models/user.model");
 
 class NotificationService {
   // 🟢 Lấy thông báo của một người dùng

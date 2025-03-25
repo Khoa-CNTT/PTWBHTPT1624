@@ -1,7 +1,7 @@
 "use strict";
 
 const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Banner = require("../models/banner.model.js");
+const Banner = require("../models/banner.model");
 
 class BannerService {
     // Tạo banner mới
