@@ -5,8 +5,7 @@ const Voucher = require("../models/voucher.model"); // Mô hình mã giảm giá
 const Cart = require("../models/cart.model"); // Mô hình giỏ hàng
 const { convertToObjectIdMongodb } = require("../utils"); // Hàm tiện ích chuyển đổi ID sang định dạng ObjectId của MongoDB
 const userVoucherModel = require("../models/userVoucher.model");
-const shippingCompany = require("../models/shippingCompany.model");
-const { default: mongoose } = require("mongoose");
+const shippingCompany = require("../models/shippingCompany.model"); 
 const orderModel = require("../models/order.model"); 
 const purchasedProductModel = require("../models/purchasedProduct.model");
 
