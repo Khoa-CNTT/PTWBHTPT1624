@@ -7,9 +7,7 @@ export interface IUserProfile {
     user_avatar_url?: string;
 }
 
-export interface IIUserDetail extends IUserProfile {
-    user_type: "admin" | "user" | "employee";
-    user_roles: string[]; // Danh sách ID của role
+export interface IUserDetail extends IUserProfile {
     user_reward_points: number;
     user_passwordChangedAt?: Date;
     user_isBlocked: boolean;

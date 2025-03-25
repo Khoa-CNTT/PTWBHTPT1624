@@ -1,8 +1,7 @@
 "use strict";
 
-const { BadRequestError, NotFoundError } = require("../core/error.response");
-const Review = require("../models/reviews.model");
-const mongoose = require("mongoose");
+const { NotFoundError } = require("../core/error.response");
+const Review = require("../models/reviews.model"); 
 const purchasedProductModel = require("../models/purchasedProduct.model");
 
 class ReviewService {

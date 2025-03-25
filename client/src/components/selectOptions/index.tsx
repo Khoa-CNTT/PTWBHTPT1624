@@ -1,14 +1,17 @@
 import React, { memo } from 'react';
 interface SelectAddressProps {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
     selectId: any;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     setOptionId: (e: any) => void;
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
     options: any;
     col?: boolean;
     label: string;
 }
 
 // eslint-disable-next-line react-refresh/only-export-components
-const SelectOptions: React.FC<SelectAddressProps> = ({ selectId, setOptionId, options, label, col }): JSX.Element => {
+const SelectOptions: React.FC<SelectAddressProps> = ({ selectId, setOptionId, options, label, col })=> {
     return (
         <div className={`flex ${col ? 'flex-col' : ''} w-full h-auto gap-3 items-center`}>
             <label className={`flex ${!col ? 'justify-end  w-2/6' : 'justify-start w-full'} text-sm text-secondary`}>
@@ -33,6 +36,5 @@ const SelectOptions: React.FC<SelectAddressProps> = ({ selectId, setOptionId, op
         </div>
     );
 };
-
 // eslint-disable-next-line react-refresh/only-export-components
 export default memo(SelectOptions);
