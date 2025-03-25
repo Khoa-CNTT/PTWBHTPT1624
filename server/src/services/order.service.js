@@ -200,7 +200,7 @@ class OrderService {
       //       pc_productId: item.productId,
       //       pc_quantity: item.quantity,
       //       pc_purchaseDate: new Date()})
-      //   }
+        }
       }
     }
     return updatedOrder
