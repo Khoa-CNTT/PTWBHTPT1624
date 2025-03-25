@@ -21,9 +21,6 @@ const BrandTable: React.FC<BrandListProps> = ({ brands, onEdit, onDelete }) => {
                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                   Tên thương hiệu
                 </TableCell>
-                <TableCell isHeader className="px-5 py-3 font-medium  text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                  Hình ảnh
-                </TableCell>
                 <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
                  Banner
                 </TableCell>
@@ -38,13 +35,8 @@ const BrandTable: React.FC<BrandListProps> = ({ brands, onEdit, onDelete }) => {
                 <TableRow key={c._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                   <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">{c.brand_name}</TableCell>
                   <TableCell className="px-5 py-3">
-                    <div className="w-12 h-12 overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                      <img src={c.brand_thumb} alt={c.brand_name} className="w-full h-full object-cover" />
-                    </div>
-                  </TableCell>
-                  <TableCell className="px-5 py-3">
-                    <div className="w-12 h-12  overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center">
-                      <img src={c.brand_banner_image} alt={c.brand_name} className="w-full h-full object-cover" />
+                    <div className="w-[200px]  overflow-hidden  border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                      <img src={c.brand_banner} alt={c.brand_name} className="w-full h-full object-cover" />
                     </div>
                   </TableCell>
                   <TableCell className="px-5 py-3 text-center flex gap-3 justify-center">

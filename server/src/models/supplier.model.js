@@ -4,20 +4,20 @@ const slugify = require('slugify'); // Chỉ khai báo một lần
 
 const supplierSchema = new Schema({
     supplier_name: { type: String, required: true },
-    supplier_contact: { type: String, required: true },
     supplier_address: { type: String },
     supplier_email: { type: String, required: true },
-    supplier_phone: { type: String, required: true },
+    supplier_phone: { 
+        type: String, 
+        required: true,
+        validate: {
+            validator: function(value) {
+                return /^\d{10,11}$/.test(value);
+            },
+            message: "Số điện thoại phải có từ 10 đến 11 chữ số"
+        }
+    },
     supplier_description: { type: String },
-    supplier_slug: { type: String, unique: true, sparse: true }
 }, { timestamps: true });
 
-// Middleware tạo slug tự động trước khi lưu vào database
-supplierSchema.pre('save', function (next) {
-    if (!this.supplier_slug) {
-        this.supplier_slug = slugify(this.supplier_name, { lower: true, strict: true });
-    }
-    next();
-});
 
 module.exports = mongoose.model('Supplier', supplierSchema);

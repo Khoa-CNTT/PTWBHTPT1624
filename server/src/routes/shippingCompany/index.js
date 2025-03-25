@@ -3,9 +3,7 @@ const ShippingCompanyController = require("../../controllers/shippingCompany.con
 const asyncHandle = require("../../helper/asyncHandle");
 const PERMISSIONS = require("../../config/permissions"); 
 const { restrictTo, adminAuthentication } = require("../../middlewares/auth.admin.middleware");
-
 const router = express.Router();
-
 
 // Lấy danh sách tất cả công ty vận chuyển
 router.get("/all", asyncHandle(ShippingCompanyController.getAllShippingCompanies));

@@ -36,6 +36,11 @@ const navItems: NavItem[] = [
     path: PATH.MANAGE_BRAND
   },
   {
+    icon: <UserCircleIcon />,
+    name: "Nhà cung cấp",
+    path: PATH.MANAGE_SUPPLIERS
+  },
+  {
     name: "Forms",
     icon: <ListIcon />,
     subItems: [{ name: "Form Elements", path: "form-elements", pro: false }],

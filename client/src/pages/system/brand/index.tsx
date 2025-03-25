@@ -50,11 +50,11 @@ export default function BrandManage() {
     }
     showNotification(data._id ? "Cập nhật thành công!" : "Thêm thành công!", true);
     closeModal();
-    // Cập nhật danh sách danh mục mà không cần reload trang
+    // Cập nhật danh sách thương hiệu mà không cần reload trang
     setBrands((prev) =>
       data._id
-        ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật danh mục đã có
-        : [res.data,...prev ] // Thêm danh mục mới
+        ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật thương hiệu đã có
+        : [res.data,...prev ] // Thêm thương hiệu mới
     );
   };
   const handleDelete = async(id:string)=>{
@@ -68,11 +68,14 @@ export default function BrandManage() {
     }
     setBrands((prev) =>  prev.filter((item) => (item._id !=id))   );
     showNotification("Xóa thành công", true);
+    setTimeout(() => {
+      window.location.reload();
+  }, 2000); 
   }
   return (
     <>
-      <PageMeta title="Quản lý danh mục" />
-      <PageBreadcrumb pageTitle="Danh mục" />
+      <PageMeta title="Quản lý thương hiệu" />
+      <PageBreadcrumb pageTitle="TThương hiệu" />
       <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="flex justify-end">
           <button

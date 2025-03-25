@@ -13,6 +13,7 @@ const PERMISSIONS = {
     ROLE_MANAGE: "role_manage", // Quản lý vai trò và phân quyền
     VIEW_REPORTS: "view_reports", // Xem báo cáo thống kê
     SHIPPING_COMPANY_MANAGE: "shipping_company_manage", // Quản lý công ty vận chuyển
+    SUPPLIER_COMPANY_MANAGE: "supplier_manage", // Quản lý nhà cung cấp
 };
 
 module.exports = PERMISSIONS;

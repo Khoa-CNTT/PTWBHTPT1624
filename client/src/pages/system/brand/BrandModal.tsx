@@ -17,7 +17,7 @@ interface BrandModalProps {
 }
 
 const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, brand }) => {
-  const [inputFields, setInputFields] = useState<IBrand>({ brand_banner_image: '', brand_name: '', brand_thumb: '' });
+  const [inputFields, setInputFields] = useState<IBrand>({   brand_name: '', brand_banner:"" });
   const [isUploading, setIsUploading] = useState(false);
   const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
   console.log(inputFields)
@@ -25,13 +25,13 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
     if (brand) {
       setInputFields(brand);
     } else {
-      setInputFields({ brand_banner_image: '', brand_name: '', brand_thumb: '' });
+      setInputFields({   brand_name: '', brand_banner:"" });
     }
   }, [brand]);
 
   const handleSave = () => {
-    const { brand_banner_image, brand_name, brand_thumb } = inputFields;
-    const data = { brand_banner_image, brand_name, brand_thumb };
+    const {   brand_name , brand_banner  }= inputFields;
+    const data = {  brand_name , brand_banner };
     
     if (!validate(data, setInvalidFields)) {
       showNotification('Vui lòng nhập đầy đủ thông tin');
@@ -42,7 +42,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
       onSave({ _id: brand._id, ...data });
     } else {
       onSave(data);
-      setInputFields({ brand_banner_image: '', brand_name: '', brand_thumb: '' });
+      setInputFields({  brand_name:"" , brand_banner :""});
     }
   };
   const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
@@ -81,17 +81,11 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
           />
         </div>
         <div className="flex">
-          <div className="w-1/2">
-            <ImageCropper width={239} height={239} label="Thêm hình ảnh" idName="brand_thumb" onCropComplete={handleImageUpload} />
+          <div className="w-full">
+            <ImageCropper  width={900} height={270} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />
             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-            {inputFields.brand_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_thumb} alt="Brand Thumbnail" />}
-            {invalidFields.some((i) => i.name === 'brand_thumb') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-          </div>
-          <div className="w-1/2">
-            <ImageCropper width={306} height={306} label="Thêm banner" idName="brand_banner_image" onCropComplete={handleImageUpload} />
-            {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-            {inputFields.brand_banner_image && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_banner_image} alt="Brand Banner" />}
-            {invalidFields.some((i) => i.name === 'brand_banner_image') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
+            {inputFields.brand_banner && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_banner} alt="Brand Thumbnail" />}
+            {invalidFields.some((i) => i.name === 'brand_banner') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
           </div>
         </div>
         <div className="flex justify-end gap-3">

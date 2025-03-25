@@ -31,17 +31,19 @@ const InputForm: React.FC<InputFormProps> = ({
             </label>}
             <div className="w-full">
                 <input
+                    required={type === "email"}
                     id={name_id}
                     value={value}
                     placeholder={placeholder}
                     onChange={handleOnchange}
-                    className="flex  w-full border-solid border-[1px] border-slate-300 py-1 px-2 rounded-sm outline-none"
+                    className="w-full border border-slate-300 py-1 px-2 rounded-sm outline-none"
                     type={type}
                 />
             </div>
+
            
             {invalidFields?.some((i) => i.name === name_id) && (
-                <div className="flex w-full justify-start text-xs text-red_custom">Không được để trống</div>
+                <div className="flex w-full justify-start text-xs text-red_custom">{invalidFields?.find((i) => i.name === name_id)?.message}</div>
             )}
         </div>
     );

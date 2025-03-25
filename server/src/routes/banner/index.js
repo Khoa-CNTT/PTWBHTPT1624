@@ -7,8 +7,8 @@ const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin
 const router = express.Router();
 
 router.get("/all", asyncHandle(BannerController.getAllBanners));
-router.use(adminAuthentication)
-router.use(restrictTo(PERMISSIONS.BANNER_MANAGE))
+// router.use(adminAuthentication)
+// router.use(restrictTo(PERMISSIONS.BANNER_MANAGE))
 //tìm theo tên
 router.get("/search", asyncHandle(BannerController.searchBanner));
 // Thêm banner

@@ -14,11 +14,12 @@ export const PATH = {
     // =========== ADMIN ==============
     ADMIN_DASHBOARD:"/quan-ly",
     ADMIN_LOGIN:"/dang-nhap",
-    MANAGE_CATEGORY:"/quan-ly/quan-ly-danh-muc",
-    MANAGE_BRAND:"/quan-ly/quan-ly-thuong-hieu",
-    MANAGE_BANNER:"/quan-ly/quan-ly-banner",
+    MANAGE_CATEGORY:"/quan-ly/danh-muc",
+    MANAGE_BRAND:"/quan-ly/thuong-hieu",
+    MANAGE_BANNER:"/quan-ly/banner", 
+    MANAGE_SUPPLIERS:"/quan-ly/nha-cung-cap",
     MANAGE_STATISTICAL:"/thong-ke-doanh-thu",
-    MANAGE_USER: "/quan-ly-nguoi-dung",
+    MANAGE_USER: "/nguoi-dung",
 };
 
 export const SEARCH_UTILITY = [

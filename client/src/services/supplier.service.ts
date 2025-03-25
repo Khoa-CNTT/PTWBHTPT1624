@@ -14,9 +14,11 @@ const apiCreateSupplier = async (supplierData: object) => {
 };
 
 // API lấy tất cả nhà cung cấp
-const apiGetAllSuppliers = async () => {
+const apiGetAllSuppliers = async (queries:{limit:number,page:number}) => {
     try {
-        const res = await adminClient.get('/v1/api/supplier/all');
+        const res = await adminClient.get('/v1/api/supplier/all',{
+            params:queries
+        });
         return res.data;
     } catch (error) {
         return {
@@ -42,7 +44,7 @@ const apiGetSupplierById = async (id: string) => {
 // API cập nhật thông tin nhà cung cấp theo ID (Admin Only)
 const apiUpdateSupplier = async (id: string, supplierData: object) => {
     try {
-        const res = await adminClient.put(`/v1/api/supplier/update/${id}`, supplierData);
+        const res = await adminClient.put(`/v1/api/supplier/${id}`, supplierData);
         return res.data;
     } catch (error) {
         return {
@@ -55,7 +57,7 @@ const apiUpdateSupplier = async (id: string, supplierData: object) => {
 // API xóa nhà cung cấp theo ID (Admin Only)
 const apiDeleteSupplier = async (id: string) => {
     try {
-        const res = await adminClient.delete(`/v1/api/supplier/delete/${id}`);
+        const res = await adminClient.delete(`/v1/api/supplier/${id}`);
         return res.data;
     } catch (error) {
         return {

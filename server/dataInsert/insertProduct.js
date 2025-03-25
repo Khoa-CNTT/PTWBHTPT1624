@@ -36,6 +36,7 @@ const brandModel = require("../src/models/brand.model")
 const productModel = require("../src/models/product.model")
 const suppliers = require("./nhacungcap")
 const supplierModel = require("../src/models/supplier.model")
+const BRAND = require("../dataInsert/brand/b")
 
 const IMAGE_SIZE = 224; // Kích thước chuẩn cho MobileNet
 /** Tải ảnh từ URL và lưu vào thư mục tạm */
@@ -118,7 +119,6 @@ const upsertSupplier = async ({
         if (!supplier) {
             supplier = await supplierModel.create({
                 supplier_name,
-                supplier_contact,
                 supplier_address,
                 supplier_email,
                 supplier_phone,
@@ -134,11 +134,10 @@ const upsertSupplier = async ({
     }
 };
 
-
 const upsertBrand = async (brand_name) => {
     let brand = await brandModel.findOne({ brand_name });
     if (!brand) {
-        brand = await brandModel.create({ brand_name });
+        brand = await brandModel.create({ brand_name,brand_banner:BRAND[ Math.floor(Math.random() * BRAND.length)].brand_banner});
     } else {
         await brand.save();
     }

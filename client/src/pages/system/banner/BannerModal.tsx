@@ -95,14 +95,14 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
     <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
       <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
         <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">
-          {banner ? "Chỉnh sửa thương hiệu" : "Thêm thương hiệu"}
+          {banner ? "Chỉnh sửa banner" : "Thêm banner"}
         </h4>
 
         <div className="mb-4">
           <InputForm
             col
             handleOnchange={(e) => handleInputField(e, "banner_title")}
-            label="Tên thương hiệu"
+            label="Tên banner"
             name_id="banner_title"
             value={inputFields?.banner_title}
             invalidFields={invalidFields}

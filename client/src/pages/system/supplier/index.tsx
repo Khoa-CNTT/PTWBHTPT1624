@@ -1,84 +1,80 @@
 import { useEffect, useState } from "react";
-
-import { apiGetAllCategories, apiCreateCategory, apiUpdateCategory, apiDeleteCategory } from "../../../services/category.service";
-import { ICategory } from "../../../interfaces/category.interfaces";
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from "../../../hooks/useModal";
-import CategoryModal from "./CategoryModal";
-import CategoryTable from "./CategoryTable";
-import { showNotification } from "../../../components";
-import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
-import Pagination from "../../../components/pagination";
+import { apiCreateSupplier, apiDeleteSupplier, apiGetAllSuppliers, apiUpdateSupplier } from "../../../services/supplier.service";
+import SupplierTable from "./SupplierTable";
+import SupplierModal from "./SupplierModal";
+import { Pagination, showNotification } from "../../../components";
 import PageMeta from "../../../components/common/PageMeta";
+import PageBreadcrumb from "../../../components/common/PageBreadCrumb";
+import { ISupplier } from "../../../interfaces/supplier.interfaces";
 
-export default function CategoryManage() {
-  const [categories, setCategories] = useState<ICategory[]>([]);
+export default function SupplierManage() {
+  const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
   const [currentPage, setCurrentPage] = useState<number>(0);
   const [totalPage, setTotalPage] = useState<number>(0);
-  const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null);
+  const [selectedSupplier, setSelectedCategory] = useState<ISupplier | null>(null);
 
   const { openModal, isOpen, closeModal } = useModal();
 
   useEffect(() => {
     const fetchApi = async () => {
-      const res = await apiGetAllCategories({ limit: 5, page: currentPage });
-      console.log(res)
+      const res = await apiGetAllSuppliers({ limit: 5, page: currentPage });
       if (!res.success) return;
       const data = res.data;
-      setCategories(data.categories);
+      setSuppliers(data.suppliers);
       setTotalPage(data.totalPage);
     };
     fetchApi();
   }, [currentPage]);
-
   const handleAdd = () => {
     setSelectedCategory(null);
     openModal(); 
   };
-
-  const handleEdit = (category: ICategory) => {
-    setSelectedCategory(category);
+  const handleEdit = (supplier: ISupplier) => {
+    setSelectedCategory(supplier);
     openModal();
   };
-  const handleSave = async (data: ICategory) => {
+  const handleSave = async (data: ISupplier) => {
     let res;
-    if (data._id) {
-      res = await apiUpdateCategory(data._id, data);
+    if (data?._id) {
+      res = await apiUpdateSupplier(data?._id, data);
     } else {
-      res = await apiCreateCategory(data);
+      res = await apiCreateSupplier(data);
     }
     if (!res?.success) {
       showNotification(res?.message, false);
+      closeModal();
       return;
     }
     showNotification(data._id ? "Cập nhật thành công!" : "Thêm thành công!", true);
     closeModal();
-    // Cập nhật danh sách danh mục mà không cần reload trang
-    setCategories((prev) =>
+    // Cập nhật danh sách nhà cung cấp mà không cần reload trang
+    setSuppliers((prev) =>
       data._id
-        ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật danh mục đã có
-        : [res.data,...prev ] // Thêm danh mục mới
+        ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật nhà cung cấp đã có
+        : [res.data,...prev ] // Thêm nhà cung cấp mới
     );
   };
   const handleDelete = async(id:string)=>{
     if(!id) return
     if(!confirm("Bạn có muốn xóa không?"))return
-    const res = await apiDeleteCategory(id);
+    const res = await apiDeleteSupplier(id);
     console.log(res)
     if (!res?.success) {
       showNotification(res?.message, false);
       return;
     }
-    setCategories((prev) =>  prev.filter((item) => (item._id !=id))   );
+    setSuppliers((prev) =>  prev.filter((item) => (item._id !=id))   );
     showNotification("Xóa thành công", true);
     setTimeout(() => {
       window.location.reload();
-  }, 2000);    
+  }, 2000); 
   }
   return (
     <>
-      <PageMeta title="Quản lý danh mục" />
-      <PageBreadcrumb pageTitle="Danh mục" />
+      <PageMeta title="Quản lý nhà cung cấp" />
+      <PageBreadcrumb pageTitle="Nhà cung cấp" />
       <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
         <div className="flex justify-end">
           <button
@@ -89,12 +85,12 @@ export default function CategoryManage() {
             Thêm
           </button>
         </div>
-        <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
+        <SupplierTable suppliers={suppliers} onEdit={handleEdit} onDelete={handleDelete} />
         {totalPage > 0 && (
           <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
         )}
       </div>
-      <CategoryModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} category={selectedCategory} />
+      <SupplierModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} supplier={selectedSupplier} />
     </>
   );
 }
