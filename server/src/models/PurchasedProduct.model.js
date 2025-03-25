@@ -27,4 +27,4 @@ const purchasedProductSchema = new mongoose.Schema({
 }, { timestamps: true });
 
 // Check if the model exists before compiling
-module.exports = mongoose.models.purchasedProduct || mongoose.model('purchasedProduct', purchasedProductSchema);
+module.exports =  mongoose.model('purchasedProduct', purchasedProductSchema);
