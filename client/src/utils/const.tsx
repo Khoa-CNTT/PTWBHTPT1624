@@ -19,7 +19,8 @@ export const PATH = {
     MANAGE_BANNER:"/quan-ly/banner", 
     MANAGE_SUPPLIERS:"/quan-ly/nha-cung-cap",
     MANAGE_STATISTICAL:"/thong-ke-doanh-thu",
-    MANAGE_USER: "/nguoi-dung",
+    MANAGE_VOUCHER: "/quan-ly/voucher",
+    MANAGE_USER: "/quan-ly/nguoi-dung",
 };
 
 export const SEARCH_UTILITY = [

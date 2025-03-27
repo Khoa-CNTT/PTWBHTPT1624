@@ -10,7 +10,7 @@ const VoucherController = {
   },
   // Lấy danh sách tất cả voucher
   getAllVouchers: async (req, res) => {
-    const vouchers = await VoucherService.getAllVouchers();
+    const vouchers = await VoucherService.getAllVouchers(req.query);
     res.status(200).json({ success: true, data: vouchers });
   },
   // Lấy chi tiết voucher theo ID

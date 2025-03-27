@@ -133,7 +133,27 @@ input{
     -ms-overflow-style: none; /* IE and Edge */
     scrollbar-width: none; /* Firefox */
   }
+  .scrollbar-hide::-webkit-scrollbar {
+    display: none;
+  }
+  /* Thu nhỏ thanh cuộn */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 2px; /* Độ rộng thanh cuộn */
+}
 
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: #a0aec0; /* Màu của thanh kéo */
+  border-radius: 10px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background-color: #edf2f7; /* Màu nền của thanh cuộn */
+}
+
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
   .custom-scrollbar::-webkit-scrollbar {
     @apply size-1.5;
   }

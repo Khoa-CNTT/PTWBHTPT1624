@@ -9,8 +9,8 @@ const router = express.Router();
 
 // Lấy danh sách tất cả voucher
 router.get("/all", asyncHandle(VoucherController.getAllVouchers));
-router.use(adminAuthentication)
-router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE))
+// router.use(adminAuthentication)
+// router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE))
 // Tìm kiếm voucher theo tên
 router.get("/search", asyncHandle(VoucherController.searchVoucherByName));
 // Thêm mới voucher

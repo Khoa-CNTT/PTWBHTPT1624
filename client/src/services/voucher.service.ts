@@ -1,9 +1,11 @@
-import { authClient } from "../config/httpRequest";
+import { adminClient, authClient } from "../config/httpRequest";
 
 // API lấy tất cả voucher
-const apiGetAllVouchers = async () => {
+const apiGetAllVouchers = async (queries:{limit:number,page:number}) => {
     try {
-        const res = await authClient.get('/v1/api/voucher/all');
+        const res = await adminClient.get('/v1/api/voucher/all',{
+            params:queries
+        });
         return res.data;
     } catch (error) {
         return {
@@ -16,7 +18,7 @@ const apiGetAllVouchers = async () => {
 // API tìm kiếm voucher theo tên
 const apiSearchVoucherByName = async (name: string) => {
     try {
-        const res = await authClient.get(`/v1/api/voucher/search?name=${name}`);
+        const res = await adminClient.get(`/v1/api/voucher/search?name=${name}`);
         return res.data;
     } catch (error) {
         return {
@@ -29,7 +31,7 @@ const apiSearchVoucherByName = async (name: string) => {
 // API thêm mới voucher
 const apiAddVoucher = async (voucherData: object) => {
     try {
-        const res = await authClient.post('/v1/api/voucher/add', voucherData);
+        const res = await adminClient.post('/v1/api/voucher/add', voucherData);
         return res.data;
     } catch (error) {
         return {
@@ -55,7 +57,7 @@ const apiGetVoucherById = async (id: string) => {
 // API cập nhật voucher theo ID
 const apiUpdateVoucher = async (id: string, voucherData: object) => {
     try {
-        const res = await authClient.put(`/v1/api/voucher/${id}/update`, voucherData);
+        const res = await adminClient.put(`/v1/api/voucher/${id}/update`, voucherData);
         return res.data;
     } catch (error) {
         return {
@@ -68,7 +70,7 @@ const apiUpdateVoucher = async (id: string, voucherData: object) => {
 // API xóa voucher theo ID
 const apiDeleteVoucher = async (id: string) => {
     try {
-        const res = await authClient.delete(`/v1/api/voucher/${id}/delete`);
+        const res = await adminClient.delete(`/v1/api/voucher/${id}/delete`);
         return res.data;
     } catch (error) {
         return {
