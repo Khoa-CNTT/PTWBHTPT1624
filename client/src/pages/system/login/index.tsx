@@ -91,7 +91,10 @@ const AdminLogin = () => {
                         {errors.password && <p className="text-sm text-red-500">{errors.password.message}</p>}
                     </div>
 
-                    <button type="submit" disabled={loading} className="w-full p-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none">
+                    <button
+                        type="submit"
+                        disabled={loading}
+                        className="flex justify-center w-full p-2 text-white bg-blue-600 rounded-lg hover:bg-blue-700 focus:outline-none">
                         {loading ? <div className="animate-spin h-5 w-5 border-b-2 border-white"></div> : 'Đăng nhập'}
                     </button>
                 </form>
