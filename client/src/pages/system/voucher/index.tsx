@@ -71,7 +71,7 @@ export default function VoucherManage() {
         showNotification('Xóa thành công', true);
         setTimeout(() => {
             window.location.reload();
-        }, 2000);
+        }, 1000);
     };
     return (
         <>

@@ -1,10 +1,10 @@
-import { adminClient, authClient } from "../config/httpRequest";
+import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả voucher
-const apiGetAllVouchers = async (queries:{limit:number,page:number}) => {
+const apiGetAllVouchers = async (queries: { limit: number; page: number }) => {
     try {
-        const res = await adminClient.get('/v1/api/voucher/all',{
-            params:queries
+        const res = await adminClient.get('/v1/api/voucher/all', {
+            params: queries,
         });
         return res.data;
     } catch (error) {
@@ -80,11 +80,4 @@ const apiDeleteVoucher = async (id: string) => {
     }
 };
 
-export {
-    apiGetAllVouchers,
-    apiSearchVoucherByName,
-    apiAddVoucher,
-    apiGetVoucherById,
-    apiUpdateVoucher,
-    apiDeleteVoucher
-};
+export { apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };

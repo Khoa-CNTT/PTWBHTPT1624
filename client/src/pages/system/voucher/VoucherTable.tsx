@@ -80,7 +80,7 @@ const VoucherTable: React.FC<VoucherListProps> = ({ vouchers, onEdit, onDelete }
                                     <button onClick={() => onEdit(voucher)} className="text-blue-500 hover:text-blue-700 transition">
                                         <EditIcon />
                                     </button>
-                                    <button onClick={() => onDelete(voucher?.voucher_code)} className="text-red-500 hover:text-red-700 transition">
+                                    <button onClick={() => onDelete(voucher?._id)} className="text-red-500 hover:text-red-700 transition">
                                         <DeleteIcon />
                                     </button>
                                 </TableCell>
