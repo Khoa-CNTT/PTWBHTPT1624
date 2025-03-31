@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import validate from '../../../utils/valueDate';
@@ -25,7 +26,6 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
 
     const handleSave = () => {
         const { _id, sc_delivery_time, ...data } = inputFields;
-        // Kiểm tra nếu from lớn hơn to
         if (sc_delivery_time?.from && sc_delivery_time?.to && Number(sc_delivery_time.from) > Number(sc_delivery_time.to)) {
             showNotification('Số ngày vận chuyển tối thiểu không được lớn hơn tối đa', false);
             return;
@@ -66,53 +66,85 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">
             <div className="no-scrollbar relative w-full max-w-[600px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{shipping ? 'Chỉnh sửa thông tin công ty' : 'Thêm công ty mới'}</h4>
-                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
-                    {[
-                        { label: 'Tên công ty', name: 'sc_name' },
-                        { label: 'Số điện thoại', name: 'sc_phone' },
-                        { label: 'Email', name: 'sc_email' },
-                        { label: 'Phí vận chuyển', name: 'sc_shipping_price', type: 'number' },
-                        { label: 'Địa chỉ', name: 'sc_address' },
-                    ].map(({ label, name, type }) => (
-                        <div className="mb-4" key={name}>
-                            <InputForm
-                                col
-                                handleOnchange={(e) => handleInputField(e, name as keyof IShipping)}
-                                label={label}
-                                name_id={name}
-                                value={inputFields[name as keyof IShipping]}
-                                type={type}
-                                invalidFields={invalidFields}
-                            />
-                        </div>
-                    ))}
-
+                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 border-gray-200 rounded-md">
+                    <div className="mb-4">
+                        <InputForm
+                            col
+                            handleOnchange={(e) => handleInputField(e, 'sc_name')}
+                            label="Tên công ty"
+                            name_id="sc_name"
+                            value={inputFields.sc_name}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <InputForm
+                            col
+                            handleOnchange={(e) => handleInputField(e, 'sc_phone')}
+                            label="Số điện thoại"
+                            name_id="sc_phone"
+                            value={inputFields.sc_phone}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <InputForm
+                            col
+                            handleOnchange={(e) => handleInputField(e, 'sc_email')}
+                            label="Email"
+                            name_id="sc_email"
+                            value={inputFields.sc_email}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <InputForm
+                            col
+                            handleOnchange={(e) => handleInputField(e, 'sc_shipping_price')}
+                            label="Phí vận chuyển"
+                            name_id="sc_shipping_price"
+                            value={inputFields.sc_shipping_price}
+                            type="number"
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+                    <div className="mb-4">
+                        <InputForm
+                            col
+                            handleOnchange={(e) => handleInputField(e, 'sc_address')}
+                            label="Địa chỉ"
+                            name_id="sc_address"
+                            value={inputFields.sc_address}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
                     <div className="mb-4">
                         <h2>Thời gian vận chuyển</h2>
                         <div className="flex gap-4">
-                            {['from', 'to'].map((name) => (
-                                <InputForm
-                                    key={name}
-                                    col
-                                    handleOnchange={(e) => handleInputField(e, name as 'from' | 'to')}
-                                    label={name === 'from' ? 'Tối thiểu (ngày)' : 'Tối đa (ngày)'}
-                                    name_id={name}
-                                    type="number"
-                                    value={inputFields?.sc_delivery_time?.[name]}
-                                    invalidFields={invalidFields}
-                                />
-                            ))}
+                            <InputForm
+                                col
+                                handleOnchange={(e) => handleInputField(e, 'from')}
+                                label="Tối thiểu (ngày)"
+                                name_id="from"
+                                type="number"
+                                value={inputFields?.sc_delivery_time?.from}
+                                invalidFields={invalidFields}
+                            />
+                            <InputForm
+                                col
+                                handleOnchange={(e) => handleInputField(e, 'to')}
+                                label="Tối đa (ngày)"
+                                name_id="to"
+                                type="number"
+                                value={inputFields?.sc_delivery_time?.to}
+                                invalidFields={invalidFields}
+                            />
                         </div>
                     </div>
                     <FormControl>
                         <FormLabel sx={{ fontSize: '13px' }}>Trạng thái</FormLabel>
                         <FormControlLabel
-                            control={
-                                <Checkbox
-                                    checked={inputFields.sc_active} // true hoặc false
-                                    onChange={(e) => handleInputField(e, 'sc_active')}
-                                />
-                            }
+                            control={<Checkbox checked={inputFields.sc_active} onChange={(e) => handleInputField(e, 'sc_active')} />}
                             label={<Typography sx={{ fontSize: '12px' }}>{inputFields.sc_active ? 'Hoạt động' : 'Không hoạt động'}</Typography>}
                         />
                     </FormControl>
