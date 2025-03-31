@@ -1,9 +1,11 @@
-import { adminClient, authClient } from "../config/httpRequest";
+import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả người dùng
-const apiGetAllUser = async () => {
+const apiGetAllUser = async (queries: { limit: number; page: number }) => {
     try {
-        const res = await adminClient.get('/v1/api/user/all');
+        const res = await adminClient.get('/v1/api/user/all', {
+            params: queries,
+        });
         return res.data;
     } catch (error) {
         return {
@@ -53,9 +55,9 @@ const apiDeleteUser = async (uid: string) => {
 };
 
 // API bật/tắt khóa người dùng theo UID
-const apiToggleBlockUser = async (uid: string) => {
+const apiToggleBlockUser = async (uid: string, isBlocked: boolean) => {
     try {
-        const res = await adminClient.put(`/v1/api/user/${uid}/toggle-block`);
+        const res = await adminClient.put(`/v1/api/user/${uid}/toggle-block`, { isBlocked });
         return res.data;
     } catch (error) {
         return {
@@ -67,7 +69,7 @@ const apiToggleBlockUser = async (uid: string) => {
 // API bật/tắt khóa người dùng theo UID
 const apiGetDetailUser = async () => {
     try {
-        const res = await authClient.get("/v1/api/user/profile");
+        const res = await authClient.get('/v1/api/user/profile');
         return res.data;
     } catch (error) {
         return {
@@ -77,11 +79,4 @@ const apiGetDetailUser = async () => {
     }
 };
 
-export {
-    apiGetDetailUser,
-    apiGetAllUser,
-    apiAddUser,
-    apiUpdateUser,
-    apiDeleteUser,
-    apiToggleBlockUser
-};
+export { apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };

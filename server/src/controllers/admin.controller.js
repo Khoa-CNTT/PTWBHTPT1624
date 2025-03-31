@@ -1,14 +1,14 @@
-"use strict";
+'use strict';
 
-const AdminService = require("../services/admin.service");
+const AdminService = require('../services/admin.service');
 
 class adminController {
     static async addAdmin(req, res) {
         const admin = await AdminService.addAdmin(req.body);
         res.status(201).json({
             success: true,
-            message: "Thêm người dùng thành công!",
-            data: admin
+            message: 'Thêm người dùng thành công!',
+            data: admin,
         });
     }
 
@@ -16,8 +16,8 @@ class adminController {
         const updatedAdmin = await AdminService.updateAdmin(req.params.uid, req.body);
         res.status(200).json({
             success: true,
-            message: "Cập nhật người dùng thành công!",
-            data: updatedAdmin
+            message: 'Cập nhật người dùng thành công!',
+            data: updatedAdmin,
         });
     }
 
@@ -25,20 +25,20 @@ class adminController {
         const deletedAdmin = await AdminService.deleteAdmin(req.params.uid);
         res.status(200).json({
             success: true,
-            message: "Xóa người dùng thành công!",
-            data: deletedAdmin
+            message: 'Xóa người dùng thành công!',
+            data: deletedAdmin,
         });
     }
 
     static async toggleBlockAdmin(req, res) {
         const { isBlocked } = req.body;
-        if (typeof isBlocked !== "boolean") {
-            return res.status(400).json({ success: false, message: "Trạng thái chặn không hợp lệ!" });
+        if (typeof isBlocked !== 'boolean') {
+            return res.status(400).json({ success: false, message: 'Trạng thái chặn không hợp lệ!' });
         }
         const message = await AdminService.toggleBlockAdmin(req.params.uid, isBlocked);
         res.status(200).json({
             success: true,
-            message: message
+            message: message,
         });
     }
 
@@ -46,8 +46,8 @@ class adminController {
         const admins = await AdminService.getAllAdmins();
         res.status(200).json({
             success: true,
-            message: "Lấy danh sách người dùng thành công!",
-            data: admins
+            message: 'Lấy danh sách người dùng thành công!',
+            data: admins,
         });
     }
 
@@ -55,15 +55,15 @@ class adminController {
         const profile = await AdminService.getProfile(req.admin._id);
         res.status(200).json({
             success: true,
-            message: "Lấy thông tin cá nhân thành công!",
-            data: profile
+            message: 'Lấy thông tin cá nhân thành công!',
+            data: profile,
         });
     }
     static async updateProfile(req, res) {
         res.status(200).json({
             success: true,
-            message: "Cập nhật thông tin cá nhân thành công",
-            data: await AdminService.updateProfile(req.admin._id, req.body)
+            message: 'Cập nhật thông tin cá nhân thành công',
+            data: await AdminService.updateProfile(req.admin._id, req.body),
         });
     }
 }

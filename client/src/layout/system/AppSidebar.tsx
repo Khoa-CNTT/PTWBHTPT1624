@@ -45,6 +45,11 @@ const navItems: NavItem[] = [
         path: PATH.MANAGE_VOUCHER,
     },
     {
+        icon: <UserCircleIcon />,
+        name: 'Người dùng',
+        path: PATH.MANAGE_USER,
+    },
+    {
         name: 'Forms',
         icon: <ListIcon />,
         subItems: [{ name: 'Form Elements', path: 'form-elements', pro: false }],

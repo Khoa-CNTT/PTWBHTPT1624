@@ -7,8 +7,8 @@ const router = express.Router();
 
 // Lấy danh sách tất cả công ty vận chuyển
 router.get('/all', asyncHandle(ShippingCompanyController.getAllShippingCompanies));
-// router.use(adminAuthentication)
-// router.use(restrictTo(PERMISSIONS.SHIPPING_COMPANY_MANAGE))
+router.use(adminAuthentication);
+router.use(restrictTo(PERMISSIONS.SHIPPING_COMPANY_MANAGE));
 // Tìm kiếm công ty vận chuyển theo tên
 router.get('/search', asyncHandle(ShippingCompanyController.searchShippingCompanies));
 // Thêm mới công ty vận chuyển
