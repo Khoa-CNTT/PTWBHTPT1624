@@ -1,6 +1,6 @@
-"use strict";
+'use strict';
 
-const ShippingCompanyService = require("../services/shippingCompany.service");
+const ShippingCompanyService = require('../services/shippingCompany.service');
 
 class ShippingCompanyController {
     // Thêm công ty vận chuyển mới
@@ -11,7 +11,7 @@ class ShippingCompanyController {
 
     // Lấy danh sách tất cả công ty vận chuyển
     static async getAllShippingCompanies(req, res, next) {
-        const shippingCompanies = await ShippingCompanyService.getAllShippingCompanies();
+        const shippingCompanies = await ShippingCompanyService.getAllShippingCompanies(req.query);
         res.status(200).json({ success: true, data: shippingCompanies });
     }
 
@@ -30,7 +30,7 @@ class ShippingCompanyController {
     // Xóa công ty vận chuyển theo ID
     static async deleteShippingCompany(req, res, next) {
         await ShippingCompanyService.deleteShippingCompany(req.params.id);
-        res.status(200).json({ success: true, message: "Xóa công ty vận chuyển thành công!" });
+        res.status(200).json({ success: true, message: 'Xóa công ty vận chuyển thành công!' });
     }
 
     // Tìm kiếm công ty vận chuyển theo tên

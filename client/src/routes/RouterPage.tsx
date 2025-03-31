@@ -12,6 +12,7 @@ import AdminLogin from '../pages/system/login';
 import useAuthStore from '../store/authStore';
 import SupplierManage from '../pages/system/supplier';
 import VoucherManage from '../pages/system/voucher';
+import ShippingManage from '../pages/system/shipping';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -25,14 +26,21 @@ const RouterPage = () => {
                 </Route>
 
                 {/* ============= ADMIN =================== */}
-                <Route path={PATH.ADMIN_DASHBOARD} element={ <ProtectedRoute redirectPath={PATH.ADMIN_LOGIN}><AppLayout /></ProtectedRoute>}>
+                <Route
+                    path={PATH.ADMIN_DASHBOARD}
+                    element={
+                        <ProtectedRoute redirectPath={PATH.ADMIN_LOGIN}>
+                            <AppLayout />
+                        </ProtectedRoute>
+                    }>
                     <Route path={PATH.MANAGE_CATEGORY} element={<CategoryManage />} />
                     <Route path={PATH.MANAGE_BRAND} element={<BrandManage />} />
                     <Route path={PATH.MANAGE_BANNER} element={<BannerManage />} />
                     <Route path={PATH.MANAGE_SUPPLIERS} element={<SupplierManage />} />
                     <Route path={PATH.MANAGE_VOUCHER} element={<VoucherManage />} />
+                    <Route path={PATH.MANAGE_SHIPPING} element={<ShippingManage />} />
                 </Route>
-                <Route  path={PATH.ADMIN_LOGIN}  element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />}/>
+                <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
             </Routes>
         </>
     );
