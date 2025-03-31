@@ -1,4 +1,4 @@
-export const PATH = { 
+export const PATH = {
     HOME: '/',
     DETAIL_PRODUCT: '/:slug/:pid',
     PAGE_CATEGORY: '/danh-muc/:category_slug/:cid',
@@ -12,15 +12,16 @@ export const PATH = {
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
     // =========== ADMIN ==============
-    ADMIN_DASHBOARD:"/quan-ly",
-    ADMIN_LOGIN:"/dang-nhap",
-    MANAGE_CATEGORY:"/quan-ly/danh-muc",
-    MANAGE_BRAND:"/quan-ly/thuong-hieu",
-    MANAGE_BANNER:"/quan-ly/banner", 
-    MANAGE_SUPPLIERS:"/quan-ly/nha-cung-cap",
-    MANAGE_STATISTICAL:"/thong-ke-doanh-thu",
-    MANAGE_VOUCHER: "/quan-ly/voucher",
-    MANAGE_USER: "/quan-ly/nguoi-dung",
+    ADMIN_DASHBOARD: '/quan-ly',
+    ADMIN_LOGIN: '/dang-nhap',
+    MANAGE_CATEGORY: '/quan-ly/danh-muc',
+    MANAGE_BRAND: '/quan-ly/thuong-hieu',
+    MANAGE_BANNER: '/quan-ly/banner',
+    MANAGE_SUPPLIERS: '/quan-ly/nha-cung-cap',
+    MANAGE_STATISTICAL: '/thong-ke-doanh-thu',
+    MANAGE_VOUCHER: '/quan-ly/voucher',
+    MANAGE_USER: '/quan-ly/nguoi-dung',
+    MANAGE_SHIPPING: '/quan-ly/cong-ty-van-chuyen',
 };
 
 export const SEARCH_UTILITY = [
@@ -100,9 +101,8 @@ export const SORT_BAR = [
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SellIcon from '@mui/icons-material/Sell';
-import { bachhoa, danhchoban, dealsieuhot, hangmoi, imgPayInCash,  paypal, revodoi } from '../assets';
+import { bachhoa, danhchoban, dealsieuhot, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
- 
 
 export const SIDEBAR_USER = [
     {

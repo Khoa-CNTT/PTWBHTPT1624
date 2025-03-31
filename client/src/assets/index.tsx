@@ -3,6 +3,7 @@ export { default as danhchoban } from './image/danh-cho-ban.png';
 export { default as dealsieuhot } from './image/deal-sieu-hot.png';
 export { default as hangmoi } from './image/hang-moi.png';
 export { default as revodoi } from './image/re-vo-doi.png';
+export { default as userAvatar } from './image/user-avatar.png';
 export { default as LogoAdmin } from './image/admin.png';
 export { default as logo } from './logo/logo.png';
 export { default as logoGoogle } from './logo/logoGoogle.png';
@@ -29,17 +30,9 @@ export { default as imgCartEmpty } from './image/cartEmpty.png';
 export { default as header_mobile } from './image/header_mobile.png';
 export { default as notExit } from './image/notExit.png';
 
-export { default as payment } from './image/payment.webp'
+export { default as payment } from './image/payment.webp';
 export const IconExcept = (
-    <svg
-        xmlns="http://www.w3.org/2000/svg"
-        fill="none"
-        viewBox="0 0 24 24"
-        strokeWidth={1.5}
-        stroke="currentColor"
-        className="w-6 h-6"
-    >
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
         <path strokeLinecap="round" strokeLinejoin="round" d="M18 12H6" />
     </svg>
 );
- 

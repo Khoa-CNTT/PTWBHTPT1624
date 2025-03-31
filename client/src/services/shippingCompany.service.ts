@@ -1,9 +1,11 @@
 import { adminClient, apiClient } from '../config/httpRequest';
 
 // API lấy danh sách tất cả công ty vận chuyển
-const apiGetAllShippingCompanies = async () => {
+const apiGetAllShippingCompanies = async (queries: { limit: number; page: number }) => {
     try {
-        const res = await apiClient.get('/v1/api/shippingCompany/all');
+        const res = await apiClient.get('/v1/api/shippingCompany/all', {
+            params: queries,
+        });
         return res.data;
     } catch (error) {
         return {
@@ -17,7 +19,7 @@ const apiGetAllShippingCompanies = async () => {
 const apiSearchShippingCompanies = async (name: string) => {
     try {
         const res = await adminClient.get('/v1/api/shippingCompany/search', {
-            params: { name }
+            params: { name },
         });
         return res.data;
     } catch (error) {
@@ -86,5 +88,5 @@ export {
     apiCreateShippingCompany,
     apiGetShippingCompanyById,
     apiUpdateShippingCompany,
-    apiDeleteShippingCompany
+    apiDeleteShippingCompany,
 };

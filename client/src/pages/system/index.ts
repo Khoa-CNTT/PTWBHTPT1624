@@ -1,2 +1,8 @@
 export { default as BrandManage } from './brand/index';
 export { default as CategoryManage } from './category/index';
+export { default as AdminLogin } from './login/index';
+export { default as ShippingManage } from './shipping/index';
+export { default as SupplierManage } from './supplier/index';
+export { default as UserManage } from './user/index';
+export { default as VoucherManage } from './voucher/index';
+export { default as BannerManage } from './banner/index';
