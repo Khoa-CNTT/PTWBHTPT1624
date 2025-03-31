@@ -14,10 +14,10 @@ const apiCreateSupplier = async (supplierData: object) => {
 };
 
 // API lấy tất cả nhà cung cấp
-const apiGetAllSuppliers = async (queries:{limit:number,page:number}) => {
+const apiGetAllSuppliers = async (queries: { limit: number; page: number }) => {
     try {
-        const res = await adminClient.get('/v1/api/supplier/all',{
-            params:queries
+        const res = await adminClient.get('/v1/api/supplier/all', {
+            params: queries,
         });
         return res.data;
     } catch (error) {
@@ -67,12 +67,4 @@ const apiDeleteSupplier = async (id: string) => {
     }
 };
 
- 
-
-export {
-    apiCreateSupplier,
-    apiGetAllSuppliers,
-    apiGetSupplierById,
-    apiUpdateSupplier,
-    apiDeleteSupplier, 
-};
+export { apiCreateSupplier, apiGetAllSuppliers, apiGetSupplierById, apiUpdateSupplier, apiDeleteSupplier };

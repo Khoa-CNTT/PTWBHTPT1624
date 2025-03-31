@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 
 interface InputFormProps {
@@ -11,23 +12,11 @@ interface InputFormProps {
     handleOnchange?: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }
 
-const InputForm: React.FC<InputFormProps> = ({
-    name_id,
-    label,
-    value,
-    col,
-    handleOnchange,
-    type = 'text',
-    placeholder,
-    invalidFields,
-}) => {
+const InputForm: React.FC<InputFormProps> = ({ name_id, label, value, col, handleOnchange, type = 'text', placeholder, invalidFields }) => {
     return (
         <div className={`flex ${col ? 'flex-col' : ''} w-full h-auto gap-3 items-center`}>
             {label && (
-                <label
-                    htmlFor={name_id}
-                    className={`flex ${!col ? 'justify-end w-1/2' : 'justify-start w-full'} text-sm text-secondary`}
-                >
+                <label htmlFor={name_id} className={`flex ${!col ? 'justify-end w-1/2' : 'justify-start w-full'} text-sm text-secondary`}>
                     {label}
                 </label>
             )}
@@ -45,9 +34,7 @@ const InputForm: React.FC<InputFormProps> = ({
             </div>
 
             {invalidFields?.some((i) => i.name === name_id) && (
-                <div className="flex w-full justify-start text-xs text-red_custom">
-                    {invalidFields?.find((i) => i.name === name_id)?.message}
-                </div>
+                <div className="flex w-full justify-start text-xs text-red_custom">{invalidFields?.find((i) => i.name === name_id)?.message}</div>
             )}
         </div>
     );
