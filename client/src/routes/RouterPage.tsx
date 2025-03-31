@@ -5,14 +5,9 @@ import CategoryManage from '../pages/system/category';
 import ProtectedRoute from '../middleware/ProtectedRoute';
 import DefaultLayout from '../layout/user/DefaultLayout';
 import { PATH } from '../utils/const';
-import BrandManage from '../pages/system/brand';
-import HomePage from '../pages/user/HomePage';
-import BannerManage from '../pages/system/banner';
-import AdminLogin from '../pages/system/login';
 import useAuthStore from '../store/authStore';
-import SupplierManage from '../pages/system/supplier';
-import VoucherManage from '../pages/system/voucher';
-import ShippingManage from '../pages/system/shipping';
+import { AdminLogin, BannerManage, BrandManage, ShippingManage, SupplierManage, UserManage, VoucherManage } from '../pages/system';
+import HomePage from '../pages/user/HomePage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -39,6 +34,7 @@ const RouterPage = () => {
                     <Route path={PATH.MANAGE_SUPPLIERS} element={<SupplierManage />} />
                     <Route path={PATH.MANAGE_VOUCHER} element={<VoucherManage />} />
                     <Route path={PATH.MANAGE_SHIPPING} element={<ShippingManage />} />
+                    <Route path={PATH.MANAGE_USER} element={<UserManage />} />
                 </Route>
                 <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
             </Routes>
