@@ -32,12 +32,7 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
         }
-        if (supplier) {
-            onSave({ _id: supplier._id, ...inputFields });
-        } else {
-            onSave(inputFields);
-            setInputFields({});
-        }
+        onSave(supplier ? { _id: supplier._id, ...inputFields } : inputFields);
     };
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev: any) => ({ ...prev, [type]: e.target.value }));
@@ -58,8 +53,6 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                         value={inputFields?.supplier_name}
                         invalidFields={invalidFields}
                     />
-                </div>
-                <div className="mb-4">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'supplier_description')}
@@ -68,8 +61,6 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                         value={inputFields?.supplier_description}
                         invalidFields={invalidFields}
                     />
-                </div>
-                <div className="mb-4">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'supplier_phone')}
@@ -79,8 +70,6 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                         type="number"
                         invalidFields={invalidFields}
                     />
-                </div>
-                <div className="mb-4">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'supplier_email')}
@@ -89,8 +78,6 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                         value={inputFields?.supplier_email}
                         invalidFields={invalidFields}
                     />
-                </div>
-                <div className="mb-4">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'supplier_address')}
@@ -100,6 +87,7 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                         invalidFields={invalidFields}
                     />
                 </div>
+
                 <div className="flex justify-end gap-3">
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy

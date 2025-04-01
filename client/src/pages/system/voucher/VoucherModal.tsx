@@ -48,14 +48,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         }
         // Gọi hàm `onSave`
         onSave(voucher ? { _id: voucher._id, ...updatedFields } : updatedFields);
-
-        // Reset input nếu không có voucher
-        if (!voucher) {
-            setInputFields({});
-        }
     };
-
-    console.log('invalidFields', invalidFields);
 
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev: any) => ({ ...prev, [type]: type == 'voucher_is_active' ? e.target.checked : e.target.value }));
@@ -113,8 +106,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
                             value={inputFields?.voucher_name}
                             invalidFields={invalidFields}
                         />
-                    </div>
-                    <div className="mb-4">
                         <InputForm
                             col
                             handleOnchange={(e) => handleInputField(e, 'voucher_description')}

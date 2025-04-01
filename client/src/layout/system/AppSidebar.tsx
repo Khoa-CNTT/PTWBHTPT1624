@@ -50,9 +50,12 @@ const navItems: NavItem[] = [
         path: PATH.MANAGE_USER,
     },
     {
-        name: 'Forms',
+        name: 'Nhân viên',
         icon: <ListIcon />,
-        subItems: [{ name: 'Form Elements', path: 'form-elements', pro: false }],
+        subItems: [
+            { name: 'Danh sách nhân viên', path: PATH.MANAGE_EMPLOYEE },
+            { name: 'Quản lý vai trò', path: PATH.MANAGE_ROLE },
+        ],
     },
     {
         name: 'Tables',
@@ -97,7 +100,7 @@ const AppSidebar: React.FC = () => {
     };
 
     const renderMenuItems = (items: NavItem[], menuType: 'main' | 'others') => (
-        <ul className="flex flex-col gap-4">
+        <ul className="flex flex-col gap-2">
             {items.map((nav, index) => (
                 <li key={nav.name}>
                     {nav.subItems ? (
