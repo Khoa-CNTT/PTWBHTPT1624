@@ -66,7 +66,7 @@ export default function ShippingManage() {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteShippingCompany(id);
-        console.log(res);
+
         if (!res?.success) {
             showNotification(res?.message, false);
             return;

@@ -1,10 +1,10 @@
-import { adminClient, apiClient } from "../config/httpRequest";
+import { adminClient, apiClient } from '../config/httpRequest';
 
 // Lấy tất cả banners
-const apiGetAllBanners = async (queries:{limit:number,page:number}) => {
+const apiGetAllBanners = async (queries: { limit: number; page: number }) => {
     try {
-        const res = await apiClient.get('/v1/api/banner/all',{
-            params:queries
+        const res = await apiClient.get('/v1/api/banner/all', {
+            params: queries,
         });
         return res.data;
     } catch (error) {
@@ -82,11 +82,4 @@ const apiDeleteBanner = async (id: string) => {
     }
 };
 
-export {
-    apiGetAllBanners,
-    apiSearchBanner,
-    apiCreateBanner,
-    apiGetBannerById,
-    apiUpdateBanner,
-    apiDeleteBanner,
-};
+export { apiGetAllBanners, apiSearchBanner, apiCreateBanner, apiGetBannerById, apiUpdateBanner, apiDeleteBanner };

@@ -1,9 +1,12 @@
 import { adminClient } from '../config/httpRequest';
 
 // API lấy tất cả vai trò
-const apiGetAllRoles = async () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const apiGetAllRoles = async (queries: { limit: number; page: number } | any) => {
     try {
-        const res = await adminClient.get('/v1/api/role/all');
+        const res = await adminClient.get('/v1/api/role/all', {
+            params: queries,
+        });
         return res.data;
     } catch (error) {
         return {
@@ -30,7 +33,7 @@ const apiGetRoleById = async (id: string) => {
 const apiGetRoleByName = async (name: string) => {
     try {
         const res = await adminClient.get(`/v1/api/role/search`, {
-            params: { name }
+            params: { name },
         });
         return res.data;
     } catch (error) {
@@ -80,11 +83,4 @@ const apiDeleteRole = async (id: string) => {
     }
 };
 
-export {
-    apiGetAllRoles,
-    apiGetRoleById,
-    apiGetRoleByName,
-    apiCreateRole,
-    apiUpdateRole,
-    apiDeleteRole
-};
+export { apiGetAllRoles, apiGetRoleById, apiGetRoleByName, apiCreateRole, apiUpdateRole, apiDeleteRole };

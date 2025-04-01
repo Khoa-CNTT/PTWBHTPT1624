@@ -1,4 +1,4 @@
-import { adminClient  } from "../config/httpRequest";
+import { adminClient } from '../config/httpRequest';
 
 // API lấy tất cả người dùng
 const apiGetAllAdmin = async () => {
@@ -67,7 +67,7 @@ const apiToggleBlockAdmin = async (uid: string) => {
 // API bật/tắt khóa người dùng theo UID
 const apiGetDetailAdmin = async () => {
     try {
-        const res = await adminClient.get("/v1/api/admin/profile");
+        const res = await adminClient.get('/v1/api/admin/profile');
         return res.data;
     } catch (error) {
         return {
@@ -77,11 +77,4 @@ const apiGetDetailAdmin = async () => {
     }
 };
 
-export {
-    apiGetDetailAdmin,
-    apiGetAllAdmin,
-    apiAddAdmin,
-    apiUpdateAdmin,
-    apiDeleteAdmin,
-    apiToggleBlockAdmin
-};
+export { apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiToggleBlockAdmin };

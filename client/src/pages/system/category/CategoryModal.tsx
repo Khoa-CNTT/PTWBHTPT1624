@@ -36,12 +36,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSav
             showNotification('Vui lòng! nhập đầy đủ thông tin');
             return;
         }
-        if (category) {
-            onSave({ _id: category?._id, ...data });
-        } else {
-            onSave(data);
-            setInputFields({});
-        }
+        onSave(category ? { _id: category._id, ...inputFields } : inputFields);
     };
     const handleInputField = (e: { target: { value: string } }, type: string) => {
         setInputFields((prev) => ({ ...prev, [type]: e.target.value }));

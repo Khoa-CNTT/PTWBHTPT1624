@@ -34,12 +34,8 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
         }
-        if (shipping) {
-            onSave({ _id: shipping._id, ...inputFields });
-        } else {
-            onSave(inputFields);
-            setInputFields({});
-        }
+
+        onSave(shipping ? { _id: shipping._id, ...inputFields } : inputFields);
     };
 
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, field: keyof IShipping | 'from' | 'to') => {
