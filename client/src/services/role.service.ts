@@ -1,0 +1,86 @@
+import { adminClient } from '../config/httpRequest';
+
+// API lấy tất cả vai trò
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const apiGetAllRoles = async (queries: { limit: number; page: number } | any) => {
+    try {
+        const res = await adminClient.get('/v1/api/role/all', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+// API lấy vai trò theo ID
+const apiGetRoleById = async (id: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/role/${id}/search`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+// API tìm kiếm vai trò theo tên
+const apiGetRoleByName = async (name: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/role/search`, {
+            params: { name },
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+// API tạo vai trò mới (Dành cho admin)
+const apiCreateRole = async (roleData: object) => {
+    try {
+        const res = await adminClient.post('/v1/api/role/add', roleData);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+// API cập nhật vai trò (Dành cho admin)
+const apiUpdateRole = async (id: string, roleData: object) => {
+    try {
+        const res = await adminClient.put(`/v1/api/role/${id}/update`, roleData);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+// API xóa vai trò (Dành cho admin)
+const apiDeleteRole = async (id: string) => {
+    try {
+        const res = await adminClient.delete(`/v1/api/role/${id}/delete`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+export { apiGetAllRoles, apiGetRoleById, apiGetRoleByName, apiCreateRole, apiUpdateRole, apiDeleteRole };
