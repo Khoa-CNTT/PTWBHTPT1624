@@ -20,7 +20,6 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
     const [inputFields, setInputFields] = useState<Partial<IBrand>>({});
     const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-    console.log(inputFields);
     useEffect(() => {
         if (brand) {
             setInputFields(brand);
@@ -32,12 +31,10 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
     const handleSave = () => {
         const { brand_name, brand_banner } = inputFields;
         const data = { brand_name, brand_banner };
-
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng nhập đầy đủ thông tin');
             return;
         }
-
         if (brand) {
             onSave({ _id: brand._id, ...data });
         } else {
@@ -68,16 +65,14 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{brand ? 'Chỉnh sửa thương hiệu' : 'Thêm thương hiệu'}</h4>
-                <div className="mb-4">
-                    <InputForm
-                        col
-                        handleOnchange={(e) => handleInputField(e, 'brand_name')}
-                        label="Tên thương hiệu"
-                        name_id="brand_name"
-                        value={inputFields.brand_name}
-                        invalidFields={invalidFields}
-                    />
-                </div>
+                <InputForm
+                    col
+                    handleOnchange={(e) => handleInputField(e, 'brand_name')}
+                    label="Tên thương hiệu"
+                    name_id="brand_name"
+                    value={inputFields.brand_name}
+                    invalidFields={invalidFields}
+                />
                 <div className="flex">
                     <div className="w-full">
                         <ImageCropper width={900} height={270} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />

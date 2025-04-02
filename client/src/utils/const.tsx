@@ -22,6 +22,8 @@ export const PATH = {
     MANAGE_VOUCHER: '/quan-ly/voucher',
     MANAGE_USER: '/quan-ly/nguoi-dung',
     MANAGE_SHIPPING: '/quan-ly/cong-ty-van-chuyen',
+    MANAGE_ROLE: '/quan-ly/vai-tro',
+    MANAGE_EMPLOYEE: '/quan-ly/nhan-vien',
 };
 
 export const SEARCH_UTILITY = [

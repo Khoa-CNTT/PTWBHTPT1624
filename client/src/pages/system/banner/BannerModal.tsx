@@ -92,8 +92,7 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{banner ? 'Chỉnh sửa banner' : 'Thêm banner'}</h4>
-
-                <div className="mb-4">
+                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'banner_title')}
@@ -102,9 +101,6 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
                         value={inputFields?.banner_title}
                         invalidFields={invalidFields}
                     />
-                </div>
-
-                <div className="mb-4">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'banner_description')}
@@ -113,9 +109,7 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
                         value={inputFields?.banner_description}
                         invalidFields={invalidFields}
                     />
-                </div>
 
-                <div className="mb-4">
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'banner_link')}
@@ -124,24 +118,23 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
                         value={inputFields?.banner_link}
                         invalidFields={invalidFields}
                     />
-                </div>
 
-                <div className="flex gap-4 my-2">
-                    <div className="w-1/2">
-                        <DateComponent label="Ngày bắt đầu" onChange={handleDate} value={inputFields?.banner_startDate} type="banner_startDate" />
+                    <div className="flex gap-4 my-4">
+                        <div className="w-1/2">
+                            <DateComponent label="Ngày bắt đầu" onChange={handleDate} value={inputFields?.banner_startDate} type="banner_startDate" />
+                        </div>
+                        <div className="w-1/2">
+                            <DateComponent label="Ngày kết thúc" onChange={handleDate} value={inputFields?.banner_endDate} type="banner_endDate" />
+                        </div>
                     </div>
-                    <div className="w-1/2">
-                        <DateComponent label="Ngày kết thúc" onChange={handleDate} value={inputFields?.banner_endDate} type="banner_endDate" />
+
+                    <div className="w-full">
+                        <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
+                        {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                        {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
+                        {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
                     </div>
                 </div>
-
-                <div className="w-full">
-                    <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
-                    {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-                    {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
-                    {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-                </div>
-
                 <div className="flex justify-end gap-3">
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy

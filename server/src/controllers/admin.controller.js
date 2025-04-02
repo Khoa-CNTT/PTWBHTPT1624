@@ -43,7 +43,7 @@ class adminController {
     }
 
     static async getAllAdmins(req, res) {
-        const admins = await AdminService.getAllAdmins();
+        const admins = await AdminService.getAllAdmins(req.query);
         res.status(200).json({
             success: true,
             message: 'Lấy danh sách người dùng thành công!',

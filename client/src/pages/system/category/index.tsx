@@ -22,7 +22,7 @@ export default function CategoryManage() {
     useEffect(() => {
         const fetchApi = async () => {
             const res = await apiGetAllCategories({ limit: 5, page: currentPage });
-            console.log(res);
+
             if (!res.success) return;
             const data = res.data;
             setCategories(data.categories);
@@ -65,7 +65,7 @@ export default function CategoryManage() {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteCategory(id);
-        console.log(res);
+
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
