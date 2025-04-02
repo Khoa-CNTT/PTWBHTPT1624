@@ -6,3 +6,6 @@ export { default as SupplierManage } from './supplier/index';
 export { default as UserManage } from './user/index';
 export { default as VoucherManage } from './voucher/index';
 export { default as BannerManage } from './banner/index';
+export { default as ProductManage } from './product/index';
+export { default as EmployeeManage } from './employee/index';
+export { default as RoleManage } from './role/index';

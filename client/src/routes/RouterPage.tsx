@@ -6,10 +6,19 @@ import ProtectedRoute from '../middleware/ProtectedRoute';
 import DefaultLayout from '../layout/user/DefaultLayout';
 import { PATH } from '../utils/const';
 import useAuthStore from '../store/authStore';
-import { AdminLogin, BannerManage, BrandManage, ShippingManage, SupplierManage, UserManage, VoucherManage } from '../pages/system';
+import {
+    AdminLogin,
+    BannerManage,
+    BrandManage,
+    EmployeeManage,
+    ProductManage,
+    RoleManage,
+    ShippingManage,
+    SupplierManage,
+    UserManage,
+    VoucherManage,
+} from '../pages/system';
 import HomePage from '../pages/user/HomePage';
-import RoleManage from '../pages/system/role';
-import EmployeeManage from '../pages/system/employee';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -39,6 +48,7 @@ const RouterPage = () => {
                     <Route path={PATH.MANAGE_USER} element={<UserManage />} />
                     <Route path={PATH.MANAGE_ROLE} element={<RoleManage />} />
                     <Route path={PATH.MANAGE_EMPLOYEE} element={<EmployeeManage />} />
+                    <Route path={PATH.MANAGE_PRODUCT} element={<ProductManage />} />
                 </Route>
                 <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
             </Routes>
