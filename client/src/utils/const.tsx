@@ -24,6 +24,7 @@ export const PATH = {
     MANAGE_SHIPPING: '/quan-ly/cong-ty-van-chuyen',
     MANAGE_ROLE: '/quan-ly/vai-tro',
     MANAGE_EMPLOYEE: '/quan-ly/nhan-vien',
+    MANAGE_PRODUCT: '/quan-ly/san-pham',
 };
 
 export const SEARCH_UTILITY = [

@@ -5,7 +5,8 @@ import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
-import { TableIcon, UserCircleIcon } from '../icons';
+import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
+import { UserCircleIcon } from '../icons';
 import { PATH } from '../utils/const';
 
 export type NavItem = {
@@ -16,6 +17,16 @@ export type NavItem = {
 };
 
 export const navItems: NavItem[] = [
+    {
+        name: 'Tổng quan',
+        icon: <BadgeOutlinedIcon />,
+        subItems: [{ name: 'Doanh thu', path: PATH.MANAGE_EMPLOYEE }],
+    },
+    {
+        icon: <ProductionQuantityLimitsOutlinedIcon />,
+        name: 'Sản phẩm',
+        path: PATH.MANAGE_PRODUCT,
+    },
     {
         icon: <AutoStoriesOutlinedIcon />,
         name: 'Banner',
@@ -58,10 +69,5 @@ export const navItems: NavItem[] = [
             { name: 'Danh sách nhân viên', path: PATH.MANAGE_EMPLOYEE },
             { name: 'Quản lý vai trò', path: PATH.MANAGE_ROLE },
         ],
-    },
-    {
-        name: 'Tables',
-        icon: <TableIcon />,
-        subItems: [{ name: 'Basic Tables', path: 'basic-tables', pro: false }],
     },
 ];

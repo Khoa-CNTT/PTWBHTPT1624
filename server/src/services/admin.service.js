@@ -66,13 +66,11 @@ class AdminService {
         await admin.save();
         return isBlocked ? 'Đã chặn người dùng thành công!' : 'Đã mở chặn người dùng!';
     }
-
-    static async getAllAdmins({ limit, page }) {
+    static async getAllAdmins({ admin_id, limit, page }) {
         const limitNum = parseInt(limit, 10) || 10; // Mặc định limit = 10 nếu không hợp lệ
         const pageNum = parseInt(page, 10) || 0; // Mặc định page = 0 nếu không hợp lệ
         const skipNum = pageNum * limitNum;
-
-        const admins = await AdminModel.find()
+        const admins = await AdminModel.find({ _id: { $ne: admin_id } })
             .select('-admin_password') // Loại bỏ trường admin_password khỏi kết quả
             .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo giảm dần
             .skip(skipNum) // Bỏ qua số bản ghi theo trang
