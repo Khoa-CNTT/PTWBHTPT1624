@@ -24,6 +24,19 @@ const apiGetAllProducts = async () => {
         };
     }
 };
+const apiGetAllProductsByAdmin = async (queries: { limit: number; page: number }) => {
+    try {
+        const res = await apiClient.get('/v1/api/product/all-products', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
 // API lấy danh sách sản phẩm nổi bật
 const apiGetFeaturedProducts = async () => {
@@ -132,6 +145,7 @@ const apiDeleteProduct = async (id: string) => {
 export {
     apiSearchProduct,
     apiGetAllProducts,
+    apiGetAllProductsByAdmin,
     apiGetFeaturedProducts,
     apiGetFlashSaleProducts,
     apiGetNewProducts,
