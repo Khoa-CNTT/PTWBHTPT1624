@@ -17,7 +17,7 @@ const InputReadOnly: React.FC<InputReadOnlyProps> = ({ label, col, value, isEdit
                 {label}
             </label>
             <div className="flex w-full bg-[#e9ecef] rounded-md overflow-hidden">
-                <input id="exact-address" type="text" readOnly value={value} className="bg-[#e9ecef] w-full px-3 py-1 outline-none border-none" />
+                <input id="exact-address" type="text" readOnly value={value} className="bg-[#e9ecef]  text-sm w-full px-3 py-1 outline-none border-none" />
                 {isEdit && (
                     <div
                         className="text-sm text-blue-custom my-2 cursor-pointer"

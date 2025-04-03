@@ -18,5 +18,5 @@ export interface IProduct extends IProductItem {
     product_category_id: string; // ID danh mục sản phẩm
     product_brand_id: string; // ID thương hiệu sản phẩm
     product_supplier_id: string; // ID nhà cung cấp sản phẩm
-    product_isPublished: boolean | number; // Trạng thái xuất bản
+    product_isPublished: boolean; // Trạng thái xuất bản
 }

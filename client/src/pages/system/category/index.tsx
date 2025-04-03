@@ -92,7 +92,7 @@ export default function CategoryManage() {
                 <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <CategoryModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} category={selectedCategory} />
+            {isOpen && <CategoryModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} category={selectedCategory} />}
         </>
     );
 }

@@ -1,245 +1,292 @@
-// /* eslint-disable @typescript-eslint/no-unused-vars */
-// /* eslint-disable @typescript-eslint/no-explicit-any */
-// import React, { useState, useEffect } from 'react';
-// import validate from '../../../utils/valueDate';
-// import { InputForm, showNotification } from '../../../components';
-// import { Modal } from '../../../components/ui/modal';
-// import Button from '../../../components/ui/button/Button';
-// import { countFilledFields } from '../../../utils/countFilledFields';
-// import ImageCropper from '../../../components/ImageCropper';
-// import { apiUploadImage } from '../../../services/uploadPicture.service';
-// import { Checkbox, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from '@mui/material';
-// import DateComponent from '../../../components/DateFilterComponent';
-// import { IProduct } from '../../../interfaces/product.interfaces';
+/* eslint-disable @typescript-eslint/no-unused-vars */
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import React, { useState, useEffect } from 'react';
+import { Checkbox, FormControl, FormControlLabel, FormLabel, Typography } from '@mui/material';
+import { InputForm, InputReadOnly, SelectOptions, showNotification } from '../../../components';
+import { Modal } from '../../../components/ui/modal';
+import Button from '../../../components/ui/button/Button';
+import ImageCropper from '../../../components/ImageCropper';
+import { apiUploadImage } from '../../../services/uploadPicture.service';
+import { apiGetAllBrands } from '../../../services/brand.service';
+import { apiGetAllCategories } from '../../../services/category.service';
+import { IProduct } from '../../../interfaces/product.interfaces';
+import { IBrand } from '../../../interfaces/brand.interfaces';
+import { ISupplier } from '../../../interfaces/supplier.interfaces';
+import { apiGetAllSuppliers } from '../../../services/supplier.service';
+import { ICategory } from '../../../interfaces/category.interfaces';
+import InputEditor from '../../../components/input/InputEditor';
+import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
+import { CloseIcon } from '../../../icons';
+import validate from '../../../utils/valueDate';
 
-// interface VoucherModalProps {
-//     isOpen: boolean;
-//     closeModal: () => void;
-//     onSave: (data: IProduct | any) => void;
-//     product?: IProduct | null;
-// }
+interface ProductModalProps {
+    isOpen: boolean;
+    closeModal: () => void;
+    onSave: (data: Partial<IProduct>) => void;
+    product?: IProduct | null;
+}
 
-// const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave, product }) => {
-//     const [inputFields, setInputFields] = useState<Partial<IProduct>>({});
-//     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-//     const [isUploading, setIsUploading] = useState(false);
+const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave, product }) => {
+    // State definitions
+    const [inputFields, setInputFields] = useState<Partial<IProduct>>({});
+    const [isUploading, setIsUploading] = useState(false);
+    const [brands, setBrands] = useState<IBrand[]>([]);
+    const [categories, setCategories] = useState<ICategory[]>([]);
+    const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
+    const [selectCategory, setSelectCategory] = useState<string>('');
+    const [selectBrand, setSelectBrand] = useState<string>('');
+    const [selectSupplier, setSelectSupplier] = useState<string>('');
+    const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
 
-//     useEffect(() => {
-//         if (product) {
-//             setInputFields(product);
-//         } else {
-//             setInputFields((prev) => ({ ...prev, product_type: 'system', product_method: 'fixed' }));
-//         }
-//     }, [product]);
-//     const handleSave = () => {
-//         // const { _id, ...data } = inputFields;
-//         // // Cập nhật giá trị mặc định khi cần thiết
-//         // const updatedFields: Partial<IProduct> = {
-//         //     ...data,
-//         // };
-//         // // Cập nhật state một lần duy nhất
-//         // setInputFields(updatedFields);
-//         // // Kiểm tra validation
-//         // if (!validate(updatedFields, setInvalidFields)) {
-//         //     showNotification('Vui lòng nhập đầy đủ thông tin', false);
-//         //     return;
-//         // }
-//         // // Gọi hàm `onSave`
-//         // onSave(product ? { _id: product._id, ...updatedFields } : updatedFields);
-//     };
+    // Fetch brands and categories on mount
+    useEffect(() => {
+        const fetchData = async () => {
+            try {
+                const brandResponse = await apiGetAllBrands();
+                const categoryResponse = await apiGetAllCategories();
+                const supplierResponse = await apiGetAllSuppliers();
+                setBrands(brandResponse.data || []);
+                setCategories(categoryResponse.data || []);
+                setSuppliers(supplierResponse.data || []);
+            } catch (error) {
+                showNotification('Lỗi khi tải dữ liệu danh mục và nhãn hàng', false);
+            }
+        };
+        fetchData();
+    }, []);
 
-//     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
-//         setInputFields((prev: any) => ({ ...prev, [type]: type == 'product_is_active' ? e.target.checked : e.target.value }));
-//         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-//     };
-//     const handleImageUpload = async (image: string, type: string): Promise<void> => {
-//         setIsUploading(true);
-//         const formData: any = new FormData();
-//         formData.append('file', image);
-//         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
-//         const response = await apiUploadImage(formData);
-//         setInputFields((prev) => ({ ...prev, [type]: response.url }));
-//         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-//         setIsUploading(false);
-//     };
-//     const handleDate = (value: string, type: string) => {
-//         setInputFields((prev: any) => {
-//             const newFields = { ...prev, [type]: value };
-//             if (type === 'product_start_date' && newFields.product_end_date && new Date(value) > new Date(newFields.product_end_date)) {
-//                 showNotification('Ngày bắt đầu không thể lớn hơn ngày kết thúc!', false);
-//                 return prev;
-//             }
-//             if (type === 'product_end_date' && newFields.product_start_date && new Date(value) < new Date(newFields.product_start_date)) {
-//                 showNotification('Ngày kết thúc không thể nhỏ hơn ngày bắt đầu!', false);
-//                 return prev;
-//             }
-//             return newFields;
-//         });
+    // Set initial form values based on product prop
+    useEffect(() => {
+        if (product) {
+            setInputFields(product);
+            setSelectCategory(product.product_category_id || '');
+            setSelectBrand(product.product_brand_id || '');
+        } else {
+            const attribute = [
+                { name: 'Xuất xứ thương hiệu', value: '' },
+                { name: 'Hạn sử dụng', value: '' },
+                { name: 'Hướng dẫn bảo quản', value: '' },
+                { name: 'Hướng dẫn sử dụng', value: '' },
+                { name: 'Sản phẩm có được bảo hành không?', value: '' },
+                { name: 'Xuất xứ', value: '' },
+                { name: 'Trọng lượng sản phẩm', value: '' },
+                { name: 'Thành phần', value: '' },
+            ];
+            setSelectCategory('');
+            setSelectBrand('');
+            setInputFields((prev) => ({ ...prev, product_attribute: attribute }));
+        }
+    }, [product]);
 
-//         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-//     };
+    // Sync selectCategory and selectBrand with inputFields
+    useEffect(() => {
+        setInputFields((prev) => ({ ...prev, product_category: selectCategory }));
+    }, [selectCategory]);
 
-//     const isFormValid = countFilledFields(inputFields) >= 9;
-//     return (
-//         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">
-//             <div className="custom-scrollbar relative w-full max-w-[600px] rounded-3xl bg-white p-6 dark:bg-gray-900">
-//                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{product ? 'Chỉnh sửa product' : 'Thêm product'}</h4>
-//                 <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
-//                     <div className="flex gap-4 my-2">
-//                         <div className="w-1/2">
-//                             <DateComponent label="Ngày bắt đầu" onChange={handleDate} value={inputFields?.product_start_date} type="product_start_date" />
-//                         </div>
-//                         <div className="w-1/2">
-//                             <DateComponent label="Ngày kết thúc" onChange={handleDate} value={inputFields?.product_end_date} type="product_end_date" />
-//                         </div>
-//                     </div>
-//                     <div className="mb-4">
-//                         <InputForm
-//                             col
-//                             handleOnchange={(e) => handleInputField(e, 'product_name')}
-//                             label="Tên product"
-//                             name_id="product_name"
-//                             value={inputFields?.product_name}
-//                             invalidFields={invalidFields}
-//                         />
-//                         <InputForm
-//                             col
-//                             handleOnchange={(e) => handleInputField(e, 'product_description')}
-//                             label="Mô tả"
-//                             name_id="product_description"
-//                             value={inputFields?.}
-//                             invalidFields={invalidFields}
-//                         />
-//                     </div>
-//                     <FormControl>
-//                         <FormLabel sx={{ fontSize: '13px' }}>Hình thức giảm giá</FormLabel>
-//                         <RadioGroup
-//                             row
-//                             name="row-radio-buttons-group"
-//                             value={inputFields.product_method || 'fixed'}
-//                             onChange={(e) => handleInputField(e, 'product_method')}>
-//                             <FormControlLabel value="fixed" control={<Radio />} label={<Typography sx={{ fontSize: '12px' }}>Số tiền cố định</Typography>} />
-//                             <FormControlLabel value="percent" control={<Radio />} label={<Typography sx={{ fontSize: '12px' }}>Phần trăm</Typography>} />
-//                         </RadioGroup>
-//                     </FormControl>
-//                     <div className="flex gap-4 mb-4 w-full">
-//                         <div className=" w-1/2">
-//                             <InputForm
-//                                 col
-//                                 handleOnchange={(e) => handleInputField(e, 'product_value')}
-//                                 label={`Giá trị giảm giá (${inputFields?.product_method === 'percent' ? '%' : 'VND'})`}
-//                                 name_id="product_value"
-//                                 value={inputFields?.product_value}
-//                                 invalidFields={invalidFields}
-//                                 type="number"
-//                             />
-//                         </div>
-//                         {inputFields?.product_method === 'percent' && (
-//                             <div className=" w-1/2">
-//                                 <InputForm
-//                                     col
-//                                     handleOnchange={(e) => handleInputField(e, 'product_max_price')}
-//                                     label="Mức giảm tối đa (VND)"
-//                                     name_id="product_max_price"
-//                                     value={inputFields?.product_max_price}
-//                                     invalidFields={invalidFields}
-//                                     type="number"
-//                                 />
-//                             </div>
-//                         )}
-//                     </div>
-//                     <FormControl>
-//                         <FormLabel sx={{ fontSize: '13px' }}>Loại product</FormLabel>
-//                         <RadioGroup
-//                             row
-//                             name="row-radio-buttons-group"
-//                             value={inputFields.product_type || 'system'}
-//                             onChange={(e) => handleInputField(e, 'product_type')}>
-//                             <FormControlLabel value="system" control={<Radio />} label={<Typography sx={{ fontSize: '12px' }}>Hệ thống</Typography>} />
-//                             <FormControlLabel value="user" control={<Radio />} label={<Typography sx={{ fontSize: '12px' }}>Đổi điểm</Typography>} />
-//                         </RadioGroup>
-//                     </FormControl>
-//                     {inputFields.product_type === 'user' && (
-//                         <div className="mb-4 w-1/2">
-//                             <InputForm
-//                                 col
-//                                 handleOnchange={(e) => handleInputField(e, 'product_required_points')}
-//                                 label="Số điểm quy đổi"
-//                                 name_id="product_required_points"
-//                                 value={inputFields?.product_required_points}
-//                                 invalidFields={invalidFields}
-//                                 type="number"
-//                             />
-//                         </div>
-//                     )}
-//                     <div className="flex gap-4 mb-4 w-full">
-//                         <div className=" w-1/2">
-//                             <InputForm
-//                                 col
-//                                 handleOnchange={(e) => handleInputField(e, 'product_max_uses')}
-//                                 label="Số lần sử dụng"
-//                                 name_id="product_max_uses"
-//                                 value={inputFields?.product_max_uses}
-//                                 invalidFields={invalidFields}
-//                                 type="number"
-//                             />
-//                         </div>
-//                         <div className=" w-1/2">
-//                             <InputForm
-//                                 col
-//                                 handleOnchange={(e) => handleInputField(e, 'product_min_order_value')}
-//                                 label="Giá trị đơn hàng tối thiểu (VND)"
-//                                 name_id="product_min_order_value"
-//                                 value={inputFields?.product_min_order_value}
-//                                 invalidFields={invalidFields}
-//                                 type="number"
-//                             />
-//                         </div>
-//                     </div>
+    useEffect(() => {
+        setInputFields((prev) => ({ ...prev, product_brand: selectBrand }));
+    }, [selectBrand]);
 
-//                     <div className="flex w-full gap-2">
-//                         <div className="w-1/2">
-//                             <ImageCropper width={128} height={128} label="Thêm hình ảnh" idName="product_thumb" onCropComplete={handleImageUpload} />
-//                             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-//                             {inputFields.product_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.product_thumb} alt="Brand Thumbnail" />}
-//                             {invalidFields.some((i) => i.name === 'product_thumb') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-//                         </div>
-//                         <div className="w-1/2">
-//                             <ImageCropper width={382} height={506} label="Thêm banner" idName="product_banner_image" onCropComplete={handleImageUpload} />
-//                             {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-//                             {inputFields.product_banner_image && (
-//                                 <img className="h-[200px] mt-2 rounded-sm" src={inputFields.product_banner_image} alt="Brand banner" />
-//                             )}
-//                             {invalidFields.some((i) => i.name === 'product_banner_image') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-//                         </div>
-//                     </div>
-//                     <FormControl>
-//                         <FormLabel sx={{ fontSize: '13px' }}>Trạng thái</FormLabel>
-//                         <FormControlLabel
-//                             control={
-//                                 <Checkbox
-//                                     checked={inputFields.product_is_active} // true hoặc false
-//                                     onChange={(e) => handleInputField(e, 'product_is_active')}
-//                                 />
-//                             }
-//                             label={<Typography sx={{ fontSize: '12px' }}>{inputFields.product_is_active ? 'Hiện' : 'Ẩn'}</Typography>}
-//                         />
-//                     </FormControl>
-//                 </div>
+    const handleImageUpload = async (image: string, type: string): Promise<void> => {
+        setIsUploading(true);
+        const formData = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+        const response = await apiUploadImage(formData);
+        setInputFields((prev) => ({ ...prev, [type]: response.url }));
+        setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+        setIsUploading(false);
+    };
+    const handleImageUploadMany = async (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+        const uploadedUrls: string[] = [];
+        const files = e.target.files;
+        if (!files) return;
+        setIsUploading(true);
+        for (const file of files) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+            const response = await apiUploadImage(formData);
+            uploadedUrls.push(response.url);
+        }
+        setInputFields((prev) => ({ ...prev, [type]: uploadedUrls }));
+        setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+        setIsUploading(false);
+    };
+    const handleSave = () => {
+        const { _id, product_slug, product_sold, product_ratings, product_isPublished, ...data } = inputFields;
+        if (!validate(data, setInvalidFields)) {
+            showNotification('Vui lòng! nhập đầy đủ thông tin');
+            return;
+        }
+        onSave(product ? { _id: product._id, ...inputFields } : inputFields);
+    };
+    // Handlers
+    const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
+        const value = type === 'product_isPublished' ? e.target.checked : e.target.value;
+        setInputFields((prev) => ({ ...prev, [type]: value }));
+        setInvalidFields((prev) => prev.filter((field) => field.name !== type));
+    };
+    const handleInputFieldAttribute = (name: string, value: string) => {
+        setInputFields((prev) => {
+            const updatedAttributes = prev.product_attribute?.map((attr) => (attr.name === name ? { ...attr, value } : { ...attr, [name]: value })) || [];
+            return { ...prev, product_attribute: updatedAttributes };
+        });
+    };
+    // Determine if the form is valid
+    return (
+        <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[800px] m-4">
+            <div className="custom-scrollbar relative w-full max-w-[800px] rounded-3xl bg-white p-6 dark:bg-gray-900">
+                <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{product ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}</h4>
+                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 border-gray-200 rounded-md">
+                    <div className="flex flex-col gap-4">
+                        <InputReadOnly col={true} label="Mã sản phẩm" value={inputFields.product_code} />
+                        <InputForm
+                            col={true}
+                            handleOnchange={(e) => handleInputField(e, 'product_name')}
+                            label="Tên sản phẩm"
+                            name_id="product_name"
+                            value={inputFields.product_name || ''}
+                            invalidFields={invalidFields}
+                        />
+                        <div className="flex gap-4">
+                            <SelectOptions
+                                col={true}
+                                label="Danh mục"
+                                options={categories?.map((e) => ({ code: e._id, name: e.category_name }))}
+                                selectId={selectCategory}
+                                setOptionId={setSelectCategory}
+                            />
+                            <SelectOptions
+                                col={true}
+                                label="Nhãn hàng"
+                                options={brands?.map((e) => ({ code: e._id || e, name: e.brand_name || e }))}
+                                selectId={selectBrand}
+                                setOptionId={setSelectBrand}
+                            />
+                            <SelectOptions
+                                col={true}
+                                label="Nhà cung cấp"
+                                options={suppliers?.map((e) => ({ code: e._id || e, name: e.supplier_name || e }))}
+                                selectId={selectSupplier}
+                                setOptionId={setSelectSupplier}
+                            />
+                        </div>
+                        <div className="flex gap-4">
+                            <InputForm
+                                type="number"
+                                col={true}
+                                handleOnchange={(e) => handleInputField(e, 'product_price')}
+                                label="Đơn giá"
+                                name_id="product_price"
+                                value={inputFields.product_price || ''}
+                                invalidFields={invalidFields}
+                            />
+                            <InputForm
+                                type="number"
+                                col={true}
+                                handleOnchange={(e) => handleInputField(e, 'product_quantity')}
+                                label="Số lượng"
+                                name_id="product_quantity"
+                                value={inputFields.product_quantity || ''}
+                                invalidFields={invalidFields}
+                            />
+                            <InputForm
+                                type="number"
+                                col={true}
+                                handleOnchange={(e) => handleInputField(e, 'product_discount')}
+                                label="Giảm giá (%)"
+                                name_id="product_discount"
+                                value={inputFields.product_discount || ''}
+                                invalidFields={invalidFields}
+                            />
+                        </div>
+                        <div className=" gap-4">
+                            <h2 className=" text-sm text-secondary text-center">Thông tin chi tiết</h2>
+                            {invalidFields.some((i) => i.name === 'product_attribute') && (
+                                <p className="text-xs  text-center text-red-500">{invalidFields.find((i) => i.name === 'product_attribute')?.message}</p>
+                            )}
+                            <div className="w-full">
+                                {inputFields?.product_attribute?.map((item, i) => (
+                                    <InputForm
+                                        type="text"
+                                        handleOnchange={(e) => handleInputFieldAttribute(item.name, e.target.value)}
+                                        label={item?.name}
+                                        name_id={`attribute_${i}`}
+                                        value={item?.value}
+                                    />
+                                ))}
+                            </div>
+                        </div>
+                        <div className=" gap-4">
+                            <InputEditor label="Mô Tả Sản Phẩm" value={inputFields.product_description || ''} setValue={setInputFields} />
+                        </div>
+                        <div className="flex w-full gap-2 my-2">
+                            <div className="w-1/3">
+                                <ImageCropper width={550} height={550} label="Ảnh thumbnail" idName="product_thumb" onCropComplete={handleImageUpload} />
+                                {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                                {inputFields.product_thumb && (
+                                    <img className="h-[200px] mt-2 rounded-sm" src={inputFields.product_thumb} alt="Product Thumbnail" />
+                                )}
+                                {invalidFields.some((i) => i.name === 'product_thumb') && <p className="text-xs text-red-500">Vui lòng chọn hình ảnh</p>}
+                            </div>
+                            <div className="w-2/3">
+                                <div className="flex w-full items-center text-secondary text-sm  ">
+                                    <input id="comment_input" type="file" multiple hidden onChange={(e) => handleImageUploadMany(e, 'product_images')} />
 
-//                 <div className="flex justify-end gap-3">
-//                     <Button size="sm" variant="outline" onClick={closeModal}>
-//                         Hủy
-//                     </Button>
-//                     {isFormValid && (
-//                         <Button size="sm" onClick={handleSave}>
-//                             {product ? 'Lưu thay đổi' : 'Thêm mới'}
-//                         </Button>
-//                     )}
-//                 </div>
-//             </div>
-//         </Modal>
-//     );
-// };
+                                    <label htmlFor="comment_input" className="flex w-full gap-2">
+                                        Thêm hình ảnh
+                                        <InsertPhotoIcon fontSize="medium" style={{ color: 'green' }} />
+                                    </label>
+                                </div>
+                                {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                                {inputFields.product_images && (
+                                    <ul className="grid grid-cols-6 gap-2 px-4">
+                                        {inputFields.product_images?.map((image, index) => (
+                                            <li key={index} className="relative w-full h-[60px] border-solid border-[1px] my-2 border-bgSecondary">
+                                                <img className="w-full h-full object-contain" src={image} alt={`Hình ảnh sản phẩm ${index}`} />
+                                                <span
+                                                    className="absolute top-0 right-1 cursor-pointer"
+                                                    onClick={() =>
+                                                        setInputFields((prev) => ({
+                                                            ...prev,
+                                                            product_images: prev.product_images?.filter((_, i) => i !== index),
+                                                        }))
+                                                    }>
+                                                    <CloseIcon style={{ fontSize: '25px', color: '#C8C8CB' }} />
+                                                </span>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                                {invalidFields.some((i) => i.name === 'product_images') && <p className="text-xs text-red-500">Vui lòng chọn hình ảnh</p>}
+                            </div>
+                        </div>
+                        <FormControl>
+                            <FormLabel sx={{ fontSize: '13px' }}>Trạng thái</FormLabel>
+                            <FormControlLabel
+                                control={
+                                    <Checkbox
+                                        checked={!!inputFields.product_isPublished} // true hoặc false
+                                        onChange={(e) => handleInputField(e, 'product_isPublished')}
+                                    />
+                                }
+                                label={<Typography sx={{ fontSize: '12px' }}>{inputFields.product_isPublished ? 'Hiện' : 'Ẩn'}</Typography>}
+                            />
+                        </FormControl>
+                    </div>
+                </div>
+                <div className="flex justify-end gap-3">
+                    <Button size="sm" variant="outline" onClick={closeModal}>
+                        Hủy
+                    </Button>
+                    <Button size="sm" onClick={handleSave}>
+                        {product ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
+                </div>
+            </div>
+        </Modal>
+    );
+};
 
-// export default VoucherModal;
+export default ProductModal;

@@ -89,7 +89,7 @@ export default function BrandManage() {
                 <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <BrandModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} brand={selectedBrand} />
+            {isOpen && <BrandModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} brand={selectedBrand} />}
         </>
     );
 }

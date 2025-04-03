@@ -89,7 +89,7 @@ export default function VoucherManage() {
                 <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <VoucherModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} voucher={selectedVoucher} />
+            {isOpen && <VoucherModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} voucher={selectedVoucher} />}
         </>
     );
 }
