@@ -90,7 +90,7 @@ export default function RoleManage() {
                 <RoleTable roles={roles} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <RoleModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} role={selectedRole} />
+            {isOpen && <RoleModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} role={selectedRole} />}
         </>
     );
 }

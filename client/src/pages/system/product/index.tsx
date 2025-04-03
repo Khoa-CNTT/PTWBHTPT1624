@@ -7,6 +7,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { apiCreateProduct, apiDeleteProduct, apiGetAllProductsByAdmin, apiUpdateProduct } from '../../../services/product.service';
 import { IProduct } from '../../../interfaces/product.interfaces';
+import ProductModal from './ProductModal';
 
 export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -85,7 +86,7 @@ export default function ProductManage() {
                 <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            {/* <ProductModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} product={selectedProduct} /> */}
+            {isOpen && <ProductModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} product={selectedProduct} />}
         </>
     );
 }

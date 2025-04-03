@@ -85,7 +85,7 @@ export default function EmployeeManage() {
                 <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <EmployeeModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} employee={selectedEmployee} />
+            {isOpen && <EmployeeModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} employee={selectedEmployee} />}
         </>
     );
 }
