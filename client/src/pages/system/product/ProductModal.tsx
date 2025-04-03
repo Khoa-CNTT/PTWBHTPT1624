@@ -23,7 +23,7 @@ interface ProductModalProps {
     isOpen: boolean;
     closeModal: () => void;
     onSave: (data: Partial<IProduct>) => void;
-    product?: IProduct | null;
+    product?: Partial<IProduct> | null;
 }
 
 const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave, product }) => {

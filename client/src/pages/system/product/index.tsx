@@ -13,7 +13,7 @@ export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
-    const [selectedProduct, setSelectedCategory] = useState<IProduct | null>(null);
+    const [selectedProduct, setSelectedCategory] = useState<Partial<IProduct> | null>(null);
     const { openModal, isOpen, closeModal } = useModal();
     useEffect(() => {
         const fetchApi = async () => {
@@ -29,11 +29,11 @@ export default function ProductManage() {
         setSelectedCategory(null);
         openModal();
     };
-    const handleEdit = (product: IProduct) => {
+    const handleEdit = (product: Partial<IProduct>) => {
         setSelectedCategory(product);
         openModal();
     };
-    const handleSave = async (data: IProduct) => {
+    const handleSave = async (data: Partial<IProduct>) => {
         let res;
         if (data?._id) {
             res = await apiUpdateProduct(data?._id, data);
