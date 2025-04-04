@@ -20,13 +20,13 @@ export const navItems: NavItem[] = [
     {
         name: 'Tổng quan',
         icon: <BadgeOutlinedIcon />,
-        subItems: [{ name: 'Doanh thu', path: PATH.MANAGE_EMPLOYEE }],
+        path: PATH.MANAGE_DASHBOARD
     },
     {
         icon: <ProductionQuantityLimitsOutlinedIcon />,
         name: 'Sản phẩm',
         path: PATH.MANAGE_PRODUCT,
-    },
+    } ,
     {
         icon: <ProductionQuantityLimitsOutlinedIcon />,
         name: 'Đơn hàng',
