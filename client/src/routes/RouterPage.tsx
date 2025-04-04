@@ -17,6 +17,8 @@ import {
     SupplierManage,
     UserManage,
     VoucherManage,
+    DashboardManage,
+    
 } from '../pages/system';
 import HomePage from '../pages/user/HomePage';
 
@@ -49,6 +51,7 @@ const RouterPage = () => {
                     <Route path={PATH.MANAGE_ROLE} element={<RoleManage />} />
                     <Route path={PATH.MANAGE_EMPLOYEE} element={<EmployeeManage />} />
                     <Route path={PATH.MANAGE_PRODUCT} element={<ProductManage />} />
+                    <Route path={PATH.MANAGE_DASHBOARD} element={<DashboardManage />} />
                 </Route>
                 <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
             </Routes>

@@ -25,6 +25,7 @@ export const PATH = {
     MANAGE_ROLE: '/quan-ly/vai-tro',
     MANAGE_EMPLOYEE: '/quan-ly/nhan-vien',
     MANAGE_PRODUCT: '/quan-ly/san-pham',
+    MANAGE_DASHBOARD: '/quan-ly/dashboard',
 };
 
 export const SEARCH_UTILITY = [
