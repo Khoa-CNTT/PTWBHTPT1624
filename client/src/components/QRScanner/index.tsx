@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import QrReader from 'react-weblineindia-qrcode-scanner';
 import { showNotification } from '../common/showNotification';
 

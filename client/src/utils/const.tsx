@@ -25,6 +25,8 @@ export const PATH = {
     MANAGE_ROLE: '/quan-ly/vai-tro',
     MANAGE_EMPLOYEE: '/quan-ly/nhan-vien',
     MANAGE_PRODUCT: '/quan-ly/san-pham',
+    MANAGE_ORDER: '/quan-ly/don-hang',
+    ORDER_DETAIL: '/quan-ly/don-hang-chi-tiet/:oid',
     MANAGE_DASHBOARD: '/quan-ly/dashboard',
 };
 
