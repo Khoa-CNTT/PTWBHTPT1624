@@ -60,7 +60,6 @@ export default function BannerManage() {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteBanner(id);
-        console.log(res);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;

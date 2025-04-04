@@ -18,6 +18,7 @@ import InputEditor from '../../../components/input/InputEditor';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { CloseIcon } from '../../../icons';
 import validate from '../../../utils/valueDate';
+import { countFilledFields } from '../../../utils/countFilledFields';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -115,6 +116,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
     };
     const handleSave = () => {
         const { _id, product_slug, product_sold, product_ratings, product_isPublished, ...data } = inputFields;
+
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng! nhập đầy đủ thông tin');
             return;
@@ -140,7 +142,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{product ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}</h4>
                 <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 border-gray-200 rounded-md">
                     <div className="flex flex-col gap-4">
-                        <InputReadOnly col={true} label="Mã sản phẩm" value={inputFields.product_code} />
                         <InputForm
                             col={true}
                             handleOnchange={(e) => handleInputField(e, 'product_name')}
@@ -220,6 +221,9 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                         </div>
                         <div className=" gap-4">
                             <InputEditor label="Mô Tả Sản Phẩm" value={inputFields.product_description || ''} setValue={setInputFields} />
+                            {invalidFields.some((i) => i.name === 'product_description') && (
+                                <p className="text-xs  text-center text-red-500">{invalidFields.find((i) => i.name === 'product_attribute')?.message}</p>
+                            )}
                         </div>
                         <div className="flex w-full gap-2 my-2">
                             <div className="w-1/3">
@@ -276,14 +280,16 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                         </FormControl>
                     </div>
                 </div>
-                <div className="flex justify-end gap-3">
-                    <Button size="sm" variant="outline" onClick={closeModal}>
-                        Hủy
-                    </Button>
-                    <Button size="sm" onClick={handleSave}>
-                        {product ? 'Lưu thay đổi' : 'Thêm mới'}
-                    </Button>
-                </div>
+                {countFilledFields(inputFields) >= 10 && (
+                    <div className="flex justify-end gap-3">
+                        <Button size="sm" variant="outline" onClick={closeModal}>
+                            Hủy
+                        </Button>
+                        <Button size="sm" onClick={handleSave}>
+                            {product ? 'Lưu thay đổi' : 'Thêm mới'}
+                        </Button>
+                    </div>
+                )}
             </div>
         </Modal>
     );

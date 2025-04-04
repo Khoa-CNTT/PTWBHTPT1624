@@ -13,10 +13,8 @@ interface ProductListProps {
     onEdit: (product: IProduct) => void;
     onDelete: (id: string | any) => void;
 }
-
 const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }) => {
     const qrRef = useRef<HTMLCanvasElement>(null);
-
     const downloadQR = async (code: string, name: string) => {
         try {
             const url = await QRCode.toDataURL(code, { scale: 10, margin: 2 });

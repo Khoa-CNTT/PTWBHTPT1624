@@ -61,7 +61,6 @@ export default function SupplierManage() {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteSupplier(id);
-        console.log(res);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
