@@ -93,7 +93,7 @@ export default function ShippingManage() {
                 <ShippingTable shippings={shippings} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <ShippingModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} shipping={selectedShipping} />
+            {isOpen && <ShippingModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} shipping={selectedShipping} />}
         </>
     );
 }

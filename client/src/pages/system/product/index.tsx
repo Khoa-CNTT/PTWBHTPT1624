@@ -1,47 +1,44 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
-import { apiAddVoucher, apiDeleteVoucher, apiGetAllVouchers, apiUpdateVoucher } from '../../../services/voucher.service';
-import VoucherTable from './VoucherTable';
-import VoucherModal from './VoucherModal';
+import ProductTable from './ProductTable';
 import { Pagination, showNotification } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
-import { IVoucher } from '../../../interfaces/voucher.interfaces';
+import { apiCreateProduct, apiDeleteProduct, apiGetAllProductsByAdmin, apiUpdateProduct } from '../../../services/product.service';
+import { IProduct } from '../../../interfaces/product.interfaces';
+import ProductModal from './ProductModal';
 
-export default function VoucherManage() {
-    const [vouchers, setVouchers] = useState<IVoucher[]>([]);
+export default function ProductManage() {
+    const [products, setProducts] = useState<IProduct[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
-    const [selectedVoucher, setSelectedCategory] = useState<IVoucher | null>(null);
-
+    const [selectedProduct, setSelectedCategory] = useState<Partial<IProduct> | null>(null);
     const { openModal, isOpen, closeModal } = useModal();
-
     useEffect(() => {
         const fetchApi = async () => {
-            const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
+            const res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
             if (!res.success) return;
             const data = res.data;
-            setVouchers(data.vouchers);
+            setProducts(data.products);
             setTotalPage(data.totalPage);
         };
         fetchApi();
     }, [currentPage]);
-
     const handleAdd = () => {
         setSelectedCategory(null);
         openModal();
     };
-    const handleEdit = (voucher: IVoucher) => {
-        setSelectedCategory(voucher);
+    const handleEdit = (product: Partial<IProduct>) => {
+        setSelectedCategory(product);
         openModal();
     };
-    const handleSave = async (data: IVoucher) => {
+    const handleSave = async (data: Partial<IProduct>) => {
         let res;
         if (data?._id) {
-            res = await apiUpdateVoucher(data?._id, data);
+            res = await apiUpdateProduct(data?._id, data);
         } else {
-            res = await apiAddVoucher(data);
+            res = await apiCreateProduct(data);
         }
         if (!res?.success) {
             showNotification(res?.message, false);
@@ -51,7 +48,7 @@ export default function VoucherManage() {
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
         // Cập nhật danh sách nhà cung cấp mà không cần reload trang
-        setVouchers(
+        setProducts(
             (prev) =>
                 data._id
                     ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật nhà cung cấp đã có
@@ -61,13 +58,13 @@ export default function VoucherManage() {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
-        const res = await apiDeleteVoucher(id);
+        const res = await apiDeleteProduct(id);
 
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
         }
-        setVouchers((prev) => prev.filter((item) => item._id != id));
+        setProducts((prev) => prev.filter((item) => item._id != id));
         showNotification('Xóa thành công', true);
         setTimeout(() => {
             window.location.reload();
@@ -86,10 +83,10 @@ export default function VoucherManage() {
                         Thêm
                     </button>
                 </div>
-                <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            {isOpen && <VoucherModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} voucher={selectedVoucher} />}
+            {isOpen && <ProductModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} product={selectedProduct} />}
         </>
     );
 }

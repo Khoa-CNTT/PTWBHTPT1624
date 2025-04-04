@@ -1,68 +1,16 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Link, useLocation } from 'react-router';
 // Assume these icons are imported from an icon library
-import { ChevronDownIcon, HorizontaLDots, ListIcon, TableIcon, UserCircleIcon } from '../../icons';
+import { ChevronDownIcon, HorizontaLDots } from '../../icons';
 import { useSidebar } from '../../context/SidebarContext';
 import { iconLogo, logo } from '../../assets';
-import { PATH } from '../../utils/const';
-
 type NavItem = {
     name: string;
     icon: React.ReactNode;
     path?: string;
     subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
-
-const navItems: NavItem[] = [
-    {
-        icon: <UserCircleIcon />,
-        name: 'Banner',
-        path: PATH.MANAGE_BANNER,
-    },
-    {
-        icon: <UserCircleIcon />,
-        name: 'Danh mục',
-        path: PATH.MANAGE_CATEGORY,
-    },
-    {
-        icon: <UserCircleIcon />,
-        name: 'Thương hiệu',
-        path: PATH.MANAGE_BRAND,
-    },
-    {
-        icon: <UserCircleIcon />,
-        name: 'Nhà cung cấp',
-        path: PATH.MANAGE_SUPPLIERS,
-    },
-    {
-        icon: <UserCircleIcon />,
-        name: 'Công ty vận chuyển',
-        path: PATH.MANAGE_SHIPPING,
-    },
-    {
-        icon: <UserCircleIcon />,
-        name: 'Voucher',
-        path: PATH.MANAGE_VOUCHER,
-    },
-    {
-        icon: <UserCircleIcon />,
-        name: 'Người dùng',
-        path: PATH.MANAGE_USER,
-    },
-    {
-        name: 'Nhân viên',
-        icon: <ListIcon />,
-        subItems: [
-            { name: 'Danh sách nhân viên', path: PATH.MANAGE_EMPLOYEE },
-            { name: 'Quản lý vai trò', path: PATH.MANAGE_ROLE },
-        ],
-    },
-    {
-        name: 'Tables',
-        icon: <TableIcon />,
-        subItems: [{ name: 'Basic Tables', path: 'basic-tables', pro: false }],
-    },
-];
+import { navItems } from '../../config/navItems';
 
 const AppSidebar: React.FC = () => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();

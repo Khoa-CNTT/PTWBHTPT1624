@@ -72,7 +72,7 @@ export default function EmployeeManage() {
     return (
         <>
             <PageMeta title="Quản lý thương hiệu" />
-            <PageBreadcrumb pageTitle="TThương hiệu" />
+            <PageBreadcrumb pageTitle="Thương hiệu" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-end">
                     <button
@@ -85,7 +85,7 @@ export default function EmployeeManage() {
                 <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
-            <EmployeeModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} employee={selectedEmployee} />
+            {isOpen && <EmployeeModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} employee={selectedEmployee} />}
         </>
     );
 }
