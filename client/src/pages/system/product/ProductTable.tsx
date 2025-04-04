@@ -33,25 +33,25 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
                     {/* Table Header */}
                     <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                         <TableRow>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 QR Code
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Tên product
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Tồn kho
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
                                 Đã bán
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
                                 Đơn giá
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
                                 Giảm giá
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
                                 Thao tác
                             </TableCell>
                         </TableRow>
@@ -68,27 +68,27 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
                                     </div>
                                 </TableCell>
                                 <TableCell className="px-5 text-gray-70 dark:text-gray-300">
-                                    <span className=" truncate-trailing text-[rgb(128,128,137)] w-[200px] line-clamp-2 font-medium text-theme-sm dark:text-white/90">
+                                    <span className=" truncate-trailing text-[rgb(128,128,137)] w-[200px] line-clamp-2 text-theme-sm dark:text-white/90">
                                         {product?.product_name}
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3">
-                                    <span className=" truncate-trailing text-[rgb(128,128,137)]  line-clamp-1 font-medium text-theme-sm dark:text-white/90">
+                                    <span className=" truncate-trailing text-[rgb(128,128,137)]  line-clamp-1 text-theme-sm dark:text-white/90">
                                         {product?.product_quantity}
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
-                                    <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1 font-medium text-theme-sm dark:text-white/90">
+                                    <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1 text-theme-sm dark:text-white/90">
                                         {product?.product_sold}
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
-                                    <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1 font-medium text-theme-sm dark:text-white/90">
+                                    <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1 text-theme-sm dark:text-white/90">
                                         {formatMoney(product?.product_price)}
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
-                                    <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1 font-medium text-theme-sm dark:text-white/90">
+                                    <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1 text-theme-sm dark:text-white/90">
                                         {product?.product_discount}%
                                     </span>
                                 </TableCell>

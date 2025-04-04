@@ -28,6 +28,11 @@ export const navItems: NavItem[] = [
         path: PATH.MANAGE_PRODUCT,
     },
     {
+        icon: <ProductionQuantityLimitsOutlinedIcon />,
+        name: 'Đơn hàng',
+        path: PATH.MANAGE_ORDER,
+    },
+    {
         icon: <AutoStoriesOutlinedIcon />,
         name: 'Banner',
         path: PATH.MANAGE_BANNER,

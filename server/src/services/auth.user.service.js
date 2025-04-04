@@ -1,31 +1,31 @@
-"use strict";
+'use strict';
 
-const { BadRequestError } = require("../core/error.response");
-const bcrypt = require("bcrypt")
-const crypto = require("crypto")
-const redis = require("../config/redisClient");
-const { findUserByEmail, findUserById } = require("../models/repositories/user.repo")
-const { randomTokenByCrypto, hashTokenByCrypto } = require("../utils/tokenUtils");
-const sendMail = require("../utils/sendMail");
-const userModel = require("../models/user.model");
-const createTokenPairs = require("../utils/auth/createTokenPairs");
-const verifyRefreshToken = require("../utils/auth/verifyRefreshToken");
+const { BadRequestError } = require('../core/error.response');
+const bcrypt = require('bcrypt');
+const crypto = require('crypto');
+const redis = require('../config/redisClient');
+const { findUserByEmail, findUserById } = require('../models/repositories/user.repo');
+const { randomTokenByCrypto, hashTokenByCrypto } = require('../utils/tokenUtils');
+const sendMail = require('../utils/sendMail');
+const userModel = require('../models/user.model');
+const createTokenPairs = require('../utils/auth/createTokenPairs');
+const verifyRefreshToken = require('../utils/auth/verifyRefreshToken');
 
 class AuthUserService {
-    // gửi mã xác thực 
+    // gửi mã xác thực
     static async sendVerificationEmail({ email }) {
-        if (!email) throw new BadRequestError("Vui lòng cung cấp email");
+        if (!email) throw new BadRequestError('Vui lòng cung cấp email');
         const user = await findUserByEmail(email);
-        if (user) throw new BadRequestError("Tài khoản đã tồn tại", 200);
+        if (user) throw new BadRequestError('Tài khoản đã tồn tại', 200);
 
         const redisKey = `verify_email:${email}`;
         const existingData = await redis.hgetall(redisKey);
         const currentTime = Date.now();
 
         if (existingData?.token) {
-            const lastSentAt = parseInt(existingData.lastSentAt || "0", 10);
+            const lastSentAt = parseInt(existingData.lastSentAt || '0', 10);
             if (currentTime - lastSentAt < 30 * 1000) {
-                throw new BadRequestError("Bạn gửi quá nhanh, vui lòng đợi 30 giây trước khi thử lại.");
+                throw new BadRequestError('Bạn gửi quá nhanh, vui lòng đợi 30 giây trước khi thử lại.');
             }
         }
 
@@ -33,14 +33,14 @@ class AuthUserService {
         const token = randomTokenByCrypto(3);
         const hashToken = hashTokenByCrypto(token);
         const expiresAt = existingData?.expiresAt || currentTime + 5 * 60 * 1000; // Giữ nguyên thời gian hết hạn nếu còn hiệu lực
-        const lastSentAt = currentTime; // Cập nhật thời điểm gửi cuối cùng 
+        const lastSentAt = currentTime; // Cập nhật thời điểm gửi cuối cùng
 
         // Cập nhật lại Redis
         await redis.hset(redisKey, {
             token: hashToken,
-            confirmed: "false",
+            confirmed: 'false',
             expiresAt: expiresAt.toString(),
-            lastSentAt: lastSentAt.toString()
+            lastSentAt: lastSentAt.toString(),
         });
         await redis.expire(redisKey, 5 * 60); // Giữ thời gian hết hạn 5 phút
 
@@ -57,7 +57,7 @@ class AuthUserService {
                 </tr>
                 <tr>
                     <td style="color: #555; font-size: 16px; text-align: left;">
-                        <p>Chào <b>${email.split("@")[0]}</b>,</p>
+                        <p>Chào <b>${email.split('@')[0]}</b>,</p>
                         <p>Mã xác minh đăng ký tài khoản của bạn là:</p>
                     </td>
                 </tr>
@@ -82,86 +82,90 @@ class AuthUserService {
                 </tr>
             </table>
         </div>`,
-            fullName: email.split("@")[0]
+            fullName: email.split('@')[0],
         });
 
-        return { success: true, message: "Sent successful" };
+        return { success: true, message: 'Sent successful' };
     }
 
-    // thực hiện xác thực 
+    // thực hiện xác thực
     static async confirmVerificationEmail({ token, email }) {
-        if (!token || !email) throw new BadRequestError("Vui lòng cung cấp thông tin xác thực");
-        //tìm email đang đăng ký, nếu có thì đem ra so sánh 
+        if (!token || !email) throw new BadRequestError('Vui lòng cung cấp thông tin xác thực');
+        //tìm email đang đăng ký, nếu có thì đem ra so sánh
         const redisKey = `verify_email:${email}`;
         // Lấy dữ liệu từ Redis
         const existingData = await redis.hgetall(redisKey);
-        if (existingData.expiresAt < Date.now()) throw new BadRequestError("Mã xác nhận đã hết hạn")
-        const hashToken = hashTokenByCrypto(token)
-        if (hashToken !== existingData?.token) throw new BadRequestError("Mã xác nhận không đúng")
-        await redis.hset(redisKey, "confirmed", "false");
+        if (existingData.expiresAt < Date.now()) throw new BadRequestError('Mã xác nhận đã hết hạn');
+        const hashToken = hashTokenByCrypto(token);
+        if (hashToken !== existingData?.token) throw new BadRequestError('Mã xác nhận không đúng');
+        await redis.hset(redisKey, 'confirmed', 'false');
     }
     // xác thực thành công -> đăng ký
     static async userSignup({ email, password, mobile }, res) {
-        if (!email || !password) throw new BadRequestError("Vui lòng nhập đầy đủ thông tin");
+        if (!email || !password) throw new BadRequestError('Vui lòng nhập đầy đủ thông tin');
         const redisKey = `verify_email:${email}`;
-        const holderUser = await findUserByEmail(email)
-        if (holderUser) { throw new BadRequestError("Tài khoản đã tồn tại", 201) }
+        const holderUser = await findUserByEmail(email);
+        if (holderUser) {
+            throw new BadRequestError('Tài khoản đã tồn tại', 201);
+        }
         const existingData = await redis.hgetall(redisKey);
-        if (!existingData?.confirmed) throw new BadRequestError("Vui lòng xác minh tài khoản trước khi đăng ký");
-        const passwordHash = await bcrypt.hashSync(password, 10)
+        if (!existingData?.confirmed) throw new BadRequestError('Vui lòng xác minh tài khoản trước khi đăng ký');
+        const passwordHash = await bcrypt.hashSync(password, 10);
         // create new shop
         const newUser = await userModel.create({
-            user_name: email?.split("@")[0],
+            user_name: email?.split('@')[0],
             user_email: email,
             user_mobile: mobile,
-            user_password: passwordHash
-        })
+            user_password: passwordHash,
+        });
         if (!newUser) {
-            throw new BadRequestError("Đăng ký không thành công!", 403)
+            throw new BadRequestError('Đăng ký không thành công!', 403);
         }
-        const tokens = await createTokenPairs(newUser.toObject())
-        const { accessToken, refreshToken } = tokens
-        res.cookie("refresh_token", `${refreshToken}`, {
-            httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000
-        })
-        return accessToken
-
+        const tokens = await createTokenPairs(newUser.toObject());
+        const { accessToken, refreshToken } = tokens;
+        res.cookie('refresh_token', `${refreshToken}`, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return accessToken;
     }
     static async userLogin({ email, password }, res) {
-        const foundUser = await findUserByEmail(email)
+        const foundUser = await findUserByEmail(email);
         if (!foundUser) {
-            throw new BadRequestError("Tài khoản không tồn tại", 203)
+            throw new BadRequestError('Tài khoản không tồn tại', 203);
         }
-        const matchPassword = bcrypt.compareSync(password, foundUser.user_password)
-        if (!matchPassword) throw new BadRequestError("Tài khoản hoặc mật khẩu không đúng", 201)
-        const tokens = await createTokenPairs(foundUser)
-        const { accessToken, refreshToken } = tokens
-        res.cookie("refresh_token", `${refreshToken}`, {
-            httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000
-        })
-        return accessToken
+        const matchPassword = bcrypt.compareSync(password, foundUser.user_password);
+        if (!matchPassword) throw new BadRequestError('Tài khoản hoặc mật khẩu không đúng', 201);
+        const tokens = await createTokenPairs(foundUser);
+        const { accessToken, refreshToken } = tokens;
+        res.cookie('refresh_token', `${refreshToken}`, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return accessToken;
     }
     static async userLogout(res) {
-        res.clearCookie("refresh_token")
+        res.clearCookie('refresh_token');
     }
     static async handleRefreshToken(refreshToken, res) {
-        if (!refreshToken) throw new BadRequestError("Cookie required", 201)
-        const response = verifyRefreshToken(refreshToken)
-        if (!response) throw new BadRequestError("Verification failed", 201)
-        const foundUser = await findUserById(response._id)
-        const tokens = await createTokenPairs(foundUser)
-        res.cookie("refresh_token", `${tokens.refreshToken}`, {
-            httpOnly: true, maxAge: 7 * 24 * 60 * 60 * 1000
-        })
-        return tokens.accessToken
+        if (!refreshToken) throw new BadRequestError('Cookie required', 201);
+        const response = verifyRefreshToken(refreshToken);
+        if (!response) throw new BadRequestError('Verification failed', 201);
+        const foundUser = await findUserById(response._id);
+        const tokens = await createTokenPairs(foundUser);
+        res.cookie('refresh_token', `${tokens.refreshToken}`, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+        return tokens.accessToken;
     }
 
     // Gửi mã quên mật khẩu
     static async forgotPassword({ email }) {
-        if (!email) throw new BadRequestError("Vui lòng cung cấp email");
+        if (!email) throw new BadRequestError('Vui lòng cung cấp email');
 
         const user = await findUserByEmail(email);
-        if (!user) throw new BadRequestError("Tài khoản không tồn tại", 204);
+        if (!user) throw new BadRequestError('Tài khoản không tồn tại', 204);
 
         const redisKey = `reset_password:${email}`;
         const token = randomTokenByCrypto(6);
@@ -171,7 +175,7 @@ class AuthUserService {
         await redis.hset(redisKey, {
             token: hashToken,
             expiresAt: expiresAt.toString(),
-            confirmed: "false",
+            confirmed: 'false',
         });
         await redis.expire(redisKey, 10 * 60);
 
@@ -192,7 +196,7 @@ class AuthUserService {
                     
                     <tr>
                         <td style="color: #555; font-size: 16px; text-align: left;">
-                            <p>Chào <b>${email.split("@")[0]}</b>,</p>
+                            <p>Chào <b>${email.split('@')[0]}</b>,</p>
                             <p>Bạn đã yêu cầu đặt lại mật khẩu. Vui lòng sử dụng mã sau để xác nhận:</p>
                         </td>
                     </tr>
@@ -219,40 +223,40 @@ class AuthUserService {
                     </tr>
                 </table>
             </div>`,
-            fullName: email.split("@")[0],
+            fullName: email.split('@')[0],
         });
 
-        return { success: true, message: "Mã xác nhận đã được gửi qua email" };
+        return { success: true, message: 'Mã xác nhận đã được gửi qua email' };
     }
 
     // Xác nhận mã quên mật khẩu
     static async verifyResetCode({ email, token }) {
-        if (!email || !token) throw new BadRequestError("Vui lòng cung cấp đầy đủ thông tin");
+        if (!email || !token) throw new BadRequestError('Vui lòng cung cấp đầy đủ thông tin');
 
         const redisKey = `reset_password:${email}`;
         const existingData = await redis.hgetall(redisKey);
-        if (!existingData?.token) throw new BadRequestError("Mã xác nhận không hợp lệ", 400);
+        if (!existingData?.token) throw new BadRequestError('Mã xác nhận không hợp lệ', 400);
         if (Date.now() > parseInt(existingData.expiresAt, 10)) {
-            throw new BadRequestError("Mã xác nhận đã hết hạn", 400);
+            throw new BadRequestError('Mã xác nhận đã hết hạn', 400);
         }
         const hashToken = hashTokenByCrypto(token);
-        if (hashToken !== existingData.token) throw new BadRequestError("Mã xác nhận không đúng", 400);
+        if (hashToken !== existingData.token) throw new BadRequestError('Mã xác nhận không đúng', 400);
         // Xác nhận thành công -> cập nhật trạng thái mã
-        await redis.hset(redisKey, "confirmed", "true");
+        await redis.hset(redisKey, 'confirmed', 'true');
 
-        return { success: true, message: "Xác nhận thành công, bạn có thể đặt lại mật khẩu" };
+        return { success: true, message: 'Xác nhận thành công, bạn có thể đặt lại mật khẩu' };
     }
 
     // Đổi mật khẩu mới
     static async resetPassword({ email, newPassword }) {
         if (!email || !newPassword) {
-            throw new BadRequestError("Vui lòng cung cấp đầy đủ thông tin");
+            throw new BadRequestError('Vui lòng cung cấp đầy đủ thông tin');
         }
 
         const redisKey = `reset_password:${email}`;
         const existingData = await redis.hgetall(redisKey);
-        if (!existingData?.confirmed || existingData.confirmed !== "true") {
-            throw new BadRequestError("Bạn chưa xác nhận mã đặt lại mật khẩu", 400);
+        if (!existingData?.confirmed || existingData.confirmed !== 'true') {
+            throw new BadRequestError('Bạn chưa xác nhận mã đặt lại mật khẩu', 400);
         }
 
         const passwordHash = await bcrypt.hash(newPassword, 10);
@@ -260,21 +264,21 @@ class AuthUserService {
 
         await redis.del(redisKey); // Xóa mã sau khi dùng
 
-        return { success: true, message: "Mật khẩu đã được đặt lại thành công" };
+        return { success: true, message: 'Mật khẩu đã được đặt lại thành công' };
     }
     //đổi mk khi đã đăng nhập
     static async changePassword(userId, currentPassword, newPassword) {
         const user = await userModel.findById(userId);
-        if (!user) throw new BadRequestError("Người dùng không tồn tại");
+        if (!user) throw new BadRequestError('Người dùng không tồn tại');
 
         // Kiểm tra mật khẩu hiện tại
         const matchPassword = bcrypt.compareSync(currentPassword, user.user_password);
-        if (!matchPassword) throw new BadRequestError("Mật khẩu hiện tại không đúng");
+        if (!matchPassword) throw new BadRequestError('Mật khẩu hiện tại không đúng');
 
         // Kiểm tra mật khẩu mới có giống với mật khẩu cũ không
         const isSameAsOldPassword = bcrypt.compareSync(newPassword, user.user_password);
         if (isSameAsOldPassword) {
-            throw new BadRequestError("Mật khẩu mới không thể giống mật khẩu cũ");
+            throw new BadRequestError('Mật khẩu mới không thể giống mật khẩu cũ');
         }
 
         // Mã hóa mật khẩu mới và cập nhật vào cơ sở dữ liệu
@@ -288,10 +292,9 @@ class AuthUserService {
 
         return {
             success: true,
-            message: "Mật khẩu đã được thay đổi thành công"
+            message: 'Mật khẩu đã được thay đổi thành công',
         };
     }
-
 }
 
 module.exports = AuthUserService;

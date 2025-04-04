@@ -11,7 +11,7 @@ const InputEditor: React.FC<{
         <div className="flex flex-col  gap-2">
             <label className="flex justify-center w-full  text-sm text-secondary">{label}</label>
             <Editor
-                onChange={(e) => setValue((prev: any) => ({ ...prev, product_description: e.target.getContent() }))}
+                onChange={(e: any) => setValue((prev: any) => ({ ...prev, product_description: e.target.getContent() }))}
                 apiKey={import.meta.env.VITE_REACT_APIKEY_TINYMCE}
                 initialValue={`${value}`}
                 init={{

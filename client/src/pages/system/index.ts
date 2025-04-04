@@ -9,3 +9,4 @@ export { default as BannerManage } from './banner/index';
 export { default as ProductManage } from './product/index';
 export { default as EmployeeManage } from './employee/index';
 export { default as RoleManage } from './role/index';
+export { default as OrderManage } from './order/index';
