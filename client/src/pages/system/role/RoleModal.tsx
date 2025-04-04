@@ -65,7 +65,6 @@ const RoleModal: React.FC<RoleModalProps> = ({ isOpen, closeModal, onSave, role 
 
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
-    console.log(inputFields);
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">

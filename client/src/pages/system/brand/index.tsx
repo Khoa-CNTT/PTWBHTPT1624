@@ -21,7 +21,6 @@ export default function BrandManage() {
     useEffect(() => {
         const fetchApi = async () => {
             const res = await apiGetAllBrands({ limit: 5, page: currentPage });
-            console.log(res);
             if (!res.success) return;
             const data = res.data;
             setBrands(data.brands);
@@ -62,7 +61,6 @@ export default function BrandManage() {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteCategory(id);
-        console.log(res);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;

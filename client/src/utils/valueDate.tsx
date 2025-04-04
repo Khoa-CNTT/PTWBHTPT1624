@@ -2,7 +2,6 @@
 const validate = (valueForm: Record<string, any>, setInvalidFields: (fields: Array<{ name: string; message: string }>) => void) => {
     let isValid = true;
     const invalidFields: Array<{ name: string; message: string }> = [];
-    console.log(valueForm);
     Object.entries(valueForm).forEach(([key, value]) => {
         if (value === '') {
             invalidFields.push({

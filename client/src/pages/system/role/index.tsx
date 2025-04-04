@@ -52,7 +52,6 @@ export default function RoleManage() {
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
         // Cập nhật danh sách vai trò mà không cần reload trang
-        console.log(res);
         setRoles(
             (prev) =>
                 data._id
