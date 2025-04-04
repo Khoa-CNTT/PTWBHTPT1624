@@ -33,7 +33,7 @@ const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, closeModal, onS
             return;
         }
         // Thực hiện lưu
-        onSave(item ? { ...item, ...inputFields } : inputFields as IDashboard);
+        onSave(item ? { ...item, ...inputFields } : (inputFields as IDashboard));
     };
 
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, field: string) => {
@@ -43,17 +43,9 @@ const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, closeModal, onS
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
-                <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">
-                    {item ? 'Chỉnh sửa mục' : 'Thêm mới'}
-                </h4>
+                <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{item ? 'Chỉnh sửa mục' : 'Thêm mới'}</h4>
                 <div className="max-h-[400px] overflow-y-auto p-4 my-2 border border-gray-200 rounded-md">
-                    <InputForm
-                        col
-                        handleOnchange={(e) => handleInputField(e, 'title')}
-                        label="Tiêu đề"
-                        name_id="title"
-                        value={inputFields.title}
-                    />
+                    <InputForm col handleOnchange={(e) => handleInputField(e, 'title')} label="Tiêu đề" name_id="title" value={inputFields.title} />
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'description')}
@@ -63,8 +55,12 @@ const DashboardModal: React.FC<DashboardModalProps> = ({ isOpen, closeModal, onS
                     />
                 </div>
                 <div className="flex justify-end gap-3">
-                    <Button size="sm" variant="outline" onClick={closeModal}>Hủy</Button>
-                    <Button size="sm" onClick={handleSave}>{item ? 'Lưu thay đổi' : 'Thêm mới'}</Button>
+                    <Button size="sm" variant="outline" onClick={closeModal}>
+                        Hủy
+                    </Button>
+                    <Button size="sm" onClick={handleSave}>
+                        {item ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>
