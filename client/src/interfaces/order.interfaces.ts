@@ -1,6 +1,7 @@
 export interface Product {
     _id: string;
     product_name: string;
+    product_slug: string;
 }
 
 export interface OrderProduct {
@@ -9,6 +10,7 @@ export interface OrderProduct {
     quantity: number;
     price: number;
     discount: number;
+    product_thumb?: string;
 }
 
 export interface IOrder {
@@ -25,4 +27,12 @@ export interface IOrder {
         city: string;
         phone: string;
     };
+    order_shipping_price: number;
+    order_payment_method: string;
+    order_date_shipping: {
+        from: Date;
+        to: Date;
+    };
+    createdAt: Date;
+    updatedAt: Date;
 }

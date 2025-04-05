@@ -18,10 +18,10 @@ import {
     UserManage,
     VoucherManage,
     DashboardManage,
-    
 } from '../pages/system';
 import HomePage from '../pages/user/HomePage';
 import OrderManage from '../pages/system/order';
+import OrderDetail from '../pages/system/order/OrderDetail';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -42,6 +42,8 @@ const RouterPage = () => {
                             <AppLayout />
                         </ProtectedRoute>
                     }>
+                    <Route path={''} element={<DashboardManage />} />
+                    <Route path={PATH.MANAGE_DASHBOARD} element={<DashboardManage />} />
                     <Route path={PATH.MANAGE_CATEGORY} element={<CategoryManage />} />
                     <Route path={PATH.MANAGE_BRAND} element={<BrandManage />} />
                     <Route path={PATH.MANAGE_BANNER} element={<BannerManage />} />
@@ -53,7 +55,7 @@ const RouterPage = () => {
                     <Route path={PATH.MANAGE_EMPLOYEE} element={<EmployeeManage />} />
                     <Route path={PATH.MANAGE_PRODUCT} element={<ProductManage />} />
                     <Route path={PATH.MANAGE_ORDER} element={<OrderManage />} />
-                    <Route path={PATH.MANAGE_DASHBOARD} element={<DashboardManage />} />
+                    <Route path={PATH.ORDER_DETAIL} element={<OrderDetail />} />
                 </Route>
                 <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
             </Routes>

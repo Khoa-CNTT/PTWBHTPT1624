@@ -245,7 +245,7 @@ class OrderService {
         if (!order) throw new BadRequestError('Không tìm thấy đơn hàng');
         // Transform products array
         const products = order.order_products.map((p) => ({
-            product_thumb: p.productId.product_thumb,
+            product_thumb: p.productId?.product_thumb,
             quantity: p.quantity,
             discount: p.discount,
             price: p.price,

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
-import { Pagination, showNotification } from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { IShipping } from '../../../interfaces/shipping.interfaces';
@@ -77,6 +77,7 @@ export default function ShippingManage() {
             window.location.reload();
         }, 2000);
     };
+    if (shippings.length === 0) return <TableSkeleton columns={7} />;
     return (
         <>
             <PageMeta title="Quản lý nhà cung cấp" />

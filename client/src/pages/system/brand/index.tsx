@@ -6,7 +6,7 @@ import { apiCreateBrand, apiGetAllBrands, apiUpdateBrand } from '../../../servic
 import BrandTable from './BrandTable';
 import { IBrand } from '../../../interfaces/brand.interfaces';
 import BrandModal from './BrandModal';
-import { Pagination, showNotification } from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 
@@ -71,6 +71,7 @@ export default function BrandManage() {
             window.location.reload();
         }, 2000);
     };
+    if (brands.length === 0) return <TableSkeleton columns={6} />;
     return (
         <>
             <PageMeta title="Quản lý thương hiệu" />

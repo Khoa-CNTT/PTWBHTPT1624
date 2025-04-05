@@ -4,7 +4,7 @@ import { useModal } from '../../../hooks/useModal';
 import { apiAddVoucher, apiDeleteVoucher, apiGetAllVouchers, apiUpdateVoucher } from '../../../services/voucher.service';
 import VoucherTable from './VoucherTable';
 import VoucherModal from './VoucherModal';
-import { Pagination, showNotification } from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { IVoucher } from '../../../interfaces/voucher.interfaces';
@@ -73,6 +73,8 @@ export default function VoucherManage() {
             window.location.reload();
         }, 1000);
     };
+    if (vouchers.length === 0) return <TableSkeleton columns={7} />;
+
     return (
         <>
             <PageMeta title="Quản lý nhà cung cấp" />

@@ -4,7 +4,7 @@ import { useModal } from '../../../hooks/useModal';
 import { apiCreateBanner, apiDeleteBanner, apiGetAllBanners, apiUpdateBanner } from '../../../services/banner.service';
 import BannerTable from './BannerTable';
 import BannerModal from './BannerModal';
-import { Pagination, showNotification } from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { IBanner } from '../../../interfaces/banner.interfaces';
@@ -70,6 +70,7 @@ export default function BannerManage() {
             window.location.reload();
         }, 2000);
     };
+    if (banners.length === 0) return <TableSkeleton columns={6} />;
     return (
         <>
             <PageMeta title="Quản lý banner" />
