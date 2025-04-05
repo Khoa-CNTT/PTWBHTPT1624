@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pagination } from '../../../components';
+import { Pagination, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import UserTable from './UserTable';
@@ -51,6 +51,7 @@ export default function UserManage() {
         setBlockStatus({ id, isBlocked });
         setUsers((prevUsers) => prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user)));
     };
+    if (users.length === 0) return <TableSkeleton columns={6} />;
 
     return (
         <>

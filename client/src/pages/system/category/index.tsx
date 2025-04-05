@@ -6,7 +6,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
 import CategoryModal from './CategoryModal';
 import CategoryTable from './CategoryTable';
-import { showNotification } from '../../../components';
+import { showNotification, TableSkeleton } from '../../../components';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
@@ -76,6 +76,7 @@ export default function CategoryManage() {
             window.location.reload();
         }, 2000);
     };
+    if (categories.length === 0) return <TableSkeleton columns={6} />;
     return (
         <>
             <PageMeta title="Quản lý danh mục" />

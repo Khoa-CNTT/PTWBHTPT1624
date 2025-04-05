@@ -5,6 +5,7 @@ import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
 import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
 import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
+import BackupTableIcon from '@mui/icons-material/BackupTable';
 import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
 import { UserCircleIcon } from '../icons';
 import { PATH } from '../utils/const';
@@ -20,15 +21,15 @@ export const navItems: NavItem[] = [
     {
         name: 'Tổng quan',
         icon: <BadgeOutlinedIcon />,
-        path: PATH.MANAGE_DASHBOARD
+        path: PATH.MANAGE_DASHBOARD,
     },
     {
         icon: <ProductionQuantityLimitsOutlinedIcon />,
         name: 'Sản phẩm',
         path: PATH.MANAGE_PRODUCT,
-    } ,
+    },
     {
-        icon: <ProductionQuantityLimitsOutlinedIcon />,
+        icon: <BackupTableIcon />,
         name: 'Đơn hàng',
         path: PATH.MANAGE_ORDER,
     },

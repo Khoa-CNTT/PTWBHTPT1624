@@ -4,7 +4,7 @@ import { useModal } from '../../../hooks/useModal';
 import { apiCreateSupplier, apiDeleteSupplier, apiGetAllSuppliers, apiUpdateSupplier } from '../../../services/supplier.service';
 import SupplierTable from './SupplierTable';
 import SupplierModal from './SupplierModal';
-import { Pagination, showNotification } from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { ISupplier } from '../../../interfaces/supplier.interfaces';
@@ -71,6 +71,8 @@ export default function SupplierManage() {
             window.location.reload();
         }, 2000);
     };
+    if (suppliers.length === 0) return <TableSkeleton columns={6} />;
+
     return (
         <>
             <PageMeta title="Quản lý nhà cung cấp" />

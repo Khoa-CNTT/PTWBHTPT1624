@@ -3,7 +3,6 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../../com
 import { IOrder } from '../../../interfaces/order.interfaces';
 import { formatMoney } from '../../../utils/formatMoney';
 import { Link } from 'react-router';
-import { PATH } from '../../../utils/const';
 import { statusOrder } from '../../../utils/statusOrder';
 interface OrderListProps {
     orders: IOrder[];
@@ -62,7 +61,7 @@ const OrderTable: React.FC<OrderListProps> = ({ orders, tab, onChangeStatus }) =
                                     <div className="truncate-trailing text-[rgb(128,128,137)] line-clamp-3  text-theme-sm dark:text-white/90 space-y-1">
                                         {order.order_products.map((p) => (
                                             <p key={p._id}>
-                                                {p.productId.product_name} <span className="text-red-500">x{p.quantity}</span>
+                                                {p.productId?.product_name} <span className="text-red-500">x{p.quantity}</span>
                                             </p>
                                         ))}
                                     </div>
@@ -73,17 +72,15 @@ const OrderTable: React.FC<OrderListProps> = ({ orders, tab, onChangeStatus }) =
                                         {formatMoney(order?.order_total_price)}
                                     </span>
                                 </TableCell>
-                                <TableCell>
-                                    <div className="text-center">
-                                        {['pending', 'confirm', 'shipped']?.includes(tab) && (
-                                            <p className="text-[13px] text-primary underline cursor-pointer" onClick={() => onChangeStatus(order._id)}>
-                                                Xác nhận
-                                            </p>
-                                        )}
-                                        <Link to={`${PATH.ORDER_DETAIL}/${order._id}`} className="text-[13px] text-primary underline cursor-pointer">
-                                            Xem chi tiết
-                                        </Link>
-                                    </div>
+                                <TableCell className="text-center">
+                                    {['pending', 'confirm', 'shipped']?.includes(tab) && (
+                                        <p className="text-[13px] text-primary underline cursor-pointer" onClick={() => onChangeStatus(order._id)}>
+                                            Xác nhận
+                                        </p>
+                                    )}
+                                    <Link to={`/quan-ly/don-hang-chi-tiet/${order._id}`} className="text-[13px] text-primary underline cursor-pointer">
+                                        Xem chi tiết
+                                    </Link>
                                 </TableCell>
                             </TableRow>
                         ))}

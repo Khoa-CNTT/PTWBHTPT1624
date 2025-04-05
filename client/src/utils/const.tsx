@@ -13,6 +13,7 @@ export const PATH = {
     MESSAGE: 'message',
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
+    MANAGE_DASHBOARD: '/quan-ly/dashboard',
     ADMIN_LOGIN: '/dang-nhap',
     MANAGE_CATEGORY: '/quan-ly/danh-muc',
     MANAGE_BRAND: '/quan-ly/thuong-hieu',
@@ -27,7 +28,6 @@ export const PATH = {
     MANAGE_PRODUCT: '/quan-ly/san-pham',
     MANAGE_ORDER: '/quan-ly/don-hang',
     ORDER_DETAIL: '/quan-ly/don-hang-chi-tiet/:oid',
-    MANAGE_DASHBOARD: '/quan-ly/dashboard',
 };
 
 export const SEARCH_UTILITY = [

@@ -73,6 +73,7 @@ export default function RoleManage() {
             window.location.reload();
         }, 2000);
     };
+
     return (
         <>
             <PageMeta title="Quản lý vai trò" />

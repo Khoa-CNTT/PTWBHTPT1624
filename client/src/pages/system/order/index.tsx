@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { apiGetAllOrders, apiUpdateOrderStatus } from '../../../services/order.service';
 import { IOrder } from '../../../interfaces/order.interfaces';
-import { ButtonOutline, showNotification } from '../../../components';
+import { ButtonOutline, showNotification, TableSkeleton } from '../../../components';
 import OrderTable from './OrderTable';
 import { formatMoney } from '../../../utils/formatMoney';
 import { statusOrder } from '../../../utils/statusOrder';
@@ -39,6 +39,7 @@ const OrderManage: React.FC = () => {
     }, [displayTab]);
 
     const handleUpdateStatus = async (id: string) => {
+        if (!confirm('Bạn có muốn xác nhận không?')) return;
         const res = await apiUpdateOrderStatus({ orderId: id, newStatus: updateStatus[displayTab] });
         if (!res.success) {
             showNotification(res.message);
@@ -53,7 +54,7 @@ const OrderManage: React.FC = () => {
         const wb = XLSX.utils.book_new();
         const products = orders.map((or) => {
             const titleProducts = or.order_products.map((p) => {
-                return `${p.productId.product_name} - số lượng ${p.quantity}`;
+                return `${p.productId?.product_name} - số lượng ${p.quantity}`;
             });
             return {
                 'Mã hàng': or.order_code,
@@ -70,10 +71,12 @@ const OrderManage: React.FC = () => {
         XLSX.writeFile(wb, 'test.xlsx');
         showNotification('Không có đơn hàng nào!', true);
     };
+    if (orders.length === 0) return <TableSkeleton columns={6} />;
+
     return (
-        <div className="fixed-mobile w-full h-full bg-white overflow-y-scroll tablet:overflow-y-scroll">
+        <div className="fixed-mobile w-full  dark:border-white/[0.05] dark:bg-white/[0.03] h-full bg-white overflow-y-scroll tablet:overflow-y-scroll">
             {/* Tab lọc đơn hàng */}
-            <div className="tablet:flex tablet:bg-white laptop:w-full sticky top-0 grid grid-cols-6 bg-white rounded-sm overflow-hidden">
+            <div className="tablet:flex tablet:bg-white laptop:w-full sticky top-0 grid grid-cols-6  dark:border-white/[0.05] dark:bg-white/[0.03]  bg-white rounded-sm overflow-hidden">
                 {SELL_TAB.map((e, idx) => (
                     <div
                         key={idx}

@@ -8,6 +8,7 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { apiCreateProduct, apiDeleteProduct, apiGetAllProductsByAdmin, apiUpdateProduct } from '../../../services/product.service';
 import { IProduct } from '../../../interfaces/product.interfaces';
 import ProductModal from './ProductModal';
+import TableSkeleton from '../../../components/skeleton/TableSkeleton';
 
 export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -70,6 +71,9 @@ export default function ProductManage() {
             window.location.reload();
         }, 1000);
     };
+
+    if (products.length === 0) return <TableSkeleton />;
+
     return (
         <>
             <PageMeta title="Quản lý nhà cung cấp" />

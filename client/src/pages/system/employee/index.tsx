@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
-import { Pagination, showNotification } from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { IAdmin } from '../../../interfaces/admin.interfaces';
@@ -69,6 +69,7 @@ export default function EmployeeManage() {
             window.location.reload();
         }, 2000);
     };
+    if (employees.length === 0) return <TableSkeleton columns={6} />;
     return (
         <>
             <PageMeta title="Quản lý thương hiệu" />
