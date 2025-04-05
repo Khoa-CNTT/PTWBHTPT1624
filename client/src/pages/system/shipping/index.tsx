@@ -77,7 +77,7 @@ export default function ShippingManage() {
             window.location.reload();
         }, 2000);
     };
-    if (shippings.length === 0) return <TableSkeleton columns={7} />;
+    if (shippings.length === 0) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý nhà cung cấp" />

@@ -73,7 +73,7 @@ export default function VoucherManage() {
             window.location.reload();
         }, 1000);
     };
-    if (vouchers.length === 0) return <TableSkeleton columns={7} />;
+    if (vouchers.length === 0) return <TableSkeleton />;
 
     return (
         <>
