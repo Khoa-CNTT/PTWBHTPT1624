@@ -93,7 +93,18 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl  font-semibold text-gray-800 dark:text-white">{employee ? 'Chỉnh sửa nhân viên' : 'Thêm nhân viên'}</h4>
                 <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
-                    <InputReadOnly col label="Email" value={inputFields?.admin_email} />
+                    {employee ? (
+                        <InputReadOnly col label="Email" value={inputFields?.admin_email} />
+                    ) : (
+                        <InputForm
+                            col
+                            handleOnchange={(e) => handleInputField(e, 'admin_email')}
+                            label="Email"
+                            name_id="admin_email"
+                            value={inputFields?.admin_email}
+                            invalidFields={invalidFields}
+                        />
+                    )}
                     <InputForm
                         col
                         handleOnchange={(e) => handleInputField(e, 'admin_name')}

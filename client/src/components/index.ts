@@ -14,3 +14,4 @@ export { default as SkeletonViewOrder } from './skeleton/SkeletonViewOrder';
 export { default as DashboardSkeleton } from './skeleton/DashboardSkeleton.tsx';
 export { default as TableSkeleton } from './skeleton/TableSkeleton.tsx';
 export { default as OrderItem } from './item/OrderItem.tsx';
+export { default as NoPermission } from './NoPermission/index.tsx';
