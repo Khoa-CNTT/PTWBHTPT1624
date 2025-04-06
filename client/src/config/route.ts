@@ -26,6 +26,6 @@ export const ROUTES = [
     { path: PATH.MANAGE_SHIPPING, component: ShippingManage, permissions: 'shipping_company_manage' },
     { path: PATH.MANAGE_EMPLOYEE, component: EmployeeManage, permissions: 'employee_manage' },
     { path: PATH.MANAGE_BRAND, component: BrandManage, permissions: 'brand_manage' },
-    { path: PATH.MANAGE_ORDER, component: OrderDetail, permissions: 'order_manage' },
+    { path: PATH.ORDER_DETAIL, component: OrderDetail, permissions: 'order_manage' },
     // { path: PATH.MESSAGE_MANAGE, component: OrderDetail, permissions: 'order_manage' },
 ];
