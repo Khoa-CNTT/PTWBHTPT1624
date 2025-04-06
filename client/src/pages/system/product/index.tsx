@@ -42,8 +42,8 @@ export default function ProductManage() {
             res = await apiCreateProduct(data);
         }
         if (!res?.success) {
-            showNotification(res?.message, false);
-            // closeModal();
+            showNotification('Thêm không thành công', false);
+            closeModal();
             return;
         }
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);

@@ -3,7 +3,7 @@ const validate = (valueForm: Record<string, any>, setInvalidFields: (fields: Arr
     let isValid = true;
     const invalidFields: Array<{ name: string; message: string }> = [];
     Object.entries(valueForm).forEach(([key, value]) => {
-        if (value === '') {
+        if (value === '' || value === 0) {
             invalidFields.push({
                 name: key,
                 message: 'Bạn không được bỏ trống!',

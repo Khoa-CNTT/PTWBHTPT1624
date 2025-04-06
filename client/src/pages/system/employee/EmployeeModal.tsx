@@ -7,7 +7,6 @@ import { InputForm, InputReadOnly, showNotification } from '../../../components'
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import ImageCropper from '../../../components/ImageCropper';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { IAdmin } from '../../../interfaces/admin.interfaces';
 import {
     FormControl,
@@ -34,12 +33,21 @@ interface EmployeeModalProps {
     employee?: IAdmin | any;
 }
 const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSave, employee }) => {
-    const [inputFields, setInputFields] = useState<Partial<IAdmin>>({});
+    const [inputFields, setInputFields] = useState<Partial<IAdmin>>({
+        admin_avatar_url: '',
+        admin_email: '',
+        admin_mobile: '',
+        admin_name: '',
+        admin_roles: '',
+        admin_password: '',
+    });
     const [isUploading, setIsUploading] = useState(false);
     const [roles, setRoles] = useState<IRole[]>([]);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
-        setInputFields(employee ? employee : {});
+        if (employee) {
+            setInputFields(employee);
+        }
     }, [employee]);
     useEffect(() => {
         const fetchApi = async () => {
@@ -165,11 +173,9 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {countFilledFields(inputFields) >= 5 && (
-                        <Button size="sm" onClick={handleSave}>
-                            {employee ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {employee ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

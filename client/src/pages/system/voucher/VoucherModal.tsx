@@ -5,7 +5,6 @@ import validate from '../../../utils/valueDate';
 import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { IVoucher } from '../../../interfaces/voucher.interfaces';
 import ImageCropper from '../../../components/ImageCropper';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
@@ -20,15 +19,28 @@ interface VoucherModalProps {
 }
 
 const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave, voucher }) => {
-    const [inputFields, setInputFields] = useState<Partial<IVoucher>>({});
+    const [inputFields, setInputFields] = useState<Partial<IVoucher>>({
+        voucher_banner_image: '',
+        voucher_description: '',
+        voucher_end_date: '',
+        voucher_max_price: 0,
+        voucher_max_uses: 0,
+        voucher_method: 'fixed',
+        voucher_min_order_value: 0,
+        voucher_required_points: 0,
+        voucher_name: '',
+        voucher_start_date: '',
+        voucher_type: 'system',
+        voucher_uses_count: 0,
+        voucher_value: 0,
+        voucher_thumb: '',
+    });
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     const [isUploading, setIsUploading] = useState(false);
 
     useEffect(() => {
         if (voucher) {
             setInputFields(voucher);
-        } else {
-            setInputFields((prev) => ({ ...prev, voucher_type: 'system', voucher_method: 'fixed' }));
         }
     }, [voucher]);
     const handleSave = () => {
@@ -81,9 +93,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
 
-    const isDateValid =
-        inputFields.voucher_start_date && inputFields.voucher_end_date && new Date(inputFields.voucher_start_date) <= new Date(inputFields.voucher_end_date);
-    const isFormValid = countFilledFields(inputFields) >= 9 && isDateValid;
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">
             <div className="custom-scrollbar relative w-full max-w-[600px] rounded-3xl bg-white p-6 dark:bg-gray-900">
@@ -235,11 +244,9 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {isFormValid && (
-                        <Button size="sm" onClick={handleSave}>
-                            {voucher ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {voucher ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

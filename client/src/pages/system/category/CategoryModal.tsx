@@ -8,7 +8,6 @@ import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import ImageCropper from '../../../components/ImageCropper';
-import { countFilledFields } from '../../../utils/countFilledFields';
 
 interface CategoryModalProps {
     isOpen: boolean;
@@ -18,14 +17,15 @@ interface CategoryModalProps {
 }
 
 const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSave, category }) => {
-    const [inputFields, setInputFields] = useState<Partial<ICategory>>({});
+    const [inputFields, setInputFields] = useState<Partial<ICategory>>({
+        category_name: '',
+        category_thumb: '',
+    });
     const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
         if (category) {
             setInputFields(category);
-        } else {
-            setInputFields({});
         }
     }, [category]);
 
@@ -87,11 +87,9 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSav
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {countFilledFields(inputFields) >= 2 && (
-                        <Button size="sm" onClick={handleSave}>
-                            {category ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {category ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

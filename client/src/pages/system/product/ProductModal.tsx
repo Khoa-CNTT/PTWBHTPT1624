@@ -18,7 +18,6 @@ import InputEditor from '../../../components/input/InputEditor';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { CloseIcon } from '../../../icons';
 import validate from '../../../utils/valueDate';
-import { countFilledFields } from '../../../utils/countFilledFields';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -29,7 +28,19 @@ interface ProductModalProps {
 
 const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave, product }) => {
     // State definitions
-    const [inputFields, setInputFields] = useState<Partial<IProduct>>({});
+    const [inputFields, setInputFields] = useState<Partial<IProduct>>({
+        product_images: [],
+        product_description: '',
+        product_quantity: 0,
+        product_attribute: [],
+        product_category_id: '',
+        product_brand_id: '',
+        product_supplier_id: '',
+        product_discount: 0,
+        product_name: '',
+        product_price: 0,
+        product_thumb: '',
+    });
     const [isUploading, setIsUploading] = useState(false);
     const [brands, setBrands] = useState<IBrand[]>([]);
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -81,12 +92,18 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
 
     // Sync selectCategory and selectBrand with inputFields
     useEffect(() => {
-        setInputFields((prev) => ({ ...prev, product_category: selectCategory }));
+        setInputFields((prev) => ({ ...prev, product_category_id: selectCategory }));
+        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_category_id'));
     }, [selectCategory]);
 
     useEffect(() => {
-        setInputFields((prev) => ({ ...prev, product_brand: selectBrand }));
+        setInputFields((prev) => ({ ...prev, product_brand_id: selectBrand }));
+        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_brand_id'));
     }, [selectBrand]);
+    useEffect(() => {
+        setInputFields((prev) => ({ ...prev, product_supplier_id: selectSupplier }));
+        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_supplier_id'));
+    }, [selectSupplier]);
 
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
         setIsUploading(true);
@@ -116,7 +133,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
     };
     const handleSave = () => {
         const { _id, product_slug, product_sold, product_ratings, product_isPublished, ...data } = inputFields;
-
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng! nhập đầy đủ thông tin');
             return;
@@ -134,6 +150,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
             const updatedAttributes = prev.product_attribute?.map((attr) => (attr.name === name ? { ...attr, value } : { ...attr, [name]: value })) || [];
             return { ...prev, product_attribute: updatedAttributes };
         });
+        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_attribute'));
     };
     // Determine if the form is valid
     return (
@@ -280,16 +297,14 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                         </FormControl>
                     </div>
                 </div>
-                {countFilledFields(inputFields) >= 10 && (
-                    <div className="flex justify-end gap-3">
-                        <Button size="sm" variant="outline" onClick={closeModal}>
-                            Hủy
-                        </Button>
-                        <Button size="sm" onClick={handleSave}>
-                            {product ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    </div>
-                )}
+                <div className="flex justify-end gap-3">
+                    <Button size="sm" variant="outline" onClick={closeModal}>
+                        Hủy
+                    </Button>
+                    <Button size="sm" onClick={handleSave}>
+                        {product ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
+                </div>
             </div>
         </Modal>
     );

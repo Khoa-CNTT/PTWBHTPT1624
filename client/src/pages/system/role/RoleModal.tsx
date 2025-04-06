@@ -6,7 +6,6 @@ import { IRole } from '../../../interfaces/role.interfaces';
 import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { Checkbox, FormControl, FormControlLabel, Typography } from '@mui/material';
 import PERMISSIONS from '../../../config/permissions';
 
@@ -18,14 +17,15 @@ interface RoleModalProps {
 }
 
 const RoleModal: React.FC<RoleModalProps> = ({ isOpen, closeModal, onSave, role }) => {
-    const [inputFields, setInputFields] = useState<Partial<IRole>>({});
+    const [inputFields, setInputFields] = useState<Partial<IRole>>({
+        role_name: '',
+        role_permissions: [],
+    });
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
 
     useEffect(() => {
         if (role) {
             setInputFields(role);
-        } else {
-            setInputFields({ role_name: '', role_permissions: [] });
         }
     }, [role]);
 
@@ -104,11 +104,9 @@ const RoleModal: React.FC<RoleModalProps> = ({ isOpen, closeModal, onSave, role 
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {countFilledFields(inputFields) >= 2 && (
-                        <Button size="sm" onClick={handleSave}>
-                            {role ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {role ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

@@ -7,6 +7,7 @@ const downloadImage = require('../utils/search-image/downloadImage');
 const extractFeatures = require('../utils/search-image/extractFeatures');
 const path = require('path');
 const tf = require('@tensorflow/tfjs'); // Sử dụng phiên bản Web
+const generateRandomCode = require('../utils/generateRandomCode');
 const fs = require('fs').promises;
 
 class ProductService {
@@ -15,6 +16,7 @@ class ProductService {
         if (Object.keys(payload).length === 0) {
             throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
         }
+        payload.product_code = generateRandomCode(10);
         // Tạo sản phẩm mới
         const newProduct = await Product.create(payload);
         return newProduct;

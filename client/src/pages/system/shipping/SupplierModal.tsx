@@ -5,7 +5,6 @@ import validate from '../../../utils/valueDate';
 import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { IShipping } from '../../../interfaces/shipping.interfaces';
 import { Checkbox, FormControl, FormControlLabel, FormLabel, Typography } from '@mui/material';
 
@@ -17,11 +16,20 @@ interface ShippingModalProps {
 }
 
 const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSave, shipping }) => {
-    const [inputFields, setInputFields] = useState<Partial<IShipping>>({});
+    const [inputFields, setInputFields] = useState<Partial<IShipping>>({
+        sc_address: '',
+        sc_delivery_time: { from: 0, to: 0 },
+        sc_email: '',
+        sc_name: '',
+        sc_shipping_price: 0,
+        sc_phone: '',
+    });
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
 
     useEffect(() => {
-        setInputFields(shipping || {});
+        if (shipping) {
+            setInputFields(shipping);
+        }
     }, [shipping]);
 
     const handleSave = () => {
@@ -34,7 +42,6 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
         }
-
         onSave(shipping ? { _id: shipping._id, ...inputFields } : inputFields);
     };
 
@@ -149,11 +156,9 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {countFilledFields(inputFields) >= 6 && (
-                        <Button size="sm" onClick={handleSave}>
-                            {shipping ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {shipping ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

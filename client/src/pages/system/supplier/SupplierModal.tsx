@@ -1,10 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import validate from '../../../utils/valueDate';
 import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { ISupplier } from '../../../interfaces/supplier.interfaces';
 
 interface SupplierModalProps {
@@ -15,19 +15,21 @@ interface SupplierModalProps {
 }
 
 const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSave, supplier }) => {
-    const [inputFields, setInputFields] = useState<Partial<ISupplier>>({});
-
+    const [inputFields, setInputFields] = useState<Partial<ISupplier>>({
+        supplier_address: '',
+        supplier_description: '',
+        supplier_email: '',
+        supplier_name: '',
+        supplier_phone: '',
+    });
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
         if (supplier) {
             setInputFields(supplier);
-        } else {
-            setInputFields({});
         }
     }, [supplier]);
     const handleSave = () => {
-        const { supplier_address, supplier_description, supplier_email, supplier_name, supplier_phone } = inputFields;
-        const data = { supplier_address, supplier_description, supplier_email, supplier_name, supplier_phone };
+        const { _id, ...data } = inputFields;
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
@@ -92,11 +94,9 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {countFilledFields(inputFields) >= 5 && (
-                        <Button size="sm" onClick={handleSave}>
-                            {supplier ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {supplier ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

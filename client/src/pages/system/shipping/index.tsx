@@ -54,12 +54,12 @@ export default function ShippingManage() {
         }
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
-        // Cập nhật danh sách nhà cung cấp mà không cần reload trang
+        // Cập nhật danh sách công ty vận chuyển mà không cần reload trang
         setShippings(
             (prev) =>
                 data._id
-                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật nhà cung cấp đã có
-                    : [res.data, ...prev], // Thêm nhà cung cấp mới
+                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật công ty vận chuyển đã có
+                    : [res.data, ...prev], // Thêm công ty vận chuyển mới
         );
     };
     const handleDelete = async (id: string) => {
@@ -80,8 +80,8 @@ export default function ShippingManage() {
     if (shippings.length === 0) return <TableSkeleton />;
     return (
         <>
-            <PageMeta title="Quản lý nhà cung cấp" />
-            <PageBreadcrumb pageTitle="Nhà cung cấp" />
+            <PageMeta title="Quản lý công ty vận chuyển" />
+            <PageBreadcrumb pageTitle="Công ty vận chuyển" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-end">
                     <button

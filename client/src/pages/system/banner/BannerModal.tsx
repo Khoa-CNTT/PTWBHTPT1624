@@ -5,7 +5,6 @@ import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import ImageCropper from '../../../components/ImageCropper';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { IBanner } from '../../../interfaces/banner.interfaces';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
 import DateComponent from '../../../components/DateFilterComponent';
@@ -18,15 +17,20 @@ interface BannerModalProps {
 }
 
 const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, banner }) => {
-    const [inputFields, setInputFields] = useState<Partial<IBanner>>({});
+    const [inputFields, setInputFields] = useState<Partial<IBanner>>({
+        banner_description: '',
+        banner_endDate: 0,
+        banner_imageUrl: '',
+        banner_link: '',
+        banner_startDate: '',
+        banner_title: '',
+    });
     const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
 
     useEffect(() => {
         if (banner) {
             setInputFields(banner);
-        } else {
-            setInputFields({});
         }
     }, [banner]);
 
@@ -83,11 +87,6 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
 
-    const isDateValid =
-        inputFields.banner_startDate && inputFields.banner_endDate && new Date(inputFields.banner_startDate) <= new Date(inputFields.banner_endDate);
-
-    const isFormValid = countFilledFields(inputFields) >= 6 && isDateValid;
-
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
@@ -139,11 +138,9 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {isFormValid && (
-                        <Button size="sm" onClick={handleSave}>
-                            {banner ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {banner ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

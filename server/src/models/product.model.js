@@ -69,11 +69,6 @@ productSchema.pre('save', async function (next) {
         const error = new Error('Tên sản phẩm đã tồn tại!');
         return next(error); // Nếu tên sản phẩm đã tồn tại, trả về lỗi
     }
-    const existingProductCode = await mongoose.model('Product').findOne({ product_code: this.product_code });
-    if (existingProductCode && existingProductCode._id.toString() !== this._id.toString()) {
-        const error = new Error('Mã sản phẩm đã tồn tại');
-        return next(error); // Nếu tên sản phẩm đã tồn tại, trả về lỗi
-    }
 
     // Tạo slug nếu chưa có
     if (!this.product_slug) {

@@ -50,12 +50,12 @@ export default function VoucherManage() {
         }
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
-        // Cập nhật danh sách nhà cung cấp mà không cần reload trang
+        // Cập nhật danh sách voucher mà không cần reload trang
         setVouchers(
             (prev) =>
                 data._id
-                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật nhà cung cấp đã có
-                    : [res.data, ...prev], // Thêm nhà cung cấp mới
+                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật voucher đã có
+                    : [res.data, ...prev], // Thêm voucher mới
         );
     };
     const handleDelete = async (id: string) => {
@@ -76,8 +76,8 @@ export default function VoucherManage() {
     if (vouchers.length === 0) return <TableSkeleton />;
     return (
         <>
-            <PageMeta title="Quản lý nhà cung cấp" />
-            <PageBreadcrumb pageTitle="Nhà cung cấp" />
+            <PageMeta title="Quản lý voucher" />
+            <PageBreadcrumb pageTitle="Voucher" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-end">
                     <button

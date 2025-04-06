@@ -7,7 +7,6 @@ import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import { IBrand } from '../../../interfaces/brand.interfaces';
 import ImageCropper from '../../../components/ImageCropper';
-import { countFilledFields } from '../../../utils/countFilledFields';
 
 interface BrandModalProps {
     isOpen: boolean;
@@ -17,14 +16,15 @@ interface BrandModalProps {
 }
 
 const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, brand }) => {
-    const [inputFields, setInputFields] = useState<Partial<IBrand>>({});
+    const [inputFields, setInputFields] = useState<Partial<IBrand>>({
+        brand_banner: '',
+        brand_name: '',
+    });
     const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
         if (brand) {
             setInputFields(brand);
-        } else {
-            setInputFields({});
         }
     }, [brand]);
 
@@ -85,11 +85,9 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {countFilledFields(inputFields) >= 3 && (
-                        <Button size="sm" onClick={handleSave}>
-                            {brand ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {brand ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>
