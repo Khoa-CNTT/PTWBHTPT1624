@@ -14,6 +14,7 @@ export type NavItem = {
     name: string;
     icon: React.ReactNode; // Đổi từ React.ReactNode sang React.ElementType
     path?: string;
+    permission?: string;
     subItems?: { name: string; path: string; pro?: boolean; new?: boolean }[];
 };
 
@@ -27,46 +28,55 @@ export const navItems: NavItem[] = [
         icon: <ProductionQuantityLimitsOutlinedIcon />,
         name: 'Sản phẩm',
         path: PATH.MANAGE_PRODUCT,
+        permission: 'product_manage',
     },
     {
         icon: <BackupTableIcon />,
         name: 'Đơn hàng',
         path: PATH.MANAGE_ORDER,
+        permission: 'order_manage',
     },
     {
         icon: <AutoStoriesOutlinedIcon />,
         name: 'Banner',
         path: PATH.MANAGE_BANNER,
+        permission: 'banner_manage',
     },
     {
         icon: <CategoryOutlinedIcon />,
         name: 'Danh mục',
         path: PATH.MANAGE_CATEGORY,
+        permission: 'category_manage',
     },
     {
         icon: <AutoAwesomeOutlinedIcon />,
         name: 'Thương hiệu',
         path: PATH.MANAGE_BRAND,
+        permission: 'brand_manage',
     },
     {
         icon: <WarehouseOutlinedIcon />,
         name: 'Nhà cung cấp',
         path: PATH.MANAGE_SUPPLIERS,
+        permission: 'supplier_manage',
     },
     {
         icon: <AgricultureOutlinedIcon />,
         name: 'Công ty vận chuyển',
         path: PATH.MANAGE_SHIPPING,
+        permission: 'shipping_company_manage',
     },
     {
         icon: <RedeemOutlinedIcon />,
         name: 'Voucher',
         path: PATH.MANAGE_VOUCHER,
+        permission: 'voucher_manage',
     },
     {
         icon: <UserCircleIcon />,
         name: 'Người dùng',
         path: PATH.MANAGE_USER,
+        permission: 'voucher_manage',
     },
     {
         name: 'Nhân viên',
@@ -75,5 +85,6 @@ export const navItems: NavItem[] = [
             { name: 'Danh sách nhân viên', path: PATH.MANAGE_EMPLOYEE },
             { name: 'Quản lý vai trò', path: PATH.MANAGE_ROLE },
         ],
+        permission: 'employee_manage',
     },
 ];

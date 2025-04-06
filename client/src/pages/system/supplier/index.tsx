@@ -71,7 +71,7 @@ export default function SupplierManage() {
             window.location.reload();
         }, 2000);
     };
-    if (suppliers.length === 0) return <TableSkeleton columns={6} />;
+    if (suppliers.length === 0) return <TableSkeleton />;
 
     return (
         <>

@@ -9,6 +9,7 @@ import HomePage from '../pages/user/HomePage';
 import { ROUTES } from '../config/route';
 import PermissionMiddleware from '../middleware/PermissionMiddleware';
 import { NoPermission } from '../components';
+import AdminProfile from '../pages/system/profile';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -45,6 +46,7 @@ const RouterPage = () => {
                     />
                 ))}
                 {/* Nếu không khớp route nào, điều hướng về dashboard */}
+                <Route path={PATH.MANAGE_PROFILE} element={<AdminProfile />} />
                 <Route path="*" element={<Navigate to={PATH.MANAGE_DASHBOARD} />} />
             </Route>
             {/* Trang đăng nhập admin */}

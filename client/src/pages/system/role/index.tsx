@@ -5,7 +5,7 @@ import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
 import RoleModal from './RoleModal';
 import RoleTable from './RoleTable';
-import { showNotification } from '../../../components';
+import { showNotification, TableSkeleton } from '../../../components';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
@@ -73,7 +73,7 @@ export default function RoleManage() {
             window.location.reload();
         }, 2000);
     };
-
+    if (roles.length === 0) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý vai trò" />

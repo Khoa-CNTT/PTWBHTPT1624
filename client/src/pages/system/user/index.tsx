@@ -51,7 +51,7 @@ export default function UserManage() {
         setBlockStatus({ id, isBlocked });
         setUsers((prevUsers) => prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user)));
     };
-    if (users.length === 0) return <TableSkeleton columns={6} />;
+    if (users.length === 0) return <TableSkeleton />;
 
     return (
         <>

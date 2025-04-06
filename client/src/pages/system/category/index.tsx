@@ -76,7 +76,7 @@ export default function CategoryManage() {
             window.location.reload();
         }, 2000);
     };
-    if (categories.length === 0) return <TableSkeleton columns={6} />;
+    if (categories.length === 0) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý danh mục" />

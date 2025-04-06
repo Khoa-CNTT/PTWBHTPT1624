@@ -10,7 +10,6 @@ const PERMISSIONS = [
     { key: 'VOUCHER_MANAGE', value: 'voucher_manage', name: 'Quản lý mã giảm giá' },
     { key: 'USER_MANAGE', value: 'user_manage', name: 'Quản lý người dùng' },
     { key: 'EMPLOYEE_MANAGE', value: 'employee_manage', name: 'Quản lý nhân viên' },
-    { key: 'ROLE_MANAGE', value: 'role_manage', name: 'Quản lý vai trò và phân quyền' },
     { key: 'SHIPPING_COMPANY_MANAGE', value: 'shipping_company_manage', name: 'Quản lý công ty vận chuyển' },
 ];
 export default PERMISSIONS;

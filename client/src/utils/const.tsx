@@ -28,6 +28,7 @@ export const PATH = {
     MANAGE_PRODUCT: '/quan-ly/san-pham',
     MANAGE_ORDER: '/quan-ly/don-hang',
     ORDER_DETAIL: '/quan-ly/don-hang-chi-tiet/:oid',
+    MANAGE_PROFILE: '/quan-ly/chinh-sua-thong-tin',
 };
 
 export const SEARCH_UTILITY = [

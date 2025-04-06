@@ -74,7 +74,6 @@ export default function VoucherManage() {
         }, 1000);
     };
     if (vouchers.length === 0) return <TableSkeleton />;
-
     return (
         <>
             <PageMeta title="Quản lý nhà cung cấp" />

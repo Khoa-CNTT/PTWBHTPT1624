@@ -51,12 +51,12 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
         fetchApi();
     }, []);
     const handleSave = () => {
-        const { _id, admin_isBlocked, ...data } = inputFields;
+        const { _id, admin_isBlocked, admin_password, ...data } = inputFields;
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng nhập đầy đủ thông tin');
             return;
         }
-        onSave(employee ? { _id: employee._id, ...data } : data);
+        onSave(employee ? { _id: employee._id, ...data } : { ...data, admin_password });
     };
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev) => ({

@@ -1,16 +1,17 @@
-import { create } from "zustand";
-import { IAdmin } from "../interfaces/admin.interfaces";
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { create } from 'zustand';
+import { IAdmin } from '../interfaces/admin.interfaces';
 
 // Trạng thái & hành động của store
 interface AdminState {
-    admin: IAdmin | null;
+    admin: IAdmin | any;
     setAdmin: (admin: IAdmin) => void;
     clearAdmin: () => void;
 }
 
 // Lấy dữ liệu từ localStorage
-const getStoredAdmin = (): IAdmin | null => {
-    const storedAdmin = localStorage.getItem("admin");
+const getStoredAdmin = (): IAdmin | any => {
+    const storedAdmin = localStorage.getItem('admin');
     return storedAdmin ? JSON.parse(storedAdmin) : null;
 };
 
@@ -18,11 +19,11 @@ const getStoredAdmin = (): IAdmin | null => {
 const useAdminStore = create<AdminState>((set) => ({
     admin: getStoredAdmin(),
     setAdmin: (admin) => {
-        localStorage.setItem("admin", JSON.stringify(admin));
+        localStorage.setItem('admin', JSON.stringify(admin));
         set({ admin });
     },
     clearAdmin: () => {
-        localStorage.removeItem("admin");
+        localStorage.removeItem('admin');
         set({ admin: null });
     },
 }));

@@ -71,7 +71,7 @@ const OrderManage: React.FC = () => {
         XLSX.writeFile(wb, 'test.xlsx');
         showNotification('Không có đơn hàng nào!', true);
     };
-    if (orders.length === 0) return <TableSkeleton columns={6} />;
+    if (orders.length === 0) return <TableSkeleton />;
 
     return (
         <div className="fixed-mobile w-full  dark:border-white/[0.05] dark:bg-white/[0.03] h-full bg-white overflow-y-scroll tablet:overflow-y-scroll">

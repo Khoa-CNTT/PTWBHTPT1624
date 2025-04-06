@@ -70,7 +70,7 @@ export default function BannerManage() {
             window.location.reload();
         }, 2000);
     };
-    if (banners.length === 0) return <TableSkeleton columns={6} />;
+    if (banners.length === 0) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý banner" />

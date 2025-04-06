@@ -1,13 +1,13 @@
 // components/TableSkeleton.js
 import { Skeleton } from '@mui/material';
 
-const TableSkeleton = ({ columns = 7, rows = 6 }) => {
+const TableSkeleton = ({ columns = 6, rows = 6 }) => {
     // Tạo mảng cho các cột header (dựa trên số lượng cột từ prop)
     const columnHeaders = Array(columns).fill(0);
     // Tạo mảng cho các hàng placeholder dựa trên số lượng rows từ prop
     const skeletonRows = Array(rows).fill(0);
     return (
-        <div className="space-y-6">
+        <div className="space-y-6 w-full">
             <Skeleton variant="text" width={150} height={30} />
             <div className="bg-white rounded-xl shadow-lg overflow-hidden">
                 {/* Skeleton cho header của bảng */}

@@ -69,7 +69,7 @@ export default function EmployeeManage() {
             window.location.reload();
         }, 2000);
     };
-    if (employees.length === 0) return <TableSkeleton columns={6} />;
+    if (employees.length === 0) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý thương hiệu" />
