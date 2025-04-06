@@ -10,6 +10,7 @@ import { DashboardSkeleton } from '../../../components';
 export default function DashboardManage() {
     const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
     const [viewType, setViewType] = useState<'day' | 'month'>('day');
+    const [showTooltip, setShowTooltip] = useState(false); // State for Tooltip
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -42,6 +43,15 @@ export default function DashboardManage() {
     const handleProductClick = () => navigate('/quan-ly/san-pham');
     const handleUserClick = () => navigate('/quan-ly/nguoi-dung');
     const handleOrderClick = () => navigate('/quan-ly/don-hang');
+
+    // Tooltip handlers for total revenue
+    const handleMouseEnter = () => {
+        setShowTooltip(true);
+    };
+
+    const handleMouseLeave = () => {
+        setShowTooltip(false);
+    };
 
     return (
         <>
@@ -91,6 +101,8 @@ export default function DashboardManage() {
                                 key: 'totalRevenue',
                                 label: statLabels.totalRevenue,
                                 value: dashboardData.stats.totalRevenue,
+                                onMouseEnter: handleMouseEnter,
+                                onMouseLeave: handleMouseLeave,
                             },
                             {
                                 key: 'totalReviews',
@@ -113,14 +125,33 @@ export default function DashboardManage() {
                                     },
                                 ],
                             },
-                        ]).map(({ key, label, value, onClick, detail }, index) => (
+                        ]).map(({ key, label, value, onClick, detail, onMouseEnter, onMouseLeave }, index) => (
                             <div
                                 key={index}
                                 className="relative group p-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105"
                                 onClick={onClick}
+                                onMouseEnter={onMouseEnter}
+                                onMouseLeave={onMouseLeave}
                             >
                                 <div className="text-sm text-gray-100">{label}</div>
                                 <div className="text-3xl font-bold text-white">{value}</div>
+                                {key === 'totalRevenue' && showTooltip && (
+                                    <div className="absolute left-0 top-full mt-2 w-full transform scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out z-10">
+                                        <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-4 space-y-2 text-sm">
+                                            <div className="font-semibold">Doanh thu 6 tháng gần nhất:</div>
+                                            {dashboardData.revenuePerMonth?.slice(-6).map((monthData, index) => (
+                                                <div key={index} className="flex items-center space-x-2">
+                                                    <span className="text-gray-800">
+                                                        Tháng {monthData._id}:
+                                                    </span>
+                                                    <span className="font-semibold text-gray-900">
+                                                        {monthData.total.toLocaleString()} VND
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                )}
                                 {detail && (
                                     <div className="absolute left-0 top-full mt-2 w-full transform scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out z-10">
                                         <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-4 space-y-2 text-sm">
@@ -148,49 +179,47 @@ export default function DashboardManage() {
                     Doanh thu theo {viewType === 'day' ? 'ngày' : 'tháng'}
                 </h3>
                 <div className="mb-4">
-    <button
-        className={`mr-4 px-4 py-2 rounded-lg ${viewType === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        onClick={() => handleViewChange('day')}
-    >
-        Theo ngày
-    </button>
-    <button
-        className={`px-4 py-2 rounded-lg ${viewType === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
-        onClick={() => handleViewChange('month')}
-    >
-        Theo tháng
-    </button>
-</div>
+                    <button
+                        className={`mr-4 px-4 py-2 rounded-lg ${viewType === 'day' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        onClick={() => handleViewChange('day')}
+                    >
+                        Theo ngày
+                    </button>
+                    <button
+                        className={`px-4 py-2 rounded-lg ${viewType === 'month' ? 'bg-blue-500 text-white' : 'bg-gray-200'}`}
+                        onClick={() => handleViewChange('month')}
+                    >
+                        Theo tháng
+                    </button>
+                </div>
 
-{viewType === 'day' ? (
-    dashboardData?.revenuePerDay?.length ? (
-        <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dashboardData.revenuePerDay}>
-                <XAxis dataKey="_id" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="total" stroke="#4C6EF5" />
-            </LineChart>
-        </ResponsiveContainer>
-    ) : (
-        <div className="text-center text-gray-500">Không có dữ liệu doanh thu</div>
-    )
-) : (
-    // Lọc 12 tháng gần nhất
-    dashboardData?.revenuePerMonth?.length ? (
-        <ResponsiveContainer width="100%" height={300}>
-            <LineChart data={dashboardData.revenuePerMonth.slice(-12)}>
-                <XAxis dataKey="_id" />
-                <YAxis />
-                <Tooltip />
-                <Line type="monotone" dataKey="total" stroke="#4C6EF5" />
-            </LineChart>
-        </ResponsiveContainer>
-    ) : (
-        <div className="text-center text-gray-500">Không có dữ liệu doanh thu</div>
-    )
-)}
-
+                {viewType === 'day' ? (
+                    dashboardData?.revenuePerDay?.length ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                            <LineChart data={dashboardData.revenuePerDay}>
+                                <XAxis dataKey="_id" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="total" stroke="#4C6EF5" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="text-center text-gray-500">Không có dữ liệu doanh thu</div>
+                    )
+                ) : (
+                    dashboardData?.revenuePerMonth?.length ? (
+                        <ResponsiveContainer width="100%" height={300}>
+                           <LineChart data={dashboardData.revenuePerMonth.slice(-6).reverse()}>
+                                <XAxis dataKey="_id" />
+                                <YAxis />
+                                <Tooltip />
+                                <Line type="monotone" dataKey="total" stroke="#4C6EF5" />
+                            </LineChart>
+                        </ResponsiveContainer>
+                    ) : (
+                        <div className="text-center text-gray-500">Không có dữ liệu doanh thu</div>
+                    )
+                )}
             </div>
 
             {/* Top 5 sản phẩm bán chạy */}
