@@ -11,8 +11,13 @@ export interface DashboardStats {
 }
 
 export interface RevenuePerDay {
-    _id: string; // ngày
+    _id: string; // ngày, ví dụ: "2025-04-05"
     total: number; // doanh thu trong ngày đó
+}
+
+export interface RevenuePerMonth {
+    _id: string; // tháng, ví dụ: "2025-04"
+    total: number; // doanh thu trong tháng đó
 }
 
 export interface TopSellingProduct {
@@ -29,6 +34,7 @@ export interface Review {
 export interface DashboardData {
     stats: DashboardStats;
     revenuePerDay: RevenuePerDay[];
+    revenuePerMonth: RevenuePerMonth[]; // 👈 Thêm dòng này
     topSellingProducts: TopSellingProduct[];
     pendingReviews: Review[];
 }
