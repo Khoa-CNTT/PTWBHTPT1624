@@ -25,6 +25,12 @@ const userAuthentication = asyncHandle(async (req, res, next) => {
             message: 'Token truy cập không hợp lệ',
         });
     }
+    if (user.user_isBlocked) {
+        return res.status(401).json({
+            success: false,
+            message: 'Bạn đã bị chặn!',
+        });
+    }
     req.user = user;
     next();
 });

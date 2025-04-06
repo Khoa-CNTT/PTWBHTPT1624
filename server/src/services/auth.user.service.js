@@ -134,6 +134,9 @@ class AuthUserService {
         if (!foundUser) {
             throw new BadRequestError('Tài khoản không tồn tại', 203);
         }
+        if (foundUser.user_isBlocked) {
+            throw new BadRequestError('Tài khoản đã bị chặn', 203);
+        }
         const matchPassword = bcrypt.compareSync(password, foundUser.user_password);
         if (!matchPassword) throw new BadRequestError('Tài khoản hoặc mật khẩu không đúng', 201);
         const tokens = await createTokenPairs(foundUser);
@@ -163,15 +166,13 @@ class AuthUserService {
     // Gửi mã quên mật khẩu
     static async forgotPassword({ email }) {
         if (!email) throw new BadRequestError('Vui lòng cung cấp email');
-
         const user = await findUserByEmail(email);
         if (!user) throw new BadRequestError('Tài khoản không tồn tại', 204);
-
+        if (user.user_isBlocked) throw new BadRequestError('Tài khoản đã bị chặn', 204);
         const redisKey = `reset_password:${email}`;
         const token = randomTokenByCrypto(6);
         const hashToken = hashTokenByCrypto(token);
         const expiresAt = Date.now() + 10 * 60 * 1000; // Hết hạn sau 10 phút
-
         await redis.hset(redisKey, {
             token: hashToken,
             expiresAt: expiresAt.toString(),
@@ -243,53 +244,41 @@ class AuthUserService {
         if (hashToken !== existingData.token) throw new BadRequestError('Mã xác nhận không đúng', 400);
         // Xác nhận thành công -> cập nhật trạng thái mã
         await redis.hset(redisKey, 'confirmed', 'true');
-
         return { success: true, message: 'Xác nhận thành công, bạn có thể đặt lại mật khẩu' };
     }
-
     // Đổi mật khẩu mới
     static async resetPassword({ email, newPassword }) {
         if (!email || !newPassword) {
             throw new BadRequestError('Vui lòng cung cấp đầy đủ thông tin');
         }
-
         const redisKey = `reset_password:${email}`;
         const existingData = await redis.hgetall(redisKey);
         if (!existingData?.confirmed || existingData.confirmed !== 'true') {
             throw new BadRequestError('Bạn chưa xác nhận mã đặt lại mật khẩu', 400);
         }
-
         const passwordHash = await bcrypt.hash(newPassword, 10);
         await userModel.updateOne({ user_email: email }, { user_password: passwordHash });
-
         await redis.del(redisKey); // Xóa mã sau khi dùng
-
         return { success: true, message: 'Mật khẩu đã được đặt lại thành công' };
     }
     //đổi mk khi đã đăng nhập
     static async changePassword(userId, currentPassword, newPassword) {
         const user = await userModel.findById(userId);
         if (!user) throw new BadRequestError('Người dùng không tồn tại');
-
         // Kiểm tra mật khẩu hiện tại
         const matchPassword = bcrypt.compareSync(currentPassword, user.user_password);
         if (!matchPassword) throw new BadRequestError('Mật khẩu hiện tại không đúng');
-
         // Kiểm tra mật khẩu mới có giống với mật khẩu cũ không
         const isSameAsOldPassword = bcrypt.compareSync(newPassword, user.user_password);
         if (isSameAsOldPassword) {
             throw new BadRequestError('Mật khẩu mới không thể giống mật khẩu cũ');
         }
-
         // Mã hóa mật khẩu mới và cập nhật vào cơ sở dữ liệu
         const newPasswordHash = await bcrypt.hash(newPassword, 10);
         user.user_password = newPasswordHash;
-
         // Cập nhật thời gian thay đổi mật khẩu
         user.user_passwordChangedAt = new Date().toISOString();
-
         await user.save();
-
         return {
             success: true,
             message: 'Mật khẩu đã được thay đổi thành công',

@@ -85,9 +85,27 @@ class AdminService {
             admins, // Danh sách admin kèm thông tin role và permission
         };
     }
-    static async getProfile(adminid) {
-        return await AdminModel.findById(adminid).select('-admin_password');
+    static async getProfile(adminId) {
+        const admin = await AdminModel.findById(adminId)
+            .select('-admin_password') // không lấy password
+            .populate({
+                path: 'admin_roles',
+                select: 'role_name role_permissions',
+            });
+
+        if (!admin) return null;
+        // Gộp toàn bộ quyền từ các role
+        const allPermissions = admin.admin_roles.flatMap((role) => role.role_permissions);
+        // Xoá trùng
+        const uniquePermissions = [...new Set(allPermissions)];
+        // Convert admin sang object JS thường
+        const adminObj = admin.toObject();
+        // Gắn thêm danh sách permission
+        adminObj.permissions = uniquePermissions;
+        delete adminObj.admin_roles;
+        return adminObj;
     }
+
     static async updateProfile(uid, payload) {
         const { admin_password, ...updateData } = payload; // Không cho phép cập nhật mật khẩu
 

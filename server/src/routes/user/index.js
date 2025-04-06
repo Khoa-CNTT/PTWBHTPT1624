@@ -11,8 +11,8 @@ const router = express.Router();
 
 router.get('/profile', [userAuthentication], asyncHandle(UserController.getProfile));
 router.put('/profile/update', [userAuthentication], asyncHandle(UserController.updateProfile));
-// router.use(adminAuthentication);
-// router.use(restrictTo(PERMISSIONS.USER_MANAGE));
+router.use(adminAuthentication);
+router.use(restrictTo(PERMISSIONS.ROLE_MANAGE));
 router.get('/all', asyncHandle(UserController.getAllUsers));
 router.post('/add', asyncHandle(UserController.addUser));
 router.put('/:uid/update', asyncHandle(UserController.updateUser));
