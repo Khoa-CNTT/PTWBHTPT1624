@@ -10,6 +10,7 @@ import {
     SupplierManage,
     UserManage,
     VoucherManage,
+    ReviewManage
 } from '../pages/system';
 import OrderDetail from '../pages/system/order/OrderDetail';
 import { PATH } from '../utils/const';
