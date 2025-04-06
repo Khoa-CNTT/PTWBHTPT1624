@@ -73,7 +73,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
                     value={inputFields.brand_name}
                     invalidFields={invalidFields}
                 />
-                <div className="flex">
+                <div className="flex mt-2">
                     <div className="w-full">
                         <ImageCropper width={900} height={270} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />
                         {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}

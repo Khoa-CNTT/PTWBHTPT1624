@@ -14,7 +14,7 @@ interface InputFormProps {
 
 const InputForm: React.FC<InputFormProps> = ({ name_id, label, value, col, handleOnchange, type = 'text', placeholder, invalidFields }) => {
     return (
-        <div className={`flex ${col ? 'flex-col' : ''} w-full h-auto gap-4 items-center mt-3`}>
+        <div className={`flex ${col ? 'flex-col' : ''} w-full h-auto gap-2 items-center mt-3`}>
             {label && (
                 <label htmlFor={name_id} className={`flex ${!col ? 'justify-end w-1/2 ' : 'justify-start w-full'} text-sm text-secondary`}>
                     {label}
