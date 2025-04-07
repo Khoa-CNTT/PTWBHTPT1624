@@ -14,6 +14,7 @@ export interface IProduct extends IProductItem {
     product_images: string[]; // Danh sách ảnh sản phẩm
     product_description: string; // Mô tả sản phẩm
     product_quantity: number; // Số lượng sản phẩm trong kho
+    product_expiry_date?: string; // ✅ Hạn sử dụng (ISO string hoặc Date)
     product_attribute: { name: string; value: string }[]; // Thuộc tính sản phẩm
     product_category_id: string; // ID danh mục sản phẩm
     product_brand_id: string; // ID thương hiệu sản phẩm

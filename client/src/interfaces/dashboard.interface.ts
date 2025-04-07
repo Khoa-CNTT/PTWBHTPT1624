@@ -1,40 +1,42 @@
 export interface DashboardStats {
-    totalProducts: number;
-    totalUsers: number;
-    totalOrders: number;
-    totalPendingOrders: number;
-    totalDeliveredOrders: number;
-    totalRevenue: number;
-    totalReviews: number;
-    totalApprovedReviews: number;
-    totalPendingReviews: number;
+  totalProducts: number;
+  totalUsers: number;
+  totalOrders: number;
+  totalPendingOrders: number;
+  totalDeliveredOrders: number;
+  totalRevenue: number;
+  totalReviews: number;
+  totalApprovedReviews: number;
+  totalPendingReviews: number;
+  expiredProducts: number; // Sản phẩm đã hết hạn
+  lessThanOneMonthProducts: number; // Sản phẩm cận hạn (dưới 1 tháng)
+  moreThanOneMonthProducts: number; // Sản phẩm còn hạn trên 1 tháng
 }
 
 export interface RevenuePerDay {
-    _id: string; // ngày, ví dụ: "2025-04-05"
-    total: number; // doanh thu trong ngày đó
+  _id: string; // ngày
+  total: number;
 }
 
 export interface RevenuePerMonth {
-    _id: string; // tháng, ví dụ: "2025-04"
-    total: number; // doanh thu trong tháng đó
+  _id: string; // tháng (yyyy-MM)
+  total: number;
 }
 
 export interface TopSellingProduct {
-    _id: string;
-    product_name: string;
-    product_sold: number;
+  _id: string;
+  product_name: string;
+  product_sold: number;
 }
 
 export interface Review {
-    content: string;
-    // bạn có thể thêm nhiều field hơn tùy vào dữ liệu API
+  content: string;
 }
 
 export interface DashboardData {
-    stats: DashboardStats;
-    revenuePerDay: RevenuePerDay[];
-    revenuePerMonth: RevenuePerMonth[]; // 👈 Thêm dòng này
-    topSellingProducts: TopSellingProduct[];
-    pendingReviews: Review[];
+  stats: DashboardStats;
+  revenuePerDay: RevenuePerDay[];
+  revenuePerMonth: RevenuePerMonth[];
+  topSellingProducts: TopSellingProduct[];
+  pendingReviews: Review[];
 }

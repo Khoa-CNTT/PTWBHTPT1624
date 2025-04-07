@@ -65,7 +65,21 @@ const UserTable: React.FC<UserListProps> = ({ users, onBlock }) => {
                                 <TableCell className="px-5 py-3 text-center align-center flex gap-3 justify-center">
                                     <FormControl>
                                         <FormControlLabel
-                                            control={<Checkbox checked={user.user_isBlocked || false} onChange={(e) => onBlock(user._id, e.target.checked)} />}
+                                            control={
+                                                <Checkbox
+                                                    checked={user.user_isBlocked || false}
+                                                    onChange={(e) => {
+                                                        const isChecked = e.target.checked;
+                                                        const confirmMsg = isChecked
+                                                            ? `Bạn có chắc chắn muốn **CHẶN** người dùng "${user.user_name || 'này'}"?`
+                                                            : `Bạn có chắc chắn muốn **BỎ CHẶN** người dùng "${user.user_name || 'này'}"?`;
+
+                                                        if (window.confirm(confirmMsg)) {
+                                                            onBlock(user._id, isChecked);
+                                                        }
+                                                    }}
+                                                />
+                                            }
                                             label={<Typography sx={{ fontSize: '12px' }}>Chặn</Typography>}
                                             aria-label={`Chặn người dùng ${user.user_name || 'này'}`}
                                         />
