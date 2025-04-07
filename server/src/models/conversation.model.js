@@ -1,17 +1,26 @@
-const mongoose = require("mongoose");
-const { Schema } = mongoose;
+const mongoose = require('mongoose');
+const Schema = mongoose.Schema;
 
 const conversationSchema = new Schema(
-  {
-    participants: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: "User",
-        required: true,
-      },
-    ],
-  },
-  { timestamps: true }
+    {
+        user: {
+            type: Schema.Types.ObjectId,
+            ref: 'User',
+            required: true,
+            unique: true, // Một người dùng chỉ có một cuộc hội thoại duy nhất
+        },
+        participants: [
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'User', // Người dùng tham gia cuộc trò chuyện
+            },
+            {
+                type: Schema.Types.ObjectId,
+                ref: 'Admin', // Admin tham gia cuộc trò chuyện
+            },
+        ],
+    },
+    { timestamps: true },
 );
 
-module.exports = mongoose.model("Conversation", conversationSchema);
+module.exports = mongoose.model('Conversation', conversationSchema);
