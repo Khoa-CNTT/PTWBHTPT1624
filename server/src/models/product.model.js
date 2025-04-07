@@ -13,6 +13,7 @@ const productSchema = new Schema(
         product_thumb: { type: String, required: true }, // Hình ảnh đại diện sản phẩm
         product_images: [{ type: String, required: true }], // Các hình ảnh của sản phẩm
         product_price: { type: Number, required: true },
+        product_expiry_date: { type: Date }, // Hạn sử dụng
         product_discount: { type: Number, default: 0 }, // %
         product_description: { type: String, required: true },
         product_quantity: { type: Number, required: true }, // Số lượng sản phẩm

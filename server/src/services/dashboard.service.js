@@ -95,6 +95,23 @@ class DashboardService {
                 { $sort: { _id: 1 } },
             ]);
 
+            // Phân loại sản phẩm theo hạn sử dụng
+            const oneMonthLater = new Date();
+            oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
+
+            // Sản phẩm đã hết hạn
+            const expiredProductsCount = await Product.countDocuments({ product_expiry_date: { $lt: new Date() } });
+
+            // Sản phẩm cận hạn (dưới 1 tháng)
+            const lessThanOneMonthProductsCount = await Product.countDocuments({
+                product_expiry_date: { $gte: new Date(), $lt: oneMonthLater },
+            });
+
+            // Sản phẩm còn hạn trên 1 tháng
+            const moreThanOneMonthProductsCount = await Product.countDocuments({
+                product_expiry_date: { $gte: oneMonthLater },
+            });
+
             return {
                 stats: {
                     totalProducts,
@@ -106,6 +123,9 @@ class DashboardService {
                     totalReviews,
                     totalApprovedReviews,
                     totalPendingReviews,
+                    expiredProducts: expiredProductsCount,
+                    lessThanOneMonthProducts: lessThanOneMonthProductsCount,
+                    moreThanOneMonthProducts: moreThanOneMonthProductsCount,
                 },
                 revenuePerDay,
                 revenuePerMonth: revenuePerMonthData,
