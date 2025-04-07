@@ -8,6 +8,9 @@ export interface DashboardStats {
   totalReviews: number;
   totalApprovedReviews: number;
   totalPendingReviews: number;
+  expiredProducts: number; // Sản phẩm đã hết hạn
+  lessThanOneMonthProducts: number; // Sản phẩm cận hạn (dưới 1 tháng)
+  moreThanOneMonthProducts: number; // Sản phẩm còn hạn trên 1 tháng
 }
 
 export interface RevenuePerDay {
