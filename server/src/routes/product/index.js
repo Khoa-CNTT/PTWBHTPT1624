@@ -45,4 +45,7 @@ router.put('/:id/update', asyncHandle(ProductController.updateProduct));
 // ❌ Xóa sản phẩm
 router.delete('/:id/delete', asyncHandle(ProductController.deleteProduct));
 
+// API lấy sản phẩm theo trạng thái hạn sử dụng
+router.get('/expiry-status/:status', asyncHandle(ProductController.getProductsByExpiryStatus));
+
 module.exports = router;
