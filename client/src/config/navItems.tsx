@@ -87,4 +87,16 @@ export const navItems: NavItem[] = [
         ],
         permission: 'employee_manage',
     },
+    {
+        icon: <UserCircleIcon />,
+        name: 'Đánh giá',
+        path: PATH.MANAGE_REVIEW,
+        permission: 'review_manage',
+    },
+    {
+        icon: <UserCircleIcon />,
+        name: 'Nhắn tin',
+        path: PATH.MANAGE_MESSAGE,
+        permission: 'message_manage',
+    },
 ];

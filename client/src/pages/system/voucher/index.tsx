@@ -14,16 +14,18 @@ export default function VoucherManage() {
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
     const [selectedVoucher, setSelectedCategory] = useState<IVoucher | null>(null);
-
+    const [loading, setLoading] = useState<boolean>(false);
     const { openModal, isOpen, closeModal } = useModal();
 
     useEffect(() => {
         const fetchApi = async () => {
+            setLoading(true);
             const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
             if (!res.success) return;
             const data = res.data;
             setVouchers(data.vouchers);
             setTotalPage(data.totalPage);
+            setLoading(false);
         };
         fetchApi();
     }, [currentPage]);
@@ -73,7 +75,7 @@ export default function VoucherManage() {
             window.location.reload();
         }, 1000);
     };
-    if (vouchers.length === 0) return <TableSkeleton />;
+    if (loading) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý voucher" />

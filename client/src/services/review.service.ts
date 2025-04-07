@@ -54,10 +54,9 @@ const apiDeleteReview = async (reviewId: string) => {
     }
 };
 
-// 📖 Xem tất cả đánh giá (Dành cho Admin)
-const apiGetAllReviews = async (queries?: { limit: number; page: number }) => {
+const getPendingReviews = async (queries?: { limit: number; page: number }) => {
     try {
-        const res = await adminClient.get('/v1/api/review/all', {
+        const res = await adminClient.get('/v1/api/review/all-pending', {
             params: queries,
         });
         return res.data;
@@ -69,4 +68,4 @@ const apiGetAllReviews = async (queries?: { limit: number; page: number }) => {
     }
 };
 
-export { apiCreateReview, apiGetReviews, apiApproveReview, apiDeleteReview, apiGetAllReviews };
+export { apiCreateReview, apiGetReviews, apiApproveReview, apiDeleteReview, getPendingReviews };

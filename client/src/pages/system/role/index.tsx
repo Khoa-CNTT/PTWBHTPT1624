@@ -17,14 +17,16 @@ export default function RoleManage() {
     const [totalPage, setTotalPage] = useState<number>(0);
     const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
     const { openModal, isOpen, closeModal } = useModal();
-
+    const [loading, setLoading] = useState<boolean>(false);
     useEffect(() => {
         const fetchApi = async () => {
+            setLoading(true);
             const res = await apiGetAllRoles({ limit: 5, page: currentPage });
             if (!res.success) return;
             const data = res.data;
             setRoles(data.roles);
             setTotalPage(data.totalPage);
+            setLoading(false);
         };
         fetchApi();
     }, [currentPage]);
@@ -73,7 +75,7 @@ export default function RoleManage() {
             window.location.reload();
         }, 2000);
     };
-    if (roles.length === 0) return <TableSkeleton />;
+    if (loading) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý vai trò" />

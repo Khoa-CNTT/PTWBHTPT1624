@@ -29,6 +29,8 @@ export const PATH = {
     MANAGE_ORDER: '/quan-ly/don-hang',
     ORDER_DETAIL: '/quan-ly/don-hang-chi-tiet/:oid',
     MANAGE_PROFILE: '/quan-ly/chinh-sua-thong-tin',
+    MANAGE_REVIEW: '/quan-ly/danh-gia',
+    MANAGE_MESSAGE: '/quan-ly/nhan-tin',
 };
 
 export const SEARCH_UTILITY = [

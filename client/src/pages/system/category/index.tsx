@@ -65,7 +65,6 @@ export default function CategoryManage() {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteCategory(id);
-
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
