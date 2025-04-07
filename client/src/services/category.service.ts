@@ -19,7 +19,7 @@ const apiGetAllCategories = async (queries?: { limit: number; page: number }) =>
 const apiSearchCategory = async (searchQuery: string) => {
     try {
         const res = await adminClient.get('/v1/api/category/search', {
-            params: { search: searchQuery },
+            params: { name: searchQuery },
         });
         return res.data;
     } catch (error) {

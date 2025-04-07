@@ -8,7 +8,7 @@ interface StatsOverviewProps {
     onRevenueMouseEnter: () => void;
     onRevenueMouseLeave: () => void;
     showTooltip: boolean;
-    revenuePerMonth: any[];
+    revenuePerMonth: { _id: string; total: number }[];
 }
 
 const statLabels: Record<keyof DashboardStats, string> = {
@@ -17,7 +17,7 @@ const statLabels: Record<keyof DashboardStats, string> = {
     totalOrders: 'Tổng đơn hàng',
     totalPendingOrders: 'Đơn hàng chờ xử lý',
     totalDeliveredOrders: 'Đơn hàng đã giao',
-    totalRevenue: 'Tổng doanh thu',
+    totalRevenue: 'Tổng doanh thu tháng này',
     totalReviews: 'Tổng đánh giá',
     totalApprovedReviews: '',
     totalPendingReviews: '',
@@ -36,6 +36,13 @@ export default function StatsOverview({
     showTooltip,
     revenuePerMonth,
 }: StatsOverviewProps) {
+    const thisMonth = revenuePerMonth?.[revenuePerMonth.length - 1]?.total || 0;
+    const lastMonth = revenuePerMonth?.[revenuePerMonth.length - 2]?.total || 0;
+    const diff = thisMonth - lastMonth;
+    const percentage =
+        lastMonth === 0 ? 100 : Math.abs((diff / lastMonth) * 100).toFixed(1);
+    const isIncrease = diff >= 0;
+
     return (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mt-6">
             {([
@@ -55,13 +62,13 @@ export default function StatsOverview({
                             icon: '⏳',
                             label: 'Cận hạn',
                             value: stats.lessThanOneMonthProducts,
-                            color: 'text-yellow-600',
+                            color: 'text-yellow-500',
                         },
                         {
                             icon: '✅',
                             label: 'Còn hạn >1 tháng',
                             value: stats.moreThanOneMonthProducts,
-                            color: 'text-green-600',
+                            color: 'text-green-500',
                         },
                     ],
                 },
@@ -81,13 +88,13 @@ export default function StatsOverview({
                             icon: '📦',
                             label: 'Chờ xử lý',
                             value: stats.totalPendingOrders,
-                            color: 'text-yellow-600',
+                            color: 'text-yellow-500',
                         },
                         {
                             icon: '✅',
                             label: 'Đã giao',
                             value: stats.totalDeliveredOrders,
-                            color: 'text-green-700',
+                            color: 'text-green-600',
                         },
                     ],
                 },
@@ -107,62 +114,92 @@ export default function StatsOverview({
                             icon: '✅',
                             label: 'Đã duyệt',
                             value: stats.totalApprovedReviews,
-                            color: 'text-green-600',
+                            color: 'text-green-500',
                         },
                         {
                             icon: '⏳',
                             label: 'Chờ duyệt',
                             value: stats.totalPendingReviews,
-                            color: 'text-yellow-600',
+                            color: 'text-yellow-500',
                         },
                     ],
                 },
-            ]).map(({ key, label, value, onClick, detail, onMouseEnter, onMouseLeave }, index) => (
-                <div
-                    key={index}
-                    className="relative group p-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105"
-                    onClick={onClick}
-                    onMouseEnter={onMouseEnter}
-                    onMouseLeave={onMouseLeave}
-                >
-                    <div className="text-sm text-gray-100">{label}</div>
-                    <div className="text-3xl font-bold text-white">{value}</div>
-
-                    {/* Tooltip cho các ô khác */}
-                    {detail && (
-                        <div className="absolute inset-0 flex items-center justify-center p-4 transform scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out z-10">
-                            <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-4 space-y-2 text-sm w-full">
-                                {detail.map((item, idx) => (
-                                    <div key={idx} className="flex items-center space-x-2">
-                                        <span className={item.color}>{item.icon}</span>
-                                        <span className="text-gray-800">{item.label}:</span>
-                                        <span className="font-semibold text-gray-900">
-                                            {item.value}
-                                        </span>
-                                    </div>
-                                ))}
-                            </div>
+            ]).map(
+                (
+                    { key, label, value, onClick, detail, onMouseEnter, onMouseLeave },
+                    index
+                ) => (
+                    <div
+                        key={index}
+                        className="relative group p-6 bg-gradient-to-r from-blue-500 to-teal-500 rounded-xl shadow-lg hover:shadow-xl transition-all duration-300 ease-in-out transform hover:scale-105 cursor-pointer overflow-hidden"
+                        onClick={onClick}
+                        onMouseEnter={onMouseEnter}
+                        onMouseLeave={onMouseLeave}
+                    >
+                        <div className="text-sm text-gray-100">{label}</div>
+                        <div className="text-3xl font-bold text-white">
+                            {value.toLocaleString()}
+                            {key === 'totalRevenue' && ' VND'}
                         </div>
-                    )}
 
-                    {/* Tooltip cho tổng doanh thu */}
-                    {key === 'totalRevenue' && showTooltip && (
-                        <div className="absolute inset-0 flex items-center justify-center p-4 transform scale-95 opacity-0 group-hover:opacity-100 group-hover:scale-100 transition-all duration-300 ease-out z-10">
-                            <div className="bg-white border border-gray-200 rounded-xl shadow-lg p-4 space-y-2 text-sm w-full">
-                                <div className="font-semibold">Doanh thu 6 tháng gần nhất:</div>
-                                {revenuePerMonth?.slice(-6).map((monthData, index) => (
-                                    <div key={index} className="flex items-center space-x-2">
-                                        <span className="text-gray-800">Tháng {monthData._id}:</span>
-                                        <span className="font-semibold text-gray-900">
-                                            {monthData.total.toLocaleString()} VND
-                                        </span>
-                                    </div>
-                                ))}
+                        {key === 'totalRevenue' && (
+                            <div className="mt-2 text-sm font-medium flex items-center space-x-1 text-white">
+                                <span
+                                    className={`flex items-center ${
+                                        isIncrease ? 'text-green-300' : 'text-red-300'
+                                    }`}
+                                >
+                                    {isIncrease ? '▲' : '▼'} {percentage}%
+                                </span>
+                                <span className="text-gray-200">(so với tháng trước)</span>
                             </div>
-                        </div>
-                    )}
-                </div>
-            ))}
+                        )}
+
+                        {/* Tooltip chiếm toàn bộ ô khi hover */}
+                        {(detail || (key === 'totalRevenue' && showTooltip)) && (
+                            <div className="absolute inset-0 w-full h-full bg-black/50 backdrop-blur-md text-white flex justify-center items-center opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-auto">
+                                <div className="space-y-2 px-4 py-2 text-sm w-full">
+                                    {detail && (
+                                        <div className="space-y-1">
+                                            {detail.map((item, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="flex items-center space-x-2"
+                                                >
+                                                    <span className={item.color}>{item.icon}</span>
+                                                    <span>{item.label}:</span>
+                                                    <span className="font-semibold">
+                                                        {item.value}
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+
+                                    {key === 'totalRevenue' && showTooltip && (
+                                        <div className="space-y-1 text-sm mt-2">
+                                            <div className="font-semibold">
+                                                Doanh thu 3 tháng gần nhất:
+                                            </div>
+                                            {revenuePerMonth?.slice(-3).map((m, idx) => (
+                                                <div
+                                                    key={idx}
+                                                    className="flex items-center space-x-2"
+                                                >
+                                                    <span>Tháng {m._id}:</span>
+                                                    <span className="font-semibold">
+                                                        {m.total.toLocaleString()} VND
+                                                    </span>
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                )
+            )}
         </div>
     );
 }

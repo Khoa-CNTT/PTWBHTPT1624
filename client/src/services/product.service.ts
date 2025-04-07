@@ -142,6 +142,21 @@ const apiDeleteProduct = async (id: string) => {
     }
 };
 
+// API lấy danh sách sản phẩm theo trạng thái hạn sử dụng
+const apiGetProductsByExpiryStatus = async (status: string, queries: { limit: number; page: number }) => {
+    try {
+        const res = await apiClient.get(`/v1/api/product/expiry-status/${status}`, {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
 export {
     apiSearchProduct,
     apiGetAllProducts,
@@ -154,4 +169,5 @@ export {
     apiGetProductById,
     apiUpdateProduct,
     apiDeleteProduct,
+    apiGetProductsByExpiryStatus, // Thêm vào đây
 };
