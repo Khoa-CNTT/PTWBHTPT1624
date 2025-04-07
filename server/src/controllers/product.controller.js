@@ -73,6 +73,47 @@ class ProductController {
             data: await ProductService.searchProductByImage(imageUrl),
         });
     }
+
+    // Lấy sản phẩm theo trạng thái hạn sử dụng
+    static async getProductsByExpiryStatus(req, res, next) {
+        try {
+            const { status } = req.params; // Lấy trạng thái từ tham số URL
+            const { limit = 10, page = 0 } = req.query; // Lấy limit và page từ query parameters
+
+            // Kiểm tra tham số `status`
+            if (!['expired', 'near_expiry', 'valid'].includes(status)) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Trạng thái hạn sử dụng không hợp lệ. Chỉ có thể là expired, near_expiry, hoặc valid.',
+                });
+            }
+
+            // Kiểm tra giá trị của `limit` và `page`
+            if (isNaN(limit) || limit <= 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Giá trị limit không hợp lệ. Vui lòng cung cấp một số dương.',
+                });
+            }
+
+            if (isNaN(page) || page < 0) {
+                return res.status(400).json({
+                    success: false,
+                    message: 'Giá trị page không hợp lệ. Vui lòng cung cấp một số không âm.',
+                });
+            }
+
+            const data = await ProductService.getProductsByExpiryStatus({ status, limit, page });
+
+            return res.status(200).json({
+                success: true,
+                message: 'Lấy danh sách sản phẩm theo hạn sử dụng thành công.',
+                data,
+            });
+        } catch (error) {
+            next(error);
+        }
+    }
 }
 
 module.exports = ProductController;

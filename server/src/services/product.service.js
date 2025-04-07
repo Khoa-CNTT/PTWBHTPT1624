@@ -186,6 +186,56 @@ class ProductService {
         // Trả về kết quả tìm kiếm với thông tin sản phẩm
         return sortedResults;
     }
+    static async getProductsByExpiryStatus({ limit, page, status }) {
+        const limitNum = parseInt(limit, 10) || 10; // Giới hạn sản phẩm mỗi trang
+        const pageNum = parseInt(page, 10) || 0; // Trang hiện tại
+        const skipNum = pageNum * limitNum; // Tính toán số lượng bỏ qua
+    
+        let filter = {};
+        const currentDate = new Date();  // Lưu lại ngày hiện tại
+    
+        // Lọc sản phẩm theo trạng thái hết hạn
+        switch (status) {
+            case 'expired': // Hết hạn
+                filter = {
+                    product_expiry_date: { $lt: currentDate }, // Ngày hết hạn đã qua
+                };
+                break;
+            case 'near_expiry': // Cận hạn (dưới 1 tháng nữa)
+                const nearExpiryDate = new Date(currentDate);
+                nearExpiryDate.setMonth(currentDate.getMonth() + 1); // Cập nhật một tháng tới
+                filter = {
+                    product_expiry_date: { $gte: currentDate, $lt: nearExpiryDate }, // Còn dưới 1 tháng
+                };
+                break;
+            case 'valid': // Còn hạn (hơn 1 tháng nữa)
+                const validDate = new Date(currentDate);
+                validDate.setMonth(currentDate.getMonth() + 1); // Cập nhật một tháng tới
+                filter = {
+                    product_expiry_date: { $gte: validDate }, // Hơn 1 tháng nữa
+                };
+                break;
+            default:
+                throw new BadRequestError('Trạng thái hạn sử dụng không hợp lệ.');
+        }
+    
+        // Lấy sản phẩm theo trạng thái
+        const products = await Product.find(filter)
+            .skip(skipNum)
+            .limit(limitNum)
+            .lean();
+    
+        const totalProducts = await Product.countDocuments(filter);
+    
+        return {
+            totalPage: Math.ceil(totalProducts / limitNum) - 1, // Số trang tổng cộng
+            currentPage: pageNum, // Trang hiện tại
+            totalProducts, // Tổng số sản phẩm
+            products, // Danh sách sản phẩm
+        };
+    }
+    
+    
 }
 
 module.exports = ProductService;
