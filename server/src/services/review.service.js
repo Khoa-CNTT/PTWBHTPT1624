@@ -2,7 +2,6 @@
 
 const { BadRequestError, NotFoundError } = require('../core/error.response');
 const Review = require('../models/reviews.model');
-const PurchasedProduct = require('../models/purchasedProduct.model');
 const Order = require('../models/order.model'); // ✅ Import đúng đường dẫn đến model
 
 class ReviewService {

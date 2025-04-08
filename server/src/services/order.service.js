@@ -7,7 +7,7 @@ const userVoucherModel = require('../models/userVoucher.model');
 const shippingCompany = require('../models/shippingCompany.model');
 const { default: mongoose } = require('mongoose');
 const orderModel = require('../models/order.model');
-// const purchasedProductModel = require("../models/purchasedProduct.model");
+const PurchasedModel = require('../models/Purchased.model');
 
 class OrderService {
     // Hàm tạo đơn hàng mới, nhận payload chứa thông tin đơn hàng
@@ -181,17 +181,17 @@ class OrderService {
             const orderItems = updatedOrder.order_products;
             for (const item of orderItems) {
                 // Kiểm tra xem sản phẩm đã được mua trước đó chưa
-                // const existingProduct = await purchasedProductModel.findOne({
-                //   pc_userId: updatedOrder.order_user,
-                //   pc_productId: item.productId
-                // });
+                const existingProduct = await PurchasedModel.findOne({
+                    pc_userId: updatedOrder.order_user,
+                    pc_productId: item.productId,
+                });
                 if (existingProduct) {
                     // Nếu sản phẩm đã tồn tại, cập nhật số lượng
                     existingProduct.pc_quantity += item.quantity;
                     await existingProduct.save();
                 } else {
                     // Nếu sản phẩm chưa tồn tại, tạo bản ghi mới
-                    await purchasedProductModel.create({
+                    await PurchasedModel.create({
                         pc_userId: updatedOrder.order_user,
                         pc_productId: item.productId,
                         pc_quantity: item.quantity,
