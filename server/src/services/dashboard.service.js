@@ -2,6 +2,7 @@ const Product = require('../models/product.model');
 const User = require('../models/user.model');
 const Review = require('../models/reviews.model');
 const OnlineOrder = require('../models/OnlineOrder');
+const OfflineOrder = require('../models/OfflineOrder');
 
 class DashboardService {
     static async getStats(startDate, endDate) {
@@ -14,15 +15,16 @@ class DashboardService {
             const totalReviews = await Review.countDocuments();
             const totalApprovedReviews = await Review.countDocuments({ isApproved: true });
             const totalPendingReviews = await Review.countDocuments({ isApproved: false });
+
             const pendingReviews = await Review.find({ isApproved: false })
                 .select('review_user review_comment review_rating review_productId createdAt')
                 .populate('review_user', 'user_name user_email')
                 .populate('review_productId', 'product_name');
-            // Lấy tháng hiện tại
+
             const now = new Date();
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-            // Chỉ lấy tổng doanh thu của tháng hiện tại
+
             const totalRevenueData = await OnlineOrder.aggregate([
                 {
                     $match: {
@@ -39,6 +41,24 @@ class DashboardService {
             ]);
             const totalRevenue = totalRevenueData[0]?.total || 0;
 
+            // ✅ Tổng số đơn hàng và doanh thu offline
+            const totalOfflineOrders = await OfflineOrder.countDocuments();
+
+            const totalOfflineRevenueData = await OfflineOrder.aggregate([
+                {
+                    $match: {
+                        createdAt: { $gte: startOfMonth, $lte: endOfMonth },
+                    },
+                },
+                {
+                    $group: {
+                        _id: null,
+                        total: { $sum: '$order_total_price' },
+                    },
+                },
+            ]);
+            const totalOfflineRevenue = totalOfflineRevenueData[0]?.total || 0;
+
             let filterStartDate = startDate ? new Date(startDate) : new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
             let filterEndDate = endDate ? new Date(endDate) : new Date();
 
@@ -49,6 +69,21 @@ class DashboardService {
                 {
                     $match: {
                         order_status: 'delivered',
+                        createdAt: { $gte: filterStartDate, $lte: filterEndDate },
+                    },
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt' } },
+                        total: { $sum: '$order_total_price' },
+                    },
+                },
+                { $sort: { _id: 1 } },
+            ]);
+
+            const offlineRevenuePerDayData = await OfflineOrder.aggregate([
+                {
+                    $match: {
                         createdAt: { $gte: filterStartDate, $lte: filterEndDate },
                     },
                 },
@@ -74,10 +109,14 @@ class DashboardService {
                 total: revenueMap.get(date) || 0,
             }));
 
-            // Lấy top 5 sản phẩm bán chạy nhất
+            const offlineMap = new Map(offlineRevenuePerDayData.map((item) => [item._id, item.total]));
+            const offlineRevenuePerDay = allDates.map((date) => ({
+                _id: date,
+                total: offlineMap.get(date) || 0,
+            }));
+
             const topSellingProducts = await Product.find().sort({ product_sold: -1 }).limit(5).select('product_name product_sold');
 
-            // Doanh thu theo tháng
             const revenuePerMonthData = await OnlineOrder.aggregate([
                 {
                     $match: { order_status: 'delivered' },
@@ -91,19 +130,26 @@ class DashboardService {
                 { $sort: { _id: 1 } },
             ]);
 
-            // Phân loại sản phẩm theo hạn sử dụng
+            const offlineRevenuePerMonth = await OfflineOrder.aggregate([
+                {
+                    $match: {},
+                },
+                {
+                    $group: {
+                        _id: { $dateToString: { format: '%Y-%m', date: '$createdAt' } },
+                        total: { $sum: '$order_total_price' },
+                    },
+                },
+                { $sort: { _id: 1 } },
+            ]);
+
             const oneMonthLater = new Date();
             oneMonthLater.setMonth(oneMonthLater.getMonth() + 1);
 
-            // Sản phẩm đã hết hạn
             const expiredProductsCount = await Product.countDocuments({ product_expiry_date: { $lt: new Date() } });
-
-            // Sản phẩm cận hạn (dưới 1 tháng)
             const lessThanOneMonthProductsCount = await Product.countDocuments({
                 product_expiry_date: { $gte: new Date(), $lt: oneMonthLater },
             });
-
-            // Sản phẩm còn hạn trên 1 tháng
             const moreThanOneMonthProductsCount = await Product.countDocuments({
                 product_expiry_date: { $gte: oneMonthLater },
             });
@@ -115,18 +161,24 @@ class DashboardService {
                     totalOrders,
                     totalPendingOrders,
                     totalDeliveredOrders,
-                    totalRevenue, // ✅ Doanh thu chỉ tính trong tháng hiện tại
+                    totalRevenue,
                     totalReviews,
                     totalApprovedReviews,
                     totalPendingReviews,
                     expiredProducts: expiredProductsCount,
                     lessThanOneMonthProducts: lessThanOneMonthProductsCount,
                     moreThanOneMonthProducts: moreThanOneMonthProductsCount,
+
+                    // ✅ Thống kê gọn gàng cho đơn hàng offline
+                    totalOfflineOrders,
+                    totalOfflineRevenue,
                 },
                 revenuePerDay,
                 revenuePerMonth: revenuePerMonthData,
                 pendingReviews,
                 topSellingProducts,
+                offlineRevenuePerDay,
+                offlineRevenuePerMonth,
             };
         } catch (error) {
             console.error('Lỗi khi lấy dữ liệu Dashboard:', error);
