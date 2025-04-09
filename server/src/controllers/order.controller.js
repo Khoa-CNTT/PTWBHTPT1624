@@ -11,13 +11,19 @@ class OrderController {
         });
     }
 
-    // static async createOfflineOrder(req, res) {
-    //     res.status(201).json({
-    //         success: true,
-    //         data: await OrderService.createOfflineOrder({ order_staff: req.admin._id, ...req.body }),
-    //         message: 'Quét sản phẩm thành công',
-    //     });
-    // }
+    static async createOfflineOrder(req, res) {
+        res.status(201).json({
+            success: true,
+            data: await OrderService.createOfflineOrder({ adminId: req.admin._id, ...req.body }),
+            message: 'Tạo đơn hàng thành công',
+        });
+    }
+    static async getAllOrdersOffline(req, res) {
+        res.status(201).json({
+            success: true,
+            data: await OrderService.getAllOrdersOffline({ ...req.query }),
+        });
+    }
     static async getAllOrdersByUser(req, res) {
         res.status(201).json({
             success: true,

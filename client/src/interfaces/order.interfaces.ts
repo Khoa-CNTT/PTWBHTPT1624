@@ -33,6 +33,11 @@ export interface IOrder {
         from: Date;
         to: Date;
     };
+    order_staff?: {
+        _id: string;
+        admin_name: string;
+        admin_mobile: number;
+    };
     createdAt: Date;
     updatedAt: Date;
 }

@@ -15,4 +15,7 @@ router.get('/all', asyncHandle(OrderControllers.getAllOrders));
 router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.ORDER_MANAGE));
 router.put('/update-status', asyncHandle(OrderControllers.updateOrderStatus));
+router.post('/add-offline', asyncHandle(OrderControllers.createOfflineOrder));
+router.get('/offline-all', asyncHandle(OrderControllers.getAllOrdersOffline));
+
 module.exports = router;

@@ -8,7 +8,7 @@ const { Schema } = mongoose;
 const offlineOrderSchema = new Schema(
     {
         ...baseOrderFields,
-        order_staff: { type: Schema.Types.ObjectId, ref: 'admin', required: true },
+        order_staff: { type: Schema.Types.ObjectId, ref: 'Admin', required: true },
     },
     { timestamps: true },
 );

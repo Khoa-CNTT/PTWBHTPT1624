@@ -71,7 +71,7 @@ class AdminService {
         const pageNum = parseInt(page, 10) || 0; // Mặc định page = 0 nếu không hợp lệ
         const skipNum = pageNum * limitNum;
         const admins = await AdminModel.find({ _id: { $ne: admin_id } })
-            .select('-admin_password') // Loại bỏ trường admin_password khỏi kết quả
+            .select('-admin_password  -__v') // Loại bỏ trường admin_password khỏi kết quả
             .sort({ createdAt: -1 }) // Sắp xếp theo thời gian tạo giảm dần
             .skip(skipNum) // Bỏ qua số bản ghi theo trang
             .limit(limitNum) // Giới hạn số bản ghi trả về

@@ -1,7 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { adminClient } from '../config/httpRequest';
 
-// API lấy danh sách thông báo của người dùng
 const apiGetAllOrders = async (status: string) => {
     try {
         const res = await adminClient.get('/v1/api/order/all', { params: { status } });
@@ -35,4 +34,30 @@ const getOrder = async (orderId: any) => {
         };
     }
 };
-export { apiGetAllOrders, apiUpdateOrderStatus, getOrder };
+
+// API lấy danh sách thông báo của người dùng
+const apiGetAllOfflineOrders = async (queries: { limit: number; page: number } | any) => {
+    try {
+        const res = await adminClient.get('/v1/api/order/offline-all', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiCreateOfflineOrders = async (data: any) => {
+    try {
+        const res = await adminClient.post('/v1/api/order/add-offline', data);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export { apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };

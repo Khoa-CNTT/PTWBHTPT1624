@@ -58,9 +58,10 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
         };
         fetchApi();
     }, []);
+    console.log('invalidFields', invalidFields);
     const handleSave = () => {
         const { _id, admin_isBlocked, admin_password, ...data } = inputFields;
-        const check = employee ? validate(data, setInvalidFields) : validate({ ...data, admin_password }, setInvalidFields);
+        const check = employee ? validate(data, setInvalidFields) : validate({ ...data }, setInvalidFields);
         if (!check) {
             showNotification('Vui lòng nhập đầy đủ thông tin');
             return;

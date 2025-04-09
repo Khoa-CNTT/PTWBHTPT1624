@@ -40,6 +40,10 @@ export const navItems: NavItem[] = [
         icon: <BackupTableIcon />,
         name: 'Bán hàng tại quầy',
         path: PATH.MANAGE_OFFLINE_ORDER,
+        subItems: [
+            { name: 'Tạo hóa đơn', path: PATH.MANAGE_OFFLINE_ORDER },
+            { name: 'Danh sách hóa đơn', path: PATH.MANAGE_LIST_OFFLINE_ORDER },
+        ],
         permission: 'offline_order',
     },
     {
