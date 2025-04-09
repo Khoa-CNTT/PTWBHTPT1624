@@ -166,7 +166,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
                             </Select>
                         </FormControl>
                     )}
-                    <ImageCropper width={200} height={200} label="Thêm nhân viên" idName="admin_avatar_url" onCropComplete={handleImageUpload} />
+                    <ImageCropper width={200} height={200} label="Thêm thêm ảnh" idName="admin_avatar_url" onCropComplete={handleImageUpload} />
                     {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                     {inputFields?.admin_avatar_url && <img className="my-2  w-1/2 rounded-sm" src={inputFields?.admin_avatar_url} alt="" />}
                     {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}

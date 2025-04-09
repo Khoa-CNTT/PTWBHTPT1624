@@ -46,12 +46,12 @@ export default function EmployeeManage() {
             return;
         }
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
-        // Cập nhật danh sách thương hiệu mà không cần reload trang
+        // Cập nhật danh sách Nhân viên mà không cần reload trang
         setEmployees(
             (prev) =>
                 data._id
-                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật thương hiệu đã có
-                    : [res.data, ...prev], // Thêm thương hiệu mới
+                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật Nhân viên đã có
+                    : [res.data, ...prev], // Thêm Nhân viên mới
         );
         closeModal();
     };
@@ -72,8 +72,8 @@ export default function EmployeeManage() {
     if (employees.length === 0) return <TableSkeleton />;
     return (
         <>
-            <PageMeta title="Quản lý thương hiệu" />
-            <PageBreadcrumb pageTitle="Thương hiệu" />
+            <PageMeta title="Quản lý Nhân viên" />
+            <PageBreadcrumb pageTitle="Nhân viên" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-end">
                     <button

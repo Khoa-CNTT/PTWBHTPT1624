@@ -12,13 +12,13 @@ export default function ReviewManage() {
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
     const [loading, setLoading] = useState<boolean>(false);
-    // Lấy danh sách người dùng từ API
+    // Lấy danh sách đánh giá từ API
     useEffect(() => {
         const fetchApi = async () => {
             setLoading(true);
             const res = await getPendingReviews({ limit: 5, page: currentPage });
             if (!res.success) {
-                console.error('Lỗi khi lấy dữ liệu người dùng:', res.message);
+                console.error('Lỗi khi lấy dữ liệu đánh giá:', res.message);
                 return;
             }
             const data = res.data;
@@ -64,8 +64,8 @@ export default function ReviewManage() {
 
     return (
         <>
-            <PageMeta title="Quản lý người dùng" />
-            <PageBreadcrumb pageTitle="Người dùng" />
+            <PageMeta title="Quản lý đánh giá" />
+            <PageBreadcrumb pageTitle="Đánh giá" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 {Reviews.length > 0 ? (
                     <ReviewTable Reviews={Reviews} onDelete={handleDelete} onApprove={handleApprove} />
