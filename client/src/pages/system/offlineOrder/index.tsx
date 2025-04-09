@@ -13,7 +13,7 @@ const OfflineOrder: React.FC = () => {
     const [carts, setCarts] = useState<IProductInCart[][]>([[]]);
     const [currentTab, setCurrentTab] = useState<number>(0);
     const [qrResult, setQrResult] = useState<string>('');
-    const [paymentMethod, setPaymentMethod] = useState<string>('cash');
+    const [paymentMethod, setPaymentMethod] = useState<string>('online');
     const [discountCode, setDiscountCode] = useState<string>('');
     const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
     const [cashReceived, setCashReceived] = useState<number | ''>('');
@@ -111,13 +111,13 @@ const OfflineOrder: React.FC = () => {
     };
 
     const handleApplyDiscountCode = () => {
-        // if (discountCode === 'SAVE20') {
-        //     setAppliedDiscount(20);
-        //     showNotification('Áp dụng mã giảm giá thành công!', true);
-        // } else {
-        //     setAppliedDiscount(0);
-        //     showNotification('Mã giảm giá không hợp lệ!', false);
-        // }
+        if (discountCode === 'SAVE20') {
+            setAppliedDiscount(20);
+            showNotification('Áp dụng mã giảm giá thành công!', true);
+        } else {
+            setAppliedDiscount(0);
+            showNotification('Mã giảm giá không hợp lệ!', false);
+        }
     };
 
     const handleCloseModal = () => {

@@ -51,8 +51,8 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
                                 setPaymentMethod(e.target.value);
                                 setCashReceived('');
                             }}>
-                            <FormControlLabel value="cash" control={<Radio />} label="Tiền mặt" />
                             <FormControlLabel value="online" control={<Radio />} label="Chuyển khoản" />
+                            <FormControlLabel value="cash" control={<Radio />} label="Tiền mặt" />
                         </RadioGroup>
                     </FormControl>
                     {paymentMethod === 'cash' && (
