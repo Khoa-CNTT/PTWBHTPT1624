@@ -10,6 +10,14 @@ class OrderController {
             message: 'Đặt hàng thành công',
         });
     }
+
+    // static async createOfflineOrder(req, res) {
+    //     res.status(201).json({
+    //         success: true,
+    //         data: await OrderService.createOfflineOrder({ order_staff: req.admin._id, ...req.body }),
+    //         message: 'Quét sản phẩm thành công',
+    //     });
+    // }
     static async getAllOrdersByUser(req, res) {
         res.status(201).json({
             success: true,

@@ -27,6 +27,7 @@ export const PATH = {
     MANAGE_EMPLOYEE: '/quan-ly/nhan-vien',
     MANAGE_PRODUCT: '/quan-ly/san-pham',
     MANAGE_ORDER: '/quan-ly/don-hang',
+    MANAGE_OFFLINE_ORDER: '/quan-ly/ban-hang-tai-quay',
     ORDER_DETAIL: '/quan-ly/don-hang-chi-tiet/:oid',
     MANAGE_PROFILE: '/quan-ly/chinh-sua-thong-tin',
     MANAGE_REVIEW: '/quan-ly/danh-gia',

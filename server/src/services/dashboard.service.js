@@ -1,33 +1,29 @@
 const Product = require('../models/product.model');
 const User = require('../models/user.model');
-const Order = require('../models/order.model');
 const Review = require('../models/reviews.model');
+const OnlineOrder = require('../models/OnlineOrder');
 
 class DashboardService {
     static async getStats(startDate, endDate) {
         try {
             const totalProducts = await Product.countDocuments();
             const totalUsers = await User.countDocuments();
-            const totalOrders = await Order.countDocuments();
-            const totalPendingOrders = await Order.countDocuments({ order_status: 'pending' });
-            const totalDeliveredOrders = await Order.countDocuments({ order_status: 'delivered' });
-
+            const totalOrders = await OnlineOrder.countDocuments();
+            const totalPendingOrders = await OnlineOrder.countDocuments({ order_status: 'pending' });
+            const totalDeliveredOrders = await OnlineOrder.countDocuments({ order_status: 'delivered' });
             const totalReviews = await Review.countDocuments();
             const totalApprovedReviews = await Review.countDocuments({ isApproved: true });
             const totalPendingReviews = await Review.countDocuments({ isApproved: false });
-
             const pendingReviews = await Review.find({ isApproved: false })
                 .select('review_user review_comment review_rating review_productId createdAt')
                 .populate('review_user', 'user_name user_email')
                 .populate('review_productId', 'product_name');
-
             // Lấy tháng hiện tại
             const now = new Date();
             const startOfMonth = new Date(now.getFullYear(), now.getMonth(), 1);
             const endOfMonth = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999);
-
             // Chỉ lấy tổng doanh thu của tháng hiện tại
-            const totalRevenueData = await Order.aggregate([
+            const totalRevenueData = await OnlineOrder.aggregate([
                 {
                     $match: {
                         order_status: 'delivered',
@@ -49,7 +45,7 @@ class DashboardService {
             filterStartDate.setUTCHours(0, 0, 0, 0);
             filterEndDate.setUTCHours(23, 59, 59, 999);
 
-            const revenuePerDayData = await Order.aggregate([
+            const revenuePerDayData = await OnlineOrder.aggregate([
                 {
                     $match: {
                         order_status: 'delivered',
@@ -82,7 +78,7 @@ class DashboardService {
             const topSellingProducts = await Product.find().sort({ product_sold: -1 }).limit(5).select('product_name product_sold');
 
             // Doanh thu theo tháng
-            const revenuePerMonthData = await Order.aggregate([
+            const revenuePerMonthData = await OnlineOrder.aggregate([
                 {
                     $match: { order_status: 'delivered' },
                 },

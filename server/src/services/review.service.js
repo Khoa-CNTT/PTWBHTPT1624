@@ -1,8 +1,8 @@
 'use strict';
 
 const { BadRequestError, NotFoundError } = require('../core/error.response');
+const OnlineOrder = require('../models/OnlineOrder');
 const Review = require('../models/reviews.model');
-const Order = require('../models/order.model'); // ✅ Import đúng đường dẫn đến model
 
 class ReviewService {
     // 📝 Tạo đánh giá mới
@@ -15,7 +15,7 @@ class ReviewService {
         }
 
         // 📌 Kiểm tra xem user đã từng mua sản phẩm này chưa
-        const hasPurchased = await Order.findOne({
+        const hasPurchased = await OnlineOrder.findOne({
             order_user: userId,
             'order_products.productId': review_productId,
             order_status: { $in: ['pending', 'confirmed', 'delivered'] }, // tuỳ logic bạn cho phép

@@ -5,6 +5,7 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import ReviewTable from './ReviewTable';
 import { IReview } from '../../../interfaces/review.interfaces';
 import { apiApproveReview, apiDeleteReview, getPendingReviews } from '../../../services/review.service';
+import NotExit from '../../../components/common/NotExit';
 
 export default function ReviewManage() {
     const [Reviews, setReviews] = useState<IReview[]>([]);
@@ -66,7 +67,11 @@ export default function ReviewManage() {
             <PageMeta title="Quản lý người dùng" />
             <PageBreadcrumb pageTitle="Người dùng" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-                <ReviewTable Reviews={Reviews} onDelete={handleDelete} onApprove={handleApprove} />
+                {Reviews.length > 0 ? (
+                    <ReviewTable Reviews={Reviews} onDelete={handleDelete} onApprove={handleApprove} />
+                ) : (
+                    <NotExit label="Không có đánh giá nào" />
+                )}
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
         </>

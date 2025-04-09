@@ -4,6 +4,7 @@ const PERMISSIONS = {
     CATEGORY_MANAGE: 'category_manage', // Quản lý danh mục sản phẩm
     MESSAGE_MANAGE: 'message_manage', // Quản lý tin nhắn
     ORDER_MANAGE: 'order_manage', // Quản lý đơn hàng
+    MANAGE_OFFLINE_ORDER: 'offline_order', // Quản lý bán hàng tại quầy
     PRODUCT_MANAGE: 'product_manage', // Quản lý sản phẩm
     REVIEW_MANAGE: 'review_manage', // Quản lý đánh giá sản phẩm (Duyệt, xóa)
     REVIEW_VIEW_ALL: 'review_view_all', // ✅ Mới: Xem tất cả đánh giá (Admin)

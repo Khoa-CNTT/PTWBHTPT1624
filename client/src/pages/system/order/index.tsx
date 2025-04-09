@@ -25,14 +25,17 @@ const OrderManage: React.FC = () => {
 
     const [orders, setOrders] = useState<IOrder[]>([]);
     const [displayTab, setDisplayTab] = useState<string>('');
+    const [loading, setLoading] = useState<boolean>(false);
 
     useEffect(() => {
         setOrders([]);
         const fetchOrders = async () => {
+            setLoading(true);
             const res = await apiGetAllOrders(displayTab);
             if (res.success) {
                 setOrders(res.data);
             }
+            setLoading(false);
         };
 
         fetchOrders();
@@ -71,8 +74,7 @@ const OrderManage: React.FC = () => {
         XLSX.writeFile(wb, 'test.xlsx');
         showNotification('Không có đơn hàng nào!', true);
     };
-    if (orders.length === 0) return <TableSkeleton />;
-
+    if (loading) return <TableSkeleton />;
     return (
         <div className="fixed-mobile w-full  dark:border-white/[0.05] dark:bg-white/[0.03] h-full bg-white overflow-y-scroll tablet:overflow-y-scroll">
             {/* Tab lọc đơn hàng */}

@@ -21,3 +21,4 @@ export interface IProduct extends IProductItem {
     product_supplier_id: string; // ID nhà cung cấp sản phẩm
     product_isPublished: boolean; // Trạng thái xuất bản
 }
+

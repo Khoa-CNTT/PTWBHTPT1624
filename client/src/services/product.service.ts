@@ -115,6 +115,17 @@ const apiGetProductById = async (id: string) => {
         };
     }
 };
+const apiGetScanProduct = async (product_code: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/product/offline-orders/scan-product`, { params: { product_code } });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
 // API cập nhật thông tin sản phẩm (Dành cho admin)
 const apiUpdateProduct = async (id: string, productData: object) => {
@@ -168,6 +179,7 @@ export {
     apiCreateProduct,
     apiGetProductById,
     apiUpdateProduct,
+    apiGetScanProduct,
     apiDeleteProduct,
     apiGetProductsByExpiryStatus, // Thêm vào đây
 };

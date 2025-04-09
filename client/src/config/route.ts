@@ -13,12 +13,14 @@ import {
     VoucherManage,
 } from '../pages/system';
 import ChatManage from '../pages/system/chat';
+import OfflineOrder from '../pages/system/offlineOrder';
 import OrderDetail from '../pages/system/order/OrderDetail';
 import { PATH } from '../utils/const';
 
 export const ROUTES = [
     { path: PATH.MANAGE_CATEGORY, component: CategoryManage, permissions: 'category_manage' },
     { path: PATH.MANAGE_ORDER, component: OrderManage, permissions: 'order_manage' },
+    { path: PATH.MANAGE_OFFLINE_ORDER, component: OfflineOrder, permissions: 'offline_order' },
     { path: PATH.ORDER_DETAIL, component: OrderDetail, permissions: 'order_manage' },
     { path: PATH.MANAGE_USER, component: UserManage, permissions: 'user_manage' },
     { path: PATH.MANAGE_ROLE, component: RoleManage, permissions: 'role_manage' },

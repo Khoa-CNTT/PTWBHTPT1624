@@ -14,7 +14,6 @@ export default function BannerManage() {
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
     const [selectedBanner, setSelectedCategory] = useState<IBanner | null>(null);
-
     const { openModal, isOpen, closeModal } = useModal();
 
     useEffect(() => {

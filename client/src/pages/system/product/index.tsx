@@ -1,15 +1,23 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search'; // Biểu tượng tìm kiếm
 import { useModal } from '../../../hooks/useModal';
 import ProductTable from './ProductTable';
 import { Pagination, showNotification } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
-import { apiCreateProduct, apiDeleteProduct, apiGetAllProductsByAdmin, apiUpdateProduct, apiGetProductsByExpiryStatus, apiSearchProduct } from '../../../services/product.service';
+import {
+    apiCreateProduct,
+    apiDeleteProduct,
+    apiGetAllProductsByAdmin,
+    apiUpdateProduct,
+    apiGetProductsByExpiryStatus,
+    apiSearchProduct,
+} from '../../../services/product.service';
 import { IProduct } from '../../../interfaces/product.interfaces';
 import ProductModal from './ProductModal';
 import TableSkeleton from '../../../components/skeleton/TableSkeleton';
+import InputSearch from '../../../components/inputSearch';
+import NotExit from '../../../components/common/NotExit';
 
 export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -19,7 +27,7 @@ export default function ProductManage() {
     const [displayTab, setDisplayTab] = useState<string>(''); // Tab hiện tại
     const [searchQuery, setSearchQuery] = useState<string>(''); // State tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
-
+    const [loading, setLoading] = useState<boolean>(false);
     // Tab lọc sản phẩm
     const PRODUCT_TAB = [
         { tab: '', title: 'Tất cả sản phẩm' },
@@ -29,6 +37,7 @@ export default function ProductManage() {
 
     useEffect(() => {
         const fetchApi = async () => {
+            setLoading(true);
             let res;
             if (displayTab === 'expired') {
                 res = await apiGetProductsByExpiryStatus('expired', { limit: 10, page: currentPage });
@@ -37,12 +46,11 @@ export default function ProductManage() {
             } else {
                 res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
             }
-
             if (!res.success) return;
             const data = res.data;
-
             setProducts(data.products);
             setTotalPage(data.totalPage);
+            setLoading(false);
         };
         fetchApi();
     }, [currentPage, displayTab]);
@@ -71,12 +79,7 @@ export default function ProductManage() {
         }
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
-        setProducts(
-            (prev) =>
-                data._id
-                    ? prev.map((item) => (item._id === data._id ? res.data : item))
-                    : [res.data, ...prev],
-        );
+        setProducts((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
 
     const handleDelete = async (id: string) => {
@@ -104,7 +107,6 @@ export default function ProductManage() {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchQuery(value);
-
         // Khi ô tìm kiếm trống, gọi lại API lấy tất cả sản phẩm
         if (value === '') {
             const fetchApi = async () => {
@@ -131,16 +133,14 @@ export default function ProductManage() {
         if (!searchQuery.trim()) {
             return; // Không làm gì nếu ô tìm kiếm trống
         }
-        
         const res = await apiSearchProduct(searchQuery.trim());
         if (res.success) {
             setProducts(res.data.products);
             setTotalPage(res.data.totalPage);
         }
+        setSearchQuery('');
     };
-
-    if (products.length === 0) return <TableSkeleton />;
-
+    if (loading) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý sản phẩm" />
@@ -148,21 +148,7 @@ export default function ProductManage() {
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 {/* Ô tìm kiếm nằm trên PRODUCT_TAB */}
                 <div className="flex justify-between items-center mb-4">
-                    <div className="relative w-1/3">
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm sản phẩm..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="border px-4 py-2 rounded-l-lg w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                        />
-                        <button
-                            onClick={handleSearch}
-                            className="absolute top-0 right-0 px-3 py-2 bg-primary text-white rounded-r-lg">
-                            <SearchIcon />
-                        </button>
-                    </div>
-
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
                     {/* Button thêm sản phẩm */}
                     <button
                         onClick={handleAdd}
@@ -184,9 +170,11 @@ export default function ProductManage() {
                         </div>
                     ))}
                 </div>
-
-                {/* Danh sách sản phẩm */}
-                <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+                {products.length > 0 ? (
+                    <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+                ) : (
+                    <NotExit label="Không có sản phẩm nào" />
+                )}
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 

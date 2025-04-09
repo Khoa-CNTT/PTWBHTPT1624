@@ -1,26 +1,17 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
 
 import { useModal } from '../../../hooks/useModal';
-import {
-    apiCreateBrand,
-    apiGetAllBrands,
-    apiUpdateBrand,
-    apiSearchBrand,
-} from '../../../services/brand.service';
+import { apiCreateBrand, apiGetAllBrands, apiUpdateBrand, apiSearchBrand } from '../../../services/brand.service';
 import { apiDeleteCategory } from '../../../services/category.service';
 
 import { IBrand } from '../../../interfaces/brand.interfaces';
 import BrandTable from './BrandTable';
 import BrandModal from './BrandModal';
-import {
-    Pagination,
-    showNotification,
-    TableSkeleton,
-} from '../../../components';
+import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
+import InputSearch from '../../../components/inputSearch';
 
 export default function BrandManage() {
     const [brands, setBrands] = useState<IBrand[]>([]);
@@ -29,15 +20,18 @@ export default function BrandManage() {
     const [selectedBrand, setSelectedCategory] = useState<IBrand | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
+    const [isUploading, setIsUploading] = useState(false);
 
     const { openModal, isOpen, closeModal } = useModal();
 
     const fetchApi = async () => {
+        setIsUploading(true);
         const res = await apiGetAllBrands({ limit: 5, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setBrands(data.brands);
         setTotalPage(data.totalPage);
+        setIsUploading(false);
     };
 
     useEffect(() => {
@@ -67,16 +61,11 @@ export default function BrandManage() {
             showNotification(res?.message, false);
             return;
         }
-        showNotification(
-            data._id ? 'Cập nhật thành công!' : 'Thêm thành công!',
-            true,
-        );
+        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
 
         if (data._id) {
-            setBrands((prev) =>
-                prev.map((item) => (item._id === data._id ? res.data : item)),
-            );
+            setBrands((prev) => prev.map((item) => (item._id === data._id ? res.data : item)));
         } else {
             setBrands((prev) => [res.data, ...prev]);
         }
@@ -118,7 +107,7 @@ export default function BrandManage() {
         }
     };
 
-    if (brands.length === 0) return <TableSkeleton />;
+    if (isUploading) return <TableSkeleton />;
 
     return (
         <>
@@ -127,20 +116,7 @@ export default function BrandManage() {
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* Ô tìm kiếm */}
-                    <div className="relative w-1/3">
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm thương hiệu..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="border px-4 py-2 rounded-l-lg w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                        />
-                        <button
-                            onClick={handleSearch}
-                            className="absolute top-0 right-0 px-3 py-2 bg-primary text-white rounded-r-lg">
-                            <SearchIcon />
-                        </button>
-                    </div>
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
 
                     {/* Button thêm thương hiệu */}
                     <button
@@ -152,30 +128,13 @@ export default function BrandManage() {
                 </div>
 
                 {/* Danh sách thương hiệu */}
-                <BrandTable
-                    brands={brands}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
+                <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
 
-                {!isSearching && totalPage > 0 && (
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPage={totalPage}
-                        setCurrentPage={setCurrentPage}
-                    />
-                )}
+                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa thương hiệu */}
-            {isOpen && (
-                <BrandModal
-                    isOpen={isOpen}
-                    closeModal={closeModal}
-                    onSave={handleSave}
-                    brand={selectedBrand}
-                />
-            )}
+            {isOpen && <BrandModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} brand={selectedBrand} />}
         </>
     );
 }

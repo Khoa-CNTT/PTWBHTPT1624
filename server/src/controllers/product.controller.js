@@ -73,6 +73,15 @@ class ProductController {
             data: await ProductService.searchProductByImage(imageUrl),
         });
     }
+    static async ScanProduct(req, res) {
+        const { product_code } = req.query;
+        console.log('product_code', product_code);
+        res.status(200).json({
+            success: true,
+            data: await ProductService.ScanProduct(product_code),
+            message: 'Quét sản phẩm thành công',
+        });
+    }
 
     // Lấy sản phẩm theo trạng thái hạn sử dụng
     static async getProductsByExpiryStatus(req, res, next) {

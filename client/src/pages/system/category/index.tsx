@@ -1,7 +1,5 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
-
 import {
     apiGetAllCategories,
     apiCreateCategory,
@@ -13,13 +11,11 @@ import { ICategory } from '../../../interfaces/category.interfaces';
 import { useModal } from '../../../hooks/useModal';
 import CategoryModal from './CategoryModal';
 import CategoryTable from './CategoryTable';
-import {
-    showNotification,
-    TableSkeleton,
-} from '../../../components';
+import { showNotification, TableSkeleton } from '../../../components';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
+import InputSearch from '../../../components/inputSearch';
 
 export default function CategoryManage() {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -28,21 +24,25 @@ export default function CategoryManage() {
     const [selectedCategory, setSelectedCategory] = useState<ICategory | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>(''); // ✅ ô tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // ✅ trạng thái tìm kiếm
+    const [isUploading, setIsUploading] = useState(false);
 
     const { openModal, isOpen, closeModal } = useModal();
 
     const fetchApi = async () => {
+        setIsUploading(true);
         const res = await apiGetAllCategories({ limit: 5, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setCategories(data.categories);
         setTotalPage(data.totalPage);
+        setIsUploading(false);
     };
 
     useEffect(() => {
         if (!isSearching) {
             fetchApi();
         }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage, isSearching]);
 
     const handleAdd = () => {
@@ -71,11 +71,7 @@ export default function CategoryManage() {
         showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
         closeModal();
 
-        setCategories((prev) =>
-            data._id
-                ? prev.map((item) => (item._id === data._id ? res.data : item))
-                : [res.data, ...prev]
-        );
+        setCategories((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
 
     const handleDelete = async (id: string) => {
@@ -103,6 +99,7 @@ export default function CategoryManage() {
 
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
+        setIsUploading(true);
         if (!searchQuery.trim()) {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
             return;
@@ -115,9 +112,10 @@ export default function CategoryManage() {
         } else {
             showNotification(res.message || 'Không tìm thấy danh mục nào', false);
         }
+        setIsUploading(false);
     };
 
-    if (categories.length === 0) return <TableSkeleton />;
+    if (isUploading) return <TableSkeleton />;
 
     return (
         <>
@@ -127,58 +125,25 @@ export default function CategoryManage() {
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* ✅ Ô tìm kiếm */}
-                    <div className="relative w-1/3">
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm danh mục..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="border px-4 py-2 rounded-l-lg w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                        />
-                        <button
-                            onClick={handleSearch}
-                            className="absolute top-0 right-0 px-3 py-2 bg-primary text-white rounded-r-lg"
-                        >
-                            <SearchIcon />
-                        </button>
-                    </div>
-
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
                     {/* Button thêm */}
                     <button
                         onClick={handleAdd}
-                        className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-                    >
+                        className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto">
                         <AddIcon />
                         Thêm
                     </button>
                 </div>
 
                 {/* Bảng danh mục */}
-                <CategoryTable
-                    categories={categories}
-                    onEdit={handleEdit}
-                    onDelete={handleDelete}
-                />
+                <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
 
                 {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && (
-                    <Pagination
-                        currentPage={currentPage}
-                        totalPage={totalPage}
-                        setCurrentPage={setCurrentPage}
-                    />
-                )}
+                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa */}
-            {isOpen && (
-                <CategoryModal
-                    isOpen={isOpen}
-                    closeModal={closeModal}
-                    onSave={handleSave}
-                    category={selectedCategory}
-                />
-            )}
+            {isOpen && <CategoryModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} category={selectedCategory} />}
         </>
     );
 }

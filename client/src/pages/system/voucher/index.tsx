@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
-import SearchIcon from '@mui/icons-material/Search';
 import { apiAddVoucher, apiDeleteVoucher, apiGetAllVouchers, apiSearchVoucherByName, apiUpdateVoucher } from '../../../services/voucher.service';
 import { IVoucher } from '../../../interfaces/voucher.interfaces';
 import { useModal } from '../../../hooks/useModal';
@@ -9,6 +8,7 @@ import VoucherModal from './VoucherModal';
 import { showNotification, TableSkeleton, Pagination } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
+import InputSearch from '../../../components/inputSearch';
 
 export default function VoucherManage() {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -17,16 +17,19 @@ export default function VoucherManage() {
     const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>(''); // Tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
+    const [loading, setLoading] = useState<boolean>(false);
 
     const { openModal, isOpen, closeModal } = useModal();
 
     useEffect(() => {
         // Khi không tìm kiếm, fetch tất cả vouchers
         const fetchVouchers = async () => {
+            setLoading(true);
             const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
             if (!res.success) return;
             setVouchers(res.data.vouchers);
             setTotalPage(res.data.totalPage);
+            setLoading(false);
         };
 
         fetchVouchers();
@@ -106,9 +109,7 @@ export default function VoucherManage() {
             showNotification(res.message || 'Không tìm thấy voucher nào', false);
         }
     };
-
-    if (vouchers.length === 0) return <TableSkeleton />;
-
+    if (loading) return <TableSkeleton />;
     return (
         <>
             <PageMeta title="Quản lý voucher" />
@@ -117,19 +118,7 @@ export default function VoucherManage() {
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* ✅ Ô tìm kiếm */}
-                    <div className="relative w-1/3">
-                        <input
-                            type="text"
-                            placeholder="Tìm kiếm voucher..."
-                            value={searchQuery}
-                            onChange={handleSearchChange}
-                            className="border px-4 py-2 rounded-l-lg w-full dark:bg-gray-800 dark:text-white dark:border-gray-700"
-                        />
-                        <button onClick={handleSearch} className="absolute top-0 right-0 px-3 py-2 bg-primary text-white rounded-r-lg">
-                            <SearchIcon />
-                        </button>
-                    </div>
-
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
                     {/* Button thêm */}
                     <button
                         onClick={handleAdd}

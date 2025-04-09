@@ -27,6 +27,11 @@ class ProductService {
         if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
         return product;
     }
+    static async ScanProduct(product_code) {
+        const product = await Product.findOne({ product_code }).select('product_thumb product_price product_name product_discount product_code').lean();
+        if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
+        return product;
+    }
     // Cập nhật sản phẩm (bao gồm cập nhật số lượng tồn kho nếu có)
     static async updateProduct(productId, updateData) {
         const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { new: true });
@@ -190,10 +195,10 @@ class ProductService {
         const limitNum = parseInt(limit, 10) || 10; // Giới hạn sản phẩm mỗi trang
         const pageNum = parseInt(page, 10) || 0; // Trang hiện tại
         const skipNum = pageNum * limitNum; // Tính toán số lượng bỏ qua
-    
+
         let filter = {};
-        const currentDate = new Date();  // Lưu lại ngày hiện tại
-    
+        const currentDate = new Date(); // Lưu lại ngày hiện tại
+
         // Lọc sản phẩm theo trạng thái hết hạn
         switch (status) {
             case 'expired': // Hết hạn
@@ -218,15 +223,12 @@ class ProductService {
             default:
                 throw new BadRequestError('Trạng thái hạn sử dụng không hợp lệ.');
         }
-    
+
         // Lấy sản phẩm theo trạng thái
-        const products = await Product.find(filter)
-            .skip(skipNum)
-            .limit(limitNum)
-            .lean();
-    
+        const products = await Product.find(filter).skip(skipNum).limit(limitNum).lean();
+
         const totalProducts = await Product.countDocuments(filter);
-    
+
         return {
             totalPage: Math.ceil(totalProducts / limitNum) - 1, // Số trang tổng cộng
             currentPage: pageNum, // Trang hiện tại
@@ -234,8 +236,6 @@ class ProductService {
             products, // Danh sách sản phẩm
         };
     }
-    
-    
 }
 
 module.exports = ProductService;

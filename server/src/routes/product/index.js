@@ -38,6 +38,7 @@ router.post('/add', asyncHandle(ProductController.createProduct));
 
 // 🔍 Lấy thông tin sản phẩm theo ID
 router.get('/:id/search', asyncHandle(ProductController.getProductById));
+router.get('/offline-orders/scan-product', asyncHandle(ProductController.ScanProduct));
 
 // ✏️ Cập nhật sản phẩm
 router.put('/:id/update', asyncHandle(ProductController.updateProduct));

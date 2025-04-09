@@ -37,6 +37,12 @@ export const navItems: NavItem[] = [
         permission: 'order_manage',
     },
     {
+        icon: <BackupTableIcon />,
+        name: 'Bán hàng tại quầy',
+        path: PATH.MANAGE_OFFLINE_ORDER,
+        permission: 'offline_order',
+    },
+    {
         icon: <AutoStoriesOutlinedIcon />,
         name: 'Banner',
         path: PATH.MANAGE_BANNER,
