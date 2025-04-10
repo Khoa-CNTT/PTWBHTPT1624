@@ -31,22 +31,17 @@ const apiGetBrandsInCategory = async (categoryId: string) => {
 // Tìm kiếm thương hiệu theo tên
 const apiSearchBrand = async (searchQuery: string) => {
     try {
-        const token = localStorage.getItem('token'); // Lấy token từ localStorage
         const res = await adminClient.get(`/v1/api/brand/search`, {
             params: { name: searchQuery },
-            headers: {
-                Authorization: `Bearer ${token}`, // Thêm token vào header
-            },
         });
         return res.data;
-    } catch (error: any) {
+    } catch (error) {
         return {
             success: false,
-            message: error?.response?.data?.message || 'Có lỗi xảy ra khi tìm kiếm thương hiệu.',
+            message: error,
         };
     }
 };
-
 
 // Thêm mới thương hiệu
 const apiCreateBrand = async (brandData: object) => {

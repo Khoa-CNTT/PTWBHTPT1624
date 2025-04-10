@@ -381,6 +381,26 @@ class OrderService {
 
         return orderObject;
     }
+    static async getAllOfflineOrders(query) {
+        const { page = 1, limit = 20, sortBy = 'createdAt', order = 'desc' } = query;
+        const skip = (page - 1) * limit;
+    
+        const orders = await OfflineOrder.find()
+            .sort({ [sortBy]: order === 'desc' ? -1 : 1 })
+            .skip(Number(skip))
+            .limit(Number(limit))
+            .populate('order_staff') // nếu muốn lấy thông tin nhân viên tạo đơn
+            .lean();
+    
+        const total = await OfflineOrder.countDocuments();
+    
+        return {
+            total,
+            page: Number(page),
+            limit: Number(limit),
+            orders,
+        };
+    }
 }
 
 module.exports = OrderService;

@@ -50,6 +50,15 @@ class OrderController {
             message: 'Thành công',
         });
     }
+    static async getAllOfflineOrders(req, res) {
+        const data = await OrderService.getAllOfflineOrders(req.query);
+        res.status(200).json({
+            success: true,
+            data,
+            message: 'Lấy danh sách đơn hàng offline thành công',
+        });
+    }
+    
 }
 
 module.exports = OrderController;
