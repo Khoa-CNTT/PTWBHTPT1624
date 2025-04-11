@@ -7,7 +7,6 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { CartTabs } from './CartTable';
 import { CartTable } from './CartTabs';
 import { PaymentSection } from './PaymentSection';
-import { apiCreateOfflineOrders } from '../../../services/order.service';
 
 const OfflineOrder: React.FC = () => {
     const [carts, setCarts] = useState<IProductInCart[][]>([[]]);
@@ -135,13 +134,6 @@ const OfflineOrder: React.FC = () => {
                 return;
             }
         }
-        const data = {
-            order_products: carts[currentTab],
-            order_payment_method: paymentMethod,
-        };
-        const res = await apiCreateOfflineOrders(data);
-        showNotification(res.message, res.success);
-        if (!res.success) return;
         setOpenModal(true);
     };
 

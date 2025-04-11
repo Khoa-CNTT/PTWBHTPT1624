@@ -33,7 +33,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
 
     // Thông tin QR chuyển khoản Agribank theo chuẩn VietQR (NAPAS)
     const account = import.meta.env.VITE_REACT_ACCOUNT_PAYMENT;
-    const content = 'Thanh toan don hang ABC123';
+    const content = `Thanh toan don hang ${formatMoney(calculateTotal)} vnd`;
     const bankCode = import.meta.env.VITE_REACT_ARB_BANK_CODE; // Mã Napas của Agribank
     const qrUrl = `https://img.vietqr.io/image/${bankCode}-${account}-compact.png?amount=${calculateTotal}&addInfo=${encodeURIComponent(content)}`;
 
@@ -57,6 +57,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                     <th className="border px-2 py-1">Tên sản phẩm</th>
                     <th className="border px-2 py-1">Giá gốc</th>
                     <th className="border px-2 py-1">Số lượng</th>
+                    <th className="border px-2 py-1">Giảm giá</th>
                     <th className="border px-2 py-1">Thành tiền</th>
                 </tr>
             </thead>
@@ -66,6 +67,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                         <td className="border px-2 py-1">{item.name || 'Không tên'}</td>
                         <td className="border px-2 py-1">{formatMoney(item.price)}</td>
                         <td className="border px-2 py-1">{item.quantity}</td>
+                        <td className="border px-2 py-1">{item.discount}%</td>
                         <td className="border px-2 py-1">{formatMoney(item.price * item.quantity * (1 - item.discount / 100))}</td>
                     </tr>
                 ))}

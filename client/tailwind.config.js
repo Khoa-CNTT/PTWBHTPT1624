@@ -1,6 +1,7 @@
 const defaultTheme = require('tailwindcss/defaultTheme');
+
 /** @type {import('tailwindcss').Config} */
-export default {
+module.exports = {
     content: ['./index.html', './src/**/*.{js,ts,jsx,tsx}'],
     darkMode: 'class',
     theme: {
@@ -8,24 +9,24 @@ export default {
             outfit: ['Outfit', 'sans-serif'],
         },
         screens: {
-            laptop: { min: '1024px' },
-            tablet: { max: '1023px' },
-            mobile: { max: '739px' },
             '2xsm': '375px',
             xsm: '425px',
+            mobile: { max: '739px' },
+            tablet: { max: '1023px' },
+            laptop: { min: '1024px' },
             '3xl': '2000px',
             ...defaultTheme.screens,
         },
         extend: {
             fontSize: {
-                'title-2xl': ['72px', '90px'],
-                'title-xl': ['60px', '72px'],
-                'title-lg': ['48px', '60px'],
-                'title-md': ['36px', '44px'],
-                'title-sm': ['30px', '38px'],
-                'theme-xl': ['20px', '30px'],
-                'theme-sm': ['14px', '20px'],
-                'theme-xs': ['12px', '18px'],
+                'title-2xl': ['72px', { lineHeight: '90px' }],
+                'title-xl': ['60px', { lineHeight: '72px' }],
+                'title-lg': ['48px', { lineHeight: '60px' }],
+                'title-md': ['36px', { lineHeight: '44px' }],
+                'title-sm': ['30px', { lineHeight: '38px' }],
+                'theme-xl': ['20px', { lineHeight: '30px' }],
+                'theme-sm': ['14px', { lineHeight: '20px' }],
+                'theme-xs': ['12px', { lineHeight: '18px' }],
             },
             colors: {
                 current: 'currentColor',
@@ -36,53 +37,12 @@ export default {
                 secondary: 'rgb(128, 128, 137)',
                 hover: 'rgba(39, 39, 42, 0.12)',
                 overlay: 'rgba(0, 0, 0, 0.53)',
-                bgSecondary: 'rgb(179,236,207)',
+                bgSecondary: 'rgb(179, 236, 207)',
                 color_hover: 'rgba(39, 39, 42, 0.12)',
-                red_custom: 'rgb(255,66,78)',
+                red_custom: 'rgb(255, 66, 78)',
                 red_lighter_custom: 'rgb(255, 170, 175)',
-                background_primary: 'rgb(245 245 250 / var(--tw-bg-opacity))',
+                background_primary: '#FDF5ED',
                 text_secondary: 'rgb(120, 120, 120)',
-                height: {
-                    header: '100px',
-                    search: '40px',
-                },
-                width: {
-                    search: '750px',
-                    menu_user: '160px',
-                },
-                boxShadow: {
-                    search: 'rgba(0, 0, 0, 0.28) 0px 6px 12px 0px',
-                    cart: 'rgb(210,223,230) 0px 0px 20px',
-                },
-                keyframes: {
-                    flash: {
-                        '0%': { transform: 'scale(1.3)' },
-                        '100%': { transform: 'scale(1)' },
-                    },
-                    openChat: {
-                        '0%': { transform: 'scale(0)', opacity: '0' },
-                        '100%': { transform: 'scale(1)', opacity: '1' },
-                    },
-                    openChatOff: {
-                        '0%': { transform: 'scale(1)', opacity: '1' },
-                        '100%': { transform: 'scale(0)', opacity: '0' },
-                    },
-                    openBoxChat: {
-                        '0%': { width: '0px', opacity: '0' },
-                        '100%': { width: '400px', opacity: '1' },
-                    },
-                    openBoxChatOff: {
-                        '0%': { width: '400px', opacity: '1' },
-                        '100%': { width: '0px', opacity: '0' },
-                    },
-                },
-                animation: {
-                    'active-flash': 'flash 0.6s ease-in-out infinite',
-                    'active-openChat': 'openChat 0.3s',
-                    'active-openChatOff': 'openChatOff 0.3s',
-                    'active-openBoxChat': 'openBoxChat 0.3s',
-                    'active-openBoxChatOff': 'openBoxChatOff 0.3s',
-                },
                 brand: {
                     25: '#F2F7FF',
                     50: '#ECF3FF',
@@ -189,10 +149,19 @@ export default {
                     500: '#7A5AF8',
                 },
             },
+            height: {
+                header: '100px',
+                search: '40px',
+            },
+            width: {
+                search: '750px',
+                menu_user: '160px',
+            },
             boxShadow: {
+                search: '0px 6px 12px 0px rgba(0, 0, 0, 0.28)',
+                cart: '0px 0px 20px rgb(210, 223, 230)',
                 'theme-md': '0px 4px 8px -2px rgba(16, 24, 40, 0.10), 0px 2px 4px -2px rgba(16, 24, 40, 0.06)',
                 'theme-lg': '0px 12px 16px -4px rgba(16, 24, 40, 0.08), 0px 4px 6px -2px rgba(16, 24, 40, 0.03)',
-
                 'theme-sm': '0px 1px 3px 0px rgba(16, 24, 40, 0.10), 0px 1px 2px 0px rgba(16, 24, 40, 0.06)',
                 'theme-xs': '0px 1px 2px 0px rgba(16, 24, 40, 0.05)',
                 'theme-xl': '0px 20px 24px -4px rgba(16, 24, 40, 0.08), 0px 8px 8px -4px rgba(16, 24, 40, 0.03)',
@@ -200,6 +169,36 @@ export default {
                 'focus-ring': '0px 0px 0px 4px rgba(70, 95, 255, 0.12)',
                 'slider-navigation': '0px 1px 2px 0px rgba(16, 24, 40, 0.10), 0px 1px 3px 0px rgba(16, 24, 40, 0.10)',
                 tooltip: '0px 4px 6px -2px rgba(16, 24, 40, 0.05), -8px 0px 20px 8px rgba(16, 24, 40, 0.05)',
+            },
+            keyframes: {
+                flash: {
+                    '0%': { transform: 'scale(1)' },
+                    '50%': { transform: 'scale(1.3)' },
+                    '100%': { transform: 'scale(1)' },
+                },
+                openChat: {
+                    '0%': { transform: 'scale(0)', opacity: '0' },
+                    '100%': { transform: 'scale(1)', opacity: '1' },
+                },
+                openChatOff: {
+                    '0%': { transform: 'scale(1)', opacity: '1' },
+                    '100%': { transform: 'scale(0)', opacity: '0' },
+                },
+                openBoxChat: {
+                    '0%': { width: '0px', opacity: '0' },
+                    '100%': { width: '400px', opacity: '1' },
+                },
+                openBoxChatOff: {
+                    '0%': { width: '400px', opacity: '1' },
+                    '100%': { width: '0px', opacity: '0' },
+                },
+            },
+            animation: {
+                'active-flash': 'flash 0.8s ease-in-out infinite',
+                'active-openChat': 'openChat 0.3s',
+                'active-openChatOff': 'openChatOff 0.3s',
+                'active-openBoxChat': 'openBoxChat 0.3s',
+                'active-openBoxChatOff': 'openBoxChatOff 0.3s',
             },
             dropShadow: {
                 '4xl': ['0 35px 35px rgba(0, 0, 0, 0.25)', '0 45px 65px rgba(0, 0, 0, 0.15)'],

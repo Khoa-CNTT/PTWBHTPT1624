@@ -59,7 +59,7 @@ const Banner: React.FC = () => {
                     </Swiper>
                 ) : (
                     // <Skeleton variant={'rectangular'} width={'100%'} height={mobile_ui ? '150px' : '304px'} />
-                    <Skeleton variant={'rectangular'} width={'100%'} height={'304px'} />
+                    <Skeleton variant={'rectangular'} width={'100%'} height={'274px'} />
                 )}
             </div>
             <div className=" tablet:hidden w-[26%] h-full  pl-4">
@@ -84,7 +84,7 @@ const Banner: React.FC = () => {
                         })}
                     </Swiper>
                 ) : (
-                    <Skeleton variant={'rectangular'} width={'100%'} height={'304px'} />
+                    <Skeleton variant={'rectangular'} width={'100%'} height={'274px'} />
                 )}
             </div>
         </div>

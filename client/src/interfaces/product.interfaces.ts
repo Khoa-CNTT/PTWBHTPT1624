@@ -5,6 +5,7 @@ export interface IProductItem {
     product_price: number;
     product_discount: number;
     product_ratings: number;
+    product_quantity: number;
     product_sold: number;
     product_slug: string;
 }

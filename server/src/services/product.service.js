@@ -101,17 +101,18 @@ class ProductService {
     // Các chức năng khác (giảm giá, sản phẩm nổi bật, sản phẩm mới, v.v.)
     static async getFeaturedProducts() {
         return await Product.find({ product_isPublished: true })
-            .sort({ sold_count: -1, rating: -1 })
-            .select('_id product_thumb product_name product_slug')
+            .sort({ product_sold: -1, product_ratings: -1 })
+            .select('_id product_thumb product_name product_price product_slug product_discount product_sold product_ratings')
             .limit(8)
             .lean();
     }
+
     static async getFlashSaleProducts() {
         return await Product.find({
             product_discount: { $gte: 40 },
             product_isPublished: true,
         })
-            .select('_id product_thumb product_name product_slug product_discount')
+            .select('_id product_thumb product_sold  product_quantity product_name product_slug product_discount')
             .sort({ product_discount: -1 })
             .lean();
     }

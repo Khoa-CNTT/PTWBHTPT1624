@@ -63,7 +63,7 @@ const OfflineOrderTable: React.FC<OrderListProps> = ({ offlineOrder }) => {
 
                                 <TableCell className="px-5 py-3 text-center dark:text-gray-300">
                                     <span className=" truncate-trailing text-[rgb(128,128,137)] line-clamp-1  text-theme-sm dark:text-white/90">
-                                        {formatMoney(order?.order_total_price)}
+                                        {formatMoney(order?.order_total_price - order?.order_total_apply_discount)}
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-center">

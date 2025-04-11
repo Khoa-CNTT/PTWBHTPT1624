@@ -186,6 +186,17 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
             <div className="custom-scrollbar relative w-full max-w-[800px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{product ? 'Chỉnh sửa sản phẩm' : 'Thêm sản phẩm mới'}</h4>
                 <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 border-gray-200 rounded-md">
+                    <div className="w-1/2">
+                        <DateComponent
+                            label="Ngày hết hạn"
+                            onChange={(e) => {
+                                setInputFields((prev) => ({ ...prev, product_expiry_date: e }));
+                                setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_expiry_date'));
+                            }}
+                            value={inputFields?.product_expiry_date}
+                            type="product_expiry_date"
+                        />
+                    </div>
                     <div className="flex flex-col gap-4">
                         <InputForm
                             col={true}
@@ -248,19 +259,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                             />
                         </div>
 
-                        <div>
-                            <div className="w-1/2">
-                                <DateComponent
-                                    label="Ngày bắt đầu"
-                                    onChange={(e) => {
-                                        setInputFields((prev) => ({ ...prev, product_expiry_date: e }));
-                                        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_expiry_date'));
-                                    }}
-                                    value={inputFields?.product_expiry_date}
-                                    type="product_expiry_date"
-                                />
-                            </div>
-                        </div>
                         <div className=" gap-4">
                             <h2 className=" text-sm text-secondary text-center">Thông tin chi tiết</h2>
                             {invalidFields.some((i) => i.name === 'product_attribute') && (

@@ -3,6 +3,8 @@
 import React, { useRef } from 'react';
 import { IProductInCart } from '../../../interfaces/product.interfaces';
 import { ReceiptContent } from '../../../components/ReceiptContent';
+import { apiCreateOfflineOrders } from '../../../services/order.service';
+import { showNotification } from '../../../components';
 
 interface ConfirmationModalProps {
     open: boolean;
@@ -35,7 +37,14 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
 
     if (!open) return null;
 
-    const handlePrint = () => {
+    const handleConfirmAndPrint = async () => {
+        const data = {
+            order_products: cart,
+            order_payment_method: paymentMethod,
+        };
+        const res = await apiCreateOfflineOrders(data);
+        showNotification(res.message, res.success);
+        if (!res.success) return;
         const printContent = printRef.current?.innerHTML;
         if (printContent) {
             // Mở tab mới
@@ -113,13 +122,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 newWindow.document.close();
             }
         }
-    };
-
-    const handleConfirmAndPrint = () => {
-        handlePrint(); // Mở tab mới và in hóa đơn
         // handlePrintSuccess sẽ được gọi từ tab mới sau khi in thành công
     };
-
     // Đảm bảo handlePrintSuccess có thể được truy cập từ tab mới
     (window as any).handlePrintSuccess = handlePrintSuccess;
 
@@ -146,7 +150,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                         Hủy
                     </button>
                     <button onClick={handleConfirmAndPrint} className="px-4 py-2 bg-blue-600 text-white rounded hover:bg-blue-700">
-                        In hóa đơn
+                        Xác nhận và in hóa đơn
                     </button>
                 </div>
             </div>

@@ -1,0 +1,67 @@
+import React, { useEffect, useState } from 'react';
+import { Swiper, SwiperSlide } from 'swiper/react';
+import { Navigation } from 'swiper/modules';
+import { v4 as uuidv4 } from 'uuid';
+import { IProductItem } from '../../../../interfaces/product.interfaces';
+import { apiGetFeaturedProducts } from '../../../../services/product.service';
+import ProductItem from '../../../../components/item/ProductItem';
+
+const ProductsFeatured: React.FC = () => {
+    const [products, setProducts] = useState<IProductItem[]>([]);
+
+    useEffect(() => {
+        const fetchProducts = async () => {
+            const res = await apiGetFeaturedProducts();
+            if (res.success) setProducts(res.data);
+        };
+        fetchProducts();
+    }, []);
+
+    return (
+        <>
+            {products?.length > 0 && (
+                <div id="sock-discount" className="relative flex flex-col w-full h-auto py-3 pt-6 px-4 bg-white rounded-md  gap-4">
+                    <div className="absolute left-1/2 top-[-16px] z-[1] flex w-max min-w-[272px] -translate-x-1/2 items-center justify-center">
+                        <p className="relative flex min-h-[34px] w-full items-center justify-center rounded-b-[8px] border-1px border-[#00ac5b] px-[7px] py-1 text-16 font-bold uppercase leading-[18px] before:absolute before:left-[-10px] before:top-[-1px] before:border-r-[10px] before:border-t-[16px] before:border-r-[#00AC5B] before:border-t-transparent after:absolute after:right-[-8px] after:top-[-1px] after:border-l-[9px] after:border-t-[16px] after:border-l-[#00AC5B] after:border-t-transparent bg-[#00AC5B] text-[#fff] after:!border-l-[#3b854e] before:!border-r-[#3b854e] cate_title">
+                            Sản phẩm nổi bật
+                        </p>
+                    </div>
+                    <div className="relative">
+                        <Swiper
+                            loop={false}
+                            allowTouchMove={false}
+                            slidesPerGroup={3}
+                            navigation={true}
+                            modules={[Navigation]}
+                            className="mySwiper"
+                            breakpoints={{
+                                1: {
+                                    slidesPerView: 2,
+                                    slidesPerGroup: 1,
+                                    allowTouchMove: true,
+                                },
+                                740: {
+                                    slidesPerView: 4,
+                                    slidesPerGroup: 2,
+                                },
+                                1024: {
+                                    slidesPerView: 6,
+                                    slidesPerGroup: 3,
+                                },
+                            }}>
+                            {products?.map((p) => {
+                                return (
+                                    <SwiperSlide key={uuidv4()}>
+                                        <ProductItem key={p?._id} props={p} />
+                                    </SwiperSlide>
+                                );
+                            })}
+                        </Swiper>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
+
+export default ProductsFeatured;
