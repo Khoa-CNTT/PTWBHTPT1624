@@ -15,3 +15,4 @@ export { default as DashboardSkeleton } from './skeleton/DashboardSkeleton.tsx';
 export { default as TableSkeleton } from './skeleton/TableSkeleton.tsx';
 export { default as OrderItem } from './item/OrderItem.tsx';
 export { default as NoPermission } from './NoPermission/index.tsx';
+export { default as Header } from './header/Header.tsx';

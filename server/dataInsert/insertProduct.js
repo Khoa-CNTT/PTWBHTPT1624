@@ -182,6 +182,7 @@ const insertProductsData = async () => {
                             product_price: item.oldPrice ? parseInt(item.oldPrice.replace('.', '')) : 150000,
                             product_description: item.description.join(', '),
                             product_quantity: 1000,
+                            product_expiry_date: getRandomExpiryDate(),
                             product_attribute: convertArrToObject(item.detail),
                             product_sold: item.solid ? parseInt(item.solid.replace('.', '')) : 0,
                             product_views: 10,
@@ -215,4 +216,14 @@ const insertProductsData = async () => {
         console.error('Operation failed:', error);
     }
 };
+
+function getRandomExpiryDate() {
+    const now = new Date();
+    const twoYearsLater = new Date();
+    twoYearsLater.setFullYear(now.getFullYear() + 2);
+    const randomTimestamp = now.getTime() + Math.random() * (twoYearsLater.getTime() - now.getTime());
+    const randomDate = new Date(randomTimestamp);
+
+    return randomDate.toISOString().split('T')[0]; // định dạng YYYY-MM-DD
+}
 insertProductsData();

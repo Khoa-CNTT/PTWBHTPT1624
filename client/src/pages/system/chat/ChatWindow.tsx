@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { IConversation } from '../../../interfaces/conversation.interfaces';
 import { userAvatar } from '../../../assets';
 import { apiGetMessagesByConversation, apiSendMessageByAdmin } from '../../../services/message.service';
@@ -12,9 +12,9 @@ interface ChatWindowProps {
 }
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
-    const [openDropDown, setOpenDropDown] = useState<boolean>(false);
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [value, setValue] = useState<string>();
+    const scroll = useRef<any>(null);
     // const [image, setImage] = useState<string>();
     useEffect(() => {
         const fetchApi = async () => {
@@ -26,7 +26,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
         };
         fetchApi();
     }, [selectedConversation]);
-
+    useEffect(() => {
+        scroll.current?.scrollIntoView({
+            behavior: 'smooth',
+        });
+    }, [messages]);
     if (!selectedConversation) {
         return (
             <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
@@ -89,46 +93,21 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
                             />
                         </svg>
                     </button>
-                    <div className="relative -mb-1.5" data-dropdown>
-                        <button
-                            onClick={() => setOpenDropDown(!openDropDown)}
-                            className={`${
-                                openDropDown
-                                    ? 'text-gray-800 dark:text-white/90'
-                                    : 'text-gray-700 dark:text-gray-400 hover:text-gray-800 dark:hover:text-white/90'
-                            }`}>
-                            <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M10.2441 6C10.2441 5.0335 11.0276 4.25 11.9941 4.25H12.0041C12.9706 4.25 13.7541 5.0335 13.7541 6C13.7541 6.9665 12.9706 7.75 12.0041 7.75H11.9941C11.0276 7.75 10.2441 6.9665 10.2441 6ZM10.2441 18C10.2441 17.0335 11.0276 16.25 11.9941 16.25H12.0041C12.9706 16.25 13.7541 17.0335 13.7541 18C13.7541 18.9665 12.9706 19.75 12.0041 19.75H11.9941C11.0276 19.75 10.2441 18.9665 10.2441 18ZM11.9941 10.25C11.0276 10.25 10.2441 11.0335 10.2441 12C10.2441 12.9665 11.0276 13.75 11.9941 13.75H12.0041C12.9706 13.75 13.7541 12.9665 13.7541 12C13.7541 11.0335 12.9706 10.25 12.0041 10.25H11.9941Z"
-                                    fill=""
-                                />
-                            </svg>
-                        </button>
-                        {openDropDown && (
-                            <div
-                                className="absolute right-0 top-full z-40 w-40 space-y-1 rounded-2xl border border-gray-200 bg-white p-2 shadow-lg dark:border-gray-800 dark:bg-gray-dark"
-                                onClick={(e: React.MouseEvent) => e.stopPropagation()}>
-                                <button className="flex w-full rounded-lg px-3 py-2 text-left text-xs font-medium text-gray-500 hover:bg-gray-100 hover:text-gray-700 dark:text-gray-400 dark:hover:bg-white/5 dark:hover:text-gray-300">
-                                    Xóa
-                                </button>
-                            </div>
-                        )}
-                    </div>
                 </div>
             </div>
 
             <div className="custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6">
                 {messages?.map((message, index) => (
-                    <ChatMessage key={index} message={message} isSentByUser={message.senderRole === 'Admin'} />
+                    <div ref={scroll}>
+                        <ChatMessage key={index} message={message} isSentByUser={message.senderRole === 'Admin'} />
+                    </div>
                 ))}
             </div>
 
             <div className="sticky bottom-0 border-t border-gray-200 p-3 dark:border-gray-800">
                 <form className="flex items-center justify-between">
                     <div className="relative w-full">
-                        <button className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90 sm:left-3">
+                        <div className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90 sm:left-3">
                             <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
                                     fillRule="evenodd"
@@ -137,7 +116,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
                                     fill=""
                                 />
                             </svg>
-                        </button>
+                        </div>
                         <input
                             type="text"
                             onChange={(e) => setValue(e?.target?.value)}
@@ -155,22 +134,6 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
                                     d="M12.9522 14.4422C12.9522 14.452 12.9524 14.4618 12.9527 14.4714V16.1442C12.9527 16.6699 12.5265 17.0961 12.0008 17.0961C11.475 17.0961 11.0488 16.6699 11.0488 16.1442V6.15388C11.0488 5.73966 10.7131 5.40388 10.2988 5.40388C9.88463 5.40388 9.54885 5.73966 9.54885 6.15388V16.1442C9.54885 17.4984 10.6466 18.5961 12.0008 18.5961C13.355 18.5961 14.4527 17.4983 14.4527 16.1442V6.15388C14.4527 6.14308 14.4525 6.13235 14.452 6.12166C14.4347 3.84237 12.5817 2 10.2983 2C8.00416 2 6.14441 3.85976 6.14441 6.15388V14.4422C6.14441 14.4492 6.1445 14.4561 6.14469 14.463V16.1442C6.14469 19.3783 8.76643 22 12.0005 22C15.2346 22 17.8563 19.3783 17.8563 16.1442V9.55775C17.8563 9.14354 17.5205 8.80775 17.1063 8.80775C16.6921 8.80775 16.3563 9.14354 16.3563 9.55775V16.1442C16.3563 18.5498 14.4062 20.5 12.0005 20.5C9.59485 20.5 7.64469 18.5498 7.64469 16.1442V9.55775C7.64469 9.55083 7.6446 9.54393 7.64441 9.53706L7.64441 6.15388C7.64441 4.68818 8.83259 3.5 10.2983 3.5C11.764 3.5 12.9522 4.68818 12.9522 6.15388L12.9522 14.4422Z"
                                     fill=""
                                 />
-                            </svg>
-                        </button>
-                        <button className="text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
-                            <svg className="stroke-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <rect x="7" y="2.75" width="10" height="12.5" rx="5" stroke="" strokeWidth="1.5" />
-                                <path
-                                    d="M20 10.25C20 14.6683 16.4183 18.25 12 18.25C7.58172 18.25 4 14.6683 4 10.25"
-                                    stroke=""
-                                    strokeWidth="1.5"
-                                    strokeLinecap="round"
-                                />
-                                <path d="M10 21.25H14" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M12 18.25L12 21.25" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M12 7.5L12 10.5" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M14.5 8.25L14.5 9.75" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-                                <path d="M9.5 8.25L9.5 9.75" stroke="" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
                             </svg>
                         </button>
                         <button

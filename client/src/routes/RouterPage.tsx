@@ -5,11 +5,11 @@ import DefaultLayout from '../layout/user/DefaultLayout';
 import { PATH } from '../utils/const';
 import useAuthStore from '../store/authStore';
 import { AdminLogin, DashboardManage } from '../pages/system';
-import HomePage from '../pages/user/HomePage';
 import { ROUTES } from '../config/route';
 import PermissionMiddleware from '../middleware/PermissionMiddleware';
 import { NoPermission } from '../components';
 import AdminProfile from '../pages/system/profile';
+import HomePage from '../pages/user/HomePage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();

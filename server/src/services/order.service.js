@@ -352,7 +352,7 @@ class OrderService {
         if (status) fillter.order_status = status;
 
         const orders = await OnlineOrder.find(fillter)
-            .select('order_code order_shipping_address order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
+            .select('order_code order_shipping_address  order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
             .populate({
                 path: 'order_products.productId',
                 select: 'product_name',

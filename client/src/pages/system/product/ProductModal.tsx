@@ -18,6 +18,7 @@ import InputEditor from '../../../components/input/InputEditor';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { CloseIcon } from '../../../icons';
 import validate from '../../../utils/valueDate';
+import DateComponent from '../../../components/DateFilterComponent';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -73,10 +74,10 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
             setInputFields(product);
             setSelectCategory(product.product_category_id || '');
             setSelectBrand(product.product_brand_id || '');
+            setSelectSupplier(product.product_supplier_id || '');
         } else {
             const attribute = [
                 { name: 'Xuất xứ thương hiệu', value: '' },
-                { name: 'Hạn sử dụng', value: '' },
                 { name: 'Hướng dẫn bảo quản', value: '' },
                 { name: 'Hướng dẫn sử dụng', value: '' },
                 { name: 'Sản phẩm có được bảo hành không?', value: '' },
@@ -132,7 +133,34 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
         setIsUploading(false);
     };
     const handleSave = () => {
-        const { _id, product_slug, product_sold, product_ratings, product_isPublished, ...data } = inputFields;
+        const {
+            product_attribute,
+            product_brand_id,
+            product_category_id,
+            product_description,
+            product_discount,
+            product_expiry_date,
+            product_images,
+            product_name,
+            product_price,
+            product_quantity,
+            product_supplier_id,
+            product_thumb,
+        } = inputFields;
+        const data = {
+            product_attribute,
+            product_brand_id,
+            product_category_id,
+            product_description,
+            product_discount,
+            product_expiry_date,
+            product_images,
+            product_name,
+            product_price,
+            product_quantity,
+            product_supplier_id,
+            product_thumb,
+        };
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng! nhập đầy đủ thông tin');
             return;
@@ -218,6 +246,20 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                                 value={inputFields.product_discount || ''}
                                 invalidFields={invalidFields}
                             />
+                        </div>
+
+                        <div>
+                            <div className="w-1/2">
+                                <DateComponent
+                                    label="Ngày bắt đầu"
+                                    onChange={(e) => {
+                                        setInputFields((prev) => ({ ...prev, product_expiry_date: e }));
+                                        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_expiry_date'));
+                                    }}
+                                    value={inputFields?.product_expiry_date}
+                                    type="product_expiry_date"
+                                />
+                            </div>
                         </div>
                         <div className=" gap-4">
                             <h2 className=" text-sm text-secondary text-center">Thông tin chi tiết</h2>

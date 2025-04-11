@@ -16,7 +16,6 @@ const productSchema = new Schema(
         product_expiry_date: { type: Date }, // Hạn sử dụng
         product_discount: { type: Number, default: 0 }, // %
         product_description: { type: String, required: true },
-        product_quantity: { type: Number, required: true }, // Số lượng sản phẩm
         product_attribute: { type: Schema.Types.Mixed, required: true }, // Thuộc tính của sản phẩm (size, color, ...)
         product_ratings: {
             type: Number,
@@ -30,7 +29,7 @@ const productSchema = new Schema(
         product_brand_id: { type: Schema.Types.ObjectId, ref: 'Brand', required: true },
         product_supplier_id: { type: Schema.Types.ObjectId, ref: 'Supplier', required: true }, // ID nhà cung cấp
         product_thumb: { type: String, required: true },
-        product_stock: { type: Number, required: true, default: 0 }, // Số lượng hàng tồn kho
+        product_quantity: { type: Number, required: true, default: 0 }, // Số lượng hàng tồn kho
         product_isPublished: { type: Number, required: true, default: true }, // Số lượng hàng tồn kho
     },
     {

@@ -35,7 +35,6 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
         const now = dayjs();
         const expiry = dayjs(expiryDate);
         const diffDays = expiry.diff(now, 'day');
-
         if (diffDays < 0) return 'bg-red-100 text-red-600'; // quá hạn
         if (diffDays <= 30) return 'bg-yellow-100 text-yellow-700'; // sắp hết hạn
         return 'bg-green-100 text-green-700'; // còn hạn lâu
@@ -112,11 +111,7 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-center">
                                     {product?.product_expiry_date ? (
-                                        <span
-                                            className={`px-3 py-1 rounded-full text-theme-sm font-medium ${getExpiryColor(
-                                                product?.product_expiry_date
-                                            )}`}
-                                        >
+                                        <span className={`px-3 py-1 rounded-full text-theme-sm font-medium ${getExpiryColor(product?.product_expiry_date)}`}>
                                             {dayjs(product.product_expiry_date).format('DD/MM/YYYY')}
                                         </span>
                                     ) : (

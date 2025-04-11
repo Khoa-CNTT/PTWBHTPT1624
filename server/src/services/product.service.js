@@ -52,7 +52,7 @@ class ProductService {
         const skipNum = pageNum * limitNum;
         const products = await Product.find({ $text: { $search: regexSearch } }, { score: { $meta: 'textScore' } })
             .sort({ score: { $meta: 'textScore' } })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount product_stock')
+            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount product_quantity')
             .skip(skipNum)
             .limit(limitNum)
             .lean();
@@ -86,7 +86,7 @@ class ProductService {
         const skipNum = pageNum * limitNum;
         const searchFilter = JSON.parse(JSON.stringify(searchConditions).replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`));
         const products = await Product.find(searchFilter, { product_isPublished: true })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount product_stock')
+            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount product_quantity')
             .skip(skipNum)
             .limit(limitNum)
             .lean();

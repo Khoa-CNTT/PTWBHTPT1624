@@ -1,7 +1,7 @@
 import { adminClient, apiClient } from '../config/httpRequest';
 
 // Lấy tất cả banners
-const apiGetAllBanners = async (queries: { limit: number; page: number }) => {
+const apiGetAllBanners = async (queries?: { limit: number; page: number }) => {
     try {
         const res = await apiClient.get('/v1/api/banner/all', {
             params: queries,
