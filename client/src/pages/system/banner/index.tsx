@@ -15,6 +15,34 @@ export default function BannerManage() {
     const [totalPage, setTotalPage] = useState<number>(0);
     const [selectedBanner, setSelectedCategory] = useState<IBanner | null>(null);
     const { openModal, isOpen, closeModal } = useModal();
+    const [tab, setTab] = useState('all'); // Tab hiện tại: 'all', 'expired', 'valid'
+    
+    const currentDate = new Date();
+
+    // Tab lọc banner
+    const PRODUCT_TAB = [
+        { tab: 'all', title: 'Tất cả banner' },
+        { tab: 'expired', title: 'Banner hết hạn' },
+        { tab: 'valid', title: 'Banner còn hạn' },
+    ];
+
+    // Lọc banner theo tab
+    const filterBanners = () => {
+        if (tab === 'expired') {
+            return banners.filter((banner) => {
+                const endDate = new Date(banner.banner_endDate);
+                return endDate < currentDate;
+            });
+        }
+        if (tab === 'valid') {
+            return banners.filter((banner) => {
+                const startDate = new Date(banner.banner_startDate);
+                const endDate = new Date(banner.banner_endDate);
+                return startDate <= currentDate && currentDate <= endDate;
+            });
+        }
+        return banners; // Mặc định trả tất cả banner
+    };
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -26,14 +54,17 @@ export default function BannerManage() {
         };
         fetchApi();
     }, [currentPage]);
+
     const handleAdd = () => {
         setSelectedCategory(null);
         openModal();
     };
+
     const handleEdit = (banner: IBanner) => {
         setSelectedCategory(banner);
         openModal();
     };
+
     const handleSave = async (data: IBanner) => {
         let res;
         if (data._id) {
@@ -55,6 +86,7 @@ export default function BannerManage() {
                     : [res.data, ...prev], // Thêm banner mới
         );
     };
+
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
@@ -69,7 +101,11 @@ export default function BannerManage() {
             window.location.reload();
         }, 2000);
     };
-    if (banners.length === 0) return <TableSkeleton />;
+
+    const filteredBanners = filterBanners(); // Lọc banner theo tab đã chọn
+
+    if (filteredBanners.length === 0) return <TableSkeleton />;
+
     return (
         <>
             <PageMeta title="Quản lý banner" />
@@ -83,9 +119,28 @@ export default function BannerManage() {
                         Thêm
                     </button>
                 </div>
-                <BannerTable banners={banners} onEdit={handleEdit} onDelete={handleDelete} />
+
+                {/* Tab lọc banner */}
+                <div className="mb-4 flex space-x-4">
+                    {PRODUCT_TAB.map((item) => (
+                        <button
+                            key={item.tab}
+                            onClick={() => setTab(item.tab)}
+                            className={`py-2 px-4 rounded-lg text-sm font-medium ${
+                                tab === item.tab
+                                    ? 'bg-blue-500 text-white'
+                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}>
+                            {item.title}
+                        </button>
+                    ))}
+                </div>
+
+                <BannerTable banners={filteredBanners} onEdit={handleEdit} onDelete={handleDelete} />
+
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
+
             {isOpen && <BannerModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} banner={selectedBanner} />}
         </>
     );
