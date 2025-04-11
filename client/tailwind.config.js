@@ -32,7 +32,7 @@ export default {
                 transparent: 'transparent',
                 white: '#FFFFFF',
                 black: '#101828',
-                primary: 'rgb(0,136,72)',
+                primary: '#ffba00',
                 secondary: 'rgb(128, 128, 137)',
                 hover: 'rgba(39, 39, 42, 0.12)',
                 overlay: 'rgba(0, 0, 0, 0.53)',
@@ -40,7 +40,7 @@ export default {
                 color_hover: 'rgba(39, 39, 42, 0.12)',
                 red_custom: 'rgb(255,66,78)',
                 red_lighter_custom: 'rgb(255, 170, 175)',
-                background_primary: '#ffba00',
+                background_primary: 'rgb(245 245 250 / var(--tw-bg-opacity))',
                 text_secondary: 'rgb(120, 120, 120)',
                 height: {
                     header: '100px',
