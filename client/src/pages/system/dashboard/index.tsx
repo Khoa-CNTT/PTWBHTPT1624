@@ -37,6 +37,7 @@ export default function DashboardManage() {
                 onProductClick={() => navigate('/quan-ly/san-pham')}
                 onUserClick={() => navigate('/quan-ly/nguoi-dung')}
                 onOrderClick={() => navigate('/quan-ly/don-hang')}
+                onOrderoffClick={() => navigate('/quan-ly/hoa-don')}
                 onRevenueMouseEnter={() => setShowTooltip(true)}
                 onRevenueMouseLeave={() => setShowTooltip(false)}
                 showTooltip={showTooltip}
@@ -45,11 +46,14 @@ export default function DashboardManage() {
 
             {/* Doanh thu theo ngày/tháng */}
             <RevenueChart
-                viewType={viewType}
-                onViewChange={setViewType}
-                revenuePerDay={dashboardData.revenuePerDay}
-                revenuePerMonth={dashboardData.revenuePerMonth}
-            />
+  viewType={viewType}
+  onViewChange={setViewType}
+  revenuePerDay={dashboardData.revenuePerDay}
+  revenuePerMonth={dashboardData.revenuePerMonth}
+  offlineRevenuePerDay={dashboardData.offlineRevenuePerDay}
+  offlineRevenuePerMonth={dashboardData.offlineRevenuePerMonth}
+/>
+
 
             {/* Top 5 sản phẩm bán chạy */}
             <TopSellingProducts topSellingProducts={dashboardData.topSellingProducts} />
