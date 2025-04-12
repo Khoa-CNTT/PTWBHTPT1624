@@ -1,8 +1,8 @@
 import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import parse from 'html-react-parser';
-import { IProduct } from '../../../../interfaces/product.interfaces';
-const ProductDescription: React.FC<{ productDetail: IProduct }> = ({ productDetail }) => {
+import { IProductDetail } from '../../../../interfaces/product.interfaces';
+const ProductDescription: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) => {
     const { product_description, product_attribute } = productDetail;
     return (
         <div>

@@ -4,12 +4,12 @@ import { SimilarProducts } from './similarProducts';
 import HeaderDetail from './headerDetail';
 import ProductDescription from './productDescription';
 import Breadcrumbs from './breadcrumbs';
-import { IProduct } from '../../../interfaces/product.interfaces';
 import { apiGetProductById } from '../../../services/product.service';
 import { SkeLetonDetailPage } from '../../../components';
 import Seo from '../../../components/seo';
+import { IProductDetail } from '../../../interfaces/product.interfaces';
 const DetailPage: React.FC = () => {
-    const [productDetail, setProductDetail] = useState<IProduct>();
+    const [productDetail, setProductDetail] = useState<IProductDetail>();
     const pid = useParams().pid;
     useEffect(() => {
         if (!pid) return;

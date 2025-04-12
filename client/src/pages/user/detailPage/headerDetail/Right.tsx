@@ -5,10 +5,10 @@ import { IconExcept } from '../../../../assets';
 import { formatMoney } from '../../../../utils/formatMoney';
 import { formatStar } from '../../../../utils/formatStar';
 import { useParams } from 'react-router-dom';
-import { IProduct } from '../../../../interfaces/product.interfaces';
 import { ButtonOutline } from '../../../../components';
+import { IProductDetail } from '../../../../interfaces/product.interfaces';
 
-const Right: React.FC<{ productDetail: IProduct }> = ({ productDetail }) => {
+const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) => {
     const [quantity, setQuantity] = useState<number>(1);
     // const { isLoginSuccess } = useAppSelector((state) => state.auth);
     // const currentUser = useAppSelector((state) => state.user);
