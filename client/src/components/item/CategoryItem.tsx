@@ -5,6 +5,7 @@ import { ICategory } from '../../interfaces/category.interfaces';
 // eslint-disable-next-line react-refresh/only-export-components
 const CategoryItem: React.FC<{ props: ICategory }> = ({ props }) => {
     const { category_name, category_code, category_thumb, category_slug } = props;
+
     return (
         <Link
             to={`/danh-muc/${category_slug}/${category_code}`}

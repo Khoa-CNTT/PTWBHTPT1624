@@ -10,6 +10,7 @@ const productSchema = new Schema(
         product_name: { type: String, required: true },
         product_code: { type: String, required: true, unique: true },
         product_slug: { type: String, unique: true },
+        product_views: { type: Number, default: 0 },
         product_thumb: { type: String, required: true }, // Hình ảnh đại diện sản phẩm
         product_images: [{ type: String, required: true }], // Các hình ảnh của sản phẩm
         product_price: { type: Number, required: true },

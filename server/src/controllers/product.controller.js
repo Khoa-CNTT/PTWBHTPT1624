@@ -61,7 +61,7 @@ class ProductController {
     }
 
     static async getSimilarProducts(req, res) {
-        const products = await ProductService.getSimilarProductsByCategory(req.params.id);
+        const products = await ProductService.getSimilarProducts(req.params.id);
         res.status(200).json({ success: true, data: products });
     }
 

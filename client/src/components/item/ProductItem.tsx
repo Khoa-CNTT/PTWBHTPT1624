@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { IProductItem } from '../../interfaces/product.interfaces';
 
 // eslint-disable-next-line react-refresh/only-export-components
-const ProductItem: React.FC<{ props: IProductItem; scrollIntoView?: boolean }> = ({ props, scrollIntoView }) => {
+const ProductItem: React.FC<{ props: IProductItem; scrollIntoView?: boolean }> = ({ props, scrollIntoView = false }) => {
     const { product_discount, product_name, product_price, product_ratings, product_slug, product_sold, product_thumb, _id } = props;
     const productRef = useRef<HTMLAnchorElement>(null);
 

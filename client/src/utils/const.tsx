@@ -37,27 +37,22 @@ export const PATH = {
 
 export const SEARCH_UTILITY = [
     {
-        id: 1,
+        id: 0,
         image: danhchoban,
         title: 'Dành cho bạn',
     },
     {
-        id: 2,
-        image: bachhoa,
-        title: 'Bách hóa dưới 99k',
-    },
-    {
-        id: 3,
-        image: dealsieuhot,
-        title: 'Siêu hot',
-    },
-    {
-        id: 4,
+        id: 1,
         image: hangmoi,
         title: 'Hàng mới',
     },
     {
-        id: 5,
+        id: 2,
+        image: bachhoa,
+        title: 'Dưới 99k',
+    },
+    {
+        id: 3,
         image: revodoi,
         title: 'Rẽ vô đối',
     },
@@ -112,7 +107,7 @@ export const SORT_BAR = [
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SellIcon from '@mui/icons-material/Sell';
-import { bachhoa, danhchoban, dealsieuhot, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
+import { bachhoa, danhchoban, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
 
 export const SIDEBAR_USER = [

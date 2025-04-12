@@ -38,7 +38,7 @@ const Header: React.FC = () => {
     }, []);
 
     return (
-        <header className="h-auto w-full px-2 tablet:bg-transparent tablet:bg-[url(https://salt.tikicdn.com/ts/banner/0f/65/5a/cc78315d8fe4d78ac876e8f9005a5cbb.png)] tablet:pb-2  bg-primary  ">
+        <header className="h-auto w-full px-2 tablet:bg-transparent tablet:bg-[url(https://salt.tikicdn.com/ts/banner/0f/65/5a/cc78315d8fe4d78ac876e8f9005a5cbb.png)] tablet:pb-2 background_header_mobile  ">
             <div className="w-full h-full flex flex-col   max-w-[1280px] m-auto  ">
                 <HeaderTop />
                 <HeaderBottom />

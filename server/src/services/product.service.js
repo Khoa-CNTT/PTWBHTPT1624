@@ -1,5 +1,4 @@
 'use strict';
-
 const { NotFoundError } = require('../core/error.response');
 const Product = require('../models/product.model');
 const cosineSimilarity = require('../utils/search-image/cosineSimilarity');
@@ -8,6 +7,7 @@ const extractFeatures = require('../utils/search-image/extractFeatures');
 const path = require('path');
 const tf = require('@tensorflow/tfjs'); // Sử dụng phiên bản Web
 const generateRandomCode = require('../utils/generateRandomCode');
+const productModel = require('../models/product.model');
 const fs = require('fs').promises;
 
 class ProductService {
@@ -23,7 +23,7 @@ class ProductService {
     }
     // Lấy sản phẩm theo ID
     static async getProductById(productId) {
-        const product = await Product.findById(productId).lean();
+        const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']).lean();
         if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
         return product;
     }
@@ -117,15 +117,16 @@ class ProductService {
             .lean();
     }
     static async getNewProducts() {
-        return await Product.find({
-            createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 30)) },
-            product_isPublished: true,
-        })
+        return await productModel
+            .find({
+                createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 30)) },
+                product_isPublished: true,
+            })
             .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount')
             .sort({ createdAt: -1 })
             .lean();
     }
-    static async getSimilarProductsByCategory(id) {
+    static async getSimilarProducts(id) {
         const currentProduct = await Product.findById(id);
         if (!currentProduct) throw new NotFoundError('Sản phẩm không tồn tại');
         return await Product.find({

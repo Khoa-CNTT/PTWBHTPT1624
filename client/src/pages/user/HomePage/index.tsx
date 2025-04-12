@@ -3,6 +3,8 @@ import Banner from './Banner';
 import Categories from './categories';
 import ShockDiscount from './shockDiscount';
 import ProductsFeatured from './productsFeatured';
+import ProductsNew from './productsNew';
+import Products from './products';
 // import Categories from './categories';
 // import ShockDiscount from './shockDiscount';
 // import Products from './products';
@@ -19,9 +21,11 @@ const HomePage: React.FC = () => {
             <Banner />
             <div className="flex flex-col gap-8">
                 <Categories />
+                <ProductsNew />
                 <ShockDiscount />
                 <ProductsFeatured />
             </div>
+            <Products />
             {/*  {isLoginSuccess && <ProductFollowings />}
             <Products /> */}
         </div>

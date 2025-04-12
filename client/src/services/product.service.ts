@@ -13,9 +13,10 @@ const apiSearchProduct = async (keySearch: string) => {
     }
 };
 // API lấy tất cả sản phẩm
-const apiGetAllProducts = async () => {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const apiGetAllProducts = async (query: any) => {
     try {
-        const res = await apiClient.get('/v1/api/product/all');
+        const res = await apiClient.get('/v1/api/product/all', { params: query });
         return res.data;
     } catch (error) {
         return {
@@ -78,7 +79,7 @@ const apiGetNewProducts = async () => {
 };
 
 // API lấy danh sách sản phẩm tương tự theo danh mục
-const apiGetSimilarProductsByCategory = async (id: string) => {
+const apiGetSimilarProducts = async (id: string) => {
     try {
         const res = await apiClient.get(`/v1/api/product/${id}/similar`);
         return res.data;
@@ -106,7 +107,7 @@ const apiCreateProduct = async (productData: object) => {
 // API lấy thông tin sản phẩm theo ID (Dành cho admin)
 const apiGetProductById = async (id: string) => {
     try {
-        const res = await adminClient.get(`/v1/api/product/${id}/search`);
+        const res = await adminClient.get(`/v1/api/product/${id}/detail`);
         return res.data;
     } catch (error) {
         return {
@@ -175,7 +176,7 @@ export {
     apiGetFeaturedProducts,
     apiGetFlashSaleProducts,
     apiGetNewProducts,
-    apiGetSimilarProductsByCategory,
+    apiGetSimilarProducts,
     apiCreateProduct,
     apiGetProductById,
     apiUpdateProduct,

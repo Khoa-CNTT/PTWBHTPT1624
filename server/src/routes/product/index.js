@@ -25,7 +25,7 @@ router.get('/flash-sale', asyncHandle(ProductController.getFlashSaleProducts));
 router.get('/new-product', asyncHandle(ProductController.getNewProducts));
 
 // 🔄 Lấy danh sách sản phẩm tương tự theo danh mục
-router.get('/:id/similar', asyncHandle(ProductController.getSimilarProductsByCategory));
+router.get('/:id/similar', asyncHandle(ProductController.getSimilarProducts));
 
 /* ================================
    🛡️ API Dành cho Admin (Quản lý Sản Phẩm)
@@ -37,7 +37,7 @@ router.get('/all-products', asyncHandle(ProductController.getAllProductsByAdmin)
 router.post('/add', asyncHandle(ProductController.createProduct));
 
 // 🔍 Lấy thông tin sản phẩm theo ID
-router.get('/:id/search', asyncHandle(ProductController.getProductById));
+router.get('/:id/detail', asyncHandle(ProductController.getProductById));
 router.get('/offline-orders/scan-product', asyncHandle(ProductController.ScanProduct));
 
 // ✏️ Cập nhật sản phẩm
