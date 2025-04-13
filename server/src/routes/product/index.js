@@ -26,12 +26,13 @@ router.get('/new-product', asyncHandle(ProductController.getNewProducts));
 
 // 🔄 Lấy danh sách sản phẩm tương tự theo danh mục
 router.get('/:id/similar', asyncHandle(ProductController.getSimilarProducts));
+router.get('/suggestion/:keySearch', asyncHandle(ProductController.getProductSuggestions));
 
 /* ================================
    🛡️ API Dành cho Admin (Quản lý Sản Phẩm)
    ================================ */
-// router.use(adminAuthentication); // ✅ Xác thực người dùng
-// router.use(restrictTo(PERMISSIONS.PRODUCT_MANAGE)); // 🚫 Chỉ admin có quyền quản lý sản phẩm
+router.use(adminAuthentication); // ✅ Xác thực người dùng
+router.use(restrictTo(PERMISSIONS.PRODUCT_MANAGE)); // 🚫 Chỉ admin có quyền quản lý sản phẩm
 router.get('/all-products', asyncHandle(ProductController.getAllProductsByAdmin));
 // ➕ Thêm sản phẩm mới (bao gồm thông tin tồn kho)
 router.post('/add', asyncHandle(ProductController.createProduct));

@@ -46,7 +46,9 @@ class ProductController {
 
     // Các chức năng khác (featured, flash sale, sản phẩm mới, v.v.)
     static async getFeaturedProducts(req, res) {
-        const products = await ProductService.getFeaturedProducts();
+        const { limit } = req.query;
+        const products = await ProductService.getFeaturedProducts(limit);
+
         res.status(200).json({ success: true, data: products });
     }
 
@@ -75,10 +77,17 @@ class ProductController {
     }
     static async ScanProduct(req, res) {
         const { product_code } = req.query;
-        console.log('product_code', product_code);
         res.status(200).json({
             success: true,
             data: await ProductService.ScanProduct(product_code),
+            message: 'Quét sản phẩm thành công',
+        });
+    }
+    static async getProductSuggestions(req, res) {
+        const { keySearch } = req.params;
+        res.status(200).json({
+            success: true,
+            data: await ProductService.getProductSuggestions(keySearch),
             message: 'Quét sản phẩm thành công',
         });
     }

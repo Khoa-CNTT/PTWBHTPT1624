@@ -99,11 +99,11 @@ class ProductService {
         };
     }
     // Các chức năng khác (giảm giá, sản phẩm nổi bật, sản phẩm mới, v.v.)
-    static async getFeaturedProducts() {
+    static async getFeaturedProducts(limit = 30) {
         return await Product.find({ product_isPublished: true })
             .sort({ product_sold: -1, product_ratings: -1 })
             .select('_id product_thumb product_name product_price product_slug product_discount product_sold product_ratings')
-            .limit(8)
+            .limit(limit)
             .lean();
     }
 

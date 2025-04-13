@@ -40,9 +40,11 @@ const apiGetAllProductsByAdmin = async (queries: { limit: number; page: number }
 };
 
 // API lấy danh sách sản phẩm nổi bật
-const apiGetFeaturedProducts = async () => {
+const apiGetFeaturedProducts = async (query: { limit?: number }) => {
     try {
-        const res = await apiClient.get('/v1/api/product/featured');
+        const res = await apiClient.get('/v1/api/product/featured', {
+            params: query,
+        });
         return res.data;
     } catch (error) {
         return {
@@ -82,6 +84,17 @@ const apiGetNewProducts = async () => {
 const apiGetSimilarProducts = async (id: string) => {
     try {
         const res = await apiClient.get(`/v1/api/product/${id}/similar`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const getProductSuggestions = async (keySearch: string) => {
+    try {
+        const res = await apiClient.get(`/v1/api/product/suggestion/${keySearch}`);
         return res.data;
     } catch (error) {
         return {
@@ -174,6 +187,7 @@ export {
     apiGetAllProducts,
     apiGetAllProductsByAdmin,
     apiGetFeaturedProducts,
+    getProductSuggestions,
     apiGetFlashSaleProducts,
     apiGetNewProducts,
     apiGetSimilarProducts,
