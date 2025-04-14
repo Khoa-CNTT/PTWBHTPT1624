@@ -83,7 +83,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                     <span className="font-medium">Giảm giá:</span> {formatMoney(totalDiscount)}
                 </p>
                 <p>
-                    <span className="font-medium">Thành tiền:</span> {formatMoney(calculateTotal)}
+                    <span className="font-medium">Thành tiền:</span> {formatMoney(calculateTotal - totalDiscount)}
                 </p>
                 <p>
                     <span className="font-medium">Phương thức mua hàng:</span> {paymentMethod === 'cash' ? 'Trực tiếp' : 'Chuyển khoản'}

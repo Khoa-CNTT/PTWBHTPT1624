@@ -39,9 +39,9 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
             onSave({ _id: brand._id, ...data });
         } else {
             onSave(data);
-            setInputFields({});
         }
     };
+
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev) => ({ ...prev, [type]: e.target.value }));
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));

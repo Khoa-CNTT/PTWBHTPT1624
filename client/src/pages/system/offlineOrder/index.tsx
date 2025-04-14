@@ -49,9 +49,13 @@ const OfflineOrder: React.FC = () => {
                 const newProduct: IProduct = res.data;
                 updateCartWithNewProduct(newProduct);
             }
+            if (!res.success) {
+                showNotification('Không tìm thấy sản phẩm', res.success);
+            }
             setQrResult('');
         };
         handleScanResult();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [qrResult]);
 
     const updateCartWithNewProduct = (newProduct: IProduct) => {

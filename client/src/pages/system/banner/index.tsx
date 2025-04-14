@@ -41,11 +41,8 @@ export default function BannerManage() {
         } else {
             res = await apiCreateBanner(data);
         }
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
         // Cập nhật danh sách banner mà không cần reload trang
         setBanners(

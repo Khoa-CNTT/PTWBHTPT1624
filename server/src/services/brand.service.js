@@ -7,7 +7,7 @@ const Product = require('../models/product.model');
 class BrandService {
     // Tạo thương hiệu mới
     static async createBrand(payload) {
-        if (!payload.brand_name || !payload.brand_thumb || !payload.brand_banner_image) {
+        if (!payload.brand_name || !payload.brand_banner) {
             throw new BadRequestError('Thiếu thông tin bắt buộc!');
         }
         return await Brand.create(payload);

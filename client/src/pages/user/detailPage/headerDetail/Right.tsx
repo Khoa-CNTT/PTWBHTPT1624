@@ -70,7 +70,9 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
                         <div className="flex-1 h-full pr-3">
                             <div className="flex flex-col gap-4">
                                 <div className="flex w-full gap-2 items-end bg-[#FAFAFA] p-4 rounded-md  text-red_custom">
-                                    {productDetail?.product_price && <div className="text-4xl font-medium">{formatMoney(productDetail?.product_price)}</div>}
+                                    {productDetail?.product_price && (
+                                        <div className="text-4xl font-medium">{formatMoney(productDetail.product_discounted_price)}</div>
+                                    )}
                                     {productDetail?.product_price && (
                                         <div className="text-sm text-text_secondary line-through">{formatMoney(productDetail?.product_price)}</div>
                                     )}

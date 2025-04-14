@@ -62,15 +62,9 @@ export default function CategoryManage() {
         } else {
             res = await apiCreateCategory(data);
         }
-
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            return;
-        }
-
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
-
         setCategories((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
 

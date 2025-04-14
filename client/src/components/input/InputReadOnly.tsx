@@ -12,7 +12,7 @@ interface InputReadOnlyProps {
 // eslint-disable-next-line react-refresh/only-export-components
 const InputReadOnly: React.FC<InputReadOnlyProps> = ({ label, col, value, isEdit, handleEdit }) => {
     return (
-        <div className={`flex ${col ? 'flex-col' : ''} w-full  h-auto gap-4 items-center mt-3`}>
+        <div className={`flex ${col ? 'flex-col' : ''} w-full  h-auto gap-2 items-center mt-3`}>
             <label htmlFor="exact-address" className={`flex ${!col ? 'justify-end w-1/2' : 'justify-start w-full'} text-sm text-secondary`}>
                 {label}
             </label>

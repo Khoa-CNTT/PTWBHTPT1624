@@ -1,9 +1,23 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { adminClient, apiClient } from '../config/httpRequest';
 
 // API tìm kiếm sản phẩm theo từ khóa
-const apiSearchProduct = async (keySearch: string) => {
+const apiSearchProduct = async (keySearch: string | any, query?: any) => {
     try {
-        const res = await apiClient.get(`/v1/api/product/search/${keySearch}`);
+        const res = await apiClient.get(`/v1/api/product/search/${keySearch}`, {
+            params: query,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiGetProductById = async (id: string) => {
+    try {
+        const res = await apiClient.get(`/v1/api/product/${id}/detail`);
         return res.data;
     } catch (error) {
         return {
@@ -27,7 +41,7 @@ const apiGetAllProducts = async (query: any) => {
 };
 const apiGetAllProductsByAdmin = async (queries: { limit: number; page: number }) => {
     try {
-        const res = await apiClient.get('/v1/api/product/all-products', {
+        const res = await adminClient.get('/v1/api/product/all-products', {
             params: queries,
         });
         return res.data;
@@ -117,18 +131,6 @@ const apiCreateProduct = async (productData: object) => {
     }
 };
 
-// API lấy thông tin sản phẩm theo ID (Dành cho admin)
-const apiGetProductById = async (id: string) => {
-    try {
-        const res = await adminClient.get(`/v1/api/product/${id}/detail`);
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
 const apiGetScanProduct = async (product_code: string) => {
     try {
         const res = await adminClient.get(`/v1/api/product/offline-orders/scan-product`, { params: { product_code } });
@@ -170,7 +172,7 @@ const apiDeleteProduct = async (id: string) => {
 // API lấy danh sách sản phẩm theo trạng thái hạn sử dụng
 const apiGetProductsByExpiryStatus = async (status: string, queries: { limit: number; page: number }) => {
     try {
-        const res = await apiClient.get(`/v1/api/product/expiry-status/${status}`, {
+        const res = await adminClient.get(`/v1/api/product/expiry-status/${status}`, {
             params: queries,
         });
         return res.data;

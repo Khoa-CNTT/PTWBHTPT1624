@@ -41,11 +41,8 @@ export default function EmployeeManage() {
         } else {
             res = await apiAddAdmin(data);
         }
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         // Cập nhật danh sách Nhân viên mà không cần reload trang
         setEmployees(
             (prev) =>

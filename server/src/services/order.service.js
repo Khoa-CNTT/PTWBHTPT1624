@@ -45,7 +45,7 @@ class OrderService {
             order_products.map(async (item) => {
                 const product = await Product.findById(item.productId); // Lấy thông tin sản phẩm
                 // Tính giá sau khi áp dụng giảm giá (nếu có)
-                totalApplyDiscount += (product.product_price * (100 - (product.product_discount || 0))) / 100;
+                totalApplyDiscount += (product.product_price * (product.product_discount || 0)) / 100;
                 totalPrice += product.product_price * item.quantity; // Cộng dồn vào tổng giá trị
                 return {
                     productId: product._id, // ID sản phẩm
@@ -176,7 +176,7 @@ class OrderService {
             order_products.map(async (item) => {
                 const product = await Product.findById(item.productId); // Lấy thông tin sản phẩm
                 // Tính giá sau khi áp dụng giảm giá (nếu có)
-                totalApplyDiscount += (product.product_price * (100 - (product.product_discount || 0))) / 100;
+                totalApplyDiscount += (product.product_price * (product.product_discount || 0)) / 100;
                 totalPrice += product.product_price * item.quantity; // Cộng dồn vào tổng giá trị
                 return {
                     productId: product._id, // ID sản phẩm

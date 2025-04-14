@@ -4,7 +4,7 @@ export const PATH = {
     PAGE_CATEGORY: '/danh-muc/:category_slug/:cid',
     PAGE_LIST_CATEGORY: 'danh-sach-danh-muc',
     PAGE_BRAND: '/thuong-hieu/:brand_slug',
-    PAGE_SEARCH: '/tim-kiem/:title',
+    PAGE_SEARCH: '/tim-kiem/:keySearch',
     PAGE_USER: '/nguoi-dung/tai-khoan',
     PAGE_CART: '/gio-hang',
     PAGE_PAYMENT: '/payment',
@@ -78,28 +78,28 @@ export const SORT_BAR = [
         id: 1,
         label: 'Phổ biến',
         sortBy: {
-            sort: '-star',
+            sort: '-product_ratings',
         },
     },
     {
         id: 2,
         label: 'Bán chạy',
         sortBy: {
-            sort: '-sold',
+            sort: '-product_sold',
         },
     },
     {
         id: 3,
         label: 'Giá thấp đến cao',
         sortBy: {
-            sort: 'new_price',
+            sort: 'product_discounted_price',
         },
     },
     {
         id: 4,
         label: 'Giá cao đến thấp',
         sortBy: {
-            sort: '-new_price',
+            sort: '-product_discounted_price',
         },
     },
 ];

@@ -32,7 +32,7 @@ const DetailPage: React.FC = () => {
     return productDetail ? (
         <>
             <Seo description={productDetail.product_name} title={productDetail.product_name} key={2} />
-            <Breadcrumbs category={productDetail?.product_category_id} title={productDetail?.product_category_id.category_name} />
+            <Breadcrumbs category={productDetail?.product_category_id} title={productDetail?.product_name} />
             <HeaderDetail productDetail={productDetail} />
             <SimilarProducts productId={productDetail._id} />
             <ProductDescription productDetail={productDetail} />

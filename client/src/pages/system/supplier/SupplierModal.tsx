@@ -2,7 +2,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState, useEffect } from 'react';
 import validate from '../../../utils/valueDate';
-import { InputForm, showNotification } from '../../../components';
+import { InputForm, InputReadOnly, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import { ISupplier } from '../../../interfaces/supplier.interfaces';
@@ -29,7 +29,8 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
         }
     }, [supplier]);
     const handleSave = () => {
-        const { _id, ...data } = inputFields;
+        const { supplier_address, supplier_description, supplier_email, supplier_name, supplier_phone } = inputFields;
+        const data = { supplier_address, supplier_description, supplier_email, supplier_name, supplier_phone };
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
@@ -72,14 +73,26 @@ const SupplierModal: React.FC<SupplierModalProps> = ({ isOpen, closeModal, onSav
                             type="number"
                             invalidFields={invalidFields}
                         />
-                        <InputForm
+                        {/* <InputForm
                             col
                             handleOnchange={(e) => handleInputField(e, 'supplier_email')}
                             label="Email"
                             name_id="supplier_email"
                             value={inputFields?.supplier_email}
                             invalidFields={invalidFields}
-                        />
+                        /> */}
+                        {supplier ? (
+                            <InputReadOnly label="Email" col value={inputFields?.supplier_email} />
+                        ) : (
+                            <InputForm
+                                col
+                                handleOnchange={(e) => handleInputField(e, 'supplier_email')}
+                                label="Email"
+                                name_id="supplier_email"
+                                value={inputFields?.supplier_email}
+                                invalidFields={invalidFields}
+                            />
+                        )}
                         <InputForm
                             col
                             handleOnchange={(e) => handleInputField(e, 'supplier_address')}

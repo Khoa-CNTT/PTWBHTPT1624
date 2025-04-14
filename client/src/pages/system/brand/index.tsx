@@ -2,8 +2,7 @@ import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 
 import { useModal } from '../../../hooks/useModal';
-import { apiCreateBrand, apiGetAllBrands, apiUpdateBrand, apiSearchBrand } from '../../../services/brand.service';
-import { apiDeleteCategory } from '../../../services/category.service';
+import { apiCreateBrand, apiGetAllBrands, apiUpdateBrand, apiSearchBrand, apiDeleteBrand } from '../../../services/brand.service';
 
 import { IBrand } from '../../../interfaces/brand.interfaces';
 import BrandTable from './BrandTable';
@@ -17,7 +16,7 @@ export default function BrandManage() {
     const [brands, setBrands] = useState<IBrand[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
-    const [selectedBrand, setSelectedCategory] = useState<IBrand | null>(null);
+    const [selectedBrand, setSelectedBrand] = useState<IBrand | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isUploading, setIsUploading] = useState(false);
@@ -41,12 +40,12 @@ export default function BrandManage() {
     }, [currentPage, isSearching]);
 
     const handleAdd = () => {
-        setSelectedCategory(null);
+        setSelectedBrand(null);
         openModal();
     };
 
     const handleEdit = (brand: IBrand) => {
-        setSelectedCategory(brand);
+        setSelectedBrand(brand);
         openModal();
     };
 
@@ -57,11 +56,8 @@ export default function BrandManage() {
         } else {
             res = await apiCreateBrand(data);
         }
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
 
         if (data._id) {
@@ -70,11 +66,10 @@ export default function BrandManage() {
             setBrands((prev) => [res.data, ...prev]);
         }
     };
-
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
-        const res = await apiDeleteCategory(id);
+        const res = await apiDeleteBrand(id);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;

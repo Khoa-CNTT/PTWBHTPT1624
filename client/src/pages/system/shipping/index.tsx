@@ -47,12 +47,8 @@ export default function ShippingManage() {
         } else {
             res = await apiCreateShippingCompany(data);
         }
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            closeModal();
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
         // Cập nhật danh sách công ty vận chuyển mà không cần reload trang
         setShippings(

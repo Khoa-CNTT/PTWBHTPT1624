@@ -6,7 +6,7 @@ import { IProductItem } from '../../interfaces/product.interfaces';
 
 // eslint-disable-next-line react-refresh/only-export-components
 const ProductItem: React.FC<{ props: IProductItem; scrollIntoView?: boolean }> = ({ props, scrollIntoView = false }) => {
-    const { product_discount, product_name, product_price, product_ratings, product_slug, product_sold, product_thumb, _id } = props;
+    const { product_discount, product_name, product_discounted_price, product_ratings, product_slug, product_sold, product_thumb, _id } = props;
     const productRef = useRef<HTMLAnchorElement>(null);
 
     useEffect(() => {
@@ -28,7 +28,7 @@ const ProductItem: React.FC<{ props: IProductItem; scrollIntoView?: boolean }> =
                 </span>
             </div>
             <div className="flex w-full gap-2 text-red_custom  items-center text-sm mb-7 ">
-                <p className="text-base font-normal ">{formatMoney(product_price)}</p>
+                <p className="text-base font-normal ">{formatMoney(product_discounted_price)}</p>
                 <span className=" border-[1px] border-solid border-red_custom rounded-sm  px-1 text-xs">{`-${product_discount}%`}</span>
             </div>
         </Link>
