@@ -1,24 +1,18 @@
 import { useEffect, useState } from 'react';
-import {
-    Pagination,
-    showNotification,
-    TableSkeleton,
-} from '../../../components';
+import { showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import ReviewTable from './ReviewTable';
 import { IReview } from '../../../interfaces/review.interfaces';
-import {
-    apiApproveReview,
-    apiDeleteReview,
-    apiGetAdminReviews,
-} from '../../../services/review.service';
+import { apiApproveReview, apiDeleteReview, apiGetAdminReviews } from '../../../services/review.service';
 import NotExit from '../../../components/common/NotExit';
+import Pagination from '../../../components/pagination';
 
 export default function ReviewManage() {
     const [reviews, setReviews] = useState<IReview[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
+
     const [loading, setLoading] = useState<boolean>(false);
     const [tab, setTab] = useState<'all' | 'pending' | 'approved'>('all');
 
@@ -29,19 +23,14 @@ export default function ReviewManage() {
     ];
 
     const fetchReviews = async () => {
-        try {
-            setLoading(true);
-            const res = await apiGetAdminReviews(tab, {
-                limit: 100,
-                page: currentPage,
-            });
-            if (res.success && res.data) {
-                setReviews(res.data.Reviews || []);
-                setTotalPage(res.data.totalPage || 0);
-            } else {
-                console.error('Lỗi lấy review:', res.message);
-            }
-        } finally {
+        setLoading(true);
+        const res = await apiGetAdminReviews(tab, {
+            limit: 20,
+            page: currentPage,
+        });
+        if (res.success && res.data) {
+            setReviews(res.data.Reviews || []);
+            setTotalPage(res.data.totalPage || 0);
             setLoading(false);
         }
     };
@@ -64,11 +53,7 @@ export default function ReviewManage() {
         if (!confirm('Bạn có muốn duyệt đánh giá này không?')) return;
         const res = await apiApproveReview(id);
         if (!res?.success) return showNotification(res?.message, false);
-        setReviews((prev) =>
-            prev.map((item) =>
-                item._id === id ? { ...item, isApproved: true } : item
-            )
-        );
+        setReviews((prev) => prev.map((item) => (item._id === id ? { ...item, isApproved: true } : item)));
         showNotification('Duyệt thành công', true);
     };
 
@@ -85,15 +70,13 @@ export default function ReviewManage() {
                         <button
                             key={item.tab}
                             onClick={() => {
+                                // eslint-disable-next-line @typescript-eslint/no-explicit-any
                                 setTab(item.tab as any);
                                 setCurrentPage(0); // reset page
                             }}
                             className={`py-2 px-4 rounded-lg text-sm font-medium ${
-                                tab === item.tab
-                                    ? 'bg-blue-500 text-white'
-                                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
-                            }`}
-                        >
+                                tab === item.tab ? 'bg-blue-500 text-white' : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                            }`}>
                             {item.title}
                         </button>
                     ))}
@@ -101,21 +84,11 @@ export default function ReviewManage() {
 
                 {/* Danh sách đánh giá */}
                 {reviews.length > 0 ? (
-                    <ReviewTable
-                        Reviews={reviews}
-                        onDelete={handleDelete}
-                        onApprove={handleApprove}
-                    />
+                    <ReviewTable Reviews={reviews} onDelete={handleDelete} onApprove={handleApprove} />
                 ) : (
                     <NotExit label="Không có đánh giá nào" />
                 )}
-
-                {/* Nếu cần phân trang thật */}
-                {/* <Pagination
-                    currentPage={currentPage}
-                    totalPage={totalPage}
-                    onPageChange={(page) => setCurrentPage(page)}
-                /> */}
+                <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
             </div>
         </>
     );
