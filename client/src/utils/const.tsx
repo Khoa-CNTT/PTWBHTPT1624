@@ -4,7 +4,7 @@ export const PATH = {
     PAGE_CATEGORY: '/danh-muc/:category_slug/:cid',
     PAGE_LIST_CATEGORY: 'danh-sach-danh-muc',
     PAGE_BRAND: '/thuong-hieu/:brand_slug',
-    PAGE_SEARCH: '/tim-kiem/:title',
+    PAGE_SEARCH: '/tim-kiem/:keySearch',
     PAGE_USER: '/nguoi-dung/tai-khoan',
     PAGE_CART: '/gio-hang',
     PAGE_PAYMENT: '/payment',
@@ -13,6 +13,7 @@ export const PATH = {
     MESSAGE: 'message',
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
+    MANAGE_DASHBOARD: '/quan-ly/dashboard',
     ADMIN_LOGIN: '/dang-nhap',
     MANAGE_CATEGORY: '/quan-ly/danh-muc',
     MANAGE_BRAND: '/quan-ly/thuong-hieu',
@@ -24,31 +25,34 @@ export const PATH = {
     MANAGE_SHIPPING: '/quan-ly/cong-ty-van-chuyen',
     MANAGE_ROLE: '/quan-ly/vai-tro',
     MANAGE_EMPLOYEE: '/quan-ly/nhan-vien',
+    MANAGE_PRODUCT: '/quan-ly/san-pham',
+    MANAGE_ORDER: '/quan-ly/don-hang',
+    MANAGE_OFFLINE_ORDER: '/quan-ly/tao-hoa-don',
+    MANAGE_LIST_OFFLINE_ORDER: '/quan-ly/hoa-don',
+    ORDER_DETAIL: '/quan-ly/don-hang-chi-tiet/:oid',
+    MANAGE_PROFILE: '/quan-ly/chinh-sua-thong-tin',
+    MANAGE_REVIEW: '/quan-ly/danh-gia',
+    MANAGE_MESSAGE: '/quan-ly/nhan-tin',
 };
 
 export const SEARCH_UTILITY = [
     {
-        id: 1,
+        id: 0,
         image: danhchoban,
         title: 'Dành cho bạn',
     },
     {
-        id: 2,
-        image: bachhoa,
-        title: 'Bách hóa dưới 99k',
-    },
-    {
-        id: 3,
-        image: dealsieuhot,
-        title: 'Siêu hot',
-    },
-    {
-        id: 4,
+        id: 1,
         image: hangmoi,
         title: 'Hàng mới',
     },
     {
-        id: 5,
+        id: 2,
+        image: bachhoa,
+        title: 'Dưới 99k',
+    },
+    {
+        id: 3,
         image: revodoi,
         title: 'Rẽ vô đối',
     },
@@ -74,28 +78,28 @@ export const SORT_BAR = [
         id: 1,
         label: 'Phổ biến',
         sortBy: {
-            sort: '-star',
+            sort: '-product_ratings',
         },
     },
     {
         id: 2,
         label: 'Bán chạy',
         sortBy: {
-            sort: '-sold',
+            sort: '-product_sold',
         },
     },
     {
         id: 3,
         label: 'Giá thấp đến cao',
         sortBy: {
-            sort: 'new_price',
+            sort: 'product_discounted_price',
         },
     },
     {
         id: 4,
         label: 'Giá cao đến thấp',
         sortBy: {
-            sort: '-new_price',
+            sort: '-product_discounted_price',
         },
     },
 ];
@@ -103,7 +107,7 @@ export const SORT_BAR = [
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SellIcon from '@mui/icons-material/Sell';
-import { bachhoa, danhchoban, dealsieuhot, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
+import { bachhoa, danhchoban, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
 import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
 
 export const SIDEBAR_USER = [
