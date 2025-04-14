@@ -54,7 +54,7 @@ const apiGetAllProductsByAdmin = async (queries: { limit: number; page: number }
 };
 
 // API lấy danh sách sản phẩm nổi bật
-const apiGetFeaturedProducts = async (query: { limit?: number }) => {
+const apiGetFeaturedProducts = async (query?: { limit: number }) => {
     try {
         const res = await apiClient.get('/v1/api/product/featured', {
             params: query,
