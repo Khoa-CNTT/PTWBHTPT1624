@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import QRScanner from '../../../components/QRScanner';
 import { apiGetScanProduct } from '../../../services/product.service';
+import { apiApplyVoucher } from '../../../services/voucher.service';
 import { showNotification } from '../../../components';
 import { IProduct, IProductInCart } from '../../../interfaces/product.interfaces';
 import { ConfirmationModal } from './ConfirmationModal';
@@ -15,7 +16,8 @@ const OfflineOrder: React.FC = () => {
     const [paymentMethod, setPaymentMethod] = useState<string>('online');
     const [discountCode, setDiscountCode] = useState<string>('');
     const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
-    const [cashReceived, setCashReceived] = useState<number | ''>('');
+    const [voucherId, setVoucherId] = useState<string>("");
+    const [cashReceived, setCashReceived] = useState<number | ''>(''); 
     const [openModal, setOpenModal] = useState<boolean>(false);
 
     // Sử dụng useMemo để tính toán các giá trị
@@ -31,10 +33,9 @@ const OfflineOrder: React.FC = () => {
     }, [carts, currentTab]);
 
     const total = useMemo(() => {
-        const additionalDiscount = (subtotal - discountFromProducts) * (appliedDiscount / 100);
-        return subtotal - discountFromProducts - additionalDiscount;
+        const additionalDiscount = discountFromProducts+appliedDiscount  ;
+        return subtotal - additionalDiscount;
     }, [subtotal, discountFromProducts, appliedDiscount]);
-
     const change = useMemo(() => {
         if (paymentMethod !== 'cash' || cashReceived === '') return 0;
         return Math.max(0, Number(cashReceived) - total);
@@ -76,6 +77,7 @@ const OfflineOrder: React.FC = () => {
             });
         }
         updatedCarts[currentTab] = currentCart;
+        setAppliedDiscount(0)
         setCarts(updatedCarts);
     };
 
@@ -84,6 +86,7 @@ const OfflineOrder: React.FC = () => {
         const currentCart = [...updatedCarts[currentTab]];
         currentCart[index].quantity = Math.max(1, currentCart[index].quantity + delta);
         updatedCarts[currentTab] = currentCart;
+        setAppliedDiscount(0)
         setCarts(updatedCarts);
     };
 
@@ -113,13 +116,20 @@ const OfflineOrder: React.FC = () => {
         setCurrentTab(tabIndex === currentTab ? Math.max(0, currentTab - 1) : tabIndex < currentTab ? currentTab - 1 : currentTab);
     };
 
-    const handleApplyDiscountCode = () => {
-        if (discountCode === 'SAVE20') {
-            setAppliedDiscount(20);
-            showNotification('Áp dụng mã giảm giá thành công!', true);
+    // Hàm áp dụng voucher với API
+    const handleApplyDiscountCode = async () => {
+        if (!discountCode) {
+            showNotification('Vui lòng nhập mã giảm giá!', false);
+            return;
+        }
+        const voucherData = { code: discountCode, orderValue: subtotal- discountFromProducts};
+        const res = await apiApplyVoucher(voucherData);
+        showNotification(res?.message, res?.success);
+        if (res?.success) {
+            setAppliedDiscount(res?.data.discount); // Áp dụng discount từ API 
+            setVoucherId(res?.data.voucherId)
         } else {
-            setAppliedDiscount(0);
-            showNotification('Mã giảm giá không hợp lệ!', false);
+            setAppliedDiscount(0); // Đặt lại discount nếu không thành công 
         }
     };
 
@@ -186,6 +196,7 @@ const OfflineOrder: React.FC = () => {
                 handleConfirmPayment={handleConfirmPayment}
             />
             <ConfirmationModal
+                voucherId={voucherId}
                 open={openModal}
                 cart={carts[currentTab]}
                 paymentMethod={paymentMethod}

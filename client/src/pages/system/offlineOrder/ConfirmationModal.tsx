@@ -15,6 +15,7 @@ interface ConfirmationModalProps {
     calculateDiscountFromProducts: number;
     calculateTotal: number;
     calculateChange: number;
+    voucherId:string;
     appliedDiscount: number;
     handleCloseModal: () => void;
     handlePrintSuccess: () => void;
@@ -31,6 +32,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     calculateChange,
     appliedDiscount,
     handleCloseModal,
+    voucherId,
     handlePrintSuccess,
 }) => {
     const printRef = useRef<HTMLDivElement>(null);
@@ -41,6 +43,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         const data = {
             order_products: cart,
             order_payment_method: paymentMethod,
+            voucherId
         };
         const res = await apiCreateOfflineOrders(data);
         showNotification(res.message, res.success);

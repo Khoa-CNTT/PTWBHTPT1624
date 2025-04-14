@@ -87,13 +87,22 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
                 <div className="flex justify-between">
                     <span className="text-gray-600">Giảm giá:</span>
                     <span className="font-semibold">
-                        {formatMoney(calculateDiscountFromProducts + (calculateSubtotal - calculateDiscountFromProducts) * (appliedDiscount / 100))}
+                        -{formatMoney(calculateDiscountFromProducts )}
                     </span>
                 </div>
+                {appliedDiscount>0&& <div className="flex justify-between">
+                    <span className="text-gray-600">Voucher</span>
+                    <span className="font-semibold">
+                        -{formatMoney(appliedDiscount)}
+                    </span>
+                </div>}
                 <div className="flex justify-between text-lg font-bold">
                     <span>Thanh toán:</span>
                     <span>{formatMoney(calculateTotal)}</span>
                 </div>
+
+
+
                 {paymentMethod === 'cash' && cashReceived !== '' && (
                     <div className="flex justify-between text-lg">
                         <span className="text-gray-600">Số dư trả lại:</span>

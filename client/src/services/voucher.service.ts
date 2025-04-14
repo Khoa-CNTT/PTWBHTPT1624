@@ -79,5 +79,17 @@ const apiDeleteVoucher = async (id: string) => {
         };
     }
 };
+// API áp dụng voucher
+const apiApplyVoucher = async (voucherData: { code: string, orderValue: number }) => {
+    try {
+        const res = await authClient.post('/v1/api/voucher/apply', voucherData);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };
+export { apiApplyVoucher,apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };

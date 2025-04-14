@@ -1,5 +1,3 @@
-'use strict';
-
 const VoucherService = require('../services/voucher.service');
 
 const VoucherController = {
@@ -61,6 +59,19 @@ const VoucherController = {
             message: 'Tìm kiếm voucher theo tên thành công!',
         });
     },
+
+    // Áp dụng voucher
+    applyVoucher: async (req, res) => {
+        const { code, orderValue } = req.body;
+        // Gọi dịch vụ để áp dụng voucher
+            const result = await VoucherService.applyVoucher({ code, orderValue });
+            // Trả về kết quả khi áp dụng voucher thành công
+            return res.status(200).json({
+                success: true,
+                message: 'Áp dụng mã thành công',
+                data: result,
+            });
+    }
 };
 
 module.exports = VoucherController;
