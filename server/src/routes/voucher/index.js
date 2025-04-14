@@ -1,25 +1,35 @@
 const express = require("express");
 const VoucherController = require("../../controllers/voucher.controller");
 const asyncHandle = require("../../helper/asyncHandle");
-const { adminAuthentication ,restrictTo} = require("../../middlewares/auth.admin.middleware");
+const { adminAuthentication, restrictTo } = require("../../middlewares/auth.admin.middleware");
 const PERMISSIONS = require("../../config/permissions");
+
 const router = express.Router();
 
-
-
+// --- Public routes ---
 // Lấy danh sách tất cả voucher
 router.get("/all", asyncHandle(VoucherController.getAllVouchers));
-router.use(adminAuthentication)
-router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE))
-// Tìm kiếm voucher theo tên
+
+// Áp dụng mã giảm giá (người dùng sử dụng)
+router.post("/apply", asyncHandle(VoucherController.applyVoucher));
+
+// --- Admin routes ---
+router.use(adminAuthentication); // Kiểm tra xem người dùng có phải admin không
+router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE)); // Kiểm tra quyền quản lý voucher
+
+// Tìm kiếm voucher theo tên (Admin)
 router.get("/search", asyncHandle(VoucherController.searchVoucherByName));
-// Thêm mới voucher
+
+// Thêm mới voucher (Admin)
 router.post("/add", asyncHandle(VoucherController.createVoucher));
-// Lấy chi tiết voucher theo ID
-router.get("/:id/search", asyncHandle(VoucherController.getVoucherById));
-// Cập nhật voucher theo ID
+
+// Lấy chi tiết voucher theo ID (Admin)
+router.get("/:id", asyncHandle(VoucherController.getVoucherById));
+
+// Cập nhật voucher theo ID (Admin)
 router.put("/:id/update", asyncHandle(VoucherController.updateVoucher));
-// Xóa voucher theo ID
+
+// Xóa voucher theo ID (Admin)
 router.delete("/:id/delete", asyncHandle(VoucherController.deleteVoucher));
 
 module.exports = router;

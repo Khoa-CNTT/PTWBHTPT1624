@@ -51,9 +51,10 @@ class ProductService {
         const skipNum = pageNum * limitNum;
         const searchFilter = keySearch ? { $text: { $search: keySearch } } : {};
         const productQuery = Product.find(searchFilter)
-            .select(
-                '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity',
-            )
+        .select(
+            '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
+          )
+          
             .skip(skipNum)
             .limit(limitNum)
             .lean();

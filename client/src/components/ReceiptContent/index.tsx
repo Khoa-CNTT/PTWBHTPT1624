@@ -27,8 +27,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     calculateChange,
     appliedDiscount,
 }) => {
-    // Tính tổng giảm giá
-    const totalDiscount = calculateDiscountFromProducts + (calculateSubtotal - calculateDiscountFromProducts) * (appliedDiscount / 100);
+     
     const { admin } = useAdminStore();
 
     // Thông tin QR chuyển khoản Agribank theo chuẩn VietQR (NAPAS)
@@ -44,7 +43,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                 <span className="font-medium">Thanh toán:</span> {paymentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'}
             </p>
             <p>
-                <span className="font-medium">Voucher đã áp dụng:</span> Không sử dụng
+                <span className="font-medium">Voucher đã áp dụng:</span> {appliedDiscount ?"Đã áp dụng":"Không sử dụng"}
             </p>
         </div>
     );
@@ -79,11 +78,14 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     const renderSummaryAndQR = () => (
         <div className="flex justify-between">
             <div className="space-y-1 mb-4">
-                <p>
-                    <span className="font-medium">Giảm giá:</span> {formatMoney(totalDiscount)}
+                <p>v
+                    <span className="font-medium">Giảm giá:</span> -{formatMoney(calculateDiscountFromProducts)}
                 </p>
                 <p>
-                    <span className="font-medium">Thành tiền:</span> {formatMoney(calculateTotal - totalDiscount)}
+                    <span className="font-medium">Voucher:</span> -{formatMoney(appliedDiscount)}
+                </p>
+                <p>
+                    <span className="font-medium">Thành tiền:</span> {formatMoney(calculateSubtotal-(calculateDiscountFromProducts+appliedDiscount))}
                 </p>
                 <p>
                     <span className="font-medium">Phương thức mua hàng:</span> {paymentMethod === 'cash' ? 'Trực tiếp' : 'Chuyển khoản'}

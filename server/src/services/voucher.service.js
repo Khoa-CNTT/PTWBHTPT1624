@@ -20,6 +20,7 @@ class VoucherService {
     ) {
       throw new BadRequestError("Thiếu thông tin bắt buộc!");
     }
+
     // Kiểm tra tên voucher có bị trùng không
     const existingVoucher = await voucherModel.findOne({
       voucher_name: payload.voucher_name,
@@ -27,12 +28,14 @@ class VoucherService {
     if (existingVoucher) {
       throw new BadRequestError("Tên voucher code đã tồn tại!");
     }
+
     // Kiểm tra định dạng ngày bắt đầu và ngày hết hạn
     const startDate = new Date(payload.voucher_start_date);
     const endDate = new Date(payload.voucher_end_date);
     if (startDate >= endDate) {
       throw new BadRequestError("Ngày hết hạn phải sau ngày bắt đầu!");
     }
+
     // Kiểm tra giá trị voucher hợp lệ (giá trị voucher và giá trị đơn hàng tối thiểu phải lớn hơn 0)
     if (payload.voucher_value <= 0) {
       throw new BadRequestError("Giá trị voucher phải lớn hơn 0!");
@@ -40,6 +43,7 @@ class VoucherService {
     if (payload.voucher_min_order_value <= 0) {
       throw new BadRequestError("Giá trị đơn hàng tối thiểu phải lớn hơn 0!");
     }
+
     // Tạo voucher mới
     const voucher = await voucherModel.create({
       ...payload,
@@ -109,6 +113,43 @@ class VoucherService {
     if (!vouchers.length)
       throw new NotFoundError("Không tìm thấy voucher phù hợp!");
     return vouchers;
+  }
+
+  // Áp dụng voucher
+  static async applyVoucher({ code, orderValue }) {
+    const voucher = await Voucher.findOne({
+      voucher_code: code,
+      voucher_is_active: true,
+      voucher_start_date: { $lte: new Date() },
+      voucher_end_date: { $gte: new Date() },
+      voucher_max_uses: { $gt: 0 },
+    });
+
+    if (!voucher) {
+      throw new BadRequestError('Mã giảm giá không hợp lệ hoặc đã hết hạn');
+    }
+
+    if (orderValue < voucher.voucher_min_order_value) {
+      throw new BadRequestError(`Đơn hàng cần tối thiểu ${voucher.voucher_min_order_value} VND để áp dụng mã`);
+    }
+
+    let discount = 0;
+    if (voucher.voucher_method === 'percent') {
+      discount = (orderValue * voucher.voucher_value) / 100;
+      if (voucher.voucher_max_price) {
+        discount = Math.min(discount, voucher.voucher_max_price);
+      }
+    } else if (voucher.voucher_method === 'fixed') {
+      discount = voucher.voucher_value;
+    }
+
+    // Giảm số lần sử dụng voucher
+    await Voucher.findByIdAndUpdate(voucher._id, { $inc: { voucher_max_uses: -1 } });
+
+    return {
+      discount,
+      voucherId: voucher._id,
+    };
   }
 }
 
