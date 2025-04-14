@@ -13,8 +13,11 @@ const apiCreateReview = async (reviewData: object) => {
     }
 };
 
-// 📖 Lấy danh sách đánh giá của sản phẩm
-const apiGetReviews = async (productId: string, queries?: { limit: number; page: number }) => {
+// 📖 Lấy danh sách đánh giá của sản phẩm (public)
+const apiGetReviews = async (
+    productId: string,
+    queries?: { limit?: number; page?: number }
+) => {
     try {
         const res = await apiClient.get(`/v1/api/review/${productId}/search`, {
             params: queries,
@@ -54,9 +57,13 @@ const apiDeleteReview = async (reviewId: string) => {
     }
 };
 
-const getPendingReviews = async (queries?: { limit: number; page: number }) => {
+// 📖 Lấy danh sách đánh giá theo tab (all / approved / pending)
+const apiGetAdminReviews = async (
+    tab: 'all' | 'approved' | 'pending',
+    queries?: { limit?: number; page?: number }
+) => {
     try {
-        const res = await adminClient.get('/v1/api/review/all-pending', {
+        const res = await adminClient.get(`/v1/api/review/${tab}`, {
             params: queries,
         });
         return res.data;
@@ -68,4 +75,10 @@ const getPendingReviews = async (queries?: { limit: number; page: number }) => {
     }
 };
 
-export { apiCreateReview, apiGetReviews, apiApproveReview, apiDeleteReview, getPendingReviews };
+export {
+    apiCreateReview,
+    apiGetReviews,
+    apiApproveReview,
+    apiDeleteReview,
+    apiGetAdminReviews, // ✅ dùng cho cả 3 tab: all, approved, pending
+};

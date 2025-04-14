@@ -257,8 +257,20 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                                 value={inputFields.product_discount || ''}
                                 invalidFields={invalidFields}
                             />
-                        </div>
-
+                        </div> 
+                        <div>
+                            <div className="w-1/2">
+                                <DateComponent
+                                    label="Ngày hết hạn"
+                                    onChange={(e) => {
+                                        setInputFields((prev) => ({ ...prev, product_expiry_date: e }));
+                                        setInvalidFields((prev) => prev.filter((field) => field.name !== 'product_expiry_date'));
+                                    }}
+                                    value={inputFields?.product_expiry_date}
+                                    type="product_expiry_date"
+                                />
+                            </div>
+                        </div> 
                         <div className=" gap-4">
                             <h2 className=" text-sm text-secondary text-center">Thông tin chi tiết</h2>
                             {invalidFields.some((i) => i.name === 'product_attribute') && (
