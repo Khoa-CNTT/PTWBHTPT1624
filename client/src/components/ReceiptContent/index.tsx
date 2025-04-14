@@ -106,27 +106,32 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     );
 
     return (
-        <div className="receipt-content">
+        <div className="receipt-content max-w-[700px] mx-auto bg-white p-6 rounded-md shadow-md text-sm text-gray-800">
             {/* Header hóa đơn */}
-            <div className="text-center mb-4">
-                <img src={logo} alt="logo" className="w-16 mx-auto mb-2" />
-                <h2 className="text-xl font-bold uppercase">Bánh hóa xanh</h2>
+            <div className="text-center border-b pb-4 mb-4">
+                <img src={logo} alt="logo" className="w-20 mx-auto mb-2" />
+                <h2 className="text-2xl font-bold uppercase text-green-700">Bánh hóa xanh</h2>
                 <p>Địa chỉ: Ngũ Hành Sơn, Đà Nẵng</p>
                 <p>Nhân viên: {admin?.admin_name}</p>
-                <p>Số điện thoại: {admin?.admin_mobile}</p>
-                <p>Thời gian tạo: {new Date().toLocaleString()}</p>
+                <p>SĐT: {admin?.admin_mobile}</p>
+                <p>Thời gian: {new Date().toLocaleString()}</p>
             </div>
-
-            <h3 className="text-center font-semibold my-4">Hóa đơn mua hàng</h3>
-
+    
+            <h3 className="text-center text-lg font-semibold mb-4 uppercase">Hóa đơn mua hàng</h3>
+    
             {/* Thông tin thanh toán */}
-            {renderPaymentInfo()}
-
+            <div className="mb-4 px-2">{renderPaymentInfo()}</div>
+    
             {/* Danh sách sản phẩm */}
-            {renderProductList()}
-
-            {/* Thông tin tổng tiền và QR chuyển khoản */}
-            {renderSummaryAndQR()}
+            <div className="overflow-x-auto">{renderProductList()}</div>
+    
+            {/* Tổng tiền và QR */}
+            <div className="mt-6 p-4 bg-gray-50 rounded-md border">
+                {renderSummaryAndQR()}
+            </div>
+    
+            {/* Footer */}
+            <p className="text-center text-xs text-gray-500 mt-6 italic">Cảm ơn quý khách đã mua hàng!</p>
         </div>
     );
-};
+}   
