@@ -20,17 +20,12 @@ export default function UserManage() {
     useEffect(() => {
         const fetchApi = async () => {
             const res = await apiGetAllUser({ limit: 5, page: currentPage });
-            if (!res.success) {
-                console.error('Lỗi khi lấy dữ liệu người dùng:', res.message);
-                return;
-            }
+            if (!res?.success) return;
             const data = res.data;
             // Kiểm tra dữ liệu trước khi cập nhật state
             if (data && Array.isArray(data.users)) {
                 setUsers(data.users);
                 setTotalPage(data.totalPage);
-            } else {
-                console.error('Dữ liệu từ API không hợp lệ');
             }
         };
         fetchApi();

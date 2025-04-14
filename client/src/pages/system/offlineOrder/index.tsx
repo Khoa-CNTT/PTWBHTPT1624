@@ -7,7 +7,6 @@ import { ConfirmationModal } from './ConfirmationModal';
 import { CartTabs } from './CartTable';
 import { CartTable } from './CartTabs';
 import { PaymentSection } from './PaymentSection';
-import { apiCreateOfflineOrders } from '../../../services/order.service';
 
 const OfflineOrder: React.FC = () => {
     const [carts, setCarts] = useState<IProductInCart[][]>([[]]);
@@ -50,9 +49,13 @@ const OfflineOrder: React.FC = () => {
                 const newProduct: IProduct = res.data;
                 updateCartWithNewProduct(newProduct);
             }
+            if (!res.success) {
+                showNotification('Không tìm thấy sản phẩm', res.success);
+            }
             setQrResult('');
         };
         handleScanResult();
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [qrResult]);
 
     const updateCartWithNewProduct = (newProduct: IProduct) => {
@@ -135,13 +138,6 @@ const OfflineOrder: React.FC = () => {
                 return;
             }
         }
-        const data = {
-            order_products: carts[currentTab],
-            order_payment_method: paymentMethod,
-        };
-        const res = await apiCreateOfflineOrders(data);
-        showNotification(res.message, res.success);
-        if (!res.success) return;
         setOpenModal(true);
     };
 

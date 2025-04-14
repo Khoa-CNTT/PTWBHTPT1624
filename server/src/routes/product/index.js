@@ -14,32 +14,27 @@ router.get('/search/search-image', asyncHandle(ProductController.searchProductBy
 router.get('/search/:keySearch', asyncHandle(ProductController.getListSearchProduct));
 // 📦 Lấy tất cả sản phẩm
 router.get('/all', asyncHandle(ProductController.getAllProducts));
-
+// 🔍 Lấy thông tin sản phẩm theo ID
+router.get('/:id/detail', asyncHandle(ProductController.getProductById));
 // 🌟 Lấy danh sách sản phẩm nổi bật
 router.get('/featured', asyncHandle(ProductController.getFeaturedProducts));
-
 // ⚡ Lấy danh sách sản phẩm giảm giá sốc
 router.get('/flash-sale', asyncHandle(ProductController.getFlashSaleProducts));
-
 // 🆕 Lấy danh sách sản phẩm mới nhất
 router.get('/new-product', asyncHandle(ProductController.getNewProducts));
-
 // 🔄 Lấy danh sách sản phẩm tương tự theo danh mục
-router.get('/:id/similar', asyncHandle(ProductController.getSimilarProductsByCategory));
-
+router.get('/:id/similar', asyncHandle(ProductController.getSimilarProducts));
+router.get('/suggestion/:keySearch', asyncHandle(ProductController.getProductSuggestions));
 /* ================================
    🛡️ API Dành cho Admin (Quản lý Sản Phẩm)
    ================================ */
-// router.use(adminAuthentication); // ✅ Xác thực người dùng
-// router.use(restrictTo(PERMISSIONS.PRODUCT_MANAGE)); // 🚫 Chỉ admin có quyền quản lý sản phẩm
+router.use(adminAuthentication); // ✅ Xác thực người dùng
+router.use(restrictTo(PERMISSIONS.PRODUCT_MANAGE)); //
 router.get('/all-products', asyncHandle(ProductController.getAllProductsByAdmin));
 // ➕ Thêm sản phẩm mới (bao gồm thông tin tồn kho)
 router.post('/add', asyncHandle(ProductController.createProduct));
 
-// 🔍 Lấy thông tin sản phẩm theo ID
-router.get('/:id/search', asyncHandle(ProductController.getProductById));
 router.get('/offline-orders/scan-product', asyncHandle(ProductController.ScanProduct));
-
 // ✏️ Cập nhật sản phẩm
 router.put('/:id/update', asyncHandle(ProductController.updateProduct));
 

@@ -45,7 +45,7 @@ class OrderService {
             order_products.map(async (item) => {
                 const product = await Product.findById(item.productId); // Lấy thông tin sản phẩm
                 // Tính giá sau khi áp dụng giảm giá (nếu có)
-                totalApplyDiscount += (product.product_price * (100 - (product.product_discount || 0))) / 100;
+                totalApplyDiscount += (product.product_price * (product.product_discount || 0)) / 100;
                 totalPrice += product.product_price * item.quantity; // Cộng dồn vào tổng giá trị
                 return {
                     productId: product._id, // ID sản phẩm
@@ -114,7 +114,7 @@ class OrderService {
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
         const orders = await OfflineOrder.find()
-            .select('order_code order_payment_method order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
+            .select('order_code order_payment_method  order_total_apply_discount order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
             .populate([
                 {
                     path: 'order_products.productId',
@@ -176,7 +176,7 @@ class OrderService {
             order_products.map(async (item) => {
                 const product = await Product.findById(item.productId); // Lấy thông tin sản phẩm
                 // Tính giá sau khi áp dụng giảm giá (nếu có)
-                totalApplyDiscount += (product.product_price * (100 - (product.product_discount || 0))) / 100;
+                totalApplyDiscount += (product.product_price * (product.product_discount || 0)) / 100;
                 totalPrice += product.product_price * item.quantity; // Cộng dồn vào tổng giá trị
                 return {
                     productId: product._id, // ID sản phẩm
@@ -283,7 +283,7 @@ class OrderService {
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
         const orders = await OnlineOrder.find({ order_user: userId })
-            .select('order_code order_total_price order_shipping_price order_total_apply_discount order_payment_method order_status')
+            .select('order_code order_total_price order_total_apply_discount order_shipping_price order_total_apply_discount order_payment_method order_status')
             .skip(skipNum)
             .limit(limitNum)
             .lean();
@@ -352,7 +352,7 @@ class OrderService {
         if (status) fillter.order_status = status;
 
         const orders = await OnlineOrder.find(fillter)
-            .select('order_code order_shipping_address  order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
+            .select('order_code order_shipping_address order_total_apply_discount order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
             .populate({
                 path: 'order_products.productId',
                 select: 'product_name',
@@ -381,26 +381,25 @@ class OrderService {
 
         return orderObject;
     }
-    static async getAllOfflineOrders(query) {
-        const { page = 1, limit = 20, sortBy = 'createdAt', order = 'desc' } = query;
-        const skip = (page - 1) * limit;
-    
-        const orders = await OfflineOrder.find()
-            .sort({ [sortBy]: order === 'desc' ? -1 : 1 })
-            .skip(Number(skip))
-            .limit(Number(limit))
-            .populate('order_staff') // nếu muốn lấy thông tin nhân viên tạo đơn
-            .lean();
-    
-        const total = await OfflineOrder.countDocuments();
-    
-        return {
-            total,
-            page: Number(page),
-            limit: Number(limit),
-            orders,
-        };
-    }
+    // static async getAllOfflineOrders(query) {
+    //     const { page = 1, limit = 20, sortBy = 'createdAt', order = 'desc' } = query;
+    //     const skip = (page - 1) * limit;
+    //     const orders = await OfflineOrder.find()
+    //         .sort({ [sortBy]: order === 'desc' ? -1 : 1 })
+    //         .skip(Number(skip))
+    //         .limit(Number(limit))
+    //         .populate('order_staff') // nếu muốn lấy thông tin nhân viên tạo đơn
+    //         .lean();
+
+    //     const total = await OfflineOrder.countDocuments();
+
+    //     return {
+    //         total,
+    //         page: Number(page),
+    //         limit: Number(limit),
+    //         orders,
+    //     };
+    // }
 }
 
 module.exports = OrderService;

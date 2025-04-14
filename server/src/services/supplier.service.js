@@ -12,6 +12,7 @@ class SupplierService {
             supplier_name,
             supplier_email,
             supplier_phone,
+            supplier_description,
             supplier_address,
         });
 
@@ -21,7 +22,7 @@ class SupplierService {
     // Lấy tất cả nhà cung cấp
     static async getAllSuppliers({ limit, page }) {
         if (!(limit && page)) {
-            return await Supplier.find().select('-__v').sort({ createdAt: -1 }).lean();
+            return await Supplier.find().sort({ createdAt: -1 }).lean();
         }
         const limitNum = parseInt(limit, 10); // Mặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0

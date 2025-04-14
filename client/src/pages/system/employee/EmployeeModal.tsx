@@ -58,7 +58,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
         };
         fetchApi();
     }, []);
-    console.log('invalidFields', invalidFields);
     const handleSave = () => {
         const { _id, admin_isBlocked, admin_password, ...data } = inputFields;
         const check = employee ? validate(data, setInvalidFields) : validate({ ...data }, setInvalidFields);

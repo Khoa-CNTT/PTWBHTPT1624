@@ -10,6 +10,8 @@ import PermissionMiddleware from '../middleware/PermissionMiddleware';
 import { NoPermission } from '../components';
 import AdminProfile from '../pages/system/profile';
 import HomePage from '../pages/user/HomePage';
+import DetailPage from '../pages/user/detailPage';
+import SearchPage from '../pages/user/searchPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -19,6 +21,9 @@ const RouterPage = () => {
             {/* ============= USER =================== */}
             <Route path={PATH.HOME} element={<DefaultLayout />}>
                 <Route index element={<HomePage />} />
+                <Route path={PATH.DETAIL_PRODUCT} element={<DetailPage />}></Route>
+                <Route path={PATH.PAGE_SEARCH} element={<SearchPage />}></Route>
+
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
             </Route>
 

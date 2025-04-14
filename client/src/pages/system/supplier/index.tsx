@@ -42,12 +42,8 @@ export default function SupplierManage() {
         } else {
             res = await apiCreateSupplier(data);
         }
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            closeModal();
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
         // Cập nhật danh sách nhà cung cấp mà không cần reload trang
         setSuppliers(

@@ -17,6 +17,7 @@ export interface IOrder {
     _id: string;
     order_products: OrderProduct[];
     order_total_price: number;
+    order_total_apply_discount: number;
     order_status: 'pending' | 'confirm' | 'shipped' | 'delivered' | 'cancelled';
     order_code: string;
     order_shipping_address: {

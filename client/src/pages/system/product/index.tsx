@@ -72,12 +72,8 @@ export default function ProductManage() {
         } else {
             res = await apiCreateProduct(data);
         }
-        if (!res?.success) {
-            showNotification('Thêm không thành công', false);
-            closeModal();
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
         setProducts((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };

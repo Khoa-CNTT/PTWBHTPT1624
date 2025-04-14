@@ -1,210 +1,219 @@
-// import SearchIcon from '@mui/icons-material/Search';
-// import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
-// import KeyboardControlKeyIcon from '@mui/icons-material/KeyboardControlKey';
+/* eslint-disable react-hooks/exhaustive-deps */
+import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
-// import { v4 as uuidv4 } from 'uuid';
-
-// import { Link } from 'react-router-dom';
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import ListCategories from './ListCategories';
 import { Overlay } from '../../../../components';
+import { apiGetFeaturedProducts, getProductSuggestions } from '../../../../services/product.service';
+import useDebounce from '../../../../hooks/useDebounce';
+import { Link } from 'react-router';
 
-// interface search {
-//     text: string;
-//     _id: string;
-// }
-// interface resultSuggest {
-//     title: string;
-//     _id: string;
-//     slug: string;
-// }
-// interface ProductSuggest extends resultSuggest {
-//     image_url: string;
-//     slug: string;
-// }
+interface search {
+    text: string;
+    _id: string;
+}
+interface resultSuggest {
+    _id: string;
+    product_name: string;
+    product_slug: string;
+}
+interface ProductSuggest extends resultSuggest {
+    product_thumb: string;
+}
+
 const Search: React.FC = () => {
-    // const [searchHistories, setSearchHistories] = useState<search[]>([]);
-    // const [resultSuggest, setResultSuggest] = useState<resultSuggest[]>([]);
-    // const [productSuggest, setProductSuggest] = useState<ProductSuggest[]>([]);
-    // const [limitHistory, setLimitHistory] = useState<number>(4);
+    const [searchHistories, setSearchHistories] = useState<search[]>([]);
+    const [resultSuggest, setResultSuggest] = useState<resultSuggest[]>([]);
+    const [productSuggest, setProductSuggest] = useState<ProductSuggest[]>([]);
+    const [limitHistory, setLimitHistory] = useState<number>(4);
     const [openSearchResults, setOpenSearchResults] = useState<boolean>(false);
     const [searchValue, setSearchValue] = useState<string>('');
-    // const valueDebounce = useDebounce(searchValue, 200);
+    const valueDebounce = useDebounce(searchValue, 200);
     const inputRef = useRef<HTMLInputElement>(null);
-    // const navigate = useNavigate();
 
-    // useEffect(() => {
-    //     const fetchHistory = async () => {
-    //         const res = await getSearchHistories();
-    //         if (res?.success) {
-    //             setSearchHistories(res?.data);
-    //         }
-    //     };
-    //     openSearchResults && fetchHistory();
-    // }, [openSearchResults]);
+    // Lấy lịch sử tìm kiếm từ localStorage khi component mount
+    useEffect(() => {
+        const storedHistory = localStorage.getItem('searchHistory');
+        if (storedHistory) {
+            setSearchHistories(JSON.parse(storedHistory));
+        }
+    }, []);
 
-    const handleInput = async (e: { target: HTMLInputElement }) => {
-        const title = (e.target as HTMLInputElement).value;
-        if (title === '') setOpenSearchResults(true);
+    // Lưu lịch sử tìm kiếm vào localStorage mỗi khi searchHistories thay đổi
+    useEffect(() => {
+        localStorage.setItem('searchHistory', JSON.stringify(searchHistories));
+    }, [searchHistories]);
+
+    // Xử lý khi người dùng nhập vào input
+    const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const title = e.target.value;
         setSearchValue(title);
+        if (title.trim() !== '') {
+            setOpenSearchResults(true);
+        }
     };
-    // useEffect(() => {
-    //     const fetchApi = async () => {
-    //         const res = await getSuggestResult(valueDebounce);
-    //         res?.data?.length == 0 && setOpenSearchResults(false);
-    //         setResultSuggest(res?.data);
-    //     };
-    //     valueDebounce.trim() == '' ? setResultSuggest([]) : fetchApi();
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [valueDebounce]);
 
-    // useEffect(() => {
-    //     const fetchApiProductSuggest = async () => {
-    //         const res = await getAllProduct({ limit: 8, sort: '-solid' });
-    //         setProductSuggest(res?.products);
-    //     };
-    //     openSearchResults && fetchApiProductSuggest();
-    // }, [openSearchResults]);
+    // Lấy gợi ý sản phẩm
+    useEffect(() => {
+        const fetchApi = async () => {
+            try {
+                const res = await getProductSuggestions(valueDebounce);
+                if (res?.data?.products?.length === 0) {
+                    setOpenSearchResults(false);
+                }
+                setResultSuggest(res?.data?.products || []);
+            } catch (error) {
+                console.error('Error fetching product suggestions:', error);
+            }
+        };
+        if (valueDebounce.trim() === '') {
+            setResultSuggest([]);
+        } else {
+            fetchApi();
+        }
+    }, [valueDebounce]);
 
-    // const handleDeleteHistory = async (_id: string) => {
-    //     setSearchHistories(() => searchHistories.filter((h) => h._id !== _id));
-    //     await deleteSearchHistory(_id);
-    // };
-    // const handleSummit = async () => {
-    //     if (searchValue) {
-    //         navigate(`/tim-kiem/${searchValue}`);
-    //         await addSearchHistory(searchValue);
-    //     }
-    //     setOpenSearchResults(false);
-    //     setSearchValue('');
-    // };
-    // useEffect(() => {
-    //     const handleKeyPress = (event: { key: string }) => {
-    //         if (event.key === 'Enter') {
-    //             handleSummit();
-    //         }
-    //     };
-    //     document.body.addEventListener('keydown', handleKeyPress);
-    //     return () => document.body.removeEventListener('keydown', handleKeyPress);
-    //     // eslint-disable-next-line react-hooks/exhaustive-deps
-    // }, [searchValue]);
+    // Lấy sản phẩm nổi bật
+    useEffect(() => {
+        const fetchApiProductSuggest = async () => {
+            try {
+                const res = await apiGetFeaturedProducts({ limit: 8 });
+                setProductSuggest(res?.data || []);
+            } catch (error) {
+                console.error('Error fetching featured products:', error);
+            }
+        };
+        if (openSearchResults) {
+            fetchApiProductSuggest();
+            setLimitHistory(4);
+        }
+    }, [openSearchResults]);
 
-    // const suggestResult =
-    //     resultSuggest?.length > 0 &&
-    //     resultSuggest?.map((s, i) => {
-    //         return (
-    //             i < limitHistory && (
-    //                 <Link
-    //                     to={`/${s.slug}/${s._id}`}
-    //                     onClick={() => {
-    //                         setOpenSearchResults(false);
-    //                         setSearchValue('');
-    //                     }}
-    //                     key={uuidv4()}
-    //                     className="flex gap-3 hover:bg-hover cursor-pointer py-2 px-5">
-    //                     <SearchIcon style={{ color: 'rgb(128, 128, 137)' }} /> <span className="text-sm ">{s?.title}</span>
-    //                 </Link>
-    //             )
-    //         );
-    //     });
+    // Xử lý submit tìm kiếm
+    const handleSummit = () => {
+        if (searchValue.trim()) {
+            const newSearch = {
+                text: searchValue,
+                _id: Date.now().toString(), // Tạo ID tạm thời
+            };
+            setSearchHistories((prev) => [newSearch, ...prev].slice(0, 10)); // Giới hạn 10 mục
+            // Điều hướng đến trang tìm kiếm
+            window.location.href = `/tim-kiem/${searchValue}`;
+        }
+        setOpenSearchResults(false);
+        setSearchValue('');
+    };
 
-    // const searchRecent = (
-    //     <>
-    //         <div>
-    //             {searchHistories?.length > 0 && (
-    //                 <div className="flex flex-col gap-3 ">
-    //                     <h1 className="text-sm font-medium px-[20px]">Tìm kiếm gần đây </h1>
-    //                     <ul className="flex flex-col ">
-    //                         {searchHistories?.map((s, i) => {
-    //                             return (
-    //                                 i < limitHistory && (
-    //                                     <Link
-    //                                         to={`/tim-kiem/${s.text}`}
-    //                                         onClick={(e) => {
-    //                                             e.stopPropagation();
-    //                                             setOpenSearchResults(false);
-    //                                         }}
-    //                                         key={uuidv4()}
-    //                                         className="flex gap-3 justify-between hover:bg-hover cursor-pointer py-2 px-5">
-    //                                         <div>
-    //                                             <SearchIcon style={{ color: 'rgb(128, 128, 137)' }} /> <span className="text-sm ">{s?.text}</span>
-    //                                         </div>
-    //                                         <div
-    //                                             className="text-secondary"
-    //                                             onClick={(e) => {
-    //                                                 e.stopPropagation();
-    //                                                 handleDeleteHistory(s?._id);
-    //                                             }}>
-    //                                             <CloseIcon fontSize="small" />
-    //                                         </div>
-    //                                     </Link>
-    //                                 )
-    //                             );
-    //                         })}
-    //                         {searchHistories?.length > 4 && (
-    //                             <div
-    //                                 className="mx-auto text-sm text-primary cursor-pointer py-1"
-    //                                 onClick={(e) => {
-    //                                     e.stopPropagation();
-    //                                     setOpenSearchResults(true);
-    //                                     if (limitHistory === 4) {
-    //                                         setLimitHistory(10);
-    //                                     } else {
-    //                                         setLimitHistory(4);
-    //                                     }
-    //                                 }}>
-    //                                 {limitHistory === 4 ? (
-    //                                     <span>
-    //                                         Xem thêm <KeyboardArrowDownIcon fontSize="small" />
-    //                                     </span>
-    //                                 ) : (
-    //                                     <span>
-    //                                         Thu gọn <KeyboardControlKeyIcon fontSize="small" />
-    //                                     </span>
-    //                                 )}
-    //                             </div>
-    //                         )}
-    //                     </ul>
-    //                 </div>
-    //             )}
-    //             <div className="flex flex-col gap-3 ">
-    //                 <h1 className="font-medium text-base px-[20px]">Sản phẩm nổi bật</h1>
-    //                 <ul className="grid mobile:grid-cols-2 grid-cols-4 gap-1">
-    //                     {productSuggest?.map((s) => {
-    //                         return (
-    //                             <Link
-    //                                 to={`${s.slug}/${s._id}`}
-    //                                 key={uuidv4()}
-    //                                 onClick={() => setOpenSearchResults(false)}
-    //                                 className="flex flex-col w-full hover:shadow-search items-center py-1 px-3 cursor-pointer gap-2 ">
-    //                                 <img className="w-1/2 rounded-md" src={s?.image_url} />
-    //                                 <span className="w-full text-xs  truncate ">{s?.title}</span>
-    //                             </Link>
-    //                         );
-    //                     })}
-    //                 </ul>
-    //             </div>
-    //         </div>
-    //     </>
-    // );
+    // Xử lý phím Enter
+    useEffect(() => {
+        const handleKeyPress = (event: KeyboardEvent) => {
+            if (event.key === 'Enter') {
+                handleSummit();
+            }
+        };
+        document.body.addEventListener('keydown', handleKeyPress);
+        return () => document.body.removeEventListener('keydown', handleKeyPress);
+    }, [searchValue]);
+
+    // Xóa một mục lịch sử
+    const handleDeleteHistory = (id: string) => {
+        setSearchHistories((prev) => prev.filter((h) => h._id !== id));
+    };
+
+    // Hiển thị kết quả gợi ý
+    const suggestResult =
+        resultSuggest?.length > 0 &&
+        resultSuggest?.map((s, i) => {
+            return (
+                i < limitHistory && (
+                    <Link
+                        to={`/${s.product_slug}/${s._id}`}
+                        onClick={() => {
+                            setOpenSearchResults(false);
+                            setSearchValue('');
+                        }}
+                        key={s._id}
+                        className="flex gap-3 hover:bg-hover cursor-pointer py-2 px-5">
+                        <SearchIcon style={{ color: 'rgb(128, 128, 137)' }} />
+                        <span className="text-sm">{s?.product_name}</span>
+                    </Link>
+                )
+            );
+        });
+
+    // Hiển thị lịch sử tìm kiếm và sản phẩm nổi bật
+    const searchRecent = (
+        <div>
+            {searchHistories?.length > 0 && (
+                <div className="flex flex-col gap-3">
+                    <h1 className="text-sm font-medium px-[20px]">Tìm kiếm gần đây</h1>
+                    <ul className="flex flex-col">
+                        {searchHistories?.map((s, i) => {
+                            return (
+                                i < limitHistory && (
+                                    <Link
+                                        to={`/tim-kiem/${s.text}`}
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            setOpenSearchResults(false);
+                                        }}
+                                        key={s._id}
+                                        className="flex gap-3 justify-between hover:bg-hover cursor-pointer py-2 px-5">
+                                        <div>
+                                            <SearchIcon style={{ color: 'rgb(128, 128, 137)' }} />
+                                            <span className="text-sm">{s?.text}</span>
+                                        </div>
+                                        <div
+                                            className="text-secondary"
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleDeleteHistory(s._id);
+                                            }}>
+                                            <CloseIcon fontSize="small" />
+                                        </div>
+                                    </Link>
+                                )
+                            );
+                        })}
+                    </ul>
+                </div>
+            )}
+            <div className="flex flex-col gap-3">
+                <h1 className="font-medium text-base px-[20px]">Sản phẩm nổi bật</h1>
+                <ul className="grid mobile:grid-cols-2 grid-cols-4 gap-1">
+                    {productSuggest?.map((s) => {
+                        return (
+                            <Link
+                                to={`/${s.product_slug}/${s._id}`}
+                                key={s._id}
+                                onClick={() => setOpenSearchResults(false)}
+                                className="flex flex-col w-full hover:shadow-search items-center py-1 px-3 cursor-pointer gap-2">
+                                <img className="w-1/2 rounded-md" src={s?.product_thumb} alt={s?.product_name} />
+                                <span className="w-full text-xs truncate">{s?.product_name}</span>
+                            </Link>
+                        );
+                    })}
+                </ul>
+            </div>
+        </div>
+    );
 
     return (
-        <div className="flex justify-between  tablet:w-full w-8/12">
+        <div className="flex justify-between tablet:w-full w-8/12">
             <div className="flex flex-col gap-2 w-full">
-                <div className="bg-white flex  rounded-[2px] w-full h-search z-50">
-                    <div id="search" className="relative flex items-center w-full h-full tablet:p-0 pr-4 ">
-                        {/* <button className="laptop:hidden outline-none h-full px-2" onClick={handleSummit}>
-                            <img className="w-6 h-6" src="https://salt.tikicdn.com/ts/upload/34/62/0c/6ae13efaff83c66f810c4c63942cf6c0.png" />
-                        </button> */}
+                <div className="bg-white flex rounded-[2px] w-full h-search z-50">
+                    <div id="search" className="relative flex items-center w-full h-full tablet:p-0 pr-4">
+                        <button className="laptop:hidden outline-none h-full px-2" onClick={handleSummit}>
+                            <img className="w-6 h-6" src="https://salt.tikicdn.com/ts/upload/34/62/0c/6ae13efaff83c66f810c4c63942cf6c0.png" alt="Search" />
+                        </button>
                         <input
-                            onFocus={() => {
-                                setOpenSearchResults(true);
-                            }}
+                            style={{ outline: 'none' }}
+                            onFocus={() => setOpenSearchResults(true)}
                             ref={inputRef}
                             onChange={handleInput}
                             value={searchValue}
                             type="text"
-                            className="outline-none border-none w-full px-3 text-[14px] text-black"
+                            className="w-full px-3 rounded-[2px] text-[14px] text-black border-none"
                             placeholder="Tìm sản phẩm, danh mục hay thương hiệu mong muốn ..."
                         />
                         {searchValue !== '' && (
@@ -214,13 +223,13 @@ const Search: React.FC = () => {
                         )}
                         {openSearchResults && (
                             <div className="absolute w-full top-[100%] right-0 bg-white shadow-search py-4">
-                                {/* {resultSuggest?.length > 0 ? suggestResult : searchRecent} */}
+                                {resultSuggest?.length > 0 ? suggestResult : searchRecent}
                             </div>
                         )}
                     </div>
-                    {/* <button className="tablet:hidden outline-none bg-[rgb(9,115,69)] w-[150px] h-[40px] text-white rounded-r-[2px]" onClick={handleSummit}>
-                        <SearchIcon /> <span> Tìm kiếm </span>
-                    </button> */}
+                    <button className="tablet:hidden outline-none bg-[rgb(9,115,69)] w-[150px] h-[40px] text-white rounded-r-[2px]" onClick={handleSummit}>
+                        <SearchIcon /> <span>Tìm kiếm</span>
+                    </button>
                 </div>
                 <ListCategories />
                 {openSearchResults && <Overlay onClick={() => setOpenSearchResults(false)} className="z-20" />}

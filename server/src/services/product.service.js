@@ -1,5 +1,4 @@
 'use strict';
-
 const { NotFoundError } = require('../core/error.response');
 const Product = require('../models/product.model');
 const cosineSimilarity = require('../utils/search-image/cosineSimilarity');
@@ -8,6 +7,7 @@ const extractFeatures = require('../utils/search-image/extractFeatures');
 const path = require('path');
 const tf = require('@tensorflow/tfjs'); // Sử dụng phiên bản Web
 const generateRandomCode = require('../utils/generateRandomCode');
+const productModel = require('../models/product.model');
 const fs = require('fs').promises;
 
 class ProductService {
@@ -23,7 +23,7 @@ class ProductService {
     }
     // Lấy sản phẩm theo ID
     static async getProductById(productId) {
-        const product = await Product.findById(productId).lean();
+        const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']).lean();
         if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
         return product;
     }
@@ -44,22 +44,24 @@ class ProductService {
         if (!deletedProduct) throw new NotFoundError('Không tìm thấy sản phẩm để xóa');
         return deletedProduct;
     }
-    // Tìm kiếm sản phẩm theo
-    static async searchProductsByUser({ keySearch, limit, page }) {
-        const regexSearch = new RegExp(keySearch);
-        const limitNum = parseInt(limit, 10); // Mặc định limit = 10
-        const pageNum = parseInt(page, 10); // Mặc định page = 0
+
+    static async searchProductsByUser({ keySearch = '', limit = 10, page = 0, sort } = {}) {
+        const limitNum = Math.max(~~limit || 10, 1); // Fast parse, default 10, min 1
+        const pageNum = Math.max(~~page || 0, 0); // Fast parse, default 0
         const skipNum = pageNum * limitNum;
-        const products = await Product.find({ $text: { $search: regexSearch } }, { score: { $meta: 'textScore' } })
-            .sort({ score: { $meta: 'textScore' } })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount product_quantity')
+        const searchFilter = keySearch ? { $text: { $search: keySearch } } : {};
+        const productQuery = Product.find(searchFilter)
+            .select(
+                '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity',
+            )
             .skip(skipNum)
             .limit(limitNum)
             .lean();
-        const totalProducts = await Product.countDocuments({ $text: { $search: regexSearch } });
+        productQuery.sort(sort);
+        const [products, totalProducts] = await Promise.all([productQuery.exec(), Product.countDocuments(searchFilter)]);
         return {
-            totalPage: Math.ceil(totalProducts / limitNum) - 1 || 0, // Tổng số trang (0-based)
-            currentPage: pageNum || 0,
+            totalPage: Math.max(Math.ceil(totalProducts / limitNum) - 1, 0),
+            currentPage: pageNum,
             totalProducts,
             products,
         };
@@ -69,7 +71,12 @@ class ProductService {
         const limitNum = parseInt(limit, 10) || 10;
         const pageNum = parseInt(page, 10) || 0;
         const skipNum = pageNum * limitNum;
-        const products = await Product.find({ product_isPublished: true }).select('-updatedAt -createdAt -__v').skip(skipNum).limit(limitNum).lean();
+        const products = await Product.find({ product_isPublished: true })
+            .select('-updatedAt -createdAt -__v')
+            .sort('-createdAt')
+            .skip(skipNum)
+            .limit(limitNum)
+            .lean();
         const totalProducts = await Product.countDocuments({ product_isPublished: true });
         return {
             totalPage: Math.ceil(totalProducts / limitNum) - 1,
@@ -80,51 +87,88 @@ class ProductService {
     }
     // Lấy tất cả sản phẩm (với các filter)
     static async getAllProducts(query = {}) {
-        const { limit, page, ...searchConditions } = query;
-        const limitNum = parseInt(limit, 10) || 10;
-        const pageNum = parseInt(page, 10) || 0;
-        const skipNum = pageNum * limitNum;
-        const searchFilter = JSON.parse(JSON.stringify(searchConditions).replace(/\b(gte|gt|lte|lt)\b/g, (match) => `$${match}`));
-        const products = await Product.find(searchFilter, { product_isPublished: true })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount product_quantity')
-            .skip(skipNum)
-            .limit(limitNum)
+        // Create a copy to avoid mutating input
+        const queries = { ...query };
+        const excludeFields = ['limit', 'sort', 'page'];
+        excludeFields.forEach((field) => delete queries[field]);
+
+        // Transform gte, gt, lte, lt to MongoDB operators
+        const queriesString = JSON.stringify(queries).replace(/\b(gte|gt|lte|lt)\b/g, (el) => `$${el}`);
+        let newQueryString = JSON.parse(queriesString);
+
+        // Add filters for category and brand if provided
+        if (query.product_category_id) {
+            newQueryString.product_category_id = query.product_category_id;
+        }
+        if (query.product_brand_id) {
+            newQueryString.product_brand_id = query.product_brand_id;
+        }
+
+        // Ensure only published products are returned
+        newQueryString.product_isPublished = true;
+
+        // Build query
+        let products = Product.find(newQueryString)
+            .select(
+                '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity',
+            )
             .lean();
-        const totalProducts = await Product.countDocuments(searchFilter, { product_isPublished: true });
+
+        // Apply sorting
+        if (query.sort) {
+            const sortBy = query.sort.toString().replace(',', ' ');
+            products = products.sort(sortBy);
+        } else {
+            products = products.sort('-createdAt');
+        }
+
+        // Apply pagination
+        const limit = Math.max(~~query.limit || 10, 1); // Default 10, min 1
+        const page = Math.max(~~query.page || 0, 0); // Default 0
+        const skip = page * limit;
+        products = products.limit(limit).skip(skip);
+
+        // Execute query and count concurrently
+        const [newProducts, totalProducts] = await Promise.all([products.exec(), Product.countDocuments(newQueryString)]);
+
+        // Return result
         return {
-            totalPage: Math.ceil(totalProducts / limitNum) - 1,
-            currentPage: pageNum,
+            success: true,
+            totalPage: Math.max(Math.ceil(totalProducts / limit) - 1, 0),
+            currentPage: page,
             totalProducts,
-            products,
+            products: newProducts, // Use executed result, not query object
         };
     }
     // Các chức năng khác (giảm giá, sản phẩm nổi bật, sản phẩm mới, v.v.)
-    static async getFeaturedProducts() {
+    static async getFeaturedProducts(limit = 30) {
         return await Product.find({ product_isPublished: true })
-            .sort({ sold_count: -1, rating: -1 })
-            .select('_id product_thumb product_name product_slug')
-            .limit(8)
+            .sort({ product_sold: -1, product_ratings: -1 })
+            .select('_id product_thumb product_name product_price product_slug product_discount product_sold product_ratings')
+            .limit(limit)
             .lean();
     }
+
     static async getFlashSaleProducts() {
         return await Product.find({
             product_discount: { $gte: 40 },
             product_isPublished: true,
         })
-            .select('_id product_thumb product_name product_slug product_discount')
+            .select('_id product_thumb product_sold  product_quantity product_name product_slug product_discount')
             .sort({ product_discount: -1 })
             .lean();
     }
     static async getNewProducts() {
-        return await Product.find({
-            createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 30)) },
-            product_isPublished: true,
-        })
+        return await productModel
+            .find({
+                createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 30)) },
+                product_isPublished: true,
+            })
             .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount')
             .sort({ createdAt: -1 })
             .lean();
     }
-    static async getSimilarProductsByCategory(id) {
+    static async getSimilarProducts(id) {
         const currentProduct = await Product.findById(id);
         if (!currentProduct) throw new NotFoundError('Sản phẩm không tồn tại');
         return await Product.find({
@@ -225,7 +269,7 @@ class ProductService {
         }
 
         // Lấy sản phẩm theo trạng thái
-        const products = await Product.find(filter).skip(skipNum).limit(limitNum).lean();
+        const products = await Product.find(filter).sort('-product_expiry_date').skip(skipNum).limit(limitNum).lean();
 
         const totalProducts = await Product.countDocuments(filter);
 

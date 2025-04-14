@@ -52,27 +52,19 @@ export default function VoucherManage() {
         } else {
             res = await apiAddVoucher(data);
         }
-
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            return;
-        }
-
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
         setVouchers((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
-
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
         const res = await apiDeleteVoucher(id);
-
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
         }
-
         setVouchers((prev) => prev.filter((item) => item._id !== id));
         showNotification('Xóa thành công', true);
     };
@@ -81,7 +73,6 @@ export default function VoucherManage() {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchQuery(value);
-
         if (value === '') {
             // Khi ô tìm kiếm trống, gọi lại API lấy tất cả sản phẩm
             const fetchVouchers = async () => {
@@ -96,17 +87,14 @@ export default function VoucherManage() {
 
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
-        if (!searchQuery.trim()) {
-            return; // Không làm gì nếu ô tìm kiếm trống
-        }
-
+        if (!searchQuery.trim()) return;
         const res = await apiSearchVoucherByName(searchQuery.trim());
         if (res.success) {
             setVouchers(res.data);
             setTotalPage(0); // Không phân trang khi tìm kiếm
             setIsSearching(true);
         } else {
-            showNotification(res.message || 'Không tìm thấy voucher nào', false);
+            showNotification(res.message, false);
         }
     };
     if (loading) return <TableSkeleton />;

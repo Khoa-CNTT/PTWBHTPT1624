@@ -47,11 +47,8 @@ export default function RoleManage() {
         } else {
             res = await apiCreateRole(data);
         }
-        if (!res?.success) {
-            showNotification(res?.message, false);
-            return;
-        }
-        showNotification(data._id ? 'Cập nhật thành công!' : 'Thêm thành công!', true);
+        showNotification(res?.message, res?.success);
+        if (!res?.success) return;
         closeModal();
         // Cập nhật danh sách vai trò mà không cần reload trang
         setRoles(
