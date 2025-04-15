@@ -31,17 +31,12 @@ export default function UserManage() {
         fetchApi();
     }, [currentPage]);
 
-    // Handle block/unblock after debounce
+    // Handle block/unblock after debounce (No need for showNotification here)
     useEffect(() => {
         if (debouncedBlockStatus) {
             const { id, isBlocked } = debouncedBlockStatus;
             const toggleBlock = async () => {
-                const res = await apiToggleBlockUser(id, isBlocked);
-                if (res?.success) {
-                    showNotification(isBlocked ? 'Người dùng đã bị chặn' : 'Người dùng đã được mở khóa', true);
-                } else {
-                    showNotification(res?.message || 'Có lỗi xảy ra', false);
-                }
+                await apiToggleBlockUser(id, isBlocked);
             };
             toggleBlock();
         }
@@ -50,11 +45,19 @@ export default function UserManage() {
     // Handle checkbox change for blocking/unblocking
     const handleBlock = (id: string, isBlocked: boolean) => {
         setBlockStatus({ id, isBlocked });
-        setUsers((prevUsers) =>
-            prevUsers.map((user) =>
-                user._id === id ? { ...user, user_isBlocked: isBlocked } : user
-            )
+
+        // Hiển thị thông báo ngay lập tức
+        showNotification(isBlocked ? `Chặn người dùng thành công` : `Bỏ chặn người dùng thành công`, true);
+
+        setUsers((prevUsers) => 
+            prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user))
         );
+
+        // Sau khi hiển thị thông báo, gọi API
+        const toggleBlock = async () => {
+            await apiToggleBlockUser(id, isBlocked);
+        };
+        toggleBlock();
     };
 
     if (users.length === 0) return <TableSkeleton />;
