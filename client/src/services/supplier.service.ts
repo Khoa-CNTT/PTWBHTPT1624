@@ -66,5 +66,19 @@ const apiDeleteSupplier = async (id: string) => {
         };
     }
 };
+// API tìm kiếm nhà cung cấp theo tên (không phân biệt dấu)
+const apiSearchSupplier = async (name: string) => {
+    try {
+        const res = await adminClient.get('/v1/api/supplier/search', {
+            params: { name }, // Truyền tên nhà cung cấp cần tìm
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiCreateSupplier, apiGetAllSuppliers, apiGetSupplierById, apiUpdateSupplier, apiDeleteSupplier };
+export { apiSearchSupplier,apiCreateSupplier, apiGetAllSuppliers, apiGetSupplierById, apiUpdateSupplier, apiDeleteSupplier };

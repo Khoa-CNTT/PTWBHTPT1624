@@ -59,12 +59,29 @@ class UserController {
             data: profile,
         });
     }
+
     static async updateProfile(req, res) {
         res.status(200).json({
             success: true,
             message: 'Cập nhật thông tin cá nhân thành công',
             data: await UserService.updateProfile(req.user._id, req.body),
         });
+    }
+
+    static async searchUsers(req, res) {
+        try {
+            const users = await UserService.findUsersByNameOrEmail(req.query);
+            res.status(200).json({
+                success: true,
+                message: 'Tìm kiếm người dùng thành công!',
+                data: users,
+            });
+        } catch (error) {
+            res.status(400).json({
+                success: false,
+                message: error.message,
+            });
+        }
     }
 }
 

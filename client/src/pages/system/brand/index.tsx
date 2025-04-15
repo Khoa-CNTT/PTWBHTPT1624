@@ -11,6 +11,7 @@ import { Pagination, showNotification, TableSkeleton } from '../../../components
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/inputSearch';
+import NotExit from '../../../components/common/NotExit';  // Import component NotExit
 
 export default function BrandManage() {
     const [brands, setBrands] = useState<IBrand[]>([]);
@@ -66,6 +67,7 @@ export default function BrandManage() {
             setBrands((prev) => [res.data, ...prev]);
         }
     };
+
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
@@ -123,7 +125,11 @@ export default function BrandManage() {
                 </div>
 
                 {/* Danh sách thương hiệu */}
-                <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
+                {brands.length === 0 ? (
+                    <NotExit label="Không có thương hiệu nào" />
+                ) : (
+                    <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
+                )}
 
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>

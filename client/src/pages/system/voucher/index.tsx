@@ -9,6 +9,7 @@ import { showNotification, TableSkeleton, Pagination } from '../../../components
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/inputSearch';
+import NotExit from '../../../components/common/NotExit';  // Import component NotExit
 
 export default function VoucherManage() {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -57,6 +58,7 @@ export default function VoucherManage() {
         closeModal();
         setVouchers((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
+
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
@@ -94,15 +96,17 @@ export default function VoucherManage() {
             setTotalPage(0); // Không phân trang khi tìm kiếm
             setIsSearching(true);
         } else {
-            showNotification(res.message, false);
+            setVouchers([]); // Clear vouchers if no result
+            showNotification(res.message || 'Không tìm thấy voucher', false);
         }
     };
+
     if (loading) return <TableSkeleton />;
+
     return (
         <>
             <PageMeta title="Quản lý voucher" />
             <PageBreadcrumb pageTitle="Voucher" />
-
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* ✅ Ô tìm kiếm */}
@@ -116,8 +120,12 @@ export default function VoucherManage() {
                     </button>
                 </div>
 
-                {/* Bảng voucher */}
-                <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                {/* Danh sách voucher */}
+                {vouchers.length === 0 ? (
+                    <NotExit label="Không có voucher nào" />
+                ) : (
+                    <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                )}
 
                 {/* Phân trang nếu không tìm kiếm */}
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}

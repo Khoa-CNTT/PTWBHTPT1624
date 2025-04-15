@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Pagination, TableSkeleton } from '../../../components';
+import { Pagination, TableSkeleton, showNotification } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import UserTable from './UserTable';
@@ -13,16 +13,16 @@ export default function UserManage() {
     const [totalPage, setTotalPage] = useState<number>(0);
     const [blockStatus, setBlockStatus] = useState<{ id: string; isBlocked: boolean } | null>(null);
 
-    // Debounce blockStatus với thời gian chờ 1 giây
+    // Debounce blockStatus with a 1-second delay
     const debouncedBlockStatus = useDebounce(blockStatus, 1000);
 
-    // Lấy danh sách người dùng từ API
+    // Fetch user list from API
     useEffect(() => {
         const fetchApi = async () => {
             const res = await apiGetAllUser({ limit: 5, page: currentPage });
             if (!res?.success) return;
             const data = res.data;
-            // Kiểm tra dữ liệu trước khi cập nhật state
+            // Check data before updating state
             if (data && Array.isArray(data.users)) {
                 setUsers(data.users);
                 setTotalPage(data.totalPage);
@@ -31,21 +31,32 @@ export default function UserManage() {
         fetchApi();
     }, [currentPage]);
 
-    // Xử lý block/unblock sau khi debounce
+    // Handle block/unblock after debounce
     useEffect(() => {
         if (debouncedBlockStatus) {
             const { id, isBlocked } = debouncedBlockStatus;
             const toggleBlock = async () => {
-                await apiToggleBlockUser(id, isBlocked);
+                const res = await apiToggleBlockUser(id, isBlocked);
+                if (res?.success) {
+                    showNotification(isBlocked ? 'Người dùng đã bị chặn' : 'Người dùng đã được mở khóa', true);
+                } else {
+                    showNotification(res?.message || 'Có lỗi xảy ra', false);
+                }
             };
             toggleBlock();
         }
     }, [debouncedBlockStatus]);
-    // Hàm xử lý khi checkbox thay đổi
+
+    // Handle checkbox change for blocking/unblocking
     const handleBlock = (id: string, isBlocked: boolean) => {
         setBlockStatus({ id, isBlocked });
-        setUsers((prevUsers) => prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user)));
+        setUsers((prevUsers) =>
+            prevUsers.map((user) =>
+                user._id === id ? { ...user, user_isBlocked: isBlocked } : user
+            )
+        );
     };
+
     if (users.length === 0) return <TableSkeleton />;
 
     return (
