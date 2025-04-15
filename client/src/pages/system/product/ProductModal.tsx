@@ -166,6 +166,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
             return;
         }
         onSave(product ? { _id: product._id, ...inputFields } : inputFields);
+        showNotification('cập nhật thành công', true);
     };
     // Handlers
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {

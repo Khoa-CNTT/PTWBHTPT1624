@@ -3,7 +3,7 @@ const Supplier = require('../models/supplier.model');
 
 class SupplierService {
     // Thêm nhà cung cấp
-    static async createSupplier({ supplier_name, supplier_email, supplier_phone, supplier_address }) {
+    static async createSupplier({ supplier_name, supplier_email, supplier_phone, supplier_address,supplier_description }) {
         if (!supplier_name || !supplier_email || !supplier_phone) {
             throw new BadRequestError('Thông tin không hợp lệ.');
         }
