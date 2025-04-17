@@ -125,7 +125,7 @@ export default function ProductManage() {
                 } else if (displayTab === 'low-stock') {
                     res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
                     if (res?.success) {
-                        const lowStockProducts = res.data.products.filter((product: IProduct) => product.product_quantity < 51);
+                        const lowStockProducts = res.data.products.filter((product: IProduct) => product.product_quantity < 50);
                         setProducts(lowStockProducts);
                         setTotalPage(1);
                     }
