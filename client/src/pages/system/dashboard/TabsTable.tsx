@@ -40,6 +40,9 @@ export default function TabsTable({ newUsers, potentialCustomers }: TabsTablePro
                 </div>
             );
         } else if (selectedTab === 'potential_customers') {
+            // Sắp xếp khách hàng tiềm năng theo số đơn hàng đã mua, từ nhiều đến ít
+            const sortedPotentialCustomers = potentialCustomers.sort((a, b) => b.totalOrders - a.totalOrders);
+
             return (
                 <div className="overflow-x-auto bg-white p-6 rounded-xl shadow-lg dark:border-white/[0.05] dark:bg-white/[0.03]">
                     <table className="min-w-full table-auto mt-4 border-collapse">
@@ -52,7 +55,7 @@ export default function TabsTable({ newUsers, potentialCustomers }: TabsTablePro
                             </tr>
                         </thead>
                         <tbody>
-                            {potentialCustomers.map((user) => (
+                            {sortedPotentialCustomers.map((user) => (
                                 <tr key={user._id}>
                                     <td className="border px-4 py-2">{user.user_name}</td>
                                     <td className="border px-4 py-2">{user.user_email}</td>
