@@ -67,22 +67,23 @@ class UserController {
             data: await UserService.updateProfile(req.user._id, req.body),
         });
     }
-
     static async searchUsers(req, res) {
         try {
-            const users = await UserService.findUsersByNameOrEmail(req.query);
+            const users = await UserService.searchUsers(req.query);
             res.status(200).json({
                 success: true,
                 message: 'Tìm kiếm người dùng thành công!',
                 data: users,
             });
         } catch (error) {
-            res.status(400).json({
+            res.status(error.statusCode || 500).json({
                 success: false,
-                message: error.message,
+                message: error.message || 'Lỗi hệ thống!',
             });
         }
     }
+    
+
 }
 
 module.exports = UserController;

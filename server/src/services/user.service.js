@@ -120,6 +120,23 @@ class UserService {
 
         return updatedUser;
     }
+    static async searchUsers(query) {
+        const { name } = query;  // Lấy từ query parameter
+        if (!name) {
+            throw new BadRequestError('Vui lòng cung cấp từ khóa tìm kiếm!', 400);
+        }
+    
+        const users = await UserModel.find({
+            $or: [
+                { user_name: { $regex: name, $options: 'i' } },  // Tìm theo tên người dùng
+                { user_email: { $regex: name, $options: 'i' } },  // Tìm theo email
+            ]
+        })
+        .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
+        .lean();
+    
+        return users;
+    }
 }
 
 module.exports = UserService;

@@ -93,7 +93,7 @@ productSchema.pre('findOneAndUpdate', async function (next) {
         const existingProduct = await mongoose.model('Product').findOne({ product_name: productName });
         if (existingProduct && existingProduct._id.toString() !== this._conditions._id.toString()) {
             const error = new Error('Tên sản phẩm đã tồn tại!');
-            error.status = 400;
+            error.status = 201;
             return next(error);
         }
     }

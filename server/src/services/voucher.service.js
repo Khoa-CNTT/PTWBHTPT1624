@@ -108,12 +108,19 @@ class VoucherService {
   // 🔹 Tìm kiếm voucher theo tên
   static async searchVoucherByName(name) {
     const vouchers = await voucherModel.find({
-      voucher_name: { $regex: new RegExp(name, "i") },
+      $or: [
+        { voucher_name: { $regex: new RegExp(name, "i") } },
+        { voucher_code: { $regex: new RegExp(name, "i") } },
+      ],
     });
-    if (!vouchers.length)
+  
+    if (!vouchers.length) {
       throw new NotFoundError("Không tìm thấy voucher phù hợp!");
+    }
+    
     return vouchers;
   }
+  
 
   // Áp dụng voucher
   static async applyVoucher({ code, orderValue }) {

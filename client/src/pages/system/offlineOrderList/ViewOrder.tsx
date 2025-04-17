@@ -57,7 +57,7 @@ export const ViewOrder: React.FC<ViewOrderProps> = ({ order, isOpen, closeModal 
                             <td className="border border-gray-200 px-4 py-2">{formatMoney(item.price)}</td>
                             <td className="border border-gray-200 px-4 py-2">{item.quantity}</td>
                             <td className="border border-gray-200 px-4 py-2">{item.discount}%</td>
-                            <td className="border border-gray-200 px-4 py-2">{formatMoney(item.price * item.quantity * (1 - item.discount / 100))}</td>
+                            <td className="border border-gray-200 px-4 py-2">{formatMoney(order.order_total_price - order.order_total_apply_discount)}</td>
                         </tr>
                     ))}
                 </tbody>
@@ -66,19 +66,26 @@ export const ViewOrder: React.FC<ViewOrderProps> = ({ order, isOpen, closeModal 
     );
 
     // Hàm render thông tin tổng tiền
-    const renderSummary = () => (
-        <div className="flex justify-between mt-6">
-            <div className="space-y-2">
-                <p className="text-sm text-gray-700">
-                    <span className="font-semibold text-gray-900">Thành tiền:</span> {formatMoney(order.order_total_price - order.order_total_apply_discount)}
-                </p>
-                <p className="text-sm text-gray-700">
-                    <span className="font-semibold text-gray-900">Phương thức mua hàng:</span>{' '}
-                    {order.order_payment_method === 'cash' ? 'Trực tiếp' : 'Chuyển khoản'}
-                </p>
+    const renderSummary = () => {
+        const totalAmount = order.order_products.reduce((total, item) => {
+            return total + item.price * item.quantity * (1 - item.discount / 100);
+        }, 0);
+    
+        return (
+            <div className="flex justify-between mt-6">
+                <div className="space-y-2">
+                    <p className="text-sm text-gray-700">
+                        <span className="font-semibold text-gray-900">Thành tiền:</span> {formatMoney(totalAmount)}
+                    </p>
+                    <p className="text-sm text-gray-700">
+                        <span className="font-semibold text-gray-900">Phương thức mua hàng:</span>{' '}
+                        {order.order_payment_method === 'cash' ? 'Trực tiếp' : 'Chuyển khoản'}
+                    </p>
+                </div>
             </div>
-        </div>
-    );
+        );
+    };
+    
 
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">

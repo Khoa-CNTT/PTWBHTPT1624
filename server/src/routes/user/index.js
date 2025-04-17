@@ -14,11 +14,14 @@ router.put('/profile/update', [userAuthentication], asyncHandle(UserController.u
 router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.ROLE_MANAGE));
 
-router.get('/search', asyncHandle(UserController.searchUsers)); // Search route
 router.get('/all', asyncHandle(UserController.getAllUsers));
 router.post('/add', asyncHandle(UserController.addUser));
 router.put('/:uid/update', asyncHandle(UserController.updateUser));
 router.delete('/:uid/delete', asyncHandle(UserController.deleteUser));
 router.put('/:uid/toggle-block', asyncHandle(UserController.toggleBlockUser));
+router.get('/search', asyncHandle(UserController.searchUsers));  // Tìm kiếm theo tên hoặc email
+
+
+
 
 module.exports = router;

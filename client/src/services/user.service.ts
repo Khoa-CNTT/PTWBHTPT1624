@@ -78,5 +78,20 @@ const apiGetDetailUser = async () => {
         };
     }
 };
+// API tìm kiếm người dùng theo tên hoặc email
+const apiSearchUsers = async (searchQuery: string) => {
+    try {
+        const res = await adminClient.get('/v1/api/user/search', {
+            params: { search: searchQuery }, // Truyền search query vào tham số của API
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+
+export {apiSearchUsers, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
