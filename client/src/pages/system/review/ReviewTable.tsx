@@ -40,7 +40,7 @@ const ReviewTable: React.FC<ReviewListProps> = ({ Reviews, onDelete, onApprove }
                             <TableRow key={review?._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
                                     <span className="truncate-trailing line-clamp-2 font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                        {review?.review_user.user_name}
+                                        {review?.review_user?.user_name}
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
@@ -49,7 +49,7 @@ const ReviewTable: React.FC<ReviewListProps> = ({ Reviews, onDelete, onApprove }
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
-                                    {review?.review_images.length > 0
+                                    {review?.review_images?.length > 0
                                         ? review?.review_images.map((i: string) => <img src={i} key={i} alt="Review image" />)
                                         : 'Không có ảnh'}
                                 </TableCell>

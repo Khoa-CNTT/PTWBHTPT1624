@@ -12,7 +12,7 @@ interface StatsOverviewProps {
   revenuePerMonth: { _id: string; total: number }[];
 }
 
-const statLabels: Record<keyof DashboardStats, string> = {
+const statLabels = {
   totalProducts: 'Tổng sản phẩm',
   totalUsers: 'Tổng người dùng',
   totalOrders: 'Tổng đơn hàng',
