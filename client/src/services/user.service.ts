@@ -82,7 +82,7 @@ const apiGetDetailUser = async () => {
 const apiSearchUsers = async (searchQuery: string) => {
     try {
         const res = await adminClient.get('/v1/api/user/search', {
-            params: { search: searchQuery }, // Truyền search query vào tham số của API
+            params: { name: searchQuery }, // Truyền search query vào tham số của API
         });
         return res.data;
     } catch (error) {
