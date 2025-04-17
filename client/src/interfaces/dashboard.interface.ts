@@ -15,6 +15,9 @@ export interface DashboardStats {
   // ✅ Thống kê đơn hàng tại quầy (offline)
   totalOfflineOrders: number;
   totalOfflineRevenue: number;
+
+  // ✅ Tổng số đơn hàng đã mua của người dùng
+  totalOrdersPurchased: number;
 }
 
 export interface RevenuePerDay {

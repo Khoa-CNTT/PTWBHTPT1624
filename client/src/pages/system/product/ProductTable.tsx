@@ -40,6 +40,12 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
         return 'bg-green-100 text-green-700'; // còn hạn lâu
     };
 
+    const getStockColor = (quantity: number) => {
+        if (quantity > 50) return 'bg-green-100 text-green-600'; // trên 50
+        if (quantity >= 1) return 'bg-yellow-100 text-yellow-600'; // từ 1 đến 50
+        return 'bg-red-100 text-red-600'; // 0
+    };
+
     return (
         <div className="overflow-hidden rounded-xl my-4 border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
@@ -56,19 +62,19 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
                             <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Tồn kho
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
                                 Đã bán
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
                                 Đơn giá
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
                                 Giảm giá
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
                                 Hạn sử dụng
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
                                 Thao tác
                             </TableCell>
                         </TableRow>
@@ -90,7 +96,7 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3">
-                                    <span className="truncate-trailing text-[rgb(128,128,137)] line-clamp-1 text-theme-sm dark:text-white/90">
+                                    <span className={`px-3 py-1 rounded-full text-theme-sm font-medium ${getStockColor(product?.product_quantity)}`}>
                                         {product?.product_quantity}
                                     </span>
                                 </TableCell>

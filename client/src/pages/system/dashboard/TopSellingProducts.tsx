@@ -10,7 +10,7 @@ export default function TopSellingProducts({ topSellingProducts }: TopSellingPro
                 <table className="min-w-full table-auto text-left">
                     <thead className="bg-gray-100 dark:bg-gray-700">
                         <tr>
-                            <th className="px-4 py-2 text-gray-800 dark:text-white">#</th>
+                            <th className="px-4 py-2 text-gray-800 dark:text-white">Top</th>
                             <th className="px-4 py-2 text-gray-800 dark:text-white">Tên sản phẩm</th>
                             <th className="px-4 py-2 text-gray-800 dark:text-white">Số lượng bán</th>
                         </tr>
