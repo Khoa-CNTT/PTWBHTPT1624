@@ -1,5 +1,5 @@
 const Product = require('../models/product.model');
-const User = require('../models/user.model');
+const User = require("../models/user.model");
 const Review = require('../models/reviews.model');
 const OnlineOrder = require('../models/OnlineOrder');
 const OfflineOrder = require('../models/OfflineOrder');
@@ -184,6 +184,22 @@ class DashboardService {
             console.error('Lỗi khi lấy dữ liệu Dashboard:', error);
             throw new Error('Không thể lấy dữ liệu Dashboard');
         }
+    }
+    static async getNewUsers() {
+        const oneWeekAgo = new Date();
+        oneWeekAgo.setDate(oneWeekAgo.getDate() - 7);
+
+        return await User.find({
+            createdAt: { $gte: oneWeekAgo },
+        })
+            .sort({ createdAt: -1 })
+            .select("user_name user_email user_mobile createdAt");
+    }
+
+    static async getPotentialCustomers() {
+        const orderUsers = await OnlineOrder.distinct("order_user");
+        return await User.find({ _id: { $in: orderUsers } })
+            .select("user_name user_email user_mobile createdAt");
     }
 }
 

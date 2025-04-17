@@ -6,5 +6,7 @@ const router = express.Router();
 
 // Route lấy dữ liệu Dashboard
 router.get("/", asyncHandle(DashboardController.getDashboardStats));
+router.get("/new", asyncHandle(DashboardController.getNewUsers));
+router.get("/potential", asyncHandle(DashboardController.getPotentialCustomers));
 
 module.exports = router;
