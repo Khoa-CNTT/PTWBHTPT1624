@@ -198,9 +198,50 @@ class DashboardService {
 
     static async getPotentialCustomers() {
         const orderUsers = await OnlineOrder.distinct("order_user");
-        return await User.find({ _id: { $in: orderUsers } })
-            .select("user_name user_email user_mobile createdAt");
+    
+        // Tính tổng số đơn hàng 'delivered' của mỗi người dùng và giữ lại các trường cần thiết
+        return await User.aggregate([
+            {
+                $match: {
+                    _id: { $in: orderUsers }
+                }
+            },
+            {
+                $lookup: {
+                    from: "onlineorders", // Tên collection của đơn hàng
+                    localField: "_id",
+                    foreignField: "order_user",
+                    as: "orders"
+                }
+            },
+            {
+                $unwind: "$orders" // Unwind mảng đơn hàng để dễ dàng lọc trạng thái
+            },
+            {
+                $match: {
+                    "orders.order_status": "delivered" // Chỉ lấy đơn hàng có trạng thái 'delivered'
+                }
+            },
+            {
+                $group: {
+                    _id: "$_id", // Nhóm lại theo _id của người dùng
+                    user_name: { $first: "$user_name" },
+                    user_email: { $first: "$user_email" },
+                    user_mobile: { $first: "$user_mobile" },
+                    totalOrders: { $sum: 1 } // Tính tổng số đơn hàng đã 'delivered'
+                }
+            },
+            {
+                $project: {
+                    user_name: 1,
+                    user_email: 1,
+                    user_mobile: 1,
+                    totalOrders: 1 // Trả về tổng số đơn hàng
+                }
+            }
+        ]);
     }
+    
 }
 
 module.exports = DashboardService;

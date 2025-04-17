@@ -6,8 +6,8 @@ interface TabsTableProps {
 }
 
 const TAB_LIST = [
-    { tab: 'new_users', title: 'New Users' },
-    { tab: 'potential_customers', title: 'Potential Customers' },
+    { tab: 'new_users', title: 'Khách hàng mới' },
+    { tab: 'potential_customers', title: 'Khách hàng tiềm năng' },
 ];
 
 export default function TabsTable({ newUsers, potentialCustomers }: TabsTableProps) {
@@ -48,7 +48,7 @@ export default function TabsTable({ newUsers, potentialCustomers }: TabsTablePro
                                 <th className="border px-4 py-2">Tên người dùng</th>
                                 <th className="border px-4 py-2">Email</th>
                                 <th className="border px-4 py-2">Số điện thoại</th>
-                                <th className="border px-4 py-2">Ngày tạo</th>
+                                <th className="border px-4 py-2">Số đơn hàng đã mua</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -57,7 +57,7 @@ export default function TabsTable({ newUsers, potentialCustomers }: TabsTablePro
                                     <td className="border px-4 py-2">{user.user_name}</td>
                                     <td className="border px-4 py-2">{user.user_email}</td>
                                     <td className="border px-4 py-2">{user.user_mobile}</td>
-                                    <td className="border px-4 py-2">{new Date(user.createdAt).toLocaleDateString()}</td>
+                                    <td className="border px-4 py-2">{user.totalOrders}</td> {/* Sửa tại đây */}
                                 </tr>
                             ))}
                         </tbody>
