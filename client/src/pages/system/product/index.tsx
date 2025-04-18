@@ -28,11 +28,13 @@ export default function ProductManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // State tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
     const [loading, setLoading] = useState<boolean>(false);
+
     // Tab lọc sản phẩm
     const PRODUCT_TAB = [
         { tab: '', title: 'Tất cả sản phẩm' },
         { tab: 'expired', title: 'Sản phẩm hết hạn' },
         { tab: 'near-expired', title: 'Sản phẩm cận hết hạn' },
+        { tab: 'low-stock', title: 'Sản phẩm sắp hết hàng' },  // Thêm tab "Sản phẩm sắp hết hàng"
     ];
 
     useEffect(() => {
@@ -43,6 +45,16 @@ export default function ProductManage() {
                 res = await apiGetProductsByExpiryStatus('expired', { limit: 10, page: currentPage });
             } else if (displayTab === 'near-expired') {
                 res = await apiGetProductsByExpiryStatus('near_expiry', { limit: 10, page: currentPage });
+            } else if (displayTab === 'low-stock') {
+                // Lọc sản phẩm có số lượng tồn kho dưới 50
+                res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
+                if (res?.success) {
+                    const lowStockProducts = res.data.products.filter((product: IProduct) => product.product_quantity < 50);
+                    setProducts(lowStockProducts);
+                    setTotalPage(1); // Vì chúng ta không phân trang cho sản phẩm sắp hết hàng
+                }
+                setLoading(false);
+                return;
             } else {
                 res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
             }
@@ -103,7 +115,6 @@ export default function ProductManage() {
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
         setSearchQuery(value);
-        // Khi ô tìm kiếm trống, gọi lại API lấy tất cả sản phẩm
         if (value === '') {
             const fetchApi = async () => {
                 let res;
@@ -111,6 +122,13 @@ export default function ProductManage() {
                     res = await apiGetProductsByExpiryStatus('expired', { limit: 10, page: currentPage });
                 } else if (displayTab === 'near-expired') {
                     res = await apiGetProductsByExpiryStatus('near_expiry', { limit: 10, page: currentPage });
+                } else if (displayTab === 'low-stock') {
+                    res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
+                    if (res?.success) {
+                        const lowStockProducts = res.data.products.filter((product: IProduct) => product.product_quantity < 50);
+                        setProducts(lowStockProducts);
+                        setTotalPage(1);
+                    }
                 } else {
                     res = await apiGetAllProductsByAdmin({ limit: 10, page: currentPage });
                 }
@@ -136,16 +154,16 @@ export default function ProductManage() {
         }
         setSearchQuery('');
     };
+
     if (loading) return <TableSkeleton />;
+
     return (
         <>
             <PageMeta title="Quản lý sản phẩm" />
             <PageBreadcrumb pageTitle="Sản phẩm " />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
-                {/* Ô tìm kiếm nằm trên PRODUCT_TAB */}
                 <div className="flex justify-between items-center mb-4">
                     <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
-                    {/* Button thêm sản phẩm */}
                     <button
                         onClick={handleAdd}
                         className="flex items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto">
@@ -154,7 +172,6 @@ export default function ProductManage() {
                     </button>
                 </div>
 
-                {/* Tab lọc sản phẩm */}
                 <div className="flex gap-4 mb-4">
                     {PRODUCT_TAB.map((e, idx) => (
                         <div
@@ -174,7 +191,6 @@ export default function ProductManage() {
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
-            {/* Modal thêm sản phẩm */}
             {isOpen && <ProductModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} product={selectedProduct} />}
         </>
     );

@@ -2,16 +2,34 @@
 const validate = (valueForm: Record<string, any>, setInvalidFields: (fields: Array<{ name: string; message: string }>) => void) => {
     let isValid = true;
     const invalidFields: Array<{ name: string; message: string }> = [];
-    console.log(valueForm);
     Object.entries(valueForm).forEach(([key, value]) => {
-        if (value === '') {
+        console.log(key);
+        if (value === '' || value === 0) {
             invalidFields.push({
                 name: key,
                 message: 'Bạn không được bỏ trống!',
             });
             isValid = false;
         }
-
+        if (key === 'product_attribute') {
+            const countEmpty = value.filter((e: any) => e.value === '').length;
+            if (countEmpty > 0) {
+                invalidFields.push({
+                    name: key,
+                    message: 'Vui lòng nhập đầy đủ thông tin chi tiết',
+                });
+                isValid = false;
+            }
+        }
+        if (key === 'product_images') {
+            if (value.length === 0) {
+                invalidFields.push({
+                    name: key,
+                    message: 'Vui lòng chọn ảnh',
+                });
+                isValid = false;
+            }
+        }
         // Kiểm tra tất cả các trường có chứa "email" trong tên
         if (key.includes('email')) {
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -23,7 +41,6 @@ const validate = (valueForm: Record<string, any>, setInvalidFields: (fields: Arr
                 isValid = false;
             }
         }
-
         // Kiểm tra số điện thoại (10 hoặc 11 số)
         if (key.includes('phone') || key.includes('mobile')) {
             const phoneRegex = /^[0-9]{10,11}$/;

@@ -5,7 +5,6 @@ import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import ImageCropper from '../../../components/ImageCropper';
-import { countFilledFields } from '../../../utils/countFilledFields';
 import { IBanner } from '../../../interfaces/banner.interfaces';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
 import DateComponent from '../../../components/DateFilterComponent';
@@ -18,15 +17,20 @@ interface BannerModalProps {
 }
 
 const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, banner }) => {
-    const [inputFields, setInputFields] = useState<Partial<IBanner>>({});
+    const [inputFields, setInputFields] = useState<Partial<IBanner>>({
+        banner_description: '',
+        banner_endDate: 0,
+        banner_imageUrl: '',
+        banner_link: '',
+        banner_startDate: '',
+        banner_title: '',
+    });
     const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
 
     useEffect(() => {
         if (banner) {
             setInputFields(banner);
-        } else {
-            setInputFields({});
         }
     }, [banner]);
 
@@ -83,67 +87,60 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
 
-    const isDateValid =
-        inputFields.banner_startDate && inputFields.banner_endDate && new Date(inputFields.banner_startDate) <= new Date(inputFields.banner_endDate);
-
-    const isFormValid = countFilledFields(inputFields) >= 6 && isDateValid;
-
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{banner ? 'Chỉnh sửa banner' : 'Thêm banner'}</h4>
+                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
+                    <InputForm
+                        col
+                        handleOnchange={(e) => handleInputField(e, 'banner_title')}
+                        label="Tên banner"
+                        name_id="banner_title"
+                        value={inputFields?.banner_title}
+                        invalidFields={invalidFields}
+                    />
+                    <InputForm
+                        col
+                        handleOnchange={(e) => handleInputField(e, 'banner_description')}
+                        label="Mô tả"
+                        name_id="banner_description"
+                        value={inputFields?.banner_description}
+                        invalidFields={invalidFields}
+                    />
 
-                <InputForm
-                    col
-                    handleOnchange={(e) => handleInputField(e, 'banner_title')}
-                    label="Tên banner"
-                    name_id="banner_title"
-                    value={inputFields?.banner_title}
-                    invalidFields={invalidFields}
-                />
-                <InputForm
-                    col
-                    handleOnchange={(e) => handleInputField(e, 'banner_description')}
-                    label="Mô tả"
-                    name_id="banner_description"
-                    value={inputFields?.banner_description}
-                    invalidFields={invalidFields}
-                />
+                    <InputForm
+                        col
+                        handleOnchange={(e) => handleInputField(e, 'banner_link')}
+                        label="Liên kết"
+                        name_id="banner_link"
+                        value={inputFields?.banner_link}
+                        invalidFields={invalidFields}
+                    />
 
-                <InputForm
-                    col
-                    handleOnchange={(e) => handleInputField(e, 'banner_link')}
-                    label="Liên kết"
-                    name_id="banner_link"
-                    value={inputFields?.banner_link}
-                    invalidFields={invalidFields}
-                />
-
-                <div className="flex gap-4 my-4">
-                    <div className="w-1/2">
-                        <DateComponent label="Ngày bắt đầu" onChange={handleDate} value={inputFields?.banner_startDate} type="banner_startDate" />
+                    <div className="flex gap-4 my-4">
+                        <div className="w-1/2">
+                            <DateComponent label="Ngày bắt đầu" onChange={handleDate} value={inputFields?.banner_startDate} type="banner_startDate" />
+                        </div>
+                        <div className="w-1/2">
+                            <DateComponent label="Ngày kết thúc" onChange={handleDate} value={inputFields?.banner_endDate} type="banner_endDate" />
+                        </div>
                     </div>
-                    <div className="w-1/2">
-                        <DateComponent label="Ngày kết thúc" onChange={handleDate} value={inputFields?.banner_endDate} type="banner_endDate" />
+
+                    <div className="w-full">
+                        <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
+                        {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                        {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
+                        {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
                     </div>
                 </div>
-
-                <div className="w-full">
-                    <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
-                    {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-                    {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
-                    {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
-                </div>
-
                 <div className="flex justify-end gap-3">
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy
                     </Button>
-                    {isFormValid && (
-                        <Button size="sm" onClick={handleSave}>
-                            {banner ? 'Lưu thay đổi' : 'Thêm mới'}
-                        </Button>
-                    )}
+                    <Button size="sm" onClick={handleSave}>
+                        {banner ? 'Lưu thay đổi' : 'Thêm mới'}
+                    </Button>
                 </div>
             </div>
         </Modal>

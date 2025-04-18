@@ -1,9 +1,10 @@
 const { BadRequestError } = require('../core/error.response');
 const Supplier = require('../models/supplier.model');
 
+
 class SupplierService {
     // Thêm nhà cung cấp
-    static async createSupplier({ supplier_name, supplier_email, supplier_phone, supplier_address }) {
+    static async createSupplier({ supplier_name, supplier_email, supplier_phone, supplier_address, supplier_description }) {
         if (!supplier_name || !supplier_email || !supplier_phone) {
             throw new BadRequestError('Thông tin không hợp lệ.');
         }
@@ -12,6 +13,7 @@ class SupplierService {
             supplier_name,
             supplier_email,
             supplier_phone,
+            supplier_description,
             supplier_address,
         });
 
@@ -20,6 +22,9 @@ class SupplierService {
 
     // Lấy tất cả nhà cung cấp
     static async getAllSuppliers({ limit, page }) {
+        if (!(limit && page)) {
+            return await Supplier.find().sort({ createdAt: -1 }).lean();
+        }
         const limitNum = parseInt(limit, 10); // Mặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
@@ -55,6 +60,18 @@ class SupplierService {
         const supplier = await Supplier.findByIdAndDelete(supplierId);
         if (!supplier) throw new Error('Nhà cung cấp không tồn tại.');
         return { message: 'Nhà cung cấp đã được xóa thành công.' };
+    }
+
+    // Tìm kiếm nhà cung cấp theo tên
+    static async searchSupplierByName(name) {
+        if (!name) {
+            throw new Error('Tên nhà cung cấp không hợp lệ.');
+        }
+
+        const suppliers = await Supplier.find({
+            supplier_name: { $regex: name, $options: 'i' },
+        }).lean(); // Dùng .lean() để trả về kết quả đơn giản hơn, không chứa document mongoose
+        return suppliers;
     }
 }
 

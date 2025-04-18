@@ -1,4 +1,15 @@
 export { default as BrandManage } from './brand/index';
 export { default as CategoryManage } from './category/index';
 export { default as AdminLogin } from './login/index';
+export { default as ShippingManage } from './shipping/index';
+export { default as SupplierManage } from './supplier/index';
+export { default as UserManage } from './user/index';
+export { default as VoucherManage } from './voucher/index';
 export { default as BannerManage } from './banner/index';
+export { default as ProductManage } from './product/index';
+export { default as EmployeeManage } from './employee/index';
+export { default as RoleManage } from './role/index';
+export { default as OrderManage } from './order/index';
+export { default as DashboardManage } from './dashboard/index';
+export { default as ReviewManage } from './review/index';
+export { default as ChatManage } from './chat/index';

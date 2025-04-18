@@ -1,10 +1,10 @@
-import { adminClient, apiClient } from "../config/httpRequest";
+import { adminClient, apiClient } from '../config/httpRequest';
 
 // Lấy tất cả thương hiệu
-const apiGetAllBrands = async (queries:{limit:number,page:number}) => {
+const apiGetAllBrands = async (queries?: { limit: number; page: number }) => {
     try {
-        const res = await apiClient.get('/v1/api/brand/all',{
-            params:queries
+        const res = await apiClient.get('/v1/api/brand/all', {
+            params: queries,
         });
         return res.data;
     } catch (error) {
@@ -32,7 +32,7 @@ const apiGetBrandsInCategory = async (categoryId: string) => {
 const apiSearchBrand = async (searchQuery: string) => {
     try {
         const res = await adminClient.get(`/v1/api/brand/search`, {
-            params: { search: searchQuery },
+            params: { name: searchQuery },
         });
         return res.data;
     } catch (error) {
@@ -95,12 +95,4 @@ const apiDeleteBrand = async (id: string) => {
     }
 };
 
-export {
-    apiGetAllBrands,
-    apiGetBrandsInCategory,
-    apiSearchBrand,
-    apiCreateBrand,
-    apiGetBrandById,
-    apiUpdateBrand,
-    apiDeleteBrand,
-};
+export { apiGetAllBrands, apiGetBrandsInCategory, apiSearchBrand, apiCreateBrand, apiGetBrandById, apiUpdateBrand, apiDeleteBrand };

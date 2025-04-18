@@ -8,12 +8,13 @@ const router = express.Router();
 // Lấy danh sách tất cả thương hiệu
 router.get("/all", asyncHandle(BrandController.getAllBrands));
 router.get("/:cid/by-category", asyncHandle(BrandController.getBrandsInCategory)); 
+// Tìm kiếm thương hiệu theo tên
+router.get("/search", asyncHandle(BrandController.searchBrand));
 router.use(adminAuthentication)
 router.use(restrictTo(PERMISSIONS.BRAND_MANAGE))
 // Lấy danh sách tất cả thương hiệu
 router.get("/all", asyncHandle(BrandController.getAllBrands));
-// Tìm kiếm thương hiệu theo tên
-router.get("/search", asyncHandle(BrandController.searchBrand));
+
 // Thêm mới thương hiệu
 router.post("/add", asyncHandle(BrandController.createBrand));
 // Lấy chi tiết thương hiệu theo ID

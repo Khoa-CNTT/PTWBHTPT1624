@@ -3,7 +3,7 @@ const userModel = require('../models/user.model');
 const verifyAccessToken = require('../utils/auth/verifyAccessToken');
 
 const userAuthentication = asyncHandle(async (req, res, next) => {
-    const authHeader = req.headers.authorization;
+    const authHeader = req.headers.authorization; 
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
         return res.status(401).json({
             success: false,
@@ -23,6 +23,12 @@ const userAuthentication = asyncHandle(async (req, res, next) => {
         return res.status(401).json({
             success: false,
             message: 'Token truy cập không hợp lệ',
+        });
+    }
+    if (user.user_isBlocked) {
+        return res.status(401).json({
+            success: false,
+            message: 'Bạn đã bị chặn!',
         });
     }
     req.user = user;

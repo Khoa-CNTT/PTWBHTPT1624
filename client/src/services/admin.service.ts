@@ -76,5 +76,16 @@ const apiGetDetailAdmin = async () => {
         };
     }
 };
+const apiUpdateProfileAmin = async (adminData: object) => {
+    try {
+        const res = await adminClient.put('/v1/api/admin/profile/update', adminData);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiToggleBlockAdmin };
+export { apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiUpdateProfileAmin, apiToggleBlockAdmin };

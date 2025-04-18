@@ -1,10 +1,10 @@
-import { adminClient, apiClient } from "../config/httpRequest";
+import { adminClient, apiClient } from '../config/httpRequest';
 
 // Lấy tất cả danh mục
-const apiGetAllCategories = async (queries:{limit:number,page:number}) => {
+const apiGetAllCategories = async (queries?: { limit: number; page: number }) => {
     try {
-        const res = await apiClient.get('/v1/api/category/all',{
-            params:queries
+        const res = await apiClient.get('/v1/api/category/all', {
+            params: queries,
         });
         return res.data;
     } catch (error) {
@@ -19,7 +19,7 @@ const apiGetAllCategories = async (queries:{limit:number,page:number}) => {
 const apiSearchCategory = async (searchQuery: string) => {
     try {
         const res = await adminClient.get('/v1/api/category/search', {
-            params: { search: searchQuery },
+            params: { name: searchQuery },
         });
         return res.data;
     } catch (error) {
@@ -82,11 +82,4 @@ const apiDeleteCategory = async (id: string) => {
     }
 };
 
-export {
-    apiGetAllCategories,
-    apiSearchCategory,
-    apiCreateCategory,
-    apiGetCategoryById,
-    apiUpdateCategory,
-    apiDeleteCategory,
-};
+export { apiGetAllCategories, apiSearchCategory, apiCreateCategory, apiGetCategoryById, apiUpdateCategory, apiDeleteCategory };

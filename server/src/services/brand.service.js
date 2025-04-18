@@ -7,7 +7,7 @@ const Product = require('../models/product.model');
 class BrandService {
     // Tạo thương hiệu mới
     static async createBrand(payload) {
-        if (!payload.brand_name || !payload.brand_thumb || !payload.brand_banner_image) {
+        if (!payload.brand_name || !payload.brand_banner) {
             throw new BadRequestError('Thiếu thông tin bắt buộc!');
         }
         return await Brand.create(payload);
@@ -15,6 +15,9 @@ class BrandService {
 
     // Lấy danh sách tất cả thương hiệu
     static async getAllBrands({ limit, page }) {
+        if (!(limit && page)) {
+            return await Brand.find().select('-__v').sort({ createdAt: -1 }).lean();
+        }
         const limitNum = parseInt(limit, 10); // Mặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;

@@ -1,21 +1,27 @@
-"use strict";
+'use strict';
 
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 const { Schema } = mongoose;
 
 const notificationSchema = new Schema(
-  {
-    notification_user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true }, // User nhận thông báo
-    notification_userName: { type: String }, // Tên người dùng nếu có
-    notification_title: { type: String, required: true }, // Tiêu đề
-    notification_subtitle: { type: String, required: true }, // Mô tả ngắn
-    notification_imageUrl: { type: String, default: "" }, // Ảnh nếu có
-    notification_link: { type: String, default: "" }, // Link điều hướng
-    notification_isWatched: { type: Boolean, default: false }, // Trạng thái xem
-  },
-  {
-    timestamps: true, // Tự động thêm createdAt & updatedAt
-  }
+    {
+        // Người nhận thông báo (có thể là admin hoặc user)
+        notification_user: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: false },
+        // Nội dung thông báo
+        notification_title: { type: String, required: true },
+        notification_subtitle: { type: String, required: true },
+        notification_imageUrl: { type: String, default: '' },
+        notification_link: { type: String, default: '' },
+        // Trạng thái
+        notification_isWatched: { type: Boolean, default: false },
+        // Thêm loại thông báo: 'user', 'admin', 'system'...
+        notification_type: { type: String, enum: ['user', 'admin'], default: 'user' },
+        // Chỉ định nếu đây là thông báo dành cho admin
+        isAdminNotification: { type: Boolean, default: false },
+    },
+    {
+        timestamps: true,
+    },
 );
 
-module.exports = mongoose.model("Notification", notificationSchema);
+module.exports = mongoose.model('Notification', notificationSchema);
