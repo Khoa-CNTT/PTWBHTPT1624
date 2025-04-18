@@ -16,7 +16,7 @@ const apiGetAllBrands = async (queries?: { limit: number; page: number }) => {
 };
 
 // Lấy tất cả thương hiệu theo danh mục
-const apiGetBrandsInCategory = async (categoryId: string) => {
+const apiGetBrandsInCategory = async (categoryId?: string) => {
     try {
         const res = await apiClient.get(`/v1/api/brand/${categoryId}/by-category`);
         return res.data;

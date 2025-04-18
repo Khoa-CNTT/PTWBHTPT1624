@@ -51,30 +51,30 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
             <div className="max-w-full overflow-x-auto">
                 <Table>
                     {/* Table Header */}
-                    <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
+                    <TableHeader className="border-b  border-gray-100 dark:border-white/[0.05]">
                         <TableRow>
-                            <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 QR Code
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
-                                Tên product
+                                Tên sản phẩm
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Tồn kho
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Đã bán
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Đơn giá
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Giảm giá
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Hạn sử dụng
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3  text-gray-500 text-start text-theme-xs dark:text-gray-400">
                                 Thao tác
                             </TableCell>
                         </TableRow>
@@ -85,7 +85,7 @@ const ProductTable: React.FC<ProductListProps> = ({ products, onEdit, onDelete }
                         {products?.map((product) => (
                             <TableRow key={product?._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <TableCell className="px-5 py-3 text-gray-700 cursor-pointer dark:text-gray-300">
-                                    <div className="flex" onClick={() => downloadQR(product?.product_code, product?.product_name)}>
+                                    <div className="flex w-[40px] " onClick={() => downloadQR(product?.product_code, product?.product_name)}>
                                         <QRCodeCanvas value={product?.product_code} size={20} ref={qrRef} />
                                         <DownloadOutlinedIcon sx={{ color: 'green', fontSize: '20px' }} />
                                     </div>

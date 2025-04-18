@@ -183,8 +183,20 @@ const apiGetProductsByExpiryStatus = async (status: string, queries: { limit: nu
         };
     }
 };
+const getTopViewedProduct = async () => {
+    try {
+        const res = await adminClient.get(`/v1/api/product/top-viewed`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
 export {
+    getTopViewedProduct,
     apiSearchProduct,
     apiGetAllProducts,
     apiGetAllProductsByAdmin,

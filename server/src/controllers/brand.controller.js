@@ -64,7 +64,7 @@ class BrandController {
 
     // Lấy tất cả thương hiệu trong danh mục
     static async getBrandsInCategory(req, res, next) {
-        const brands = await BrandService.getBrandsInCategory(req.params.cid);
+        const brands = await BrandService.getBrandsInCategory(req.params.category_code);
         res.status(200).json({
             success: true,
             data: brands,

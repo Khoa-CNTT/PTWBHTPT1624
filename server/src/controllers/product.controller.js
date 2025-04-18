@@ -1,5 +1,6 @@
 'use strict';
 
+const productModel = require('../models/product.model');
 const ProductService = require('../services/product.service');
 
 class ProductController {
@@ -12,13 +13,14 @@ class ProductController {
     // Lấy sản phẩm theo ID
     static async getProductById(req, res) {
         const product = await ProductService.getProductById(req.params.id);
+
         res.status(200).json({ success: true, data: product });
     }
 
     // Cập nhật sản phẩm
     static async updateProduct(req, res) {
         const updatedProduct = await ProductService.updateProduct(req.params.id, req.body);
-        res.status(200).json({ success: true, data: updatedProduct, message: 'Cập nhật sản phẩm thành công'  });
+        res.status(200).json({ success: true, data: updatedProduct });
     }
     static async getListSearchProduct(req, res) {
         const { keySearch } = req.params;
@@ -88,7 +90,6 @@ class ProductController {
         res.status(200).json({
             success: true,
             data: await ProductService.getProductSuggestions(keySearch),
-            message: 'Quét sản phẩm thành công',
         });
     }
 
@@ -96,7 +97,6 @@ class ProductController {
     static async getProductsByExpiryStatus(req, res, next) {
         const { status } = req.params; // Lấy trạng thái từ tham số URL
         const { limit = 10, page = 0 } = req.query; // Lấy limit và page từ query parameters
-
         // Kiểm tra tham số `status`
         if (!['expired', 'near_expiry', 'valid'].includes(status)) {
             return res.status(400).json({
@@ -125,6 +125,14 @@ class ProductController {
         return res.status(200).json({
             success: true,
             message: 'Lấy danh sách sản phẩm theo hạn sử dụng thành công.',
+            data,
+        });
+    }
+
+    static async getTopViewedProduct(req, res) {
+        const data = await productModel.find().sort('-product_views').select('product_thumb product_slug _id').limit(10).lean();
+        return res.status(200).json({
+            success: true,
             data,
         });
     }

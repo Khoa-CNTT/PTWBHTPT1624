@@ -37,7 +37,6 @@ const OrderManage: React.FC = () => {
             }
             setLoading(false);
         };
-
         fetchOrders();
     }, [displayTab]);
 

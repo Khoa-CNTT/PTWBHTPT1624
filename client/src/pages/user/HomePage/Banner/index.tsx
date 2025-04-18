@@ -5,18 +5,18 @@ import { apiGetAllBanners } from '../../../../services/banner.service';
 import { IBanner } from '../../../../interfaces/banner.interfaces';
 import { Link } from 'react-router';
 import { Skeleton } from '@mui/material';
-import { apiGetAllBrands } from '../../../../services/brand.service';
-import { IBrand } from '../../../../interfaces/brand.interfaces';
+import { getTopViewedProduct } from '../../../../services/product.service';
+import { IProduct } from '../../../../interfaces/product.interfaces';
 const Banner: React.FC = () => {
     // const { mobile_ui } = useAppSelector((state) => state.action);
     const [banners, setBanners] = useState<IBanner[]>([]);
-    const [brands, setBrands] = useState<IBrand[]>([]);
+    const [products, setProducts] = useState<IProduct[]>([]);
     useEffect(() => {
         const fetchProducts = async () => {
             const resBanner = await apiGetAllBanners();
-            const resBrand = await apiGetAllBrands();
+            const resProduct = await getTopViewedProduct();
             if (resBanner?.success) setBanners(resBanner.data);
-            if (resBrand?.success) setBrands(resBrand.data);
+            if (resProduct?.success) setProducts(resProduct.data);
         };
         fetchProducts();
     }, []);
@@ -63,7 +63,7 @@ const Banner: React.FC = () => {
                 )}
             </div>
             <div className=" tablet:hidden w-[26%] h-full  pl-4">
-                {brands?.length > 0 ? (
+                {products?.length > 0 ? (
                     <Swiper
                         autoplay={{
                             delay: 6000,
@@ -73,11 +73,11 @@ const Banner: React.FC = () => {
                         allowTouchMove={false}
                         modules={[Autoplay]}
                         className="mySwiper">
-                        {brands?.map((i) => {
+                        {products?.map((i) => {
                             return (
                                 <SwiperSlide key={i._id}>
-                                    <Link to={`/danh-muc/${i.brand_slug}`} className="w-full object-fill  overflow-hidden ">
-                                        <img className="w-full object-fill rounded-[4px]" src={i?.brand_banner} />
+                                    <Link to={`/${i?.product_slug}/${i?._id}`} className="w-full object-fill  overflow-hidden ">
+                                        <img className="w-full object-fill rounded-[4px]" src={i?.product_thumb} />
                                     </Link>
                                 </SwiperSlide>
                             );
