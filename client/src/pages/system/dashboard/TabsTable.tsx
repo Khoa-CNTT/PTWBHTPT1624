@@ -17,22 +17,22 @@ export default function TabsTable({ newUsers, potentialCustomers }: TabsTablePro
         if (selectedTab === 'new_users') {
             return (
                 <div className="overflow-x-auto bg-white p-6 rounded-xl shadow-lg dark:border-white/[0.05] dark:bg-white/[0.03]">
-                    <table className="min-w-full table-auto mt-4 border-collapse">
-                        <thead>
+                    <table className="min-w-full table-auto text-left">
+                        <thead className="bg-gray-100 dark:bg-gray-700">
                             <tr>
-                                <th className="border px-4 py-2">Tên người dùng</th>
-                                <th className="border px-4 py-2">Email</th>
-                                <th className="border px-4 py-2">Số điện thoại</th>
-                                <th className="border px-4 py-2">Ngày tạo</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Tên người dùng</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Email</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Số điện thoại</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Ngày tạo</th>
                             </tr>
                         </thead>
                         <tbody>
                             {newUsers.map((user) => (
-                                <tr key={user._id}>
-                                    <td className="border px-4 py-2">{user.user_name}</td>
-                                    <td className="border px-4 py-2">{user.user_email}</td>
-                                    <td className="border px-4 py-2">{user.user_mobile}</td>
-                                    <td className="border px-4 py-2">{new Date(user.createdAt).toLocaleDateString()}</td>
+                                <tr key={user._id} className="border-t border-gray-200 dark:border-gray-600">
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.user_name}</td>
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.user_email}</td>
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.user_mobile}</td>
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{new Date(user.createdAt).toLocaleDateString()}</td>
                                 </tr>
                             ))}
                         </tbody>
@@ -45,22 +45,22 @@ export default function TabsTable({ newUsers, potentialCustomers }: TabsTablePro
 
             return (
                 <div className="overflow-x-auto bg-white p-6 rounded-xl shadow-lg dark:border-white/[0.05] dark:bg-white/[0.03]">
-                    <table className="min-w-full table-auto mt-4 border-collapse">
-                        <thead>
+                    <table className="min-w-full table-auto text-left">
+                        <thead className="bg-gray-100 dark:bg-gray-700">
                             <tr>
-                                <th className="border px-4 py-2">Tên người dùng</th>
-                                <th className="border px-4 py-2">Email</th>
-                                <th className="border px-4 py-2">Số điện thoại</th>
-                                <th className="border px-4 py-2">Số đơn hàng đã mua</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Tên người dùng</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Email</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Số điện thoại</th>
+                                <th className="px-4 py-2 text-gray-800 dark:text-white">Số đơn hàng đã mua</th>
                             </tr>
                         </thead>
                         <tbody>
                             {sortedPotentialCustomers.map((user) => (
-                                <tr key={user._id}>
-                                    <td className="border px-4 py-2">{user.user_name}</td>
-                                    <td className="border px-4 py-2">{user.user_email}</td>
-                                    <td className="border px-4 py-2">{user.user_mobile}</td>
-                                    <td className="border px-4 py-2">{user.totalOrders}</td> {/* Sửa tại đây */}
+                                <tr key={user._id} className="border-t border-gray-200 dark:border-gray-600">
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.user_name}</td>
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.user_email}</td>
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.user_mobile}</td>
+                                    <td className="px-4 py-2 text-gray-800 dark:text-white">{user.totalOrders}</td>
                                 </tr>
                             ))}
                         </tbody>

@@ -107,7 +107,7 @@ class UserService {
         if (updateData.user_mobile && updateData.user_mobile !== user.user_mobile) {
             const existingMobile = await UserModel.findOne({ user_mobile: updateData.user_mobile }); // ✅ Sửa lại `UserModel`
             if (existingMobile) {
-                throw new BadRequestError('Số điện thoại đã tồn tại!', 400);
+                throw new BadRequestError('Số điện thoại đã tồn tại!', 201);
             }
         }
 
