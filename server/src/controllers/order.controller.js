@@ -50,6 +50,32 @@ class OrderController {
             message: 'Thành công',
         });
     }
+
+    // Tìm kiếm đơn hàng theo mã order_code
+    static async getOrderByCode(req, res) {
+        try {
+            const { code } = req.params;
+            const order = await OrderService.getOrderByCode(code);
+            
+            if (!order) {
+                return res.status(404).json({
+                    success: false,
+                    message: 'Order not found',
+                });
+            }
+            
+            return res.status(200).json({
+                success: true,
+                data: order,
+            });
+        } catch (error) {
+            return res.status(500).json({
+                success: false,
+                message: error.message,
+            });
+        }
+    }
+    
     
     
 }

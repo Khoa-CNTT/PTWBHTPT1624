@@ -381,6 +381,22 @@ class OrderService {
 
         return orderObject;
     }
+    // Tìm đơn hàng theo order_code
+    static async getOrderByCode(code) {
+        try {
+            const order = await OnlineOrder.findOne({ order_code: code })
+            .populate('order_products.productId');
+
+            if (!order) {
+                throw new Error('Order not found');
+            }
+
+            return order;
+        } catch (error) {
+            throw error;
+        }
+    }
+    
     // static async getAllOfflineOrders(query) {
     //     const { page = 1, limit = 20, sortBy = 'createdAt', order = 'desc' } = query;
     //     const skip = (page - 1) * limit;

@@ -60,4 +60,15 @@ const apiCreateOfflineOrders = async (data: any) => {
         };
     }
 };
-export { apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };
+const apiGetOrderByCode = async (orderCode: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/order/search/${orderCode}`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message:error,
+        };
+    }
+};
+export { apiGetOrderByCode,apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };
