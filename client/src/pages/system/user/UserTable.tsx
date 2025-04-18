@@ -1,14 +1,16 @@
 import { IUserProfile } from "../../../interfaces/user.interfaces";
 import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { FormControl, FormControlLabel, Checkbox, Typography } from '@mui/material';
 
 interface UserTableProps {
     users: IUserProfile[];
     onEdit: (user: IUserProfile) => void;
     onBlock: (id: string, isBlocked: boolean) => void;
+    onDelete: (id: string) => void; // Add onDelete function
 }
 
-const UserTable = ({ users, onEdit, onBlock }: UserTableProps) => {
+const UserTable = ({ users, onEdit, onBlock, onDelete }: UserTableProps) => {
     return (
         <div className="overflow-hidden rounded-xl my-4 border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             <div className="max-w-full overflow-x-auto">
@@ -43,7 +45,6 @@ const UserTable = ({ users, onEdit, onBlock }: UserTableProps) => {
                                         )}
                                     </div>
                                 </td>
-                                
                                 <td className="px-4 py-2">{user.user_mobile}</td>
                                 <td className="px-4 py-2">
                                     <FormControl>
@@ -73,6 +74,13 @@ const UserTable = ({ users, onEdit, onBlock }: UserTableProps) => {
                                         className="text-blue-500 hover:text-blue-700 px-2 py-1 text-sm"
                                     >
                                         <EditIcon />
+                                    </button>
+                                    {/* Delete button */}
+                                    <button
+                                        onClick={() => onDelete(user._id)}
+                                        className="text-red-500 hover:text-red-700 px-2 py-1 text-sm"
+                                    >
+                                        <DeleteIcon />
                                     </button>
                                 </td>
                             </tr>

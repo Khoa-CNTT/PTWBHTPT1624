@@ -6,6 +6,7 @@ import {
     apiUpdateUser,
     apiSearchUsers,
     apiToggleBlockUser,
+    apiDeleteUser,  // Import the delete API function
 } from '../../../services/user.service';
 import { IUserProfile } from '../../../interfaces/user.interfaces';
 import { useModal } from '../../../hooks/useModal';
@@ -107,6 +108,18 @@ export default function UserManage() {
         toggleBlock();
     };
 
+    const handleDelete = async (id: string) => {
+        if (window.confirm('Bạn có muốn xóa người dùng này không?')) {
+            const res = await apiDeleteUser(id);
+            if (res.success) {
+                setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
+                showNotification('Xóa người dùng thành công', true);
+            } else {
+                showNotification(res.message || 'Xóa người dùng thất bại', false);
+            }
+        }
+    };
+
     if (isUploading) return <TableSkeleton />;
 
     return (
@@ -132,7 +145,8 @@ export default function UserManage() {
                 <UserTable 
                     users={users} 
                     onEdit={handleEdit} 
-                    onBlock={handleBlock} 
+                    onBlock={handleBlock}
+                    onDelete={handleDelete}  // Pass the handleDelete function
                 />
 
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}

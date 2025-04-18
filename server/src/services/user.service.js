@@ -3,6 +3,9 @@
 const { BadRequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/user.model');
+const OrderModel = require('../models/OnlineOrder');
+const ReviewModel = require('../models/reviews.model');
+
 
 class UserService {
     static async addUser(payload) {
@@ -24,38 +27,39 @@ class UserService {
         return await newUser.save();
     }
 
-    static async updateUser(uid, payload) {
-        const { user_email, user_password, user_mobile, ...dataUser } = payload;
-
+    static async deleteUser(uid) {
         const user = await UserModel.findById(uid);
         if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
-
-        if (user_mobile && user_mobile !== user.user_mobile) {
-            const existingMobile = await UserModel.findOne({ user_mobile });
-            if (existingMobile) throw new BadRequestError('Số điện thoại đã tồn tại!', 400);
-            dataUser.user_mobile = user_mobile;
+    
+        // Xóa tất cả các đánh giá liên quan đến người dùng (bất kể trường review_user là null)
+        await ReviewModel.deleteMany({ review_userId: uid });
+    
+        const hasOrders = await OrderModel.exists({ order_userId: uid });
+    
+        // Nếu người dùng đã có đơn hàng → chỉ xóa người dùng, giữ lại đơn hàng
+        if (hasOrders) {
+            await UserModel.findByIdAndDelete(uid);
+            return {
+                _id: user._id,
+                user_name: user.user_name,
+                user_email: user.user_email,
+                message: 'Người dùng đã được xoá cùng với các đánh giá (giữ lại đơn hàng)',
+            };
         }
-
-        if (user_password) {
-            const salt = await bcrypt.genSalt(10);
-            dataUser.user_password = await bcrypt.hash(user_password, salt);
-        }
-        return await UserModel.findByIdAndUpdate(uid, dataUser, {
-            new: true,
-            runValidators: true,
-        });
-    }
-
-    static async deleteUser(uid) {
-        const user = await UserModel.findByIdAndDelete(uid);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
-
+    
+        // Nếu chưa từng mua hàng → xóa người dùng và tất cả đánh giá của người đó
+        await UserModel.findByIdAndDelete(uid);
+    
         return {
             _id: user._id,
             user_name: user.user_name,
             user_email: user.user_email,
+            message: 'Người dùng đã được xoá hoàn toàn cùng với các đánh giá của họ',
         };
     }
+    
+    
+    
 
     static async toggleBlockUser(uid, isBlocked) {
         if (typeof isBlocked !== 'boolean') {
