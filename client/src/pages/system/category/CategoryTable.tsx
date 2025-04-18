@@ -17,16 +17,16 @@ const CategoryTable: React.FC<CategoryListProps> = ({ categories, onEdit, onDele
                     {/* Table Header */}
                     <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                         <TableRow>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-6 py-4 font-semibold text-gray-600 text-start text-theme-xs dark:text-gray-400">
                                 Code
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium  text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-6 py-4 font-semibold text-gray-600 text-start text-theme-xs dark:text-gray-400">
                                 Tên danh mục
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-6 py-4 font-semibold text-gray-600 text-start text-theme-xs dark:text-gray-400">
                                 Hình ảnh
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-6 py-4 font-semibold text-gray-600 text-center text-theme-xs dark:text-gray-400">
                                 Thao tác
                             </TableCell>
                         </TableRow>
@@ -35,18 +35,18 @@ const CategoryTable: React.FC<CategoryListProps> = ({ categories, onEdit, onDele
                     <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
                         {categories.map((c) => (
                             <TableRow key={c._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
-                                <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">{c.category_code}</TableCell>
-                                <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">
-                                    <span className=" truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                <TableCell className="px-6 py-4 text-gray-700 dark:text-gray-300">{c.category_code}</TableCell>
+                                <TableCell className="px-6 py-4 text-gray-700 dark:text-gray-300">
+                                    <span className="truncate-trailing line-clamp-1 w-[250px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                         {c.category_name}
                                     </span>
                                 </TableCell>
-                                <TableCell className="px-5 py-3">
-                                    <div className="w-12 h-12 m-auto overflow-hidden rounded-lg border border-gray-200 dark:border-gray-700 flex items-center justify-center">
+                                <TableCell className="px-6 py-4">
+                                    <div className="w-20 h-20 m-auto overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-lg">
                                         <img src={c.category_thumb} alt={c.category_name} className="w-full h-full object-cover" />
                                     </div>
                                 </TableCell>
-                                <TableCell className="px-5 py-3 text-center flex gap-3 justify-center">
+                                <TableCell className="px-6 py-4 text-center flex gap-4 justify-center">
                                     <button onClick={() => onEdit(c)} className="text-blue-500 hover:text-blue-700 transition">
                                         <EditIcon />
                                     </button>
