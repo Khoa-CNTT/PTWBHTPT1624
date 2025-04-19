@@ -12,6 +12,7 @@ import AdminProfile from '../pages/system/profile';
 import HomePage from '../pages/user/HomePage';
 import DetailPage from '../pages/user/detailPage';
 import SearchPage from '../pages/user/searchPage';
+import FilterPage from '../pages/user/filterPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -23,7 +24,8 @@ const RouterPage = () => {
                 <Route index element={<HomePage />} />
                 <Route path={PATH.DETAIL_PRODUCT} element={<DetailPage />}></Route>
                 <Route path={PATH.PAGE_SEARCH} element={<SearchPage />}></Route>
-
+                <Route path={PATH.PAGE_CATEGORY} element={<FilterPage />}></Route>
+                <Route path={PATH.PAGE_BRAND} element={<FilterPage />}></Route>
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
             </Route>
 

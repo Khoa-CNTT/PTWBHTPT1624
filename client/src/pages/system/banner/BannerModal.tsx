@@ -128,7 +128,7 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
                     </div>
 
                     <div className="w-full">
-                        <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
+                        <ImageCropper width={1080} height={360} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
                         {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                         {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
                         {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}

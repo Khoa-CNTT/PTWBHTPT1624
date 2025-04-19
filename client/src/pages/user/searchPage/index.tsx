@@ -22,7 +22,6 @@ const SearchPage: React.FC = () => {
     const navigate = useNavigate();
     useEffect(() => {
         if (!params.keySearch) return;
-        console.log('queries', queries);
         const fetchProducts = async () => {
             setIsLoading(true);
             const res = await apiSearchProduct(params?.keySearch, {

@@ -39,9 +39,9 @@ const OrderManage: React.FC = () => {
             }
             setLoading(false);
         };
-
         fetchOrders(); // Lấy lại tất cả đơn hàng khi trang được load hoặc khi thay đổi tab
     }, [displayTab]); // Khi thay đổi tab, gọi lại API
+
 
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;

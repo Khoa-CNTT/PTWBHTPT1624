@@ -25,6 +25,8 @@ router.get('/new-product', asyncHandle(ProductController.getNewProducts));
 // 🔄 Lấy danh sách sản phẩm tương tự theo danh mục
 router.get('/:id/similar', asyncHandle(ProductController.getSimilarProducts));
 router.get('/suggestion/:keySearch', asyncHandle(ProductController.getProductSuggestions));
+router.get('/top-viewed', asyncHandle(ProductController.getTopViewedProduct));
+
 /* ================================
    🛡️ API Dành cho Admin (Quản lý Sản Phẩm)
    ================================ */

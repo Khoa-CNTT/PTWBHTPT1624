@@ -13,9 +13,7 @@ const fs = require('fs').promises;
 class ProductService {
     // Tạo sản phẩm mới với số lượng tồn kho
     static async createProduct(payload) {
-        if (Object.keys(payload).length === 0) {
-            throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
-        }
+        if (Object.keys(payload).length === 0) throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
         payload.product_code = generateRandomCode(10);
         // Tạo sản phẩm mới
         const newProduct = await Product.create(payload);
@@ -23,12 +21,25 @@ class ProductService {
     }
     // Lấy sản phẩm theo ID
     static async getProductById(productId) {
-        const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']).lean();
-        if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
-        return product;
+        // Fetch product without lean() to retain Mongoose model instance
+        const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']);
+
+        if (!product) {
+            throw new NotFoundError('Không tìm thấy sản phẩm');
+        }
+
+        // Increment view count
+        product.product_views += 1;
+
+        // Save the updated product
+        await product.save();
+        // Convert to plain object for response, if needed
+        return product.toObject();
     }
     static async ScanProduct(product_code) {
-        const product = await Product.findOne({ product_code }).select('product_thumb product_price product_name product_discount product_code').lean();
+        const product = await Product.findOne({ product_code })
+            .select('product_thumb product_price product_name product_discounted_price product_discount product_code')
+            .lean();
         if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
         return product;
     }
@@ -51,10 +62,9 @@ class ProductService {
         const skipNum = pageNum * limitNum;
         const searchFilter = keySearch ? { $text: { $search: keySearch } } : {};
         const productQuery = Product.find(searchFilter)
-        .select(
-            '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
-          )
-          
+            .select(
+                '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
+            )
             .skip(skipNum)
             .limit(limitNum)
             .lean();
@@ -96,6 +106,7 @@ class ProductService {
         // Transform gte, gt, lte, lt to MongoDB operators
         const queriesString = JSON.stringify(queries).replace(/\b(gte|gt|lte|lt)\b/g, (el) => `$${el}`);
         let newQueryString = JSON.parse(queriesString);
+        console.log('newQueryString', newQueryString);
 
         // Add filters for category and brand if provided
         if (query.product_category_id) {
@@ -104,17 +115,14 @@ class ProductService {
         if (query.product_brand_id) {
             newQueryString.product_brand_id = query.product_brand_id;
         }
-
         // Ensure only published products are returned
         newQueryString.product_isPublished = true;
-
         // Build query
         let products = Product.find(newQueryString)
             .select(
                 '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity',
             )
             .lean();
-
         // Apply sorting
         if (query.sort) {
             const sortBy = query.sort.toString().replace(',', ' ');
@@ -122,16 +130,13 @@ class ProductService {
         } else {
             products = products.sort('-createdAt');
         }
-
         // Apply pagination
         const limit = Math.max(~~query.limit || 10, 1); // Default 10, min 1
         const page = Math.max(~~query.page || 0, 0); // Default 0
         const skip = page * limit;
         products = products.limit(limit).skip(skip);
-
         // Execute query and count concurrently
         const [newProducts, totalProducts] = await Promise.all([products.exec(), Product.countDocuments(newQueryString)]);
-
         // Return result
         return {
             success: true,
@@ -145,17 +150,16 @@ class ProductService {
     static async getFeaturedProducts(limit = 30) {
         return await Product.find({ product_isPublished: true })
             .sort({ product_sold: -1, product_ratings: -1 })
-            .select('_id product_thumb product_name product_price product_slug product_discount product_sold product_ratings')
+            .select('_id product_thumb product_name product_price product_discounted_price product_slug product_discount product_sold product_ratings')
             .limit(limit)
             .lean();
     }
-
     static async getFlashSaleProducts() {
         return await Product.find({
             product_discount: { $gte: 40 },
             product_isPublished: true,
         })
-            .select('_id product_thumb product_sold  product_quantity product_name product_slug product_discount')
+            .select('_id product_thumb product_sold product_discounted_price product_quantity product_name product_slug product_discount')
             .sort({ product_discount: -1 })
             .lean();
     }
@@ -165,7 +169,7 @@ class ProductService {
                 createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 30)) },
                 product_isPublished: true,
             })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount')
+            .select('_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount')
             .sort({ createdAt: -1 })
             .lean();
     }
@@ -177,7 +181,7 @@ class ProductService {
             product_category_id: currentProduct.product_category_id,
             product_isPublished: true,
         })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount')
+            .select('_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount')
             .sort({ sold_count: -1 })
             .limit(10)
             .lean();
@@ -197,19 +201,14 @@ class ProductService {
             .lean();
         return { products };
     }
-
     static async searchProductByImage(imageUrl) {
         if (!imageUrl) throw new NotFoundError('Vui lòng cung cấp URL ảnh!');
         const tempPath = path.join(__dirname, 'temp_search.png');
         // Tải ảnh từ URL về thư mục tạm
-        if (!(await downloadImage(imageUrl, tempPath))) {
-            throw new BadRequestError('Không thể tải ảnh!');
-        }
+        if (!(await downloadImage(imageUrl, tempPath))) throw new BadRequestError('Không thể tải ảnh!');
         // Trích xuất đặc trưng từ ảnh tìm kiếm
         const searchFeatures = await extractFeatures(tempPath);
-        if (!searchFeatures || searchFeatures.length === 0) {
-            throw new BadRequestError('Không thể trích xuất đặc trưng từ ảnh!');
-        }
+        if (!searchFeatures || searchFeatures.length === 0) throw new BadRequestError('Không thể trích xuất đặc trưng từ ảnh!');
         // Lấy tất cả sản phẩm trong cơ sở dữ liệu (sử dụng `.lean()` để tối ưu hóa hiệu suất)
         const productFeatures = await Product.find({ product_isPublished: true }).lean();
         const results = await Promise.all(
@@ -240,10 +239,8 @@ class ProductService {
         const limitNum = parseInt(limit, 10) || 10; // Giới hạn sản phẩm mỗi trang
         const pageNum = parseInt(page, 10) || 0; // Trang hiện tại
         const skipNum = pageNum * limitNum; // Tính toán số lượng bỏ qua
-
         let filter = {};
         const currentDate = new Date(); // Lưu lại ngày hiện tại
-
         // Lọc sản phẩm theo trạng thái hết hạn
         switch (status) {
             case 'expired': // Hết hạn
@@ -268,12 +265,9 @@ class ProductService {
             default:
                 throw new BadRequestError('Trạng thái hạn sử dụng không hợp lệ.');
         }
-
         // Lấy sản phẩm theo trạng thái
         const products = await Product.find(filter).sort('-product_expiry_date').skip(skipNum).limit(limitNum).lean();
-
         const totalProducts = await Product.countDocuments(filter);
-
         return {
             totalPage: Math.ceil(totalProducts / limitNum) - 1, // Số trang tổng cộng
             currentPage: pageNum, // Trang hiện tại
