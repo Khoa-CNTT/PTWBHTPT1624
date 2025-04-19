@@ -1,9 +1,9 @@
 import React from 'react';
-import { Link, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 
 interface BreadcrumbProps {
-    title: string|undefined;
+    title: string | undefined;
 }
 const Breadcrumbs: React.FC<BreadcrumbProps> = ({ title }) => {
     const breadcrumbs = [
@@ -25,17 +25,8 @@ const Breadcrumbs: React.FC<BreadcrumbProps> = ({ title }) => {
                 <>
                     <div
                         onClick={() => b.path !== '#' && navigate(b.path)}
-                        className={`flex w-auto text-sm  ${
-                            b.path !== '#' ? 'text-secondary cursor-pointer hover:underline' : 'text-primary'
-                        }`}
-                    >
-                        <span
-                            className={`${
-                                b.path !== '#' ? 'flex whitespace-nowrap' : 'truncate-trailing line-clamp-1'
-                            }`}
-                        >
-                            {b.breadcrumb}
-                        </span>
+                        className={`flex w-auto text-sm  ${b.path !== '#' ? 'text-secondary cursor-pointer hover:underline' : 'text-primary'}`}>
+                        <span className={`${b.path !== '#' ? 'flex whitespace-nowrap' : 'truncate-trailing line-clamp-1'}`}>{b.breadcrumb}</span>
                     </div>
                     {b.path !== '#' && (
                         <span className="text-secondary w-auto ">
