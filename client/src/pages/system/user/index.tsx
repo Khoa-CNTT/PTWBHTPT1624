@@ -65,9 +65,13 @@ export default function UserManage() {
         }
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
+    
         closeModal();
-        setUsers((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
+    
+        // Refetch lại danh sách người dùng thay vì cập nhật thủ công
+        fetchApi();
     };
+    
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;

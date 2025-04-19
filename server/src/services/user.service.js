@@ -131,6 +131,40 @@ class UserService {
     
         return users;
     }
+    static async updateUserByAdmin(userId, updateData) {
+        const user = await UserModel.findById(userId);
+
+        if (!user) {
+          throw new BadRequestError('Người dùng không tồn tại');
+        }
+    
+        // Nếu có mật khẩu mới thì hash lại
+        if (updateData.user_password) {
+          if (updateData.user_password.length < 6) {
+            throw new BadRequestError('Mật khẩu phải có ít nhất 6 ký tự');
+          }
+          updateData.user_password = await bcrypt.hash(updateData.user_password, 10);
+        }
+    
+        // Cập nhật thông tin còn lại
+        for (let key in updateData) {
+          user[key] = updateData[key];
+        }
+    
+        await user.save();
+    
+        return {
+          message: 'Cập nhật người dùng thành công',
+          user: {
+            _id: user._id,
+            user_name: user.user_name,
+            user_email: user.user_email,
+            user_mobile: user.user_mobile,
+            user_role: user.user_role,
+            user_isBlocked: user.user_isBlocked,
+          },
+        };
+      }
 }
 
 module.exports = UserService;
