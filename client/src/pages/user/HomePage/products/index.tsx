@@ -14,7 +14,6 @@ const Products: React.FC = () => {
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [page, setPage] = useState<number>(0);
     const [optionTab, setOptionTab] = useState<number>(0);
-
     // Hàm fetch products được bọc trong useCallback để tránh tạo lại hàm không cần thiết
     const fetchProducts = useCallback(async () => {
         setIsLoading(true);
@@ -28,28 +27,24 @@ const Products: React.FC = () => {
             setIsLoading(false);
             return; // Thoát sớm để không chạy logic bên dưới
         }
-
         // Định nghĩa queries cho các tab khác
         const queries = optionTab === 2 ? { 'product_price[lte]': 99000 } : optionTab === 3 ? { 'product_price[lte]': 20000 } : {};
-
         const res = await apiGetAllProducts({ limit: 30, page, ...queries });
         if (res.success) {
             const { data } = res;
             // Kiểm tra nếu đã đến trang cuối
-            setHiddenButton(data.totalPage === page + 1);
+            setHiddenButton(data.totalPage === page);
             // Cập nhật danh sách sản phẩm
             setProducts((prev) => [...prev, ...data.products]);
         }
         setIsLoading(false);
     }, [page, optionTab]);
-
     // Reset products và page khi optionTab thay đổi
     useEffect(() => {
         setProducts([]);
         setPage(0);
         setHiddenButton(false); // Reset hiddenButton khi tab thay đổi
     }, [optionTab]);
-
     // Gọi fetchProducts khi page hoặc optionTab thay đổi
     useEffect(() => {
         fetchProducts();

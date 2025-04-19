@@ -1,7 +1,7 @@
 export const PATH = {
     HOME: '/',
     DETAIL_PRODUCT: '/:slug/:pid',
-    PAGE_CATEGORY: '/danh-muc/:category_slug/:cid',
+    PAGE_CATEGORY: '/danh-muc/:category_slug/:category_code',
     PAGE_LIST_CATEGORY: 'danh-sach-danh-muc',
     PAGE_BRAND: '/thuong-hieu/:brand_slug',
     PAGE_SEARCH: '/tim-kiem/:keySearch',

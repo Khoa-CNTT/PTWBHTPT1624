@@ -9,7 +9,7 @@ import Products from './products';
 const HomePage: React.FC = () => {
     // const { isLoginSuccess } = useAppSelector((state) => state.auth);
     return (
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col ">
             {/* <Seo description='Shop bách hóa' title='D P S H O P V N' key={2} /> */}
             <Banner />
             <div className="flex flex-col gap-8">
@@ -19,8 +19,6 @@ const HomePage: React.FC = () => {
                 <ProductsFeatured />
             </div>
             <Products />
-            {/*  {isLoginSuccess && <ProductFollowings />}
-            <Products /> */}
         </div>
     );
 };

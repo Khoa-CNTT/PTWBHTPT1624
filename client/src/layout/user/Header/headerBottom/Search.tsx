@@ -2,7 +2,6 @@
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useRef, useState } from 'react';
-import ListCategories from './ListCategories';
 import { Overlay } from '../../../../components';
 import { apiGetFeaturedProducts, getProductSuggestions } from '../../../../services/product.service';
 import useDebounce from '../../../../hooks/useDebounce';
@@ -214,8 +213,10 @@ const Search: React.FC = () => {
                             </span>
                         )}
                         {openSearchResults && (
-                            <div className="absolute w-full top-[100%] right-0 bg-white shadow-search py-4">
-                                {resultSuggest?.length > 0 ? suggestResult : searchRecent}
+                            <div className="absolute w-full top-[100%] right-0 bg-white shadow-search   rounded-b-md">
+                                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 border-gray-200 rounded-md">
+                                    {resultSuggest?.length > 0 ? suggestResult : searchRecent}
+                                </div>
                             </div>
                         )}
                     </div>
@@ -223,7 +224,6 @@ const Search: React.FC = () => {
                         <SearchIcon /> <span>Tìm kiếm</span>
                     </button>
                 </div>
-                <ListCategories />
                 {openSearchResults && <Overlay onClick={() => setOpenSearchResults(false)} className="z-20" />}
             </div>
         </div>

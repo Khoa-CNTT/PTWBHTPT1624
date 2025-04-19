@@ -2,22 +2,22 @@ import React, { useEffect, useState } from 'react';
 import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import queryString from 'query-string';
 import { apiGetBrandsInCategory } from '../../services/brand.service';
+import { IBrand } from '../../interfaces/brand.interfaces';
 
 const SearchByBrand: React.FC = () => {
-    const [brands, setBrands] = useState<Array<string>>([]);
-    const [optionBrands, setOptionBrands] = useState<Array<string>>([]);
+    const [brands, setBrands] = useState<IBrand[]>([]);
+    const [optionBrands, setOptionBrands] = useState<string[]>([]);
     const [quantityDisplayBrand, setQuantityDisplayBrand] = useState<number>(5);
     const location = useLocation();
     const params = useParams();
     useEffect(() => {
         setOptionBrands([]);
         const fetchApi = async () => {
-            const res = await apiGetBrandsInCategory(params?.cid);
+            const res = await apiGetBrandsInCategory(params?.category_code);
             if (res.success) setBrands(res.data);
         };
-
         fetchApi();
-    }, [params.cid, params.brand_slug, params.sid]);
+    }, [params.category_code, params.brand_slug]);
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -51,16 +51,16 @@ const SearchByBrand: React.FC = () => {
                                         <input
                                             onClick={() => {
                                                 if (params.brand_slug) return;
-                                                if (optionBrands?.includes(b)) {
-                                                    setOptionBrands((prevOptionBrands) => prevOptionBrands.filter((i) => i !== b));
+                                                if (optionBrands?.includes(b._id)) {
+                                                    setOptionBrands((prevOptionBrands) => prevOptionBrands.filter((i) => i !== b._id));
                                                 } else {
-                                                    setOptionBrands((prevOptionBrands) => [...prevOptionBrands, b]);
+                                                    setOptionBrands((prevOptionBrands) => [...prevOptionBrands, b._id]);
                                                 }
                                             }}
                                             type="checkbox"
-                                            checked={optionBrands?.includes(b) || !!params.brand_slug}
+                                            checked={optionBrands?.includes(b._id) || !!params.brand_slug}
                                         />
-                                        <span className="text-sm">{b}</span>
+                                        <span className="text-sm">{b.brand_name}</span>
                                     </label>
                                 ),
                         )}

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { memo } from 'react';
 import { useEffect } from 'react';
 
@@ -10,12 +11,12 @@ import HeaderTop from './headerTop';
 import HeaderBottom from './headerBottom';
 import { apiGetAllCategories } from '../../../services/category.service';
 import { useCategoriesStore } from '../../../store/category';
-
+import { apiGetAllBrands } from '../../../services/brand.service';
+import { useBrandsStore } from '../../../store/brand';
 // eslint-disable-next-line react-refresh/only-export-components
 const Header: React.FC = () => {
     // const currenUser = useAppSelector((state) => state.user);
     // const { socketRef } = useAppSelector((state) => state.action);
-
     // useEffect(() => {
     //     if (socketRef) {
     //         socketRef.emit('addUser', currenUser._id);
@@ -26,11 +27,15 @@ const Header: React.FC = () => {
     //     // eslint-disable-next-line react-hooks/exhaustive-deps
     // }, [socketRef, currenUser]);
     const { setCategories } = useCategoriesStore();
+    const { setBrands } = useBrandsStore();
     useEffect(() => {
         const fetchCategory = async () => {
-            const res = await apiGetAllCategories();
-            const data = res?.data;
-            if (res.success && data.length > 0) setCategories(data);
+            const resCategory = await apiGetAllCategories();
+            const resBrand = await apiGetAllBrands();
+            const dataCategory = resCategory?.data;
+            const dataBrand = resBrand?.data;
+            if (resCategory.success && dataCategory.length > 0) setCategories(dataCategory);
+            if (resBrand.success && dataBrand.length > 0) setBrands(dataBrand);
         };
         fetchCategory();
     }, []);

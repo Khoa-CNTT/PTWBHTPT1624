@@ -9,7 +9,6 @@ interface CategoriesStore {
 export const useCategoriesStore = create<CategoriesStore>((set) => ({
     categories: typeof window !== 'undefined' ? JSON.parse(localStorage.getItem('categories') || '[]') : [],
     setCategories: (categories) => {
-        console.log(categories);
         set({ categories });
         if (typeof window !== 'undefined') {
             localStorage.setItem('categories', JSON.stringify(categories));
