@@ -1,5 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import useCountUp from '../../../hooks/useCountUp';
+import { apiGetProductStats } from '../../../services/dashboard.service'; // Đảm bảo đã import đúng API
 
 // Interface for statistic items
 interface StatisticItem {
@@ -21,14 +22,6 @@ interface FooterProps {
     statistics?: StatisticItem[];
     contacts?: ContactItem[];
 }
-
-// Static data for statistics
-const DEFAULT_STATISTICS: StatisticItem[] = [
-    { id: 'sold', value: 1200, name: 'Sản phẩm đã bán' },
-    { id: 'customers', value: 850, name: 'Khách hàng hài lòng' },
-    { id: 'products', value: 300, name: 'Sản phẩm đa dạng' },
-    { id: 'visits', value: 15000, name: 'Lượt truy cập' },
-];
 
 // Static data for contacts
 const DEFAULT_CONTACTS: ContactItem[] = [
@@ -67,11 +60,29 @@ const ContactCard: React.FC<{ contact: ContactItem }> = ({ contact }) => {
     );
 };
 
-const Footer: React.FC<FooterProps> = ({ statistics = DEFAULT_STATISTICS, contacts = DEFAULT_CONTACTS }) => {
+const Footer: React.FC<FooterProps> = ({ contacts = DEFAULT_CONTACTS }) => {
     const [isVisible, setIsVisible] = useState(false);
+    const [statistics, setStatistics] = useState<StatisticItem[]>([]);
     const statsRef = useRef<HTMLDivElement>(null);
 
     useEffect(() => {
+        // Fetch product stats from API
+        const fetchStats = async () => {
+            const result = await apiGetProductStats();
+            if (result.success) {
+                setStatistics([
+                    { id: 'sold', value: result.data.sold, name: 'Sản phẩm đã bán' },
+                    { id: 'customers', value: result.data.customers, name: 'Khách hàng hài lòng' },
+                    { id: 'products', value: result.data.products, name: 'Sản phẩm đa dạng' },
+                    { id: 'visits', value: result.data.visits, name: 'Lượt truy cập' },
+                ]);
+            } else {
+                console.error('Failed to fetch stats:', result.message);
+            }
+        };
+
+        fetchStats();
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {

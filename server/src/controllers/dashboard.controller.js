@@ -14,6 +14,15 @@ class DashboardController {
         const users = await DashboardService.getPotentialCustomers();
         res.status(200).json({ success: true, users });
     }
+    static async getProductStats(req, res) {
+        try {
+            const data = await DashboardService.getProductStats(); 
+            res.status(200).json({ success: true, data });
+        } catch (error) {
+            res.status(500).json({ success: false, message: error.message });
+        }
+    }
+    
 }
 
 module.exports = DashboardController;

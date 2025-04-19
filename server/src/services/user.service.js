@@ -51,12 +51,6 @@ class UserService {
             message: 'Xóa người dùng thành công.',
         };
     }
-    
-      
-    
-    
-    
-
     static async toggleBlockUser(uid, isBlocked) {
         if (typeof isBlocked !== 'boolean') {
             if (isBlocked === 'true') isBlocked = true;
