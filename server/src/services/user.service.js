@@ -1,4 +1,5 @@
 'use strict';
+const mongoose = require('mongoose');
 
 const { BadRequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
@@ -28,35 +29,30 @@ class UserService {
     }
 
     static async deleteUser(uid) {
-        const user = await UserModel.findById(uid);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
-    
-        // Xóa tất cả các đánh giá liên quan đến người dùng (bất kể trường review_user là null)
-        await ReviewModel.deleteMany({ review_userId: uid });
-    
-        const hasOrders = await OrderModel.exists({ order_userId: uid });
-    
-        // Nếu người dùng đã có đơn hàng → chỉ xóa người dùng, giữ lại đơn hàng
-        if (hasOrders) {
-            await UserModel.findByIdAndDelete(uid);
-            return {
-                _id: user._id,
-                user_name: user.user_name,
-                user_email: user.user_email,
-                message: 'Người dùng đã được xoá cùng với các đánh giá (giữ lại đơn hàng)',
-            };
+        // Kiểm tra uid có phải ObjectId hợp lệ không
+        if (!mongoose.Types.ObjectId.isValid(uid)) {
+            throw new BadRequestError('ID người dùng không hợp lệ.');
         }
     
-        // Nếu chưa từng mua hàng → xóa người dùng và tất cả đánh giá của người đó
-        await UserModel.findByIdAndDelete(uid);
+        // Kiểm tra xem người dùng đã từng đánh giá chưa
+        const hasReviews = await ReviewModel.exists({ user: new mongoose.Types.ObjectId(uid) });
+    
+        if (hasReviews) {
+            throw new BadRequestError('Không thể xóa tài khoản vì người dùng đã từng đánh giá sản phẩm.');
+        }
+    
+        // Tiến hành xóa
+        const deletedUser = await UserModel.findByIdAndDelete(uid);
+        if (!deletedUser) {
+            throw new BadRequestError('Người dùng không tồn tại.');
+        }
     
         return {
-            _id: user._id,
-            user_name: user.user_name,
-            user_email: user.user_email,
-            message: 'Người dùng đã được xoá hoàn toàn cùng với các đánh giá của họ',
+            message: 'Xóa người dùng thành công.',
         };
     }
+    
+      
     
     
     
