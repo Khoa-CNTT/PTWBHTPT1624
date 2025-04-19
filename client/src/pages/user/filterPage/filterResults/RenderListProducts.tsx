@@ -10,7 +10,6 @@ import { useCategoriesStore } from '../../../../store/category';
 import ProductItem from '../../../../components/item/ProductItem';
 import Pagination from '../../../../components/pagination';
 import { NotFound, SkeletonProducts } from '../../../../components';
-import { useBrandsStore } from '../../../../store/brand';
 
 const RenderListProducts: React.FC = () => {
     const location = useLocation();
