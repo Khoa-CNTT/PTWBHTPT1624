@@ -13,6 +13,7 @@ import HomePage from '../pages/user/HomePage';
 import DetailPage from '../pages/user/detailPage';
 import SearchPage from '../pages/user/searchPage';
 import FilterPage from '../pages/user/filterPage';
+import ForgotPassword from '../feature/forgotPassword';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -27,6 +28,7 @@ const RouterPage = () => {
                 <Route path={PATH.PAGE_CATEGORY} element={<FilterPage />}></Route>
                 <Route path={PATH.PAGE_BRAND} element={<FilterPage />}></Route>
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
+                <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />}></Route>
             </Route>
 
             {/* ============= ADMIN =================== */}

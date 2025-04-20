@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useEffect, useMemo } from 'react';
 import { useNavigate, useParams, useLocation } from 'react-router-dom';
 import queryString from 'query-string';
-import { useBrandsStore } from '../../store/brand';
+import { useBrandsStore } from '../../store/brandStore';
 import { ButtonOutline } from '..';
 import { formatMoney } from '../../utils/formatMoney';
 import { SORT_BAR } from '../../utils/const';
@@ -19,7 +19,7 @@ interface SortBarItem {
 }
 // Memoize component to prevent unnecessary re-renders
 const SortBar: React.FC = memo(() => {
-    const { cid } = useParams<{ cid?: string }>();
+    const { category_code } = useParams<{ category_code?: string }>();
     const navigate = useNavigate();
     const { pathname, search } = useLocation();
     const { brands } = useBrandsStore();
@@ -34,7 +34,7 @@ const SortBar: React.FC = memo(() => {
     // Reset sortBy when cid changes
     useEffect(() => {
         setSortBy('');
-    }, [cid]);
+    }, [category_code]);
 
     // Update URL when sortBy changes
     useEffect(() => {

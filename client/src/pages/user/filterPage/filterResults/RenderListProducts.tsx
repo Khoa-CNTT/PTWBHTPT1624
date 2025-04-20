@@ -6,7 +6,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import queryString from 'query-string';
 import { IProductItem } from '../../../../interfaces/product.interfaces';
 import { apiGetAllProducts } from '../../../../services/product.service';
-import { useCategoriesStore } from '../../../../store/category';
+import { useCategoriesStore } from '../../../../store/categoryStore';
 import ProductItem from '../../../../components/item/ProductItem';
 import Pagination from '../../../../components/pagination';
 import { NotFound, SkeletonProducts } from '../../../../components';

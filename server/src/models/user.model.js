@@ -10,6 +10,8 @@ const userSchema = mongoose.Schema(
         user_mobile: { type: String, unique: true },
         user_avatar_url: { type: String },
         user_passwordChangedAt: { type: Date },
+        user_passwordResetToken: { type: String },
+        user_passwordTokenExpires: { type: String },
         user_isBlocked: { type: Boolean, default: false },
     },
     {

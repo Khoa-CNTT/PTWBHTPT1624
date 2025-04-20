@@ -1,21 +1,18 @@
-import { adminClient} from '../config/httpRequest';
- 
+import { adminClient } from '../config/httpRequest';
+
 // Đăng nhập người dùng
 const apiLoginAdmin = async ({ email, password }: { email: string; password: string }) => {
     try {
-      const res = await adminClient.post('/v1/api/admin/auth/login', { email, password });
-      return res.data;
+        const res = await adminClient.post('/v1/api/admin/auth/login', { email, password });
+        return res.data;
     } catch (error) {
-      return {
-        success: false,
-        message: error,
-      };
+        return {
+            success: false,
+            message: error,
+        };
     }
-  };
-  
+};
 
- 
- 
 // Đăng xuất người dùng
 const apiLogoutAdmin = async () => {
     try {
@@ -42,10 +39,4 @@ const apiRefreshTokenAdmin = async () => {
     }
 };
 
- 
-
-export {
-    apiRefreshTokenAdmin,
-    apiLoginAdmin,
-    apiLogoutAdmin
-};
+export { apiRefreshTokenAdmin, apiLoginAdmin, apiLogoutAdmin };

@@ -16,6 +16,13 @@ class ProductService {
         if (Object.keys(payload).length === 0) throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
         payload.product_code = generateRandomCode(10);
         // Tạo sản phẩm mới
+        const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
+        tempPath = path.join(__dirname, 'img', randomFileName); // Assign here
+        await downloadImage(payload?.product_thumb, tempPath);
+        const searchFeatures = await extractFeatures(tempPath);
+        const featuresArray = Array.from(searchFeatures.dataSync());
+        searchFeatures.dispose();
+        payload.product_image_features = featuresArray || [];
         const newProduct = await Product.create(payload);
         return newProduct;
     }
@@ -215,7 +222,6 @@ class ProductService {
             productFeatures.map(async (product) => {
                 // Kiểm tra nếu sản phẩm không có đặc trưng hình ảnh
                 if (!product.product_image_features || product.product_image_features.length === 0) {
-                    console.warn(`Skipping product ${product.product_thumb} due to empty features`);
                     return { url: product.product_thumb, similarity: 0, product };
                 }
                 // Tính toán sự tương đồng cosine giữa ảnh tìm kiếm và sản phẩm

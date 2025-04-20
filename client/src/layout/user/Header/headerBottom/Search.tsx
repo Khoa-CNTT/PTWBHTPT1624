@@ -6,7 +6,7 @@ import { Overlay } from '../../../../components';
 import { apiGetFeaturedProducts, getProductSuggestions } from '../../../../services/product.service';
 import useDebounce from '../../../../hooks/useDebounce';
 import { Link, useNavigate } from 'react-router';
-
+import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak';
 interface search {
     text: string;
     _id: string;
@@ -219,6 +219,7 @@ const Search: React.FC = () => {
                                 </div>
                             </div>
                         )}
+                        <CenterFocusWeakIcon />
                     </div>
                     <button className="tablet:hidden outline-none bg-[rgb(9,115,69)] w-[150px] h-[40px] text-white rounded-r-[2px]" onClick={handleSummit}>
                         <SearchIcon /> <span>Tìm kiếm</span>

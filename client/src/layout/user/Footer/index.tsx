@@ -32,8 +32,8 @@ const DEFAULT_STATISTICS: StatisticItem[] = [
 
 // Static data for contacts
 const DEFAULT_CONTACTS: ContactItem[] = [
-    { id: 'phone', text: 'Hotline', value: '0328 430 561', type: 'phone' },
-    { id: 'zalo', text: 'Zalo', value: '0328 430 561', type: 'zalo' },
+    { id: 'phone', text: 'Hotline', value: '0328430561', type: 'phone' },
+    { id: 'zalo', text: 'Zalo', value: '0328430561', type: 'zalo' },
     { id: 'email', text: 'Email', value: 'support@bachhoaxanh.com', type: 'email' },
 ];
 
@@ -53,7 +53,6 @@ const StatisticCard: React.FC<{ stat: StatisticItem; isVisible: boolean }> = ({ 
 // Sub-component for rendering individual contact
 const ContactCard: React.FC<{ contact: ContactItem }> = ({ contact }) => {
     const href = contact.type === 'phone' ? `tel:${contact.value}` : contact.type === 'zalo' ? `https://zalo.me/${contact.value}` : `mailto:${contact.value}`;
-
     return (
         <div className="flex flex-col items-center justify-center p-2">
             <span className="text-base font-semibold leading-tight text-orange-500 md:text-lg">{contact.text}</span>
@@ -70,8 +69,8 @@ const ContactCard: React.FC<{ contact: ContactItem }> = ({ contact }) => {
 const Footer: React.FC<FooterProps> = ({ statistics = DEFAULT_STATISTICS, contacts = DEFAULT_CONTACTS }) => {
     const [isVisible, setIsVisible] = useState(false);
     const statsRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
+        // IntersectionObserver được sử dụng để phát hiện khi phần thống kê (statistics section) cuộn vào tầm nhìn (viewport), từ đó kích hoạt hiệu ứng đếm số (useCountUp).
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {
@@ -91,13 +90,13 @@ const Footer: React.FC<FooterProps> = ({ statistics = DEFAULT_STATISTICS, contac
 
     return (
         <footer
-            className="mx-auto mt-4 w-full max-w-7xl rounded-lg border-4 border-dashed border-blue-100 bg-white p-6 shadow-lg md:p-8 font-sans"
+            className="mx-auto mt-4 w-full max-w-7xl rounded-lg border-4 border-dashed border-blue-100 bg-white  p-6 shadow-lg md:p-8"
             aria-labelledby="footer-title">
             {/* Header Image */}
             <img src="https://phongtro123.com/images/support-bg.jpg" alt="Hỗ trợ khách hàng" className="h-48 w-full rounded-md object-contain" />
 
             {/* Title and Description */}
-            <h3 id="footer-title" className="mt-6 text-center text-2xl font-bold tracking-tight text-gray-900 md:text-3xl">
+            <h3 id="footer-title" className="mt-6 text-center text-2xl font-bold  text-gray-900 ">
                 Về cửa hàng của chúng tôi
             </h3>
             <p className="mx-auto mt-2 max-w-3xl text-center text-base font-normal leading-relaxed text-gray-600 md:text-lg">
@@ -121,11 +120,8 @@ const Footer: React.FC<FooterProps> = ({ statistics = DEFAULT_STATISTICS, contac
                     ))}
                 </div>
             </div>
-
             {/* Copyright */}
-            <p className="mt-6 text-center text-sm font-normal leading-relaxed text-gray-500">
-                © {new Date().getFullYear()} Cửa hàng của chúng tôi. All rights reserved.
-            </p>
+            <p className="mt-6 text-center text-sm leading-relaxed text-gray-500">© {new Date().getFullYear()} Cửa hàng của chúng tôi. All rights reserved.</p>
         </footer>
     );
 };

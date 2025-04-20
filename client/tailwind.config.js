@@ -41,7 +41,7 @@ module.exports = {
                 color_hover: 'rgba(39, 39, 42, 0.12)',
                 red_custom: 'rgb(255, 66, 78)',
                 red_lighter_custom: 'rgb(255, 170, 175)',
-                background_primary: '#FDF5ED',
+                background_primary: '#F5F5FA',
                 text_secondary: 'rgb(120, 120, 120)',
                 brand: {
                     25: '#F2F7FF',

@@ -75,7 +75,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
                 />
                 <div className="flex my-2">
                     <div className="w-full">
-                        <ImageCropper width={310} height={274} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />
+                        <ImageCropper width={1080} height={360} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />
                         {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                         {inputFields.brand_banner && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_banner} alt="Brand Thumbnail" />}
                         {invalidFields.some((i) => i.name === 'brand_banner') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}

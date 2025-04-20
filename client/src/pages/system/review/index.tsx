@@ -88,7 +88,7 @@ export default function ReviewManage() {
                 ) : (
                     <NotExit label="Không có đánh giá nào" />
                 )}
-                <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
+                {reviews.length > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
         </>
     );

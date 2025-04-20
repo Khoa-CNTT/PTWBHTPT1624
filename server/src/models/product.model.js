@@ -32,6 +32,7 @@ const productSchema = new Schema(
         product_supplier_id: { type: Schema.Types.ObjectId, ref: 'Supplier', required: true },
         product_quantity: { type: Number, required: true, default: 0 }, // Số lượng hàng tồn kho
         product_isPublished: { type: Number, required: true, default: true }, // Trạng thái xuất bản
+        product_image_features: { type: Array, required: true }, // Trạng thái xuất bản
     },
     {
         timestamps: true,
