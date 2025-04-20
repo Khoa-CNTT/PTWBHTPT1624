@@ -7,14 +7,38 @@ const userModel = require('../models/user.model');
 class NotificationService {
     // 🟢 Lấy thông báo của một người dùng
     static async getUserNotifications(userId) {
-        return await Notification.find({ notification_user: userId }).sort({ createdAt: -1 });
+        const notifications = await Notification.find({ notification_user: userId }).sort({ createdAt: -1 }).lean(); // Sử dụng lean để tối ưu hiệu suất
+        // Đếm số lượng thông báo chưa đọc
+        const unreadCount = await Notification.countDocuments({
+            notification_user: userId,
+            notification_isWatched: false,
+        });
+        return {
+            notifications, // Danh sách thông báo
+            unreadCount, // Số lượng thông báo chưa đọc
+        };
     }
-
+    static async getAdminNotifications() {
+        // Lấy tất cả thông báo admin, sắp xếp theo thời gian tạo giảm dần
+        const notifications = await Notification.find({ notification_type: 'admin' }).sort({ createdAt: -1 }).lean(); // Sử dụng lean để tối ưu hiệu suất
+        // Đếm số lượng thông báo chưa đọc
+        const unreadCount = await Notification.countDocuments({
+            notification_type: 'admin',
+            notification_isWatched: false,
+        });
+        return {
+            notifications, // Danh sách thông báo
+            unreadCount, // Số lượng thông báo chưa đọc
+        };
+    }
     // 🟢 Đánh dấu thông báo là đã đọc
-    static async markAsRead(notificationId) {
-        const notification = await Notification.findByIdAndUpdate(notificationId, { notification_isWatched: true }, { new: true });
-        if (!notification) throw new NotFoundError('Thông báo không tồn tại!');
-        return notification;
+    static async markAsRead(userId) {
+        await Notification.updateMany({ notification_user: userId }, { notification_isWatched: true }, { new: true });
+    }
+    static async markAllAdminNotificationsAsRead() {
+        // Cập nhật tất cả thông báo admin thành đã đọc
+        await Notification.updateMany({ notification_type: 'admin' }, { notification_isWatched: true }, { new: true });
+        // Kiểm tra xem có thông báo nào được cập nhật không
     }
 
     // 🔴 Gửi thông báo đến tất cả người dùng (Admin, Staff)
@@ -36,13 +60,22 @@ class NotificationService {
 
     // 🔴 Gửi thông báo đến một người dùng cụ thể (Admin, Staff)
     static async sendNotificationToUser(userId, payload) {
-        if (!payload.notification_title || !payload.notification_subtitle || !payload.notification_type) {
+        if (!payload.notification_title || !payload.notification_subtitle) {
             throw new BadRequestError('Vui lòng cung cấp thông tin thông báo');
         }
 
         return await Notification.create({
             notification_user: userId,
             ...payload,
+        });
+    }
+    static async sendNotificationToAdmin(payload) {
+        if (!payload.notification_title || !payload.notification_subtitle) {
+            throw new BadRequestError('Vui lòng cung cấp thông tin thông báo');
+        }
+        return await Notification.create({
+            ...payload,
+            notification_type: 'admin',
         });
     }
 }

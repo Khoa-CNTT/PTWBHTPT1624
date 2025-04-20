@@ -1,9 +1,10 @@
-import { apiClient } from '../config/httpRequest';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { adminClient, apiClient, authClient } from '../config/httpRequest';
 
 // API lấy danh sách thông báo của người dùng
-const apiGetUserNotifications = async () => {
+export const apiGetUserNotifications = async () => {
     try {
-        const res = await apiClient.get('/v1/api/notification');
+        const res = await authClient.get('/v1/api/notification');
         return res.data;
     } catch (error) {
         return {
@@ -14,9 +15,9 @@ const apiGetUserNotifications = async () => {
 };
 
 // API đánh dấu thông báo là đã đọc
-const apiMarkNotificationAsRead = async (notificationId: string) => {
+export const apiMarkNotificationAsRead = async () => {
     try {
-        const res = await apiClient.put(`/v1/api/notification/${notificationId}/read`);
+        const res = await authClient.put(`/v1/api/notification/read`);
         return res.data;
     } catch (error) {
         return {
@@ -25,8 +26,58 @@ const apiMarkNotificationAsRead = async (notificationId: string) => {
         };
     }
 };
-
-export {
-    apiGetUserNotifications,
-    apiMarkNotificationAsRead,
+export const markAllAdminNotificationsAsRead = async () => {
+    try {
+        const res = await adminClient.put(`/v1/api/notification/admin-read`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export const sendNotificationToAdmin = async (data: any) => {
+    try {
+        const res = await apiClient.post(`/v1/api/notification/send-to-admin`, data);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export const getAdminNotifications = async () => {
+    try {
+        const res = await adminClient.get(`/v1/api/notification/all-admin`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export const sendNotificationToAll = async (data: any) => {
+    try {
+        const res = await adminClient.post(`/v1/api/notification/all-admin`, data);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export const sendNotificationToUser = async (userId: string, data: any) => {
+    try {
+        const res = await adminClient.post(`/v1/api/notification/send-to-user/${userId}`, data);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
 };

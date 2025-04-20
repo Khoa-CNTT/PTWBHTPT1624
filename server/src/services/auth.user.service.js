@@ -110,7 +110,7 @@ class AuthUserService {
         }
         const existingData = await redis.hgetall(redisKey);
         if (!existingData?.confirmed) throw new BadRequestError('Vui lòng xác minh tài khoản trước khi đăng ký');
-        const passwordHash = await bcrypt.hashSync(password, 10);
+        const passwordHash = bcrypt.hashSync(password, 10);
         // create new shop
         const newUser = await userModel.create({
             user_name: email?.split('@')[0],
@@ -133,7 +133,7 @@ class AuthUserService {
         };
     }
     static async userLogin({ email, password }, res) {
-        const foundUser = await findUserByEmail(email);
+        const foundUser = await userModel.findOne({ user_email: email });
         if (!foundUser) {
             throw new BadRequestError('Tài khoản không tồn tại', 203);
         }

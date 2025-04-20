@@ -11,8 +11,8 @@ const User: React.FC = () => {
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
     // const { isLoginSuccess } = useAppSelector((state) => state.auth);
     // const { avatar_url, firstName, lastName, email } = useAppSelector((state) => state.user);
-    const { user } = useUserStore();
-    const { isUserLoggedIn } = useAuthStore();
+    const { user, clearUser } = useUserStore();
+    const { isUserLoggedIn, logoutUser } = useAuthStore();
     const { setOpenFeatureAuth } = useActionStore();
     const handleLogOut = async () => {
         if (confirm('Bạn có muốn đăng xuất')) {
@@ -20,11 +20,8 @@ const User: React.FC = () => {
             if (!res.success) return;
             localStorage.clear();
             setIsOpenMenu(false);
-            // dispatch(setDetailUser({}));
-            // dispatch(setIsLoginSuccess(false));
-            // dispatch(setSelectedProductsAll([]));
-            // dispatch(setAddProductInCartFromApi([]));
-            window.location.reload();
+            clearUser();
+            logoutUser();
             showNotification('Đăng xuất thành công', true);
         }
     };
