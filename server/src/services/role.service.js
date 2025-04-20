@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const Role = require('../models/role.model');
 
 class RoleService {
@@ -8,12 +8,12 @@ class RoleService {
     static async createRole(payload) {
         const { role_name, role_permissions } = payload;
         if (!role_name || !role_permissions) {
-            throw new BadRequestError('Vui lòng cung cấp đầy đủ thông tin vai trò');
+            throw new RequestError('Vui lòng cung cấp đầy đủ thông tin vai trò');
         }
         // Kiểm tra xem role_name đã tồn tại chưa
         const existingRole = await Role.findOne({ role_name });
         if (existingRole) {
-            throw new BadRequestError('Vai trò đã tồn tại');
+            throw new RequestError('Vai trò đã tồn tại');
         }
         return await Role.create({ role_name, role_permissions });
     }
@@ -44,7 +44,7 @@ class RoleService {
 
     // Lấy vai trò theo tên
     static async getRoleByName(roleName) {
-        if (!roleName) throw new BadRequestError('Vui lòng cung cấp tên vai trò');
+        if (!roleName) throw new RequestError('Vui lòng cung cấp tên vai trò');
 
         const role = await Role.findOne({ role_name: roleName });
         if (!role) throw new NotFoundError('Không tìm thấy vai trò');

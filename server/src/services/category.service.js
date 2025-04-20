@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const Category = require('../models/category.model');
 const productModel = require('../models/product.model');
 
@@ -8,7 +8,7 @@ class CategoryService {
     // Tạo danh mục mới
     static async createCategory(payload) {
         if (!payload.category_name || !payload.category_thumb) {
-            throw new BadRequestError('Vui lòng cung cấp đầy đủ dữ liệu');
+            throw new RequestError('Vui lòng cung cấp đầy đủ dữ liệu');
         }
         // Dùng new Category() thay vì Category.create()
         const category = new Category(payload);
@@ -57,7 +57,7 @@ class CategoryService {
         // Kiểm tra xem danh mục có sản phẩm hay không
         const totalProducts = await productModel.countDocuments({ product_category_id: categoryId }).exec();
         if (totalProducts > 0) {
-            throw new BadRequestError(`Danh mục hiện có ${totalProducts} sản phẩm`);
+            throw new RequestError(`Danh mục hiện có ${totalProducts} sản phẩm`);
         }
         // Xóa danh mục
         await deletedCategory.deleteOne();

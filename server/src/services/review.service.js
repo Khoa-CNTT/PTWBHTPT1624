@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const OnlineOrder = require('../models/OnlineOrder');
 const Review = require('../models/reviews.model');
 
@@ -10,7 +10,7 @@ class ReviewService {
         const { userId, review_productId, review_rating, review_comment, review_images } = payload;
 
         if (!userId || !review_productId || !review_comment) {
-            throw new BadRequestError('Thiếu thông tin để tạo đánh giá');
+            throw new RequestError('Thiếu thông tin để tạo đánh giá');
         }
 
         const hasPurchased = await OnlineOrder.findOne({
@@ -20,7 +20,7 @@ class ReviewService {
         });
 
         if (!hasPurchased && review_rating > 0) {
-            throw new BadRequestError('Chỉ người đã mua sản phẩm mới được đánh giá sao');
+            throw new RequestError('Chỉ người đã mua sản phẩm mới được đánh giá sao');
         }
 
         const finalRating = hasPurchased ? review_rating : 0;
@@ -40,8 +40,7 @@ class ReviewService {
 
     // 📖 Lấy đánh giá đã duyệt cho sản phẩm cụ thể (public)
     static async getReviews(productId) {
-        const reviews = await Review.find({ review_productId: productId, isApproved: true })
-            .populate('review_user', 'user_name user_avatar_url');
+        const reviews = await Review.find({ review_productId: productId, isApproved: true }).populate('review_user', 'user_name user_avatar_url');
         return reviews;
     }
 
@@ -51,12 +50,7 @@ class ReviewService {
         const pageNum = parseInt(page, 10) || 0;
         const skipNum = pageNum * limitNum;
 
-        const Reviews = await Review.find()
-            .populate('review_user', 'user_name user_avatar_url')
-            .sort({ createdAt: -1 })
-            .skip(skipNum)
-            .limit(limitNum)
-            .lean();
+        const Reviews = await Review.find().populate('review_user', 'user_name user_avatar_url').sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
 
         const totalReview = await Review.countDocuments();
 

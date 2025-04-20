@@ -1,13 +1,13 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const ShippingCompany = require('../models/shippingCompany.model');
 
 class ShippingCompanyService {
     // Tạo công ty vận chuyển mới
     static async createShippingCompany(payload) {
         if (!payload.sc_name || !payload.sc_phone || !payload.sc_shipping_price) {
-            throw new BadRequestError('Thiếu thông tin bắt buộc!');
+            throw new RequestError('Thiếu thông tin bắt buộc!');
         }
         return await ShippingCompany.create(payload);
     }
@@ -50,7 +50,7 @@ class ShippingCompanyService {
 
     // 🔹 Tìm kiếm công ty vận chuyển theo tên
     static async searchShippingCompaniesByName(name) {
-        if (!name) throw new BadRequestError('Vui lòng nhập tên công ty để tìm kiếm');
+        if (!name) throw new RequestError('Vui lòng nhập tên công ty để tìm kiếm');
 
         const companies = await ShippingCompany.find({
             sc_name: { $regex: name, $options: 'i' }, // Tìm kiếm không phân biệt hoa thường

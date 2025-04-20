@@ -5,6 +5,7 @@ export const PATH = {
     PAGE_LIST_CATEGORY: 'danh-sach-danh-muc',
     PAGE_BRAND: '/thuong-hieu/:brand_slug',
     PAGE_SEARCH: '/tim-kiem/:keySearch',
+    PAGE_IMAGE_SEARCH: '/tim-kiem-hinh-anh',
     PAGE_USER: '/nguoi-dung/tai-khoan',
     PAGE_CART: '/gio-hang',
     PAGE_PAYMENT: '/payment',

@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { apiLogout } from '../../../../services/auth.user.service';
 import { showNotification } from '../../../../components';
 import useAuthStore from '../../../../store/authStore';
 import { noUser } from '../../../../assets';
 import useUserStore from '../../../../store/userStore';
 import { PATH } from '../../../../utils/const';
 import { useActionStore } from '../../../../store/actionStore';
+import { apiLogout } from '../../../../services/auth.user.service';
 const User: React.FC = () => {
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
     // const { isLoginSuccess } = useAppSelector((state) => state.auth);
@@ -15,8 +15,9 @@ const User: React.FC = () => {
     const { isUserLoggedIn, logoutUser } = useAuthStore();
     const { setOpenFeatureAuth } = useActionStore();
     const handleLogOut = async () => {
+        const res = await apiLogout();
+        console.log('res', res);
         if (confirm('Bạn có muốn đăng xuất')) {
-            const res = await apiLogout();
             if (!res.success) return;
             localStorage.clear();
             setIsOpenMenu(false);

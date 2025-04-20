@@ -1,5 +1,5 @@
 'use strict';
-const { BadRequestError, NotFoundError, ConflictRequestError } = require('../core/error.response');
+const { RequestError, NotFoundError, ConflictRequestError } = require('../core/error.response');
 const userVoucherModel = require('../models/userVoucher.model');
 const voucherModel = require('../models/voucher.model');
 const userModel = require('../models/user.model');
@@ -7,7 +7,7 @@ const userModel = require('../models/user.model');
 class UserVoucherService {
     // Lưu voucher cho người dùng
     static async saveVoucherForUser(userId, voucherId) {
-        if (!userId || !voucherId) throw new BadRequestError('Thiếu thông tin');
+        if (!userId || !voucherId) throw new RequestError('Thiếu thông tin');
 
         // Kiểm tra voucher có tồn tại và còn hạn không
         const voucher = await voucherModel.findOne({
@@ -41,7 +41,7 @@ class UserVoucherService {
 
     // Đổi voucher
     static async redeemVoucher(userId, voucherId) {
-        if (!userId || !voucherId) throw new BadRequestError('Vui lòng cung cấp thông tin');
+        if (!userId || !voucherId) throw new RequestError('Vui lòng cung cấp thông tin');
 
         const user = await userModel.findById(userId);
         if (!user) throw new NotFoundError('Không tìm thấy người dùng');
@@ -50,13 +50,13 @@ class UserVoucherService {
         if (!voucher) throw new NotFoundError('Không tìm thấy voucher');
 
         // Kiểm tra voucher có đang hoạt động không
-        if (!voucher.voucher_is_active) throw new BadRequestError('Voucher này hiện không hoạt động');
+        if (!voucher.voucher_is_active) throw new RequestError('Voucher này hiện không hoạt động');
 
         const currentDate = new Date();
 
         // Kiểm tra xem voucher có hết hạn không
         if (currentDate < voucher.voucher_start_date || currentDate > voucher.voucher_end_date) {
-            throw new BadRequestError('Voucher đã hết hạn sử dụng');
+            throw new RequestError('Voucher đã hết hạn sử dụng');
         }
 
         // Kiểm tra xem người dùng đã sở hữu voucher này chưa
@@ -64,17 +64,17 @@ class UserVoucherService {
             vc_user_id: userId,
             vc_vouchers: voucherId,
         });
-        if (existingVoucher) throw new BadRequestError('Bạn đã sở hữu voucher này');
+        if (existingVoucher) throw new RequestError('Bạn đã sở hữu voucher này');
 
         // Kiểm tra user đã sử dụng hay chưa
         const userVoucherCount = voucher.voucher_users_used.some((userUsedId) => userUsedId.toString() === userId.toString());
         if (userVoucherCount) {
-            throw new BadRequestError('Bạn đã đạt giới hạn số lần sử dụng voucher này');
+            throw new RequestError('Bạn đã đạt giới hạn số lần sử dụng voucher này');
         }
 
         // Kiểm tra điểm của người dùng để đổi voucher
         if (user.user_reward_points < voucher.voucher_required_points) {
-            throw new BadRequestError(`Không đủ điểm để đổi voucher. Cần ${voucher.voucher_required_points} điểm`);
+            throw new RequestError(`Không đủ điểm để đổi voucher. Cần ${voucher.voucher_required_points} điểm`);
         }
 
         // Trừ điểm của người dùng
@@ -96,7 +96,7 @@ class UserVoucherService {
 
     // Lấy danh sách voucher của user
     static async getVoucherByUser(userId) {
-        if (!userId) throw new BadRequestError('Thiếu thông tin người dùng');
+        if (!userId) throw new RequestError('Thiếu thông tin người dùng');
 
         const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate('vc_vouchers');
 
@@ -116,7 +116,7 @@ class UserVoucherService {
 
     // Lấy danh sách voucher còn hạn của user
     static async getVouchersByUser(userId) {
-        if (!userId) throw new BadRequestError('Thiếu thông tin người dùng');
+        if (!userId) throw new RequestError('Thiếu thông tin người dùng');
 
         const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate({
             path: 'vc_vouchers',
@@ -132,7 +132,7 @@ class UserVoucherService {
 
     // Tìm voucher theo tên cho user
     static async searchVoucherByNameForUser(userId, name) {
-        if (!userId || !name) throw new BadRequestError('Thiếu thông tin tìm kiếm');
+        if (!userId || !name) throw new RequestError('Thiếu thông tin tìm kiếm');
 
         const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate({
             path: 'vc_vouchers',

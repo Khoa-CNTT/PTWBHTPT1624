@@ -25,6 +25,7 @@ const RouterPage = () => {
                 <Route index element={<HomePage />} />
                 <Route path={PATH.DETAIL_PRODUCT} element={<DetailPage />}></Route>
                 <Route path={PATH.PAGE_SEARCH} element={<SearchPage />}></Route>
+                <Route path={PATH.PAGE_IMAGE_SEARCH} element={<SearchPage />}></Route>
                 <Route path={PATH.PAGE_CATEGORY} element={<FilterPage />}></Route>
                 <Route path={PATH.PAGE_BRAND} element={<FilterPage />}></Route>
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />

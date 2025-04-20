@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError } = require('../core/error.response');
+const { RequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
 const crypto = require('crypto');
 const redis = require('../config/redisClient');
@@ -14,9 +14,9 @@ const verifyRefreshToken = require('../utils/auth/verifyRefreshToken');
 class AuthUserService {
     // gửi mã xác thực
     static async sendVerificationEmail({ email }) {
-        if (!email) throw new BadRequestError('Vui lòng cung cấp email');
+        if (!email) throw new RequestError('Vui lòng cung cấp email');
         const user = await findUserByEmail(email);
-        if (user) throw new BadRequestError('Tài khoản đã tồn tại', 200);
+        if (user) throw new RequestError('Tài khoản đã tồn tại', 200);
 
         const redisKey = `verify_email:${email}`;
         const existingData = await redis.hgetall(redisKey);
@@ -25,7 +25,7 @@ class AuthUserService {
         if (existingData?.token) {
             const lastSentAt = parseInt(existingData.lastSentAt || '0', 10);
             if (currentTime - lastSentAt < 30 * 1000) {
-                throw new BadRequestError('Bạn gửi quá nhanh, vui lòng đợi 30 giây trước khi thử lại.');
+                throw new RequestError('Bạn gửi quá nhanh, vui lòng đợi 30 giây trước khi thử lại.');
             }
         }
 
@@ -90,26 +90,26 @@ class AuthUserService {
 
     // thực hiện xác thực
     static async confirmVerificationEmail({ token, email }) {
-        if (!token || !email) throw new BadRequestError('Vui lòng cung cấp thông tin xác thực');
+        if (!token || !email) throw new RequestError('Vui lòng cung cấp thông tin xác thực');
         //tìm email đang đăng ký, nếu có thì đem ra so sánh
         const redisKey = `verify_email:${email}`;
         // Lấy dữ liệu từ Redis
         const existingData = await redis.hgetall(redisKey);
-        if (existingData.expiresAt < Date.now()) throw new BadRequestError('Mã xác nhận đã hết hạn');
+        if (existingData.expiresAt < Date.now()) throw new RequestError('Mã xác nhận đã hết hạn');
         const hashToken = hashTokenByCrypto(token);
-        if (hashToken !== existingData?.token) throw new BadRequestError('Mã xác nhận không đúng');
+        if (hashToken !== existingData?.token) throw new RequestError('Mã xác nhận không đúng');
         await redis.hset(redisKey, 'confirmed', 'false');
     }
     // xác thực thành công -> đăng ký
     static async userSignup({ email, password, mobile }, res) {
-        if (!email || !password) throw new BadRequestError('Vui lòng nhập đầy đủ thông tin');
+        if (!email || !password) throw new RequestError('Vui lòng nhập đầy đủ thông tin');
         const redisKey = `verify_email:${email}`;
         const holderUser = await findUserByEmail(email);
         if (holderUser) {
-            throw new BadRequestError('Tài khoản đã tồn tại', 201);
+            throw new RequestError('Tài khoản đã tồn tại', 201);
         }
         const existingData = await redis.hgetall(redisKey);
-        if (!existingData?.confirmed) throw new BadRequestError('Vui lòng xác minh tài khoản trước khi đăng ký');
+        if (!existingData?.confirmed) throw new RequestError('Vui lòng xác minh tài khoản trước khi đăng ký');
         const passwordHash = bcrypt.hashSync(password, 10);
         // create new shop
         const newUser = await userModel.create({
@@ -119,7 +119,7 @@ class AuthUserService {
             user_password: passwordHash,
         });
         if (!newUser) {
-            throw new BadRequestError('Đăng ký không thành công!', 403);
+            throw new RequestError('Đăng ký không thành công!', 403);
         }
         const tokens = await createTokenPairs(newUser.toObject());
         const { accessToken, refreshToken } = tokens;
@@ -133,17 +133,18 @@ class AuthUserService {
         };
     }
     static async userLogin({ email, password }, res) {
-        const foundUser = await userModel.findOne({ user_email: email });
+        const foundUser = await userModel.findOne({ user_email: email }).lean();
         if (!foundUser) {
-            throw new BadRequestError('Tài khoản không tồn tại', 203);
+            throw new RequestError('Tài khoản không tồn tại', 203);
         }
         if (foundUser.user_isBlocked) {
-            throw new BadRequestError('Tài khoản đã bị chặn', 203);
+            throw new RequestError('Tài khoản đã bị chặn', 203);
         }
         const matchPassword = bcrypt.compareSync(password, foundUser.user_password);
-        if (!matchPassword) throw new BadRequestError('Tài khoản hoặc mật khẩu không đúng', 201);
+        if (!matchPassword) throw new RequestError('Tài khoản hoặc mật khẩu không đúng', 201);
         const tokens = await createTokenPairs(foundUser);
         const { accessToken, refreshToken } = tokens;
+        console.log('accessToken, refreshToken', { accessToken, refreshToken });
         res.cookie('refresh_token', `${refreshToken}`, {
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
@@ -157,9 +158,9 @@ class AuthUserService {
         res.clearCookie('refresh_token');
     }
     static async handleRefreshToken(refreshToken, res) {
-        if (!refreshToken) throw new BadRequestError('Cookie required', 201);
+        if (!refreshToken) throw new RequestError('Cookie required', 201);
         const response = verifyRefreshToken(refreshToken);
-        if (!response) throw new BadRequestError('Verification failed', 201);
+        if (!response) throw new RequestError('Verification failed', 201);
         const foundUser = await findUserById(response._id);
         const tokens = await createTokenPairs(foundUser);
         res.cookie('refresh_token', `${tokens.refreshToken}`, {
@@ -171,10 +172,10 @@ class AuthUserService {
 
     // Gửi mã quên mật khẩu
     static async forgotPassword({ email }) {
-        if (!email) throw new BadRequestError('Vui lòng cung cấp email');
+        if (!email) throw new RequestError('Vui lòng cung cấp email');
         const user = await userModel.findOne({ user_email: email });
-        if (!user) throw new BadRequestError('Tài khoản không tồn tại', 404);
-        if (user.user_isBlocked) throw new BadRequestError('Tài khoản đã bị chặn', 403);
+        if (!user) throw new RequestError('Tài khoản không tồn tại', 404);
+        if (user.user_isBlocked) throw new RequestError('Tài khoản đã bị chặn', 403);
         const token = randomNumberToken(30);
         const hashToken = hashTokenByCrypto(token);
         const expiresAt = Date.now() + 10 * 60 * 1000; // Hết hạn sau 10 phút
@@ -228,7 +229,7 @@ class AuthUserService {
         });
         // Kiểm tra xem người dùng có tồn tại không
         if (!user) {
-            throw new BadRequestError('Token không hợp lệ hoặc đã hết hạn');
+            throw new RequestError('Token không hợp lệ hoặc đã hết hạn');
         }
         // Cập nhật mật khẩu và xóa token đặt lại
         user.user_password = bcrypt.hashSync(password, 10);
@@ -240,14 +241,14 @@ class AuthUserService {
     //đổi mk khi đã đăng nhập
     static async changePassword(userId, currentPassword, newPassword) {
         const user = await userModel.findById(userId);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại');
+        if (!user) throw new RequestError('Người dùng không tồn tại');
         // Kiểm tra mật khẩu hiện tại
         const matchPassword = bcrypt.compareSync(currentPassword, user.user_password);
-        if (!matchPassword) throw new BadRequestError('Mật khẩu hiện tại không đúng');
+        if (!matchPassword) throw new RequestError('Mật khẩu hiện tại không đúng');
         // Kiểm tra mật khẩu mới có giống với mật khẩu cũ không
         const isSameAsOldPassword = bcrypt.compareSync(newPassword, user.user_password);
         if (isSameAsOldPassword) {
-            throw new BadRequestError('Mật khẩu mới không thể giống mật khẩu cũ');
+            throw new RequestError('Mật khẩu mới không thể giống mật khẩu cũ');
         }
         // Mã hóa mật khẩu mới và cập nhật vào cơ sở dữ liệu
         const newPasswordHash = await bcrypt.hash(newPassword, 10);
