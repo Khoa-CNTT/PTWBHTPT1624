@@ -13,7 +13,7 @@ class UserController {
     }
 
     static async updateUser(req, res) {
-        const updatedUser = await UserService.updateProfile(req.params.uid, req.body);
+        const updatedUser = await UserService.updateUserByAdmin(req.params.uid, req.body);
         res.status(200).json({
             success: true,
             message: 'Cập nhật người dùng thành công!',
