@@ -1,7 +1,8 @@
-import { IUserProfile } from "../../../interfaces/user.interfaces";
+import { IUserProfile } from '../../../interfaces/user.interfaces';
 import EditIcon from '@mui/icons-material/Edit';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { FormControl, FormControlLabel, Checkbox, Typography } from '@mui/material';
+import { noUser } from '../../../assets';
 
 interface UserTableProps {
     users: IUserProfile[];
@@ -17,36 +18,26 @@ const UserTable = ({ users, onEdit, onBlock, onDelete }: UserTableProps) => {
                 <table className="min-w-full table-auto">
                     <thead>
                         <tr>
-                            <th className="px-4 py-2 text-left">Tên người dùng</th>
-                            <th className="px-4 py-2 text-left">Email</th>
-                            <th className="px-4 py-2 text-left">Ảnh đại diện</th>
-                            <th className="px-4 py-2 text-left">Số điện thoại</th>
-                            <th className="px-4 py-2 text-left">Trạng thái</th>
-                            <th className="px-4 py-2 text-left">Hành động</th>
+                            <th className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">Tên người dùng</th>
+                            <th className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">Email</th>
+                            <th className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">Ảnh đại diện</th>
+                            <th className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">Số điện thoại</th>
+                            <th className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">Trạng thái</th>
+                            <th className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">Hành động</th>
                         </tr>
                     </thead>
                     <tbody>
                         {users.map((user) => (
                             <tr key={user._id}>
-                                <td className="px-4 py-2">{user.user_name}</td>
-                                <td className="px-4 py-2">{user.user_email}</td>
-                                <td className="px-4 py-2">
-                                    <div className="w-[100px] overflow-hidden flex items-center justify-center">
-                                        {user.user_avatar_url ? (
-                                            <img
-                                                src={user.user_avatar_url}
-                                                alt={user.user_name}
-                                                className="w-full h-full object-cover rounded-md"
-                                            />
-                                        ) : (
-                                            <div className="w-full h-full bg-gray-300 flex items-center justify-center text-xs text-white rounded-md">
-                                                N/A
-                                            </div>
-                                        )}
+                                <td className="text-center px-4 py-2">{user.user_name}</td>
+                                <td className="text-center px-4 py-2">{user.user_email}</td>
+                                <td className="text-center px-4 py-2">
+                                    <div className="w-12  overflow-hidden flex items-center justify-center">
+                                        <img src={user?.user_avatar_url || noUser} alt={user.user_name} className="w-full h-full object-cover rounded-md" />
                                     </div>
                                 </td>
-                                <td className="px-4 py-2">{user.user_mobile}</td>
-                                <td className="px-4 py-2">
+                                <td className="text-center px-4 py-2">{user.user_mobile || 'Chưa cập nhật'}</td>
+                                <td className="text-center px-4 py-2">
                                     <FormControl>
                                         <FormControlLabel
                                             control={
@@ -69,17 +60,11 @@ const UserTable = ({ users, onEdit, onBlock, onDelete }: UserTableProps) => {
                                     </FormControl>
                                 </td>
                                 <td className="px-4 py-2">
-                                    <button
-                                        onClick={() => onEdit(user)}
-                                        className="text-blue-500 hover:text-blue-700 px-2 py-1 text-sm"
-                                    >
+                                    <button onClick={() => onEdit(user)} className="text-blue-500 hover:text-blue-700 px-2 py-1 text-sm">
                                         <EditIcon />
                                     </button>
                                     {/* Delete button */}
-                                    <button
-                                        onClick={() => onDelete(user._id)}
-                                        className="text-red-500 hover:text-red-700 px-2 py-1 text-sm"
-                                    >
+                                    <button onClick={() => onDelete(user._id)} className="text-red-500 hover:text-red-700 px-2 py-1 text-sm">
                                         <DeleteIcon />
                                     </button>
                                 </td>

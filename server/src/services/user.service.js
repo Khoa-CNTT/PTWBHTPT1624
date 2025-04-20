@@ -7,7 +7,6 @@ const UserModel = require('../models/user.model');
 const OrderModel = require('../models/OnlineOrder');
 const ReviewModel = require('../models/reviews.model');
 
-
 class UserService {
     static async addUser(payload) {
         const { user_name, user_email, user_password, user_mobile } = payload;
@@ -33,24 +32,24 @@ class UserService {
         if (!mongoose.Types.ObjectId.isValid(uid)) {
             throw new BadRequestError('ID người dùng không hợp lệ.');
         }
-    
+
         // Kiểm tra xem người dùng đã từng đánh giá chưa
         const hasReviews = await ReviewModel.exists({ user: new mongoose.Types.ObjectId(uid) });
-    
+
         if (hasReviews) {
             throw new BadRequestError('Không thể xóa tài khoản vì người dùng đã từng đánh giá sản phẩm.');
         }
-    
+
         // Tiến hành xóa
         const deletedUser = await UserModel.findByIdAndDelete(uid);
         if (!deletedUser) {
             throw new BadRequestError('Người dùng không tồn tại.');
         }
-    
+
         return {
             message: 'Xóa người dùng thành công.',
         };
-    }
+    } 
     static async toggleBlockUser(uid, isBlocked) {
         if (typeof isBlocked !== 'boolean') {
             if (isBlocked === 'true') isBlocked = true;
@@ -115,20 +114,20 @@ class UserService {
         return updatedUser;
     }
     static async searchUsers(query) {
-        const { name } = query;  // Lấy từ query parameter
+        const { name } = query; // Lấy từ query parameter
         if (!name) {
             throw new BadRequestError('Vui lòng cung cấp từ khóa tìm kiếm!', 400);
         }
-    
+
         const users = await UserModel.find({
             $or: [
-                { user_name: { $regex: name, $options: 'i' } },  // Tìm theo tên người dùng
-                { user_email: { $regex: name, $options: 'i' } },  // Tìm theo email
-            ]
+                { user_name: { $regex: name, $options: 'i' } }, // Tìm theo tên người dùng
+                { user_email: { $regex: name, $options: 'i' } }, // Tìm theo email
+            ],
         })
-        .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
-        .lean();
-    
+            .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
+            .lean();
+
         return users;
     }
     static async updateUserByAdmin(userId, updateData) {

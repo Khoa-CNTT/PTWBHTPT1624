@@ -1,9 +1,10 @@
 import 'react-toastify/dist/ReactToastify.css';
 import { Outlet } from 'react-router';
 import { ToastContainer } from 'react-toastify';
-import useFetchDetailUser from '../../hooks/useFetchDetailUser';
 import Header from './Header';
-import Footer from './Footer/index';
+import Footer from './Footer';
+import { Auth } from '../../feature';
+import useFetchDetailUser from '../../hooks/useFetchDetailUser';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
@@ -15,7 +16,6 @@ import Footer from './Footer/index';
 // import Chat from '../component/chat';
 const DefaultLayout = () => {
     useFetchDetailUser();
-
     const toastContainer = (
         <ToastContainer
             position="top-center"
@@ -41,9 +41,9 @@ const DefaultLayout = () => {
                     <Outlet />
                 </main>
                 <Footer />
+                <Auth />
                 {/* <Auth /> */}
                 {/* {!mobile_ui ||!location.pathname.includes(path.PAGE_PAYPAL) &&<Footer />}
-                <Auth />
                 <Loading />
                 <Chat />
                 <BottomNavigate /> */}

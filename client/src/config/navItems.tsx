@@ -7,6 +7,8 @@ import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
 import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
 import BackupTableIcon from '@mui/icons-material/BackupTable';
 import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
+import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
+import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
 import { UserCircleIcon } from '../icons';
 import { PATH } from '../utils/const';
 
@@ -98,13 +100,13 @@ export const navItems: NavItem[] = [
         permission: 'employee_manage',
     },
     {
-        icon: <UserCircleIcon />,
+        icon: <TextsmsOutlinedIcon />,
         name: 'Đánh giá',
         path: PATH.MANAGE_REVIEW,
         permission: 'review_manage',
     },
     {
-        icon: <UserCircleIcon />,
+        icon: <LocalPostOfficeOutlinedIcon />,
         name: 'Nhắn tin',
         path: PATH.MANAGE_MESSAGE,
         permission: 'message_manage',

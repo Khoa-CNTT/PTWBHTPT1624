@@ -1,9 +1,9 @@
-const DashboardService = require("../services/dashboard.service");
+const DashboardService = require('../services/dashboard.service');
 
 class DashboardController {
     static async getDashboardStats(req, res) {
-        const data = await DashboardService.getStats(); 
-        res.status(201).json({ success: true, data  });
+        const data = await DashboardService.getStats();
+        res.status(201).json({ success: true, data });
     }
     static async getNewUsers(req, res) {
         const users = await DashboardService.getNewUsers();

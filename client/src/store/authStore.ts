@@ -11,10 +11,12 @@ interface AuthState {
     isUserLoggedIn: boolean;
     isAdminLoggedIn: boolean;
     userOnline: UserOnline[];
+    email: string;
     loginUser: () => void;
     loginAdmin: () => void;
     logoutUser: () => void;
     logoutAdmin: () => void;
+    setEmailToConfirm: (email: string) => void;
     setUserOnline: (users: UserOnline[]) => void;
 }
 
@@ -24,7 +26,7 @@ const useAuthStore = create<AuthState>((set) => ({
     isUserLoggedIn: JSON.parse(localStorage.getItem('isUserLoggedIn') || 'false'),
     isAdminLoggedIn: JSON.parse(localStorage.getItem('isAdminLoggedIn') || 'false'),
     userOnline: [],
-
+    email: '',
     // Đăng nhập người dùng
     loginUser: () => {
         localStorage.setItem('isUserLoggedIn', 'true');
@@ -52,6 +54,9 @@ const useAuthStore = create<AuthState>((set) => ({
     // Cập nhật danh sách người dùng online
     setUserOnline: (users: UserOnline[]) => {
         set({ userOnline: users });
+    },
+    setEmailToConfirm: (email: string) => {
+        set({ email });
     },
 }));
 

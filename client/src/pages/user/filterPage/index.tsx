@@ -4,8 +4,8 @@ import Seo from '../../../components/seo';
 import Breadcrumbs from './breadcrumbs';
 import FilterPanel from './filterPanel';
 import FilterResults from './filterResults';
-import { useCategoriesStore } from '../../../store/category';
-import { useBrandsStore } from '../../../store/brand';
+import { useCategoriesStore } from '../../../store/categoryStore';
+import { useBrandsStore } from '../../../store/brandStore';
 // Memoize to prevent unnecessary re-renders
 const FilterPage: React.FC = memo(() => {
     const { category_code, brand_slug } = useParams();

@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Link, useParams } from 'react-router-dom';
-import { useCategoriesStore } from '../../store/category';
+import { useCategoriesStore } from '../../store/categoryStore';
 
 const ListCategory: React.FC = () => {
     const { categories } = useCategoriesStore();

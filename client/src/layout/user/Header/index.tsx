@@ -10,9 +10,9 @@ import { useEffect } from 'react';
 import HeaderTop from './headerTop';
 import HeaderBottom from './headerBottom';
 import { apiGetAllCategories } from '../../../services/category.service';
-import { useCategoriesStore } from '../../../store/category';
+import { useCategoriesStore } from '../../../store/categoryStore';
 import { apiGetAllBrands } from '../../../services/brand.service';
-import { useBrandsStore } from '../../../store/brand';
+import { useBrandsStore } from '../../../store/brandStore';
 // eslint-disable-next-line react-refresh/only-export-components
 const Header: React.FC = () => {
     // const currenUser = useAppSelector((state) => state.user);

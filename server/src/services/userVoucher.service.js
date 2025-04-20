@@ -1,160 +1,150 @@
-"use strict";
-const { BadRequestError, NotFoundError, ConflictRequestError } = require("../core/error.response");
-const userVoucherModel = require("../models/userVoucher.model");
-const voucherModel = require("../models/voucher.model");
-const userModel = require("../models/user.model");
+'use strict';
+const { BadRequestError, NotFoundError, ConflictRequestError } = require('../core/error.response');
+const userVoucherModel = require('../models/userVoucher.model');
+const voucherModel = require('../models/voucher.model');
+const userModel = require('../models/user.model');
 
 class UserVoucherService {
-  // Lưu voucher cho người dùng
-  static async saveVoucherForUser(userId, voucherId) {
-    if (!userId || !voucherId) throw new BadRequestError("Thiếu thông tin");
+    // Lưu voucher cho người dùng
+    static async saveVoucherForUser(userId, voucherId) {
+        if (!userId || !voucherId) throw new BadRequestError('Thiếu thông tin');
 
-    // Kiểm tra voucher có tồn tại và còn hạn không
-    const voucher = await voucherModel.findOne({
-      _id: voucherId,
-      voucher_is_active: true,  // Kiểm tra trạng thái hoạt động của voucher
-      voucher_end_date: { $gte: new Date() },  // Kiểm tra hạn sử dụng
-    });
+        // Kiểm tra voucher có tồn tại và còn hạn không
+        const voucher = await voucherModel.findOne({
+            _id: voucherId,
+            voucher_is_active: true, // Kiểm tra trạng thái hoạt động của voucher
+            voucher_end_date: { $gte: new Date() }, // Kiểm tra hạn sử dụng
+        });
 
-    // Thêm log để kiểm tra thông tin voucher
-    console.log("Voucher tìm thấy:", voucher);
+        // Thêm log để kiểm tra thông tin voucher
+        console.log('Voucher tìm thấy:', voucher);
 
-    if (!voucher) throw new NotFoundError("Voucher không tồn tại hoặc đã hết hạn");
+        if (!voucher) throw new NotFoundError('Voucher không tồn tại hoặc đã hết hạn');
 
-    // Tìm danh sách voucher của user
-    const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId });
-    if (!userVouchers) {
-      // Nếu chưa có danh sách voucher thì tạo mới
-      await userVoucherModel.create({ vc_user_id: userId, vc_vouchers: [voucherId] });
-    } else {
-      // Kiểm tra voucher đã được lưu chưa
-      if (userVouchers.vc_vouchers.includes(voucherId)) {
-        throw new ConflictRequestError("Voucher đã được lưu trước đó");
-      }
-      // Thêm voucher vào danh sách
-      userVouchers.vc_vouchers.push(voucherId);
-      await userVouchers.save();
+        // Tìm danh sách voucher của user
+        const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId });
+        if (!userVouchers) {
+            // Nếu chưa có danh sách voucher thì tạo mới
+            await userVoucherModel.create({ vc_user_id: userId, vc_vouchers: [voucherId] });
+        } else {
+            // Kiểm tra voucher đã được lưu chưa
+            if (userVouchers.vc_vouchers.includes(voucherId)) {
+                throw new ConflictRequestError('Voucher đã được lưu trước đó');
+            }
+            // Thêm voucher vào danh sách
+            userVouchers.vc_vouchers.push(voucherId);
+            await userVouchers.save();
+        }
+
+        return { message: 'Voucher đã được lưu thành công' };
     }
 
-    return { message: "Voucher đã được lưu thành công" };
-  }
+    // Đổi voucher
+    static async redeemVoucher(userId, voucherId) {
+        if (!userId || !voucherId) throw new BadRequestError('Vui lòng cung cấp thông tin');
 
-  // Đổi voucher
-  static async redeemVoucher(userId, voucherId) {
-    if (!userId || !voucherId) throw new BadRequestError("Vui lòng cung cấp thông tin");
+        const user = await userModel.findById(userId);
+        if (!user) throw new NotFoundError('Không tìm thấy người dùng');
 
-    const user = await userModel.findById(userId);
-    if (!user) throw new NotFoundError("Không tìm thấy người dùng");
+        const voucher = await voucherModel.findById(voucherId);
+        if (!voucher) throw new NotFoundError('Không tìm thấy voucher');
 
-    const voucher = await voucherModel.findById(voucherId);
-    if (!voucher) throw new NotFoundError("Không tìm thấy voucher");
+        // Kiểm tra voucher có đang hoạt động không
+        if (!voucher.voucher_is_active) throw new BadRequestError('Voucher này hiện không hoạt động');
 
-    // Kiểm tra voucher có đang hoạt động không
-    if (!voucher.voucher_is_active) throw new BadRequestError("Voucher này hiện không hoạt động");
+        const currentDate = new Date();
 
-    const currentDate = new Date();
+        // Kiểm tra xem voucher có hết hạn không
+        if (currentDate < voucher.voucher_start_date || currentDate > voucher.voucher_end_date) {
+            throw new BadRequestError('Voucher đã hết hạn sử dụng');
+        }
 
-    // Kiểm tra xem voucher có hết hạn không
-    if (currentDate < voucher.voucher_start_date || currentDate > voucher.voucher_end_date) {
-      throw new BadRequestError("Voucher đã hết hạn sử dụng");
+        // Kiểm tra xem người dùng đã sở hữu voucher này chưa
+        const existingVoucher = await userVoucherModel.findOne({
+            vc_user_id: userId,
+            vc_vouchers: voucherId,
+        });
+        if (existingVoucher) throw new BadRequestError('Bạn đã sở hữu voucher này');
+
+        // Kiểm tra user đã sử dụng hay chưa
+        const userVoucherCount = voucher.voucher_users_used.some((userUsedId) => userUsedId.toString() === userId.toString());
+        if (userVoucherCount) {
+            throw new BadRequestError('Bạn đã đạt giới hạn số lần sử dụng voucher này');
+        }
+
+        // Kiểm tra điểm của người dùng để đổi voucher
+        if (user.user_reward_points < voucher.voucher_required_points) {
+            throw new BadRequestError(`Không đủ điểm để đổi voucher. Cần ${voucher.voucher_required_points} điểm`);
+        }
+
+        // Trừ điểm của người dùng
+        user.user_reward_points -= voucher.voucher_required_points;
+
+        // Lưu voucher mới vào danh sách voucher của người dùng
+        await userVoucherModel.findOneAndUpdate(
+            { vc_user_id: userId },
+            { $push: { vc_vouchers: voucherId }, $addToSet: { vc_users_used: userId } },
+            { new: true, upsert: true },
+        );
+
+        await user.save();
+
+        return {
+            message: 'Đổi voucher thành công',
+        };
     }
 
-    // Kiểm tra xem người dùng đã sở hữu voucher này chưa
-    const existingVoucher = await userVoucherModel.findOne({
-      vc_user_id: userId,
-      vc_vouchers: voucherId
-    });
-    if (existingVoucher) throw new BadRequestError("Bạn đã sở hữu voucher này");
+    // Lấy danh sách voucher của user
+    static async getVoucherByUser(userId) {
+        if (!userId) throw new BadRequestError('Thiếu thông tin người dùng');
 
-    // Kiểm tra user đã sử dụng hay chưa
-    const userVoucherCount = voucher.voucher_users_used.some(
-      userUsedId => userUsedId.toString() === userId.toString()
-    );
-    if (userVoucherCount) {
-      throw new BadRequestError("Bạn đã đạt giới hạn số lần sử dụng voucher này");
+        const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate('vc_vouchers');
+
+        if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
+            throw new NotFoundError('Người dùng chưa có voucher nào');
+        }
+
+        return userVouchers.vc_vouchers.map((voucher) => ({
+            voucherId: voucher._id,
+            voucherName: voucher.voucher_name,
+            voucherCode: voucher.voucher_code,
+            voucherValue: voucher.voucher_value,
+            voucherType: voucher.voucher_method,
+            expirationDate: voucher.voucher_end_date,
+        }));
     }
 
-    // Kiểm tra điểm của người dùng để đổi voucher
-    if (user.user_reward_points < voucher.voucher_required_points) {
-      throw new BadRequestError(
-        `Không đủ điểm để đổi voucher. Cần ${voucher.voucher_required_points} điểm`
-      );
+    // Lấy danh sách voucher còn hạn của user
+    static async getVouchersByUser(userId) {
+        if (!userId) throw new BadRequestError('Thiếu thông tin người dùng');
+
+        const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate({
+            path: 'vc_vouchers',
+            match: { voucher_end_date: { $gte: new Date() } }, // Chỉ lấy voucher còn hạn
+        });
+
+        if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
+            throw new NotFoundError('Người dùng chưa có voucher nào còn hạn');
+        }
+
+        return userVouchers.vc_vouchers;
     }
 
-    // Trừ điểm của người dùng
-    user.user_reward_points -= voucher.voucher_required_points;
+    // Tìm voucher theo tên cho user
+    static async searchVoucherByNameForUser(userId, name) {
+        if (!userId || !name) throw new BadRequestError('Thiếu thông tin tìm kiếm');
 
-    // Lưu voucher mới vào danh sách voucher của người dùng
-    await userVoucherModel.findOneAndUpdate(
-      { vc_user_id: userId },
-      { $push: { vc_vouchers: voucherId }, $addToSet: { vc_users_used: userId } },
-      { new: true, upsert: true }
-    );
+        const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate({
+            path: 'vc_vouchers',
+            match: { voucher_name: { $regex: new RegExp(name, 'i') } },
+        });
 
-    await user.save();
+        if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
+            throw new NotFoundError('Không tìm thấy voucher nào phù hợp');
+        }
 
-    return {
-      message: "Đổi voucher thành công"
-    };
-  }
-
-  // Lấy danh sách voucher của user
-  static async getVoucherByUser(userId) {
-    if (!userId) throw new BadRequestError("Thiếu thông tin người dùng");
-
-    const userVouchers = await userVoucherModel
-      .findOne({ vc_user_id: userId })
-      .populate("vc_vouchers");
-
-    if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
-      throw new NotFoundError("Người dùng chưa có voucher nào");
+        return userVouchers.vc_vouchers;
     }
-
-    return userVouchers.vc_vouchers.map(voucher => ({
-      voucherId: voucher._id,
-      voucherName: voucher.voucher_name,
-      voucherCode: voucher.voucher_code,
-      voucherValue: voucher.voucher_value,
-      voucherType: voucher.voucher_method,
-      expirationDate: voucher.voucher_end_date
-    }));
-  }
-
-  // Lấy danh sách voucher còn hạn của user
-  static async getVouchersByUser(userId) {
-    if (!userId) throw new BadRequestError("Thiếu thông tin người dùng");
-
-    const userVouchers = await userVoucherModel
-      .findOne({ vc_user_id: userId })
-      .populate({
-        path: "vc_vouchers",
-        match: { voucher_end_date: { $gte: new Date() } }, // Chỉ lấy voucher còn hạn
-      });
-
-    if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
-      throw new NotFoundError("Người dùng chưa có voucher nào còn hạn");
-    }
-
-    return userVouchers.vc_vouchers;
-  }
-
-  // Tìm voucher theo tên cho user
-  static async searchVoucherByNameForUser(userId, name) {
-    if (!userId || !name) throw new BadRequestError("Thiếu thông tin tìm kiếm");
-
-    const userVouchers = await userVoucherModel
-      .findOne({ vc_user_id: userId })
-      .populate({
-        path: "vc_vouchers",
-        match: { voucher_name: { $regex: new RegExp(name, "i") } },
-      });
-
-    if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
-      throw new NotFoundError("Không tìm thấy voucher nào phù hợp");
-    }
-
-    return userVouchers.vc_vouchers;
-  }
 }
 
 module.exports = UserVoucherService;

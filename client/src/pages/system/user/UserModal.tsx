@@ -73,86 +73,86 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[500px] m-4">
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{user ? 'Chỉnh sửa người dùng' : 'Thêm người dùng'}</h4>
-
-                <div className="mb-4">
-                    <InputForm
-                        col={true}
-                        handleOnchange={(e) => handleInputField(e, 'user_name')}
-                        label="Tên người dùng"
-                        name_id="user_name"
-                        value={inputFields.user_name}
-                        invalidFields={invalidFields}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <InputForm
-                        col={true}
-                        handleOnchange={(e) => handleInputField(e, 'user_email')}
-                        label="Email"
-                        name_id="user_email"
-                        value={inputFields.user_email}
-                        invalidFields={invalidFields}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <InputForm
-                        col={true}
-                        handleOnchange={(e) => handleInputField(e, 'user_mobile')}
-                        label="Số điện thoại"
-                        name_id="user_mobile"
-                        value={inputFields.user_mobile}
-                        invalidFields={invalidFields}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <InputForm
-                        col={true}
-                        handleOnchange={(e) => handleInputField(e, 'user_address')}
-                        label="Địa chỉ"
-                        name_id="user_address"
-                        value={inputFields.user_address}
-                        invalidFields={invalidFields}
-                    />
-                </div>
-
-                {/* Thêm trường mật khẩu */}
-                <div className="mb-4">
-                    <InputForm
-                        col={true}
-                        handleOnchange={(e) => handleInputField(e, 'user_password')}
-                        label="Mật khẩu"
-                        name_id="user_password"
-                        type="password"
-                        value={inputFields.user_password}
-                        invalidFields={invalidFields}
-                    />
-                </div>
-
-                <div className="mb-4">
-                    <div className="flex w-full items-center text-secondary text-sm">
-                        <ImageCropper width={239} height={239} label="Thêm ảnh đại diện" onCropComplete={handleImageUpload} idName="user_avatar_url" />
-                    </div>
-                    {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
-                    {inputFields.user_avatar_url && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.user_avatar_url} />}
-                    {invalidFields?.some((i) => i.name === 'user_avatar_url') && (
-                        <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>
-                    )}
-                </div>
-
-                <div className="mb-4">
-                    <label className="flex items-center gap-2">
-                        <input
-                            type="checkbox"
-                            checked={inputFields.user_isBlocked}
-                            onChange={() => setInputFields((prev) => ({ ...prev, user_isBlocked: !prev.user_isBlocked }))}
+                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
+                    <div className="mb-4">
+                        <InputForm
+                            col={true}
+                            handleOnchange={(e) => handleInputField(e, 'user_name')}
+                            label="Tên người dùng"
+                            name_id="user_name"
+                            value={inputFields.user_name}
+                            invalidFields={invalidFields}
                         />
-                        <span className="text-sm">Chặn người dùng</span>
-                    </label>
-                </div>
+                    </div>
 
+                    <div className="mb-4">
+                        <InputForm
+                            col={true}
+                            handleOnchange={(e) => handleInputField(e, 'user_email')}
+                            label="Email"
+                            name_id="user_email"
+                            value={inputFields.user_email}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <InputForm
+                            col={true}
+                            handleOnchange={(e) => handleInputField(e, 'user_mobile')}
+                            label="Số điện thoại"
+                            name_id="user_mobile"
+                            value={inputFields.user_mobile}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <InputForm
+                            col={true}
+                            handleOnchange={(e) => handleInputField(e, 'user_address')}
+                            label="Địa chỉ"
+                            name_id="user_address"
+                            value={inputFields.user_address}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+
+                    {/* Thêm trường mật khẩu */}
+                    <div className="mb-4">
+                        <InputForm
+                            col={true}
+                            handleOnchange={(e) => handleInputField(e, 'user_password')}
+                            label="Mật khẩu"
+                            name_id="user_password"
+                            type="password"
+                            value={inputFields.user_password}
+                            invalidFields={invalidFields}
+                        />
+                    </div>
+
+                    <div className="mb-4">
+                        <div className="flex w-full items-center text-secondary text-sm">
+                            <ImageCropper width={239} height={239} label="Thêm ảnh đại diện" onCropComplete={handleImageUpload} idName="user_avatar_url" />
+                        </div>
+                        {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                        {inputFields.user_avatar_url && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.user_avatar_url} />}
+                        {invalidFields?.some((i) => i.name === 'user_avatar_url') && (
+                            <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>
+                        )}
+                    </div>
+
+                    <div className="mb-4">
+                        <label className="flex items-center gap-2">
+                            <input
+                                type="checkbox"
+                                checked={inputFields.user_isBlocked}
+                                onChange={() => setInputFields((prev) => ({ ...prev, user_isBlocked: !prev.user_isBlocked }))}
+                            />
+                            <span className="text-sm">Chặn người dùng</span>
+                        </label>
+                    </div>
+                </div>
                 <div className="flex justify-end gap-3">
                     <Button size="sm" variant="outline" onClick={closeModal}>
                         Hủy

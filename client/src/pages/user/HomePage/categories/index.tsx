@@ -7,7 +7,7 @@ import 'swiper/css/pagination';
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
 import CategoryItem from '../../../../components/item/CategoryItem';
 import { SkeletonCategory } from '../../../../components';
-import { useCategoriesStore } from '../../../../store/category';
+import { useCategoriesStore } from '../../../../store/categoryStore';
 const Categories: React.FC = () => {
     // const { mobile_ui } = useAppSelector((state) => state.action);
     const { categories } = useCategoriesStore();

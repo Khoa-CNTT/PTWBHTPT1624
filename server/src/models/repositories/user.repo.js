@@ -1,15 +1,14 @@
-const { convertToObjectIdMongodb } = require("../../utils")
-const User = require("../user.model")
-
+const { convertToObjectIdMongodb } = require('../../utils');
+const User = require('../user.model');
 
 const findUserByEmail = async (email) => {
-    return await User.findOne({ user_email: email }).lean()
-}
+    return await User.findOne({ user_email: email }).select('-user_password').lean();
+};
 const findUserById = async (id) => {
-    return await User.findById(convertToObjectIdMongodb(id)).lean()
-}
+    return await User.findById(convertToObjectIdMongodb(id)).lean();
+};
 
 const updateUserById = async (id, payload) => {
-    return await User.findByIdAndUpdate(id, payload, { new: isNew })
-}
-module.exports = { findUserByEmail, findUserById, updateUserById }
+    return await User.findByIdAndUpdate(id, payload, { new: isNew });
+};
+module.exports = { findUserByEmail, findUserById, updateUserById };
