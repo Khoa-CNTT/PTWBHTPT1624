@@ -10,7 +10,9 @@ interface ActionState {
     // notifications: INotification[];
     // unreadNotification: INotification[];
     // conversations: Conversation[];
+    //ima
     loadDataConversation: boolean;
+    searchImage: string;
     isOpenChat: boolean;
     // Action methods
     setOpenFeatureAuth: (value: boolean) => void;
@@ -18,6 +20,7 @@ interface ActionState {
     setMobileUi: (value: boolean) => void;
     setIsOpenChat: (value: boolean) => void;
     setFeatureAuth: (value: number) => void;
+    setSearchImage: (value: string) => void;
     // setSocketRef: (socket: Socket | null) => void;
     // setNotifications: (payload: INotification | INotification[]) => void;
     // setUnreadNotifications: () => void;
@@ -39,12 +42,13 @@ export const useActionStore = create<ActionState>((set) => ({
     conversations: [],
     isOpenChat: false,
     loadDataConversation: false,
-
+    searchImage: '',
     // Actions
     setOpenFeatureAuth: (value) => set({ openFeatureAuth: value }),
     setIsLoading: (value) => set({ isLoading: value }),
     setMobileUi: (value) => set({ mobile_ui: value }),
     setIsOpenChat: (value) => set({ isOpenChat: value }),
     setFeatureAuth: (value) => set({ featureAuth: value }),
+    setSearchImage: (value) => set({ searchImage: value }),
     setLoadDataConversation: () => set((state) => ({ loadDataConversation: !state.loadDataConversation })),
 }));

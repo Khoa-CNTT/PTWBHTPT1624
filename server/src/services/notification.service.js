@@ -1,7 +1,7 @@
 'use strict';
 
 const Notification = require('../models/notification.model');
-const { NotFoundError, BadRequestError } = require('../core/error.response');
+const { NotFoundError, RequestError } = require('../core/error.response');
 const userModel = require('../models/user.model');
 
 class NotificationService {
@@ -44,7 +44,7 @@ class NotificationService {
     // 🔴 Gửi thông báo đến tất cả người dùng (Admin, Staff)
     static async sendNotificationToAll(payload) {
         if (!payload.notification_title || !payload.notification_subtitle) {
-            throw new BadRequestError('Vui lòng cung cấp thông tin thông báo');
+            throw new RequestError('Vui lòng cung cấp thông tin thông báo');
         }
 
         const users = await userModel.find({}, '_id').lean();
@@ -61,7 +61,7 @@ class NotificationService {
     // 🔴 Gửi thông báo đến một người dùng cụ thể (Admin, Staff)
     static async sendNotificationToUser(userId, payload) {
         if (!payload.notification_title || !payload.notification_subtitle) {
-            throw new BadRequestError('Vui lòng cung cấp thông tin thông báo');
+            throw new RequestError('Vui lòng cung cấp thông tin thông báo');
         }
 
         return await Notification.create({
@@ -71,7 +71,7 @@ class NotificationService {
     }
     static async sendNotificationToAdmin(payload) {
         if (!payload.notification_title || !payload.notification_subtitle) {
-            throw new BadRequestError('Vui lòng cung cấp thông tin thông báo');
+            throw new RequestError('Vui lòng cung cấp thông tin thông báo');
         }
         return await Notification.create({
             ...payload,

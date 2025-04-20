@@ -194,8 +194,19 @@ const getTopViewedProduct = async () => {
         };
     }
 };
-
+const apiSearchProductByImage = async (imageUrl: string) => {
+    try {
+        const res = await adminClient.post(`/v1/api/product//search/search-image`, { imageUrl });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 export {
+    apiSearchProductByImage,
     getTopViewedProduct,
     apiSearchProduct,
     apiGetAllProducts,

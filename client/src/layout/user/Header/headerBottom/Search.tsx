@@ -6,7 +6,10 @@ import { Overlay } from '../../../../components';
 import { apiGetFeaturedProducts, getProductSuggestions } from '../../../../services/product.service';
 import useDebounce from '../../../../hooks/useDebounce';
 import { Link, useNavigate } from 'react-router';
-import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak';
+import ImageCropper from '../../../../components/ImageCropper';
+import { apiUploadImage } from '../../../../services/uploadPicture.service';
+import { useActionStore } from '../../../../store/actionStore';
+import { PATH } from '../../../../utils/const';
 interface search {
     text: string;
     _id: string;
@@ -30,6 +33,8 @@ const Search: React.FC = () => {
     const valueDebounce = useDebounce(searchValue, 200);
     const inputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
+
+    const { setSearchImage } = useActionStore();
     // Lấy lịch sử tìm kiếm từ localStorage khi component mount
     useEffect(() => {
         const storedHistory = localStorage.getItem('searchHistory');
@@ -94,7 +99,15 @@ const Search: React.FC = () => {
         setOpenSearchResults(false);
         setSearchValue('');
     };
-
+    const handleImageUpload = async (image: string): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formData: any = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+        const response = await apiUploadImage(formData);
+        setSearchImage(response.url);
+        navigate(PATH.PAGE_IMAGE_SEARCH);
+    };
     // Xử lý phím Enter
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -219,7 +232,8 @@ const Search: React.FC = () => {
                                 </div>
                             </div>
                         )}
-                        <CenterFocusWeakIcon />
+
+                        <ImageCropper width={550} height={550} type="search" label="Ảnh thumbnail" idName="product_thumb" onCropComplete={handleImageUpload} />
                     </div>
                     <button className="tablet:hidden outline-none bg-[rgb(9,115,69)] w-[150px] h-[40px] text-white rounded-r-[2px]" onClick={handleSummit}>
                         <SearchIcon /> <span>Tìm kiếm</span>

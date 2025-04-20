@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const mongoose = require('mongoose');
 const PurchasedModel = require('../models/Purchased.model');
 

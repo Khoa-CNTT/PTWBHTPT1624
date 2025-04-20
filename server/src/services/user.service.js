@@ -1,7 +1,7 @@
 'use strict';
 const mongoose = require('mongoose');
 
-const { BadRequestError } = require('../core/error.response');
+const { RequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/user.model');
 const OrderModel = require('../models/OnlineOrder');
@@ -11,12 +11,12 @@ class UserService {
     static async addUser(payload) {
         const { user_name, user_email, user_password, user_mobile } = payload;
         if (!user_name || !user_email || !user_password || !user_mobile) {
-            throw new BadRequestError('Thiếu thông tin bắt buộc!', 400);
+            throw new RequestError('Thiếu thông tin bắt buộc!', 400);
         }
         const existingUser = await UserModel.findOne({ user_email });
-        if (existingUser) throw new BadRequestError('Email đã tồn tại!', 400);
+        if (existingUser) throw new RequestError('Email đã tồn tại!', 400);
         const existingMobile = await UserModel.findOne({ user_mobile });
-        if (existingMobile) throw new BadRequestError('Số điện thoại đã tồn tại!', 400);
+        if (existingMobile) throw new RequestError('Số điện thoại đã tồn tại!', 400);
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(user_password, salt);
         const newUser = new UserModel({
@@ -30,20 +30,20 @@ class UserService {
     static async deleteUser(uid) {
         // Kiểm tra uid có phải ObjectId hợp lệ không
         if (!mongoose.Types.ObjectId.isValid(uid)) {
-            throw new BadRequestError('ID người dùng không hợp lệ.');
+            throw new RequestError('ID người dùng không hợp lệ.');
         }
 
         // Kiểm tra xem người dùng đã từng đánh giá chưa
         const hasReviews = await ReviewModel.exists({ user: new mongoose.Types.ObjectId(uid) });
 
         if (hasReviews) {
-            throw new BadRequestError('Không thể xóa tài khoản vì người dùng đã từng đánh giá sản phẩm.');
+            throw new RequestError('Không thể xóa tài khoản vì người dùng đã từng đánh giá sản phẩm.');
         }
 
         // Tiến hành xóa
         const deletedUser = await UserModel.findByIdAndDelete(uid);
         if (!deletedUser) {
-            throw new BadRequestError('Người dùng không tồn tại.');
+            throw new RequestError('Người dùng không tồn tại.');
         }
 
         return {
@@ -55,11 +55,11 @@ class UserService {
         if (typeof isBlocked !== 'boolean') {
             if (isBlocked === 'true') isBlocked = true;
             else if (isBlocked === 'false') isBlocked = false;
-            else throw new BadRequestError('Trạng thái chặn không hợp lệ!', 400);
+            else throw new RequestError('Trạng thái chặn không hợp lệ!', 400);
         }
 
         const user = await UserModel.findById(uid);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
+        if (!user) throw new RequestError('Người dùng không tồn tại!', 404);
 
         user.user_isBlocked = isBlocked;
         await user.save();
@@ -94,14 +94,14 @@ class UserService {
         // Tìm user theo ID
         const user = await UserModel.findById(uid); // ✅ Sửa lại `UserModel`
         if (!user) {
-            throw new BadRequestError('Người dùng không tồn tại!', 404);
+            throw new RequestError('Người dùng không tồn tại!', 404);
         }
 
         // Kiểm tra số điện thoại đã tồn tại (nếu có cập nhật số điện thoại)
         if (updateData.user_mobile && updateData.user_mobile !== user.user_mobile) {
             const existingMobile = await UserModel.findOne({ user_mobile: updateData.user_mobile }); // ✅ Sửa lại `UserModel`
             if (existingMobile) {
-                throw new BadRequestError('Số điện thoại đã tồn tại!', 201);
+                throw new RequestError('Số điện thoại đã tồn tại!', 201);
             }
         }
 
@@ -117,7 +117,7 @@ class UserService {
     static async searchUsers(query) {
         const { name } = query; // Lấy từ query parameter
         if (!name) {
-            throw new BadRequestError('Vui lòng cung cấp từ khóa tìm kiếm!', 400);
+            throw new RequestError('Vui lòng cung cấp từ khóa tìm kiếm!', 400);
         }
 
         const users = await UserModel.find({

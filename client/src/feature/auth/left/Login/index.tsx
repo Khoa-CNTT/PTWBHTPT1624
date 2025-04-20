@@ -23,6 +23,7 @@ const Login: React.FC = () => {
         }
         const res = await apiLogin(email, password);
         if (res?.success) {
+            console.log(res);
             localStorage.setItem('access_token', JSON.stringify(res?.data.accessToken));
             showNotification(res.message, true);
             setOpenFeatureAuth(false);

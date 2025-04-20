@@ -4,16 +4,18 @@ import Cropper from 'react-easy-crop';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import convertBlobToFile from '../../utils/convertBlobToFile';
 import Overlay from '../common/Overlay';
+import CenterFocusWeakIcon from '@mui/icons-material/CenterFocusWeak';
 
 interface ImageCropperProps {
     width: number;
     height: number;
     idName: string;
     label: string;
+    type?: string;
     onCropComplete: (croppedImage: any, idName: string) => void;
 }
 
-const ImageCropper: React.FC<ImageCropperProps> = ({ width, height, idName, label, onCropComplete }) => {
+const ImageCropper: React.FC<ImageCropperProps> = ({ width, height, idName, label, type = '', onCropComplete }) => {
     const [crop, setCrop] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
     const [zoom, setZoom] = useState<number>(1);
     const [croppedAreaPixels, setCroppedAreaPixels] = useState<{ x: number; y: number; width: number; height: number } | null>(null);
@@ -49,9 +51,15 @@ const ImageCropper: React.FC<ImageCropperProps> = ({ width, height, idName, labe
     return (
         <div className="flex flex-col items-center space-y-4">
             <input id={idName} type="file" multiple hidden onChange={onSelectFile} />
-            <label htmlFor={idName} className="flex w-full gap-2 text-secondary text-sm ">
-                {label}
-                <InsertPhotoIcon fontSize="medium" style={{ color: 'green' }} />
+            <label htmlFor={idName} className={`flex w-full gap-2 ${type === 'search' ? '' : ' text-secondary'} text-sm`}>
+                {type === 'search' ? (
+                    <CenterFocusWeakIcon />
+                ) : (
+                    <>
+                        {label}
+                        <InsertPhotoIcon fontSize="medium" style={{ color: 'green' }} />
+                    </>
+                )}
             </label>
             {isCropping && imageSrc && (
                 <Overlay>
@@ -80,11 +88,9 @@ const getCroppedImg = async (imageSrc: string, cropArea: { x: number; y: number;
     const canvas = document.createElement('canvas');
     const ctx = canvas.getContext('2d');
     if (!ctx) throw new Error('Không thể tạo canvas');
-
     canvas.width = cropArea.width;
     canvas.height = cropArea.height;
     ctx.drawImage(image, cropArea.x, cropArea.y, cropArea.width, cropArea.height, 0, 0, canvas.width, canvas.height);
-
     return new Promise((resolve) => {
         canvas.toBlob((blob) => {
             if (blob) resolve(URL.createObjectURL(blob));

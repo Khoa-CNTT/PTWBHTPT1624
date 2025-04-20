@@ -1,5 +1,5 @@
 'use strict';
-const { NotFoundError } = require('../core/error.response');
+const { NotFoundError, RequestError } = require('../core/error.response');
 const Product = require('../models/product.model');
 const cosineSimilarity = require('../utils/search-image/cosineSimilarity');
 const downloadImage = require('../utils/search-image/downloadImage');
@@ -212,10 +212,10 @@ class ProductService {
         if (!imageUrl) throw new NotFoundError('Vui lòng cung cấp URL ảnh!');
         const tempPath = path.join(__dirname, 'temp_search.png');
         // Tải ảnh từ URL về thư mục tạm
-        if (!(await downloadImage(imageUrl, tempPath))) throw new BadRequestError('Không thể tải ảnh!');
+        if (!(await downloadImage(imageUrl, tempPath))) throw new RequestError('Không thể tải ảnh!');
         // Trích xuất đặc trưng từ ảnh tìm kiếm
         const searchFeatures = await extractFeatures(tempPath);
-        if (!searchFeatures || searchFeatures.length === 0) throw new BadRequestError('Không thể trích xuất đặc trưng từ ảnh!');
+        if (!searchFeatures || searchFeatures.length === 0) throw new RequestError('Không thể trích xuất đặc trưng từ ảnh!');
         // Lấy tất cả sản phẩm trong cơ sở dữ liệu (sử dụng `.lean()` để tối ưu hóa hiệu suất)
         const productFeatures = await Product.find({ product_isPublished: true }).lean();
         const results = await Promise.all(
@@ -224,18 +224,36 @@ class ProductService {
                 if (!product.product_image_features || product.product_image_features.length === 0) {
                     return { url: product.product_thumb, similarity: 0, product };
                 }
+                const {
+                    _id,
+                    product_thumb,
+                    product_name,
+                    product_discounted_price,
+                    product_slug,
+                    product_ratings,
+                    product_sold,
+                    product_price,
+                    product_discount,
+                } = product;
                 // Tính toán sự tương đồng cosine giữa ảnh tìm kiếm và sản phẩm
                 const productTensor = tf.tensor1d(product.product_image_features);
                 const similarity = cosineSimilarity(searchFeatures, productTensor);
                 return {
-                    url: product.product_thumb, // Đường dẫn ảnh sản phẩm
-                    similarity: similarity, // Độ tương đồng cosine
-                    product: product, // Trả về thông tin sản phẩm
-                };
+                    similarity,
+                    _id,
+                    product_thumb,
+                    product_name,
+                    product_discounted_price,
+                    product_slug,
+                    product_ratings,
+                    product_sold,
+                    product_price,
+                    product_discount,
+                }; // Trả về thông tin sản phẩm
             }),
         );
         // Sắp xếp kết quả theo độ tương đồng giảm dần và lấy 10 sản phẩm tương tự nhất
-        const sortedResults = results.sort((a, b) => b.similarity - a.similarity).slice(0, 10);
+        const sortedResults = results.sort((a, b) => b.similarity - a.similarity).slice(0, 12);
         // Xóa tệp ảnh tạm sau khi xử lý
         await fs.unlink(tempPath).catch(() => {});
         // Trả về kết quả tìm kiếm với thông tin sản phẩm
@@ -269,7 +287,7 @@ class ProductService {
                 };
                 break;
             default:
-                throw new BadRequestError('Trạng thái hạn sử dụng không hợp lệ.');
+                throw new RequestError('Trạng thái hạn sử dụng không hợp lệ.');
         }
         // Lấy sản phẩm theo trạng thái
         const products = await Product.find(filter).sort('-product_expiry_date').skip(skipNum).limit(limitNum).lean();
