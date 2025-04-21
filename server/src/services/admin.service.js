@@ -132,6 +132,21 @@ class AdminService {
 
         return updatedAdmin;
     }
+
+    static async searchAdminsByNameOrEmail(keyword) {
+        if (!keyword || typeof keyword !== 'string') return [];
+    
+        const regex = new RegExp(keyword.trim(), 'i');
+        const results = await AdminModel.find({
+            $or: [{ admin_name: regex }, { admin_email: regex }],
+        })
+            .select('-admin_password -__v')
+            .sort({ createdAt: -1 })
+            .lean();
+    
+        return results;
+    }
+    
 }
 
 module.exports = AdminService;
