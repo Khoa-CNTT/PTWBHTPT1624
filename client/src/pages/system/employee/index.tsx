@@ -27,6 +27,7 @@ export default function EmployeeManage() {
         setEmployees(data.admins);
         setTotalPage(data.totalPage);
     };
+    
 
     useEffect(() => {
         if (!isSearching) {
@@ -56,11 +57,12 @@ export default function EmployeeManage() {
         }
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
-        setEmployees((prev) =>
-            data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]
-        );
+        
+        // Sau khi thành công, gọi lại API để làm mới danh sách nhân viên
+        fetchApi();
         closeModal();
     };
+    
 
     // Xóa nhân viên
     const handleDelete = async (id: string) => {

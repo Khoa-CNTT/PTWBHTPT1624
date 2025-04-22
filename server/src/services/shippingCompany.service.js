@@ -59,34 +59,31 @@ class ShippingCompanyService {
     }
 
     // Cập nhật công ty vận chuyển theo ID
-    // Cập nhật công ty vận chuyển theo ID
-static async updateShippingCompany(id, payload) {
-    const { sc_name, sc_phone, sc_email } = payload;
+    static async updateShippingCompany(id, data) {
+        const { sc_name, sc_phone, sc_email } = data;
 
-    // Kiểm tra trùng tên
-    const existingName = await ShippingCompany.findOne({ sc_name });
-    if (existingName && existingName._id !== id) { // Tránh trường hợp tìm trùng chính công ty đang cập nhật
-        throw new RequestError('Tên công ty đã tồn tại!');
-    }
+        // Kiểm tra trùng tên công ty (trừ chính bản thân nó)
+        const nameExists = await ShippingCompany.findOne({ sc_name, _id: { $ne: id } });
+        if (nameExists) throw new RequestError("Tên công ty đã tồn tại!");
 
-    // Kiểm tra trùng số điện thoại
-    const existingPhone = await ShippingCompany.findOne({ sc_phone });
-    if (existingPhone && existingPhone._id !== id) { // Tránh trường hợp tìm trùng chính công ty đang cập nhật
-        throw new RequestError('Số điện thoại đã được sử dụng!');
-    }
+        // Kiểm tra trùng số điện thoại
+        const phoneExists = await ShippingCompany.findOne({ sc_phone, _id: { $ne: id } });
+        if (phoneExists) throw new RequestError("Số điện thoại đã tồn tại!");
 
-    // Kiểm tra trùng email (nếu có nhập)
-    if (sc_email) {
-        const existingEmail = await ShippingCompany.findOne({ sc_email });
-        if (existingEmail && existingEmail._id !== id) { // Tránh trường hợp tìm trùng chính công ty đang cập nhật
-            throw new RequestError('Email đã được sử dụng!');
+        // Kiểm tra trùng email nếu có
+        if (sc_email) {
+            const emailExists = await ShippingCompany.findOne({ sc_email, _id: { $ne: id } });
+            if (emailExists) throw new RequestError("Email đã tồn tại!");
         }
-    }
 
-    const updatedShippingCompany = await ShippingCompany.findByIdAndUpdate(id, payload, { new: true });
-    if (!updatedShippingCompany) throw new NotFoundError('Công ty vận chuyển không tồn tại!');
-    return updatedShippingCompany;
-}
+        // Tiến hành cập nhật
+        const updated = await ShippingCompany.findByIdAndUpdate(id, data, { new: true });
+        if (!updated) throw new NotFoundError("Không tìm thấy công ty vận chuyển!");
+
+        return updated;
+    }
+    
+
 
     // Xóa công ty vận chuyển theo ID
     static async deleteShippingCompany(id) {

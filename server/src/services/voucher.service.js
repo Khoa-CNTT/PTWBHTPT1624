@@ -76,17 +76,30 @@ class VoucherService {
 
     // Cập nhật voucher theo ID
     static async updateVoucher(id, payload) {
-        // Kiểm tra tên voucher có bị trùng không
+        // Kiểm tra tên voucher có bị trùng với voucher khác (khác _id)
         const existingVoucher = await voucherModel.findOne({
             voucher_name: payload.voucher_name,
+            _id: { $ne: id }, // bỏ qua chính nó
         });
+    
         if (existingVoucher) {
-            throw new RequestError('Tên voucher code đã tồn tại!');
+            throw new RequestError('Tên voucher đã tồn tại!');
         }
-        const updatedVoucher = await voucherModel.findByIdAndUpdate(id, { ...payload, voucher_code: autoCode(payload.voucher_name) }, { new: true });
+    
+        const updatedVoucher = await voucherModel.findByIdAndUpdate(
+            id,
+            {
+                ...payload,
+                voucher_code: autoCode(payload.voucher_name),
+            },
+            { new: true }
+        );
+    
         if (!updatedVoucher) throw new NotFoundError('Voucher không tồn tại!');
+    
         return updatedVoucher;
     }
+    
 
     // Xóa voucher theo ID
     static async deleteVoucher(id) {
