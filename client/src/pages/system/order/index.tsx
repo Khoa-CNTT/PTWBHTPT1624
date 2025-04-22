@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { apiGetAllOrders, apiUpdateOrderStatus, apiGetOrderByCode } from '../../../services/order.service';
+import { apiGetAllOrders, apiGetOrderByCode, apiUpdateOrderStatus } from '../../../services/order.service';
 import { IOrder } from '../../../interfaces/order.interfaces';
 import { ButtonOutline, showNotification, TableSkeleton } from '../../../components';
 import OrderTable from './OrderTable';
@@ -33,15 +33,48 @@ const OrderManage: React.FC = () => {
     const [searchQuery, setSearchQuery] = useState<string>(''); 
     const [isSearching, setIsSearching] = useState<boolean>(false); 
 
+    // Hàm fetch API đã được khai báo bên ngoài useEffect
+    const fetchOrders = async () => {
+        setLoading(true);
+        const res = await apiGetAllOrders(displayTab);
+        if (res.success) setOrders(res.data);
+        setLoading(false);
+    };
+
     useEffect(() => {
-        const fetchOrders = async () => {
-            setLoading(true);
-            const res = await apiGetAllOrders(displayTab);
-            if (res.success) setOrders(res.data);
-            setLoading(false);
-        };
-        fetchOrders();
-    }, [displayTab]);
+        if (!isSearching) {
+            fetchOrders();
+        }
+    }, [displayTab, isSearching]);
+
+    // Hàm xử lý thay đổi trong ô tìm kiếm
+    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const value = e.target.value;
+        setSearchQuery(value);
+        if (value === '') {
+            setIsSearching(false);
+            fetchOrders();
+        }
+    };
+
+    // Hàm tìm kiếm đơn hàng theo mã
+    const handleSearch = async () => {
+        setLoading(true);
+        if (!searchQuery.trim()) {
+            console.error('Vui lòng nhập từ khoá tìm kiếm');
+            return;
+        }
+        const res = await apiGetOrderByCode(searchQuery.trim());  // Sử dụng apiGetOrderByCode để tìm kiếm
+        if (res.success) {
+            const result = Array.isArray(res.data) ? res.data : [res.data];
+            setOrders(result);  // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
+            setIsSearching(true);
+        } else {
+            console.error('Không tìm thấy đơn hàng:', res.message);
+            setOrders([]);  // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
+        }
+        setLoading(false);
+    };
 
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;
@@ -72,52 +105,6 @@ const OrderManage: React.FC = () => {
         showNotification('Xuất đơn hàng thành công!', true);
     };
 
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => setSearchQuery(e.target.value);
-
-    const handleSearch = async () => {
-        setLoading(true);
-        setIsSearching(true);
-        if (searchQuery.trim()) {
-            try {
-                const res = await apiGetOrderByCode(searchQuery.trim());
-                if (res.success) {
-                    const result = Array.isArray(res.data) ? res.data : [res.data];
-                    setOrders(result);
-                    const firstOrder = result[0];
-                    if (firstOrder) {
-                        const orderStatus = firstOrder.status;
-                        if (SELL_TAB.some((tab) => tab.tab === orderStatus)) {
-                            setDisplayTab(orderStatus);
-                        } else {
-                            setDisplayTab('');
-                        }
-                    }
-                } else {
-                    showNotification(res.message || 'Không tìm thấy đơn hàng', false);
-                    setOrders([]);
-                }
-            } catch (err) {
-                console.error('Lỗi tìm kiếm:', err);
-                showNotification('Lỗi khi tìm kiếm đơn hàng', false);
-            }
-        } else {
-            setIsSearching(false);
-            const res = await apiGetAllOrders(displayTab);
-            if (res.success) setOrders(res.data);
-        }
-        setLoading(false);
-    };
-
-    useEffect(() => {
-        if (!isSearching && searchQuery === '') {
-            const fetchOrders = async () => {
-                const res = await apiGetAllOrders(displayTab);
-                if (res.success) setOrders(res.data);
-            };
-            fetchOrders();
-        }
-    }, [searchQuery, isSearching, displayTab]);
-
     if (loading) return <TableSkeleton />;
 
     return (
@@ -126,7 +113,11 @@ const OrderManage: React.FC = () => {
             <PageBreadcrumb pageTitle="Danh sách đơn hàng" />
             <div className="fixed-mobile w-full dark:border-white/[0.05] dark:bg-white/[0.03] h-full bg-white overflow-y-scroll tablet:overflow-y-scroll">
                 <div className="px-5 py-4">
-                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
+                    <InputSearch
+                        handleSearch={handleSearch} 
+                        handleSearchChange={handleSearchChange} 
+                        searchQuery={searchQuery}
+                    />
                 </div>
 
                 <div className="tablet:flex tablet:bg-white laptop:w-full sticky top-0 grid grid-cols-6 dark:border-white/[0.05] dark:bg-white/[0.03] bg-white rounded-sm overflow-hidden">

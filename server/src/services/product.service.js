@@ -13,20 +13,44 @@ const fs = require('fs').promises;
 class ProductService {
     // Tạo sản phẩm mới với số lượng tồn kho
     static async createProduct(payload) {
-        if (Object.keys(payload).length === 0) throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
+        if (Object.keys(payload).length === 0) {
+            throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
+        }
+    
         payload.product_code = generateRandomCode(10);
+    
+        // Xử lý ảnh chỉ nếu có product_thumb
+        if (payload?.product_thumb) {
+            const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
+            const imgDir = path.join(__dirname, 'img');
+            const tempPath = path.join(imgDir, randomFileName);
+    
+            try {
+                // Đảm bảo folder tồn tại
+                await fs.mkdir(imgDir, { recursive: true });
+    
+                // Tải ảnh và trích xuất đặc trưng
+                await downloadImage(payload.product_thumb, tempPath);
+                const searchFeatures = await extractFeatures(tempPath);
+                payload.product_image_features = Array.from(searchFeatures.dataSync());
+    
+                // Giải phóng Tensor
+                searchFeatures.dispose();
+            } catch (err) {
+                console.error('Lỗi xử lý ảnh:', err);
+                // Tiếp tục thêm sản phẩm mà không có đặc trưng ảnh
+                payload.product_image_features = [];
+            } finally {
+                // Xóa file tạm
+                fs.unlink(tempPath).catch(() => {});
+            }
+        }
+    
         // Tạo sản phẩm mới
-        const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
-        const tempPath = path.join(__dirname, 'img', randomFileName); // Assign here
-        await fs.mkdir(path.join(__dirname, 'img'), { recursive: true });
-        await downloadImage(payload?.product_thumb, tempPath);
-        const searchFeatures = await extractFeatures(tempPath);
-        const featuresArray = Array.from(searchFeatures.dataSync());
-        searchFeatures.dispose();
-        payload.product_image_features = featuresArray || [];
         const newProduct = await Product.create(payload);
         return newProduct;
     }
+    
     // Lấy sản phẩm theo ID
     static async getProductById(productId) {
         // Fetch product without lean() to retain Mongoose model instance

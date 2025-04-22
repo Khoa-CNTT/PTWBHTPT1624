@@ -16,6 +16,7 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
 import InputSearch from '../../../components/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
 
 export default function CategoryManage() {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -130,7 +131,11 @@ export default function CategoryManage() {
                 </div>
 
                 {/* Bảng danh mục */}
-                <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
+                {categories.length === 0 ? (
+                    <NotExit label="Không có danh mục nào" /> // Hiển thị khi không có danh mục
+                ) : (
+                    <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
+                )}
 
                 {/* Phân trang nếu không tìm kiếm */}
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}

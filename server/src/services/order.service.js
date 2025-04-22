@@ -396,6 +396,14 @@ class OrderService {
         }
     }
 
+    static async getOfflineOrderByCode(code) {
+        const order = await OfflineOrder.findOne({ order_code: code })
+            .populate('order_products.productId')
+            .populate('order_staff', 'name email'); // Nếu muốn hiện thông tin nhân viên tạo đơn
+    
+        return order;
+    }
+
     // static async getAllOfflineOrders(query) {
     //     const { page = 1, limit = 20, sortBy = 'createdAt', order = 'desc' } = query;
     //     const skip = (page - 1) * limit;

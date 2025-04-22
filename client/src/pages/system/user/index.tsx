@@ -17,6 +17,7 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
 import InputSearch from '../../../components/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
 
 export default function UserManage() {
     const [users, setUsers] = useState<IUserProfile[]>([]);
@@ -146,12 +147,16 @@ export default function UserManage() {
                     </button>
                 </div>
 
-                <UserTable 
-                    users={users} 
-                    onEdit={handleEdit} 
-                    onBlock={handleBlock}
-                    onDelete={handleDelete}  // Pass the handleDelete function
-                />
+                {users.length === 0 ? (
+                    <NotExit label="Không có người dùng nào" />
+                ) : (
+                    <UserTable 
+                        users={users} 
+                        onEdit={handleEdit} 
+                        onBlock={handleBlock}
+                        onDelete={handleDelete}  // Pass the handleDelete function
+                    />
+                )}
 
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>

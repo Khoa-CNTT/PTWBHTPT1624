@@ -20,5 +20,9 @@ router.post('/add-offline', asyncHandle(OrderControllers.createOfflineOrder));
 router.get('/offline-all', asyncHandle(OrderControllers.getAllOrdersOffline));
 router.get('/search/:code', asyncHandle(OrderControllers.getOrderByCode));
 
+router.get('/offline/search/:code', asyncHandle(OrderControllers.getOfflineOrderByCode));
+
+
+
 
 module.exports = router;

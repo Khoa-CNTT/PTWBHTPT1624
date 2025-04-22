@@ -71,5 +71,17 @@ const apiGetOrderByCode = async (orderCode: string) => {
         };
     }
 };
-export { apiGetOrderByCode,apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };
+// API tìm kiếm đơn hàng offline theo mã đơn hàng
+const apiGetOfflineOrderByCode = async (orderCode: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/order/offline/search/${orderCode}`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export {apiGetOfflineOrderByCode, apiGetOrderByCode,apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };
 
