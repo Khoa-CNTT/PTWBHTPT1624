@@ -4,9 +4,13 @@ import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import { IconExcept } from '../../../../assets';
 import { formatMoney } from '../../../../utils/formatMoney';
 import { formatStar } from '../../../../utils/formatStar';
-import { useParams } from 'react-router-dom';
-import { ButtonOutline } from '../../../../components';
-import { IProductDetail } from '../../../../interfaces/product.interfaces';
+import { useNavigate, useParams } from 'react-router-dom';
+import { ButtonOutline, showNotification } from '../../../../components';
+import { IProductDetail, IProductInCart } from '../../../../interfaces/product.interfaces';
+import useAuthStore from '../../../../store/authStore';
+import { useActionStore } from '../../../../store/actionStore';
+import { apiAddToCart } from '../../../../services/cart.service';
+import { useCartStore } from '../../../../store/cartStore';
 
 const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) => {
     const [quantity, setQuantity] = useState<number>(1);
@@ -15,33 +19,33 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
     // const dispatch = useAppDispatch();
     // const { selectedProducts } = useAppSelector((state) => state.order);
     // const { mobile_ui } = useAppSelector((state) => state.action);
+    const { isUserLoggedIn } = useAuthStore();
+    const { setOpenFeatureAuth } = useActionStore();
+    const { setAddProductInCartFromApi, setSelectedProducts, selectedProducts } = useCartStore();
+    const navigate = useNavigate();
     const handleAddToCart = async (isBuy: boolean) => {
-        console.log(isBuy);
-        // if (!isLoginSuccess) {
-        //     dispatch(setOpenFeatureAuth(true));
-        //     return;
-        // }
-        // dispatch(setIsLoading(true));
-        // const response = await apiAddToCart({
-        //     quantity,
-        //     shopId: productDetail?.user?._id,
-        //     productId: productDetail?._id,
-        //     totalPrice: quantity * productDetail.new_price,
-        // });
+        if (!isUserLoggedIn) {
+            setOpenFeatureAuth(true);
+            return;
+        }
+        //   setIsLoading(true) ;
+        const response = await apiAddToCart({
+            quantity,
+            productId: productDetail?._id,
+        });
         // dispatch(setIsLoading(false));
-        // if (response?.success) {
-        //     dispatch(setAddProductInCart(response.data));
-        //     showNotification('Sản phẩm đã được thêm vào giỏ hàng', true);
-        //     if (isBuy) {
-        //         if (!selectedProducts.some((e) => e.productId._id === params?.pid)) {
-        //             dispatch(setSelectedProducts(response.data));
-        //             dispatch(setProductsByShopId());
-        //         }
-        //         navigate('/cart');
-        //     }
-        // } else {
-        //     showNotification('Sản phẩm chưa được thêm vào giỏ hàng', false);
-        // }
+        if (response?.success) {
+            setAddProductInCartFromApi(response.data.cart_products);
+            showNotification('Sản phẩm đã được thêm vào giỏ hàng', true);
+            if (isBuy) {
+                if (!selectedProducts.some((e) => e.productId._id === productDetail?._id)) {
+                    setSelectedProducts(response.data.cart_products.filter((e: IProductInCart) => e.productId === productDetail?._id));
+                }
+                navigate('/cart');
+            }
+        } else {
+            showNotification('Sản phẩm chưa được thêm vào giỏ hàng', false);
+        }
     };
 
     const pid = useParams().pid;

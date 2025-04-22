@@ -38,10 +38,7 @@ class CartController {
 
     static async removeFromCart(req, res, next) {
         try {
-            const { productId } = req.body;
-            if (!productId) throw new RequestError('Thiếu thông tin sản phẩm.');
-
-            const cart = await CartService.removeFromCart(req.user._id, productId);
+            const cart = await CartService.removeFromCart(req.user._id, req.params.pid);
             res.status(200).json({ success: true, data: cart });
         } catch (error) {
             next(error);

@@ -16,7 +16,7 @@ import {
 import { IProduct } from '../../../interfaces/product.interfaces';
 import ProductModal from './ProductModal';
 import TableSkeleton from '../../../components/skeleton/TableSkeleton';
-import InputSearch from '../../../components/inputSearch';
+import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit';
 
 export default function ProductManage() {
@@ -34,7 +34,7 @@ export default function ProductManage() {
         { tab: '', title: 'Tất cả sản phẩm' },
         { tab: 'expired', title: 'Sản phẩm hết hạn' },
         { tab: 'near-expired', title: 'Sản phẩm cận hết hạn' },
-        { tab: 'low-stock', title: 'Sản phẩm sắp hết hàng' },  // Thêm tab "Sản phẩm sắp hết hàng"
+        { tab: 'low-stock', title: 'Sản phẩm sắp hết hàng' }, // Thêm tab "Sản phẩm sắp hết hàng"
     ];
 
     useEffect(() => {
@@ -184,11 +184,13 @@ export default function ProductManage() {
                     ))}
                 </div>
                 {products.length > 0 ? (
-                    <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+                        {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                    </>
                 ) : (
                     <NotExit label="Không có sản phẩm nào" />
                 )}
-                {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {isOpen && <ProductModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} product={selectedProduct} />}

@@ -37,7 +37,7 @@ class CartService {
         const cart = await Cart.findOne({ cart_user: userId })
             .populate({
                 path: 'cart_products.productId',
-                select: 'product_name product_thumb product_price',
+                select: 'product_name product_thumb product_price product_discounted_price product_slug',
             })
             .lean();
 
@@ -51,6 +51,8 @@ class CartService {
                 product_thumb: item.productId?.product_thumb,
                 product_images: item.productId?.product_images,
                 product_price: item.productId?.product_price,
+                product_slug: item.productId?.product_slug,
+                product_discounted_price: item.productId?.product_discounted_price,
                 quantity: item.quantity,
             })),
         };

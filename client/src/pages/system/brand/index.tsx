@@ -10,8 +10,8 @@ import BrandModal from './BrandModal';
 import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
-import InputSearch from '../../../components/inputSearch';
-import NotExit from '../../../components/common/NotExit';  // Import component NotExit
+import InputSearch from '../../../components/item/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
 
 export default function BrandManage() {
     const [brands, setBrands] = useState<IBrand[]>([]);

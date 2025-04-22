@@ -7,6 +7,7 @@ import useUserStore from '../../../../store/userStore';
 import { PATH } from '../../../../utils/const';
 import { useActionStore } from '../../../../store/actionStore';
 import { apiLogout } from '../../../../services/auth.user.service';
+import { useCartStore } from '../../../../store/cartStore';
 const User: React.FC = () => {
     const [isOpenMenu, setIsOpenMenu] = useState<boolean>(false);
     // const { isLoginSuccess } = useAppSelector((state) => state.auth);
@@ -14,6 +15,7 @@ const User: React.FC = () => {
     const { user, clearUser } = useUserStore();
     const { isUserLoggedIn, logoutUser } = useAuthStore();
     const { setOpenFeatureAuth } = useActionStore();
+    const { setAddProductInCartFromApi } = useCartStore();
     const handleLogOut = async () => {
         const res = await apiLogout();
         console.log('res', res);
@@ -23,6 +25,7 @@ const User: React.FC = () => {
             setIsOpenMenu(false);
             clearUser();
             logoutUser();
+            setAddProductInCartFromApi([]);
             showNotification('Đăng xuất thành công', true);
         }
     };

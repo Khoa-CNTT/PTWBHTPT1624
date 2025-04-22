@@ -7,9 +7,10 @@ import { formatMoney } from '../../../utils/formatMoney';
 import { statusOrder } from '../../../utils/statusOrder';
 import * as XLSX from 'xlsx';
 import NotExit from '../../../components/common/NotExit';
+ 
 import InputSearch from '../../../components/inputSearch';
 import PageMeta from '../../../components/common/PageMeta';
-import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
+import PageBreadcrumb from '../../../components/common/PageBreadCrumb'; 
 
 const OrderManage: React.FC = () => {
     const SELL_TAB = [
@@ -39,15 +40,17 @@ const OrderManage: React.FC = () => {
             const res = await apiGetAllOrders(displayTab);
             if (res.success) setOrders(res.data);
             setLoading(false);
-        };
+        }; 
         fetchOrders();
-    }, [displayTab]);
+    }, [displayTab]); 
 
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;
         const res = await apiUpdateOrderStatus({ orderId: id, newStatus: updateStatus[displayTab] });
+ 
         if (!res.success) return showNotification(res.message);
         setOrders(prev => prev.map(order => order._id === id ? { ...order, status: updateStatus[displayTab] } : order));
+ 
         showNotification('Cập nhật thành công', true);
     };
 
@@ -135,6 +138,7 @@ const OrderManage: React.FC = () => {
                             key={idx}
                             className={`flex tablet:w-4/12 laptop:w-full justify-center text-sm items-center py-2 border-b-[2px] cursor-pointer
               ${displayTab === e.tab ? 'text-primary border-primary' : 'text-secondary border-transparent'}`}
+ 
                             onClick={() => setDisplayTab(e.tab)}
                         >
                             {e.title}
@@ -145,6 +149,7 @@ const OrderManage: React.FC = () => {
                 {orders.length > 0 ? (
                     <div className="flex flex-col gap-5 w-full">
                         <OrderTable orders={orders} tab={displayTab} onChangeStatus={handleUpdateStatus} />
+ 
                         <ButtonOutline onClick={handleExportFile} className="mx-auto my-4">
                             Xuất đơn hàng
                         </ButtonOutline>
