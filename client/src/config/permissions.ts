@@ -1,4 +1,5 @@
 const PERMISSIONS = [
+    { key: 'ADMIN_MANAGE', value: 'admin_manage', name: 'Quản lý danh mục sản phẩm' },
     { key: 'CATEGORY_MANAGE', value: 'category_manage', name: 'Quản lý danh mục sản phẩm' },
     { key: 'SUPPLIER_COMPANY_MANAGE', value: 'supplier_manage', name: 'Quản lý nhà cung cấp' },
     { key: 'BANNER_MANAGE', value: 'banner_manage', name: 'Quản lý banner' },

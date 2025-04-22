@@ -142,7 +142,7 @@ const AppSidebar: React.FC = () => {
             onMouseEnter={() => !isExpanded && setIsHovered(true)}
             onMouseLeave={() => setIsHovered(false)}>
             <div className={`py-4 flex mx-auto ${!isExpanded && !isHovered ? 'lg:justify-center' : 'justify-start'}`}>
-                <Link to="/">
+                <Link to="/quan-ly">
                     {isExpanded || isHovered || isMobileOpen ? (
                         <>
                             <img src={logo} alt="Logo" width={150} />

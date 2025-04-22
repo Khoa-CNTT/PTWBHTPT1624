@@ -163,7 +163,7 @@ const OfflineOrder: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 p-8 font-sans">
-            <h1 className="mb-6 text-3xl tracking-tight text-gray-900">Hóa Đơn Bán Hàng</h1>
+            <h1 className="mb-6 text-3xl tracking-tight text-gray-900">Hóa Đơn Bán Hàng Tại Quầy</h1>
             <CartTabs
                 carts={carts}
                 currentTab={currentTab}

@@ -72,3 +72,4 @@ const apiGetOrderByCode = async (orderCode: string) => {
     }
 };
 export { apiGetOrderByCode,apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };
+

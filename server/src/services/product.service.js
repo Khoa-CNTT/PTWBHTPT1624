@@ -17,7 +17,8 @@ class ProductService {
         payload.product_code = generateRandomCode(10);
         // Tạo sản phẩm mới
         const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
-        tempPath = path.join(__dirname, 'img', randomFileName); // Assign here
+        const tempPath = path.join(__dirname, 'img', randomFileName); // Assign here
+        await fs.mkdir(path.join(__dirname, 'img'), { recursive: true });
         await downloadImage(payload?.product_thumb, tempPath);
         const searchFeatures = await extractFeatures(tempPath);
         const featuresArray = Array.from(searchFeatures.dataSync());

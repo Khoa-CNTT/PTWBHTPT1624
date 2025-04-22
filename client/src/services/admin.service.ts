@@ -88,4 +88,16 @@ const apiUpdateProfileAmin = async (adminData: object) => {
     }
 };
 
-export { apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiUpdateProfileAmin, apiToggleBlockAdmin };
+const apiSearchAdmin = async (keyword: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/admin/search?keyword=${keyword}`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+export { apiSearchAdmin,apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiUpdateProfileAmin, apiToggleBlockAdmin };

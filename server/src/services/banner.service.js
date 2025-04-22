@@ -52,9 +52,14 @@ class BannerService {
     }
     //tìm theo tên
     static async searchBannerByName(name) {
+        if (typeof name !== 'string') {
+            throw new BadRequestError('The name parameter must be a string');
+        }
+    
         const banners = await Banner.find({ banner_title: { $regex: name, $options: 'i' } });
         return banners;
     }
+    
 }
 
 module.exports = BannerService;

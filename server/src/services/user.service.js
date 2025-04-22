@@ -132,38 +132,61 @@ class UserService {
     }
     static async updateUserByAdmin(userId, updateData) {
         const user = await UserModel.findById(userId);
-
         if (!user) {
-          throw new BadRequestError('Người dùng không tồn tại');
+            throw new RequestError('Người dùng không tồn tại');
+        }
+    
+        // Kiểm tra trùng email với user khác
+        if (updateData.user_email) {
+            const existingEmailUser = await UserModel.findOne({
+                user_email: updateData.user_email,
+                _id: { $ne: userId } // khác chính user đang update
+            });
+            if (existingEmailUser) {
+                throw new RequestError('Email đã được sử dụng bởi người dùng khác');
+            }
+        }
+    
+        // Kiểm tra trùng số điện thoại với user khác
+        if (updateData.user_mobile) {
+            const existingMobileUser = await UserModel.findOne({
+                user_mobile: updateData.user_mobile,
+                _id: { $ne: userId }
+            });
+            if (existingMobileUser) {
+                throw new RequestError('Số điện thoại đã được sử dụng bởi người dùng khác');
+            }
         }
     
         // Nếu có mật khẩu mới thì hash lại
         if (updateData.user_password) {
-          if (updateData.user_password.length < 6) {
-            throw new BadRequestError('Mật khẩu phải có ít nhất 6 ký tự');
-          }
-          updateData.user_password = await bcrypt.hash(updateData.user_password, 10);
+            if (updateData.user_password.length < 6) {
+                throw new RequestError('Mật khẩu phải có ít nhất 6 ký tự');
+            }
+            updateData.user_password = await bcrypt.hash(updateData.user_password, 10);
         }
     
         // Cập nhật thông tin còn lại
         for (let key in updateData) {
-          user[key] = updateData[key];
+            user[key] = updateData[key];
         }
     
         await user.save();
     
         return {
-          message: 'Cập nhật người dùng thành công',
-          user: {
-            _id: user._id,
-            user_name: user.user_name,
-            user_email: user.user_email,
-            user_mobile: user.user_mobile,
-            user_role: user.user_role,
-            user_isBlocked: user.user_isBlocked,
-          },
+            message: 'Cập nhật người dùng thành công',
+            user: {
+                _id: user._id,
+                user_name: user.user_name,
+                user_email: user.user_email,
+                user_mobile: user.user_mobile,
+                user_role: user.user_role,
+                user_isBlocked: user.user_isBlocked,
+            },
         };
-      }
+    }
+    
+    
 }
 
 module.exports = UserService;

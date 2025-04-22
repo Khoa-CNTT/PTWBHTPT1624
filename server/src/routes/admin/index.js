@@ -12,11 +12,13 @@ const router = express.Router();
 router.use(adminAuthentication);
 router.get('/profile', asyncHandle(adminController.getProfile));
 router.put('/profile/update', asyncHandle(adminController.updateProfile));
-router.use(restrictTo(PERMISSIONS.CATEGORY_MANAGE));
+router.use(restrictTo(PERMISSIONS.EMPLOYEE_MANAGE));
 router.get('/all', asyncHandle(adminController.getAllAdmins));
 router.post('/add', asyncHandle(adminController.addAdmin));
 router.put('/:uid/update', asyncHandle(adminController.updateAdmin));
 router.delete('/:uid/delete', asyncHandle(adminController.deleteAdmin));
 router.put('/:uid/toggle-block', asyncHandle(adminController.toggleBlockAdmin));
+router.get('/search', asyncHandle(adminController.searchAdmins));
+
 
 module.exports = router;
