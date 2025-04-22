@@ -8,8 +8,8 @@ import VoucherModal from './VoucherModal';
 import { showNotification, TableSkeleton, Pagination } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
-import InputSearch from '../../../components/inputSearch';
-import NotExit from '../../../components/common/NotExit';  // Import component NotExit
+import InputSearch from '../../../components/item/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
 
 export default function VoucherManage() {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);

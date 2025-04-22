@@ -40,13 +40,3 @@ export interface IProductDetail extends IProductItem {
     product_supplier_id: string; // ID nhà cung cấp sản phẩm
     product_isPublished: boolean; // Trạng thái xuất bản
 }
-
-export interface IProductInCart {
-    image: string;
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    productId: string | any;
-    quantity: number;
-    price: number;
-    discount: number;
-    name?: string;
-}

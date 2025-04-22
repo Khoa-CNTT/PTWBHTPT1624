@@ -7,7 +7,7 @@ import { formatMoney } from '../../../utils/formatMoney';
 import { statusOrder } from '../../../utils/statusOrder';
 import * as XLSX from 'xlsx';
 import NotExit from '../../../components/common/NotExit';
-import InputSearch from '../../../components/inputSearch';  // Thêm import cho ô tìm kiếm
+import InputSearch from '../../../components/item/inputSearch'; // Thêm import cho ô tìm kiếm
 
 const OrderManage: React.FC = () => {
     const SELL_TAB = [
@@ -42,7 +42,6 @@ const OrderManage: React.FC = () => {
         fetchOrders(); // Lấy lại tất cả đơn hàng khi trang được load hoặc khi thay đổi tab
     }, [displayTab]); // Khi thay đổi tab, gọi lại API
 
-
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;
 
@@ -53,7 +52,7 @@ const OrderManage: React.FC = () => {
         }
 
         // Cập nhật lại trạng thái đơn hàng trong danh sách
-        setOrders((prev) => prev.map((order) => order._id === id ? { ...order, status: updateStatus[displayTab] } : order));
+        setOrders((prev) => prev.map((order) => (order._id === id ? { ...order, status: updateStatus[displayTab] } : order)));
 
         showNotification('Cập nhật thành công', true);
     };
@@ -163,7 +162,7 @@ const OrderManage: React.FC = () => {
                     </div>
                 ))}
             </div>
-            
+
             {/* Danh sách đơn hàng */}
             {orders.length > 0 ? (
                 <div className="flex flex-col gap-5 w-full">
