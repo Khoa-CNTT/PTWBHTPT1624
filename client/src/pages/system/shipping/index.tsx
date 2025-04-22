@@ -50,14 +50,14 @@ export default function ShippingManage() {
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
-        // Cập nhật danh sách công ty vận chuyển mà không cần reload trang
-        setShippings(
-            (prev) =>
-                data._id
-                    ? prev.map((item) => (item._id === data._id ? res.data : item)) // Cập nhật công ty vận chuyển đã có
-                    : [res.data, ...prev], // Thêm công ty vận chuyển mới
+        // Cập nhật lại danh sách công ty vận chuyển sau khi lưu mà không cần reload trang
+        setShippings((prev) =>
+            data._id
+                ? prev.map((item) => (item._id === data._id ? res.data : item))  // Chỉnh sửa
+                : [res.data, ...prev]  // Thêm mới
         );
     };
+    
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;

@@ -28,9 +28,29 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
 
     useEffect(() => {
         if (shipping) {
-            setInputFields(shipping);
+            setInputFields({
+                sc_address: shipping.sc_address,
+                sc_delivery_time: shipping.sc_delivery_time,
+                sc_email: shipping.sc_email,
+                sc_name: shipping.sc_name,
+                sc_shipping_price: shipping.sc_shipping_price,
+                sc_phone: shipping.sc_phone,
+                sc_active: shipping.sc_active || false, // Đảm bảo có trường này nếu cần
+            });
+        } else {
+            // Nếu không có thông tin về shipping, reset lại giá trị mặc định
+            setInputFields({
+                sc_address: '',
+                sc_delivery_time: { from: 0, to: 0 },
+                sc_email: '',
+                sc_name: '',
+                sc_shipping_price: 0,
+                sc_phone: '',
+                sc_active: false,
+            });
         }
-    }, [shipping]);
+    }, [shipping]); // Cập nhật chỉ khi `shipping` thay đổi
+    
 
     const handleSave = () => {
         const { _id, sc_delivery_time, ...data } = inputFields;
@@ -42,6 +62,7 @@ const ShippingModal: React.FC<ShippingModalProps> = ({ isOpen, closeModal, onSav
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
         }
+        // Truyền đúng dữ liệu đã thay đổi
         onSave(shipping ? { _id: shipping._id, ...inputFields } : inputFields);
     };
 
