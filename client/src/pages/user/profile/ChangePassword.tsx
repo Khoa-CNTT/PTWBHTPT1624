@@ -8,7 +8,7 @@ const ChangePassword: React.FC = () => {
     const [confirmPassword, setConfirmPassword] = useState('');
 
     const validatePassword = (password: string) => {
-        const minLength = 6;
+        const minLength = 10;
         const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
         if (password.length < minLength) {

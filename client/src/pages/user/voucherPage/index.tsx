@@ -8,8 +8,7 @@ import { apiSaveVoucherForUser } from '../../../services/user.voucher.service';
 import { showNotification } from '../../../components';
 import useAuthStore from '../../../store/authStore';
 import { useActionStore } from '../../../store/actionStore';
-
-// Định nghĩa kiểu cho props của component Voucher
+import { Sparkles } from 'lucide-react'; // Icon cho đẹp
 
 const VoucherPage: React.FC = () => {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -26,7 +25,7 @@ const VoucherPage: React.FC = () => {
             setTotalPage(res.data.totalPage);
         };
         fetchProducts();
-    }, []);
+    }, [currentPage]);
 
     const handleSave = async (voucher: IVoucher) => {
         if (!isUserLoggedIn) {
@@ -38,16 +37,26 @@ const VoucherPage: React.FC = () => {
     };
 
     return (
-        <div className="p-5 max-w-[600px] mx-auto">
-            <div className="mb-5">
-                <h3 className="text-base font-bold text-orange-600 bg-gray-100 p-3 rounded-lg">VOUCHER SHOPEE CHOICE</h3>
-                <div className="flex flex-col gap-3">
-                    {vouchers?.map((v) => (
-                        <VoucherItem voucher={v} onSave={handleSave} />
-                    ))}
+        <div className="p-4 sm:p-6 md:p-8 max-w-4xl mx-auto bg-white shadow-xl rounded-2xl">
+            <div className="mb-6">
+                <div className="flex items-center justify-between bg-gradient-to-r from-orange-400 to-red-500 text-white p-4 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold tracking-wide flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" /> ƯU ĐÃI VOUCHER HOT NHẤT
+                    </h3>
                 </div>
-                {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
+            <div className="grid gap-4 md:grid-cols-2">
+                {vouchers?.map((v) => (
+                    <div key={v._id} className="transition-transform hover:scale-[1.02] duration-300">
+                        <VoucherItem voucher={v} onSave={handleSave} />
+                    </div>
+                ))}
+            </div>
+            {totalPage > 0 && (
+                <div className="mt-6">
+                    <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
+                </div>
+            )}
         </div>
     );
 };

@@ -94,16 +94,21 @@ class ShippingCompanyService {
 
     // 🔹 Tìm kiếm công ty vận chuyển theo tên
     static async searchShippingCompaniesByName(name) {
-        if (!name) throw new RequestError('Vui lòng nhập tên công ty để tìm kiếm');
-
+        if (!name) throw new RequestError('Vui lòng nhập tên công ty, email hoặc số điện thoại để tìm kiếm');
+    
         const companies = await ShippingCompany.find({
-            sc_name: { $regex: name, $options: 'i' }, // Tìm kiếm không phân biệt hoa thường
+            $or: [
+                { sc_name: { $regex: name, $options: 'i' } },  // Tìm kiếm theo tên công ty
+                { sc_email: { $regex: name, $options: 'i' } }, // Tìm kiếm theo email
+                { sc_phone: { $regex: name, $options: 'i' } }, // Tìm kiếm theo số điện thoại
+            ],
         });
-
+    
         if (companies.length === 0) throw new NotFoundError('Không tìm thấy công ty nào');
-
+    
         return companies;
     }
+    
 }
 
 module.exports = ShippingCompanyService;
