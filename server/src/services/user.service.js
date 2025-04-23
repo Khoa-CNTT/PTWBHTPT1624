@@ -185,6 +185,42 @@ class UserService {
             },
         };
     }
+
+    static async changePassword(uid, oldPassword, newPassword) {
+        // Kiểm tra độ dài mật khẩu mới
+        if (newPassword.length < 6) {
+            throw new RequestError('Mật khẩu mới phải có ít nhất 6 ký tự', 400);
+        }
+    
+        // Tìm người dùng theo ID
+        const user = await UserModel.findById(uid);
+        if (!user) {
+            throw new RequestError('Người dùng không tồn tại!', 404);
+        }
+    
+        // Kiểm tra mật khẩu cũ
+        const isMatch = await bcrypt.compare(oldPassword, user.user_password);
+        if (!isMatch) {
+            throw new RequestError('Mật khẩu cũ không đúng!', 400);
+        }
+    
+        // Mã hóa mật khẩu mới
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+    
+        // Cập nhật mật khẩu mới và thời gian thay đổi
+        user.user_password = hashedPassword;
+        user.user_passwordChangedAt = new Date();
+    
+        // Lưu thông tin cập nhật
+        await user.save();
+    
+        return {
+            success: true,
+            message: 'Đổi mật khẩu thành công!',
+        };
+    }
+
     
     
 }

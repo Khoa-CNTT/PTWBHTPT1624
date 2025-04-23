@@ -15,6 +15,7 @@ import SearchPage from '../pages/user/searchPage';
 import FilterPage from '../pages/user/filterPage';
 import ForgotPassword from '../feature/forgotPassword';
 import CartPage from '../pages/user/cartPage';
+import UserProfile from '../pages/user/profile/UserProfile';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -24,15 +25,21 @@ const RouterPage = () => {
             {/* ============= USER =================== */}
             <Route path={PATH.HOME} element={<DefaultLayout />}>
                 <Route index element={<HomePage />} />
-                <Route path={PATH.DETAIL_PRODUCT} element={<DetailPage />}></Route>
-                <Route path={PATH.PAGE_SEARCH} element={<SearchPage />}></Route>
-                <Route path={PATH.PAGE_IMAGE_SEARCH} element={<SearchPage />}></Route>
-                <Route path={PATH.PAGE_CATEGORY} element={<FilterPage />}></Route>
-                <Route path={PATH.PAGE_BRAND} element={<FilterPage />}></Route>
-                <Route path={PATH.PAGE_CART} element={<CartPage />}></Route>
+                <Route path={PATH.DETAIL_PRODUCT} element={<DetailPage />} />
+                <Route path={PATH.PAGE_SEARCH} element={<SearchPage />} />
+                <Route path={PATH.PAGE_IMAGE_SEARCH} element={<SearchPage />} />
+                <Route path={PATH.PAGE_CATEGORY} element={<FilterPage />} />
+                <Route path={PATH.PAGE_BRAND} element={<FilterPage />} />
+                <Route path={PATH.PAGE_CART} element={<CartPage />} />
+                <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />} />
+                <Route path={PATH.USER_PROFILE} element={<UserProfile />} />
+                {/* Các trang bên dưới vẫn được bọc trong DefaultLayout */}
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
-                <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />}></Route>
             </Route>
+
+            {/* Đặc biệt: không bọc UserProfile trong DefaultLayout */}
+            
+
             {/* ============= ADMIN =================== */}
             <Route
                 path={PATH.ADMIN_DASHBOARD}
@@ -40,7 +47,8 @@ const RouterPage = () => {
                     <ProtectedRoute redirectPath={PATH.ADMIN_LOGIN}>
                         <AppLayout />
                     </ProtectedRoute>
-                }>
+                }
+            >
                 {/* Route mặc định */}
                 <Route index element={<DashboardManage />} />
                 <Route path={PATH.MANAGE_DASHBOARD} element={<DashboardManage />} />
@@ -60,6 +68,7 @@ const RouterPage = () => {
                 <Route path={PATH.MANAGE_PROFILE} element={<AdminProfile />} />
                 <Route path="*" element={<Navigate to={PATH.MANAGE_DASHBOARD} />} />
             </Route>
+
             {/* Trang đăng nhập admin */}
             <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
         </Routes>

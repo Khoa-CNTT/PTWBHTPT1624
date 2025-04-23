@@ -92,6 +92,21 @@ const apiSearchUsers = async (searchQuery: string) => {
         };
     }
 };
+const apiChangePassword = async (oldPassword: string, newPassword: string) => {
+    try {
+        const res = await authClient.put('/v1/api/user/change-password', {
+            oldPassword,
+            newPassword,
+        });
+        return res.data; // BE trả về { success, message, ... } nên dùng trực tiếp
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.response?.data?.message || 'Đã xảy ra lỗi!',
+            code: error?.response?.data?.code || 500,
+        };
+    }
+};
 
 
-export {apiSearchUsers, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+export {apiChangePassword,apiSearchUsers, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };

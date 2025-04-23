@@ -82,6 +82,16 @@ class UserController {
             });
         }
     }
+    static async changePassword(req, res, next) {
+        try {
+            const { oldPassword, newPassword } = req.body;
+            const uid = req.user._id; // Giả sử user đã đăng nhập và UID có sẵn trong `req.user`
+            const result = await UserService.changePassword(uid, oldPassword, newPassword);
+            return res.status(200).json(result);
+        } catch (error) {
+            next(error);
+        }
+    }
     
 
 }

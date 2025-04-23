@@ -12,6 +12,8 @@ export const PATH = {
     PAGE_PAYPAL: '/payment/paypal',
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
+    USER_PROFILE: "/nguoi-dung/tai-khoan/profile", // hoặc đơn giản là "profile"
+
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
     MANAGE_DASHBOARD: '/quan-ly/dashboard',
