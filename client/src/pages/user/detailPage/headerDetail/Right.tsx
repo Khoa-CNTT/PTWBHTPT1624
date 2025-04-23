@@ -6,11 +6,12 @@ import { formatMoney } from '../../../../utils/formatMoney';
 import { formatStar } from '../../../../utils/formatStar';
 import { useNavigate, useParams } from 'react-router-dom';
 import { ButtonOutline, showNotification } from '../../../../components';
-import { IProductDetail, IProductInCart } from '../../../../interfaces/product.interfaces';
+import { IProductDetail } from '../../../../interfaces/product.interfaces';
 import useAuthStore from '../../../../store/authStore';
 import { useActionStore } from '../../../../store/actionStore';
 import { apiAddToCart } from '../../../../services/cart.service';
 import { useCartStore } from '../../../../store/cartStore';
+import { IProductInCart } from '../../../../interfaces/cart.interfaces';
 
 const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) => {
     const [quantity, setQuantity] = useState<number>(1);
