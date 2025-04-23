@@ -8,7 +8,7 @@ interface VoucherProps {
     discount: string;
     maxDiscount: number | any;
     minOrder: number;
-    validUntil: Date;
+    validUntil: any;
     category?: string; // Thêm prop tùy chọn để hiển thị danh mục
     onSave?: () => void; // Thêm prop để xử lý sự kiện khi nhấn nút "Lưu"
 }
