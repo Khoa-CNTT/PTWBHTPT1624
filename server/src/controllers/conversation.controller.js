@@ -1,4 +1,6 @@
 const conversationModel = require('../models/conversation.model');
+const User = require('../models/user.model');
+const { BadRequestError } = require('../core/error.response');
 
 /**
  * @desc Tạo cuộc trò chuyện mới
@@ -56,8 +58,8 @@ const getConversationUser = async (req, res) => {
         // Lấy cuộc trò chuyện của người dùng hiện tại
         const conversation = await conversationModel
             .findOne({ user: req.user._id })
-            .populate('participants', 'admin_avatar_url  admin_name ')
-            .populate('participants', 'user_avatar_url  user_name') // Lấy thông tin của admin
+            .populate('participants', 'admin_avatar_url admin_name')
+            .populate('participants', 'user_avatar_url user_name') // Lấy thông tin của admin
             .sort({ createdAt: -1 });
         if (!conversation) {
             return res.status(404).json({
@@ -78,10 +80,17 @@ const getConversationUser = async (req, res) => {
         });
     }
 };
+
+/**
+ * @desc Lấy tất cả cuộc trò chuyện
+ */
 const getAllConversations = async (req, res) => {
     try {
-        // Lấy cuộc trò chuyện của người dùng hiện tại
-        const conversation = await conversationModel.find().populate('user', 'user_avatar_url  user_name ').sort({ createdAt: -1 });
+        // Lấy tất cả cuộc trò chuyện
+        const conversation = await conversationModel
+            .find()
+            .populate('user', 'user_avatar_url user_name')
+            .sort({ createdAt: -1 });
         if (!conversation) {
             return res.status(404).json({
                 success: false,
@@ -101,12 +110,13 @@ const getAllConversations = async (req, res) => {
         });
     }
 };
+
 /**
  * @desc Cập nhật cuộc trò chuyện (thêm người tham gia)
  */
 const addAdminToConversation = async (req, res) => {
     const { conversationId } = req.params;
-    const adminId = req.admin._id; // danh sách người tham gia mới
+    const adminId = req.admin._id; // người tham gia mới
     if (!adminId) {
         return res.status(400).json({
             success: false,
@@ -116,9 +126,9 @@ const addAdminToConversation = async (req, res) => {
     try {
         // Cập nhật cuộc trò chuyện, thêm người tham gia
         const updatedConversation = await conversationModel
-            .findByIdAndUpdate(conversationId, { $push: { participants: { $each: adminId } } }, { new: true })
-            .populate('participants', 'user_avatar_url  user_name')
-            .populate('participants', 'admin_avatar_url  admin_name');
+            .findByIdAndUpdate(conversationId, { $push: { participants: adminId } }, { new: true })
+            .populate('participants', 'user_avatar_url user_name')
+            .populate('participants', 'admin_avatar_url admin_name');
         if (!updatedConversation) {
             return res.status(404).json({
                 success: false,
@@ -165,7 +175,31 @@ const deleteConversation = async (req, res) => {
     }
 };
 
+/**
+ * @desc Tìm cuộc hội thoại theo tên người dùng
+ */
+const getConversationByUserName = async (req, res) => {
+    const { name } = req.query;
+
+    if (!name) throw new BadRequestError('Thiếu tên người dùng');
+
+    const user = await User.findOne({ user_name: { $regex: name, $options: 'i' } });
+    if (!user) throw new BadRequestError('Không tìm thấy người dùng');
+
+    const conversation = await conversationModel.findOne({ user: user._id })
+        .populate('user', 'user_name user_email')
+        .populate('participants');
+
+    if (!conversation) throw new BadRequestError('Không tìm thấy cuộc hội thoại');
+
+    return res.status(200).json({
+        success: true,
+        data: conversation,
+    });
+};
+
 module.exports = {
+    getConversationByUserName,
     createConversation,
     getAllConversations,
     getConversationUser,

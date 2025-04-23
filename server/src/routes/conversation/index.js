@@ -5,6 +5,7 @@ const {
     getAllConversations,
     deleteConversation,
     addAdminToConversation,
+    getConversationByUserName,
 } = require('../../controllers/conversation.controller');
 const { adminAuthentication, restrictTo } = require('../../middlewares/auth.admin.middleware');
 const PERMISSIONS = require('../../config/permissions');
@@ -18,6 +19,7 @@ router.post('/create', [userAuthentication], createConversation);
 router.get('/user', [userAuthentication], getConversationUser);
 // Route lấy tất cả cuộc trò chuyện
 
+
 router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.MESSAGE_MANAGE));
 // lấy tất cả cuộc hội thoại
@@ -26,5 +28,6 @@ router.get('/', getAllConversations);
 router.put('/:conversationId/add-admin', addAdminToConversation);
 // Route xóa cuộc trò chuyện
 router.delete('/:conversationId', deleteConversation);
+router.get('/search', getConversationByUserName);
 
 module.exports = router;
