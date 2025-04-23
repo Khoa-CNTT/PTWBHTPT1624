@@ -7,6 +7,21 @@ const ChangePassword: React.FC = () => {
     const [newPassword, setNewPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
 
+    const validatePassword = (password: string) => {
+        const minLength = 6;
+        const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
+
+        if (password.length < minLength) {
+            return "Mật khẩu phải có ít nhất 6 ký tự.";
+        }
+
+        if (!specialCharRegex.test(password)) {
+            return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+        }
+
+        return "";
+    };
+
     const handlePasswordChange = async () => {
         if (!oldPassword || !newPassword || !confirmPassword) {
             showNotification('Vui lòng nhập đầy đủ tất cả các trường', false);
@@ -15,6 +30,12 @@ const ChangePassword: React.FC = () => {
 
         if (newPassword !== confirmPassword) {
             showNotification('Mật khẩu xác nhận không khớp', false);
+            return;
+        }
+
+        const passwordValidationMessage = validatePassword(newPassword);
+        if (passwordValidationMessage) {
+            showNotification(passwordValidationMessage, false);
             return;
         }
 
