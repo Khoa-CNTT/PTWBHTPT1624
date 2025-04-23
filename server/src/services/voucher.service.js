@@ -53,11 +53,17 @@ class VoucherService {
     }
 
     // Lấy danh sách tất cả voucher
-    static async getAllVouchers({ limit, page }) {
+    static async getAllVouchers({ limit, page, type = 'system' }) {
         const limitNum = parseInt(limit, 10); // Mặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
-        const vouchers = await voucherModel.find().sort({ createdAt: -1 }).skip(skipNum).select('-__v -createdAt -updatedAt').limit(limitNum).lean();
+        const vouchers = await voucherModel
+            .find({ voucher_type: type })
+            .sort({ createdAt: -1 })
+            .skip(skipNum)
+            .select('-__v -createdAt -updatedAt')
+            .limit(limitNum)
+            .lean();
         const totalVoucher = await voucherModel.countDocuments();
         return {
             totalPage: Math.ceil(totalVoucher / limitNum) - 1 || 0, // Tổng số trang (0-based)
@@ -81,25 +87,24 @@ class VoucherService {
             voucher_name: payload.voucher_name,
             _id: { $ne: id }, // bỏ qua chính nó
         });
-    
+
         if (existingVoucher) {
             throw new RequestError('Tên voucher đã tồn tại!');
         }
-    
+
         const updatedVoucher = await voucherModel.findByIdAndUpdate(
             id,
             {
                 ...payload,
                 voucher_code: autoCode(payload.voucher_name),
             },
-            { new: true }
+            { new: true },
         );
-    
+
         if (!updatedVoucher) throw new NotFoundError('Voucher không tồn tại!');
-    
+
         return updatedVoucher;
     }
-    
 
     // Xóa voucher theo ID
     static async deleteVoucher(id) {

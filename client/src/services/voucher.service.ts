@@ -1,7 +1,7 @@
 import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả voucher
-const apiGetAllVouchers = async (queries: { limit: number; page: number }) => {
+const apiGetAllVouchers = async (queries: { limit: number; page: number; type?: string }) => {
     try {
         const res = await adminClient.get('/v1/api/voucher/all', {
             params: queries,
@@ -80,7 +80,7 @@ const apiDeleteVoucher = async (id: string) => {
     }
 };
 // API áp dụng voucher
-const apiApplyVoucher = async (voucherData: { code: string, orderValue: number }) => {
+const apiApplyVoucher = async (voucherData: { code: string; orderValue: number }) => {
     try {
         const res = await authClient.post('/v1/api/voucher/apply', voucherData);
         return res.data;
@@ -92,4 +92,4 @@ const apiApplyVoucher = async (voucherData: { code: string, orderValue: number }
     }
 };
 
-export { apiApplyVoucher,apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };
+export { apiApplyVoucher, apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };

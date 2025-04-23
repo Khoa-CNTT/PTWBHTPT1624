@@ -15,10 +15,7 @@ class UserVoucherService {
             voucher_is_active: true, // Kiểm tra trạng thái hoạt động của voucher
             voucher_end_date: { $gte: new Date() }, // Kiểm tra hạn sử dụng
         });
-
         // Thêm log để kiểm tra thông tin voucher
-        console.log('Voucher tìm thấy:', voucher);
-
         if (!voucher) throw new NotFoundError('Voucher không tồn tại hoặc đã hết hạn');
 
         // Tìm danh sách voucher của user
@@ -29,7 +26,7 @@ class UserVoucherService {
         } else {
             // Kiểm tra voucher đã được lưu chưa
             if (userVouchers.vc_vouchers.includes(voucherId)) {
-                throw new ConflictRequestError('Voucher đã được lưu trước đó');
+                throw new RequestError('Voucher đã được lưu trước đó');
             }
             // Thêm voucher vào danh sách
             userVouchers.vc_vouchers.push(voucherId);

@@ -13,7 +13,6 @@ export const PATH = {
     VOUCHER: '/voucher',
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
-    USER_PROFILE: '/nguoi-dung/tai-khoan/profile', // hoặc đơn giản là "profile"
 
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',

@@ -17,9 +17,10 @@ import ForgotPassword from '../feature/forgotPassword';
 import CartPage from '../pages/user/cartPage';
 import UserProfile from '../pages/user/profile/UserProfile';
 import VoucherPage from '../pages/user/voucherPage';
+import UserPage from '../pages/user/userPage';
 
 const RouterPage = () => {
-    const { isAdminLoggedIn } = useAuthStore();
+    const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
 
     return (
         <Routes>
@@ -33,10 +34,19 @@ const RouterPage = () => {
                 <Route path={PATH.PAGE_BRAND} element={<FilterPage />} />
                 <Route path={PATH.PAGE_CART} element={<CartPage />} />
                 <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />} />
-                <Route path={PATH.USER_PROFILE} element={<UserProfile />} />
                 <Route path={PATH.VOUCHER} element={<VoucherPage />} />
+
                 {/* Các trang bên dưới vẫn được bọc trong DefaultLayout */}
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
+
+                <Route path={PATH.PAGE_USER} element={isUserLoggedIn ? <UserPage /> : <Navigate to="/" />}>
+                    <Route path={''} element={<Navigate to="profile" />} />
+                    <Route path={'profile'} element={<UserProfile />} />
+                    {/* <Route path={'purchase'} element={<PurchaseManage />} />
+                    <Route path={'sell'} element={<SellManage />} />
+                    <Route path={'product'} element={<ProductManage />} />
+                    <Route path={'view/:oid'} element={<ViewOrder />} /> */}
+                </Route>
             </Route>
 
             {/* Đặc biệt: không bọc UserProfile trong DefaultLayout */}

@@ -1,0 +1,48 @@
+import React, { useEffect } from 'react';
+import { NavLink, useLocation, useNavigate } from 'react-router-dom';
+import { noUser } from '../../../assets';
+import { PATH, SIDEBAR_USER } from '../../../utils/const';
+import { useActionStore } from '../../../store/actionStore';
+import useUserStore from '../../../store/userStore';
+import useAuthStore from '../../../store/authStore';
+
+export const Sidebar: React.FC = () => {
+    const location = useLocation();
+    const navigate = useNavigate();
+    const { setOpenFeatureAuth } = useActionStore();
+    const { user } = useUserStore();
+    const { isUserLoggedIn } = useAuthStore();
+    useEffect(() => {
+        if (location.pathname === PATH.PAGE_USER && !isUserLoggedIn) {
+            navigate('/');
+            setOpenFeatureAuth(true);
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [location.pathname]);
+    return (
+        <div className="flex flex-col w-full gap-6 bg-white py-3 rounded-md overflow-hidden">
+            <div className="flex gap-2 items-center ml-2">
+                <div className="w-11 h-11 overflow-hidden rounded-full border-[1px] border-solid border-separate">
+                    <img src={user.user_avatar_url || noUser} className="w-full h-full object-cover block" />
+                </div>
+                <div className="flex flex-col text-xs text-secondary">
+                    Tài khoản của
+                    <span className="text-base font-normal text-black ">{user.user_name}</span>
+                </div>
+            </div>
+
+            <ul className="w-full h-full ">
+                {SIDEBAR_USER.map((e) => (
+                    <NavLink
+                        to={e.path_name}
+                        className={`flex gap-4 p-2 text-sm text-gray-800 hover:bg-gray-200 cursor-pointer ${
+                            location.pathname?.includes(e.path_name) ? 'bg-gray-200' : ''
+                        }`}>
+                        {e.icon}
+                        {e.label}
+                    </NavLink>
+                ))}
+            </ul>
+        </div>
+    );
+};

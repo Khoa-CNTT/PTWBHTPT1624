@@ -4,6 +4,10 @@ import VoucherItem from '../../../components/item/VoucherItem';
 import { IVoucher } from '../../../interfaces/voucher.interfaces';
 import { apiGetAllVouchers } from '../../../services/voucher.service';
 import Pagination from '../../../components/pagination';
+import { apiSaveVoucherForUser } from '../../../services/user.voucher.service';
+import { showNotification } from '../../../components';
+import useAuthStore from '../../../store/authStore';
+import { useActionStore } from '../../../store/actionStore';
 
 // Định nghĩa kiểu cho props của component Voucher
 
@@ -11,6 +15,8 @@ const VoucherPage: React.FC = () => {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
+    const { isUserLoggedIn } = useAuthStore();
+    const { setOpenFeatureAuth } = useActionStore();
 
     useEffect(() => {
         const fetchProducts = async () => {
@@ -22,18 +28,22 @@ const VoucherPage: React.FC = () => {
         fetchProducts();
     }, []);
 
+    const handleSave = async (voucher: IVoucher) => {
+        if (!isUserLoggedIn) {
+            setOpenFeatureAuth(true);
+            return;
+        }
+        const res = await apiSaveVoucherForUser(voucher._id);
+        showNotification(res.message, res.success);
+    };
+
     return (
         <div className="p-5 max-w-[600px] mx-auto">
             <div className="mb-5">
                 <h3 className="text-base font-bold text-orange-600 bg-gray-100 p-3 rounded-lg">VOUCHER SHOPEE CHOICE</h3>
                 <div className="flex flex-col gap-3">
                     {vouchers?.map((v) => (
-                        <VoucherItem
-                            discount={v.voucher_name}
-                            maxDiscount={v.voucher_max_price}
-                            minOrder={v.voucher_min_order_value || v.voucher_value}
-                            validUntil={v.voucher_end_date}
-                        />
+                        <VoucherItem voucher={v} onSave={handleSave} />
                     ))}
                 </div>
                 {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
