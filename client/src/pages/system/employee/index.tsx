@@ -8,7 +8,7 @@ import { IAdmin } from '../../../interfaces/admin.interfaces';
 import { apiAddAdmin, apiDeleteAdmin, apiGetAllAdmin, apiUpdateAdmin, apiSearchAdmin } from '../../../services/admin.service';
 import EmployeeTable from './EmployeeTable';
 import EmployeeModal from './EmployeeModal';
-import InputSearch from '../../../components/inputSearch';
+import InputSearch from '../../../components/item/inputSearch';
 
 export default function EmployeeManage() {
     const [employees, setEmployees] = useState<IAdmin[]>([]);

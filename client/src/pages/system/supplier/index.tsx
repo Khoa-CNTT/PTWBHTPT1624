@@ -7,7 +7,7 @@ import SupplierModal from './SupplierModal';
 import { showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
-import InputSearch from '../../../components/inputSearch';
+import InputSearch from '../../../components/item/inputSearch';
 import { ISupplier } from '../../../interfaces/supplier.interfaces';
 import NotExit from '../../../components/common/NotExit';
 import Pagination from '../../../components/pagination';
@@ -31,6 +31,7 @@ export default function SupplierManage() {
         setSuppliers(data.suppliers);
         setTotalPage(data.totalPage);
         setIsUploading(false);
+
     };
 
     useEffect(() => {
@@ -63,6 +64,7 @@ export default function SupplierManage() {
         setSuppliers((prev) =>
             data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev],
         );
+
     };
 
     const handleDelete = async (id: string) => {
@@ -114,6 +116,7 @@ export default function SupplierManage() {
                 <div className="flex justify-between items-center mb-4">
                     {/* Ô tìm kiếm */}
                     <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
+
                     <button
                         onClick={handleAdd}
                         className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto">

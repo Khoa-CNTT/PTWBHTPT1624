@@ -6,7 +6,7 @@ import {
     apiUpdateUser,
     apiSearchUsers,
     apiToggleBlockUser,
-    apiDeleteUser,  // Import the delete API function
+    apiDeleteUser, // Import the delete API function
 } from '../../../services/user.service';
 import { IUserProfile } from '../../../interfaces/user.interfaces';
 import { useModal } from '../../../hooks/useModal';
@@ -16,8 +16,8 @@ import { showNotification, TableSkeleton } from '../../../components';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
-import InputSearch from '../../../components/inputSearch';
-import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import NotExit from '../../../components/common/NotExit';
+import InputSearch from '../../../components/item/inputSearch';
 
 export default function UserManage() {
     const [users, setUsers] = useState<IUserProfile[]>([]);
@@ -66,13 +66,12 @@ export default function UserManage() {
         }
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
-    
+
         closeModal();
-    
+
         // Refetch lại danh sách người dùng thay vì cập nhật thủ công
         fetchApi();
     };
-    
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const value = e.target.value;
@@ -134,11 +133,7 @@ export default function UserManage() {
 
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
-                    <InputSearch 
-                        handleSearch={handleSearch} 
-                        handleSearchChange={handleSearchChange} 
-                        searchQuery={searchQuery} 
-                    />
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
                     <button
                         onClick={handleAdd}
                         className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto">
@@ -157,6 +152,7 @@ export default function UserManage() {
                         onDelete={handleDelete}  // Pass the handleDelete function
                     />
                 )}
+
 
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>

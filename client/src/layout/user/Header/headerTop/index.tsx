@@ -1,16 +1,16 @@
 import React from 'react';
 import Notification from './Notification';
 import User from './User';
+import Cart from '../../../../components/cart';
 
 const HeaderTop: React.FC = () => {
     // const { mobile_ui } = useAppSelector((state) => state.action);
-    // const mobile_ui = false;
+    const mobile_ui = false;
     return (
         <div className="flex w-full justify-end items-center py-[6px] px-6  ">
             <div className="flex items-center gap-6 ">
                 <Notification />
-                {/* {mobile_ui ? <Cart /> : <User />} */}
-                <User />
+                {mobile_ui ? <Cart /> : <User />}
             </div>
         </div>
     );

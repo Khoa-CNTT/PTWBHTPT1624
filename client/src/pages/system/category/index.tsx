@@ -15,8 +15,9 @@ import { showNotification, TableSkeleton } from '../../../components';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
-import InputSearch from '../../../components/inputSearch';
+import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+
 
 export default function CategoryManage() {
     const [categories, setCategories] = useState<ICategory[]>([]);

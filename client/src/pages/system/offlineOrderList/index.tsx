@@ -6,7 +6,7 @@ import OfflineOrderListTable from './OfflineOrderListTable';
 import { IOrder } from '../../../interfaces/order.interfaces';
 import { apiGetAllOfflineOrders, apiGetOfflineOrderByCode } from '../../../services/order.service';  
 import NotExit from '../../../components/common/NotExit';
-import InputSearch from '../../../components/inputSearch';  
+import InputSearch from '../../../components/item/inputSearch';  
 
 export default function OfflineOrderListManage() {
     const [offlineOrderLists, setOfflineOrderLists] = useState<IOrder[]>([]);
