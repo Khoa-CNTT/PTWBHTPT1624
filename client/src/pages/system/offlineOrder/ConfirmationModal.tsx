@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 /* eslint-disable react-hooks/rules-of-hooks */
 import React, { useRef } from 'react';
-import { IProductInCart } from '../../../interfaces/product.interfaces';
 import { ReceiptContent } from '../../../components/ReceiptContent';
 import { apiCreateOfflineOrders } from '../../../services/order.service';
 import { showNotification } from '../../../components';
+import { IProductInCart } from '../../../interfaces/cart.interfaces';
 
 interface ConfirmationModalProps {
     open: boolean;
@@ -15,7 +15,7 @@ interface ConfirmationModalProps {
     calculateDiscountFromProducts: number;
     calculateTotal: number;
     calculateChange: number;
-    voucherId:string;
+    voucherId: string;
     appliedDiscount: number;
     handleCloseModal: () => void;
     handlePrintSuccess: () => void;
@@ -43,7 +43,7 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
         const data = {
             order_products: cart,
             order_payment_method: paymentMethod,
-            voucherId
+            voucherId,
         };
         const res = await apiCreateOfflineOrders(data);
         showNotification(res.message, res.success);

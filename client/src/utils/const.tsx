@@ -10,9 +10,10 @@ export const PATH = {
     PAGE_CART: '/gio-hang',
     PAGE_PAYMENT: '/payment',
     PAGE_PAYPAL: '/payment/paypal',
+    VOUCHER: '/voucher',
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
-    USER_PROFILE: "/nguoi-dung/tai-khoan/profile", // hoặc đơn giản là "profile"
+    USER_PROFILE: '/nguoi-dung/tai-khoan/profile', // hoặc đơn giản là "profile"
 
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',

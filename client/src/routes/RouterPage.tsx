@@ -16,6 +16,7 @@ import FilterPage from '../pages/user/filterPage';
 import ForgotPassword from '../feature/forgotPassword';
 import CartPage from '../pages/user/cartPage';
 import UserProfile from '../pages/user/profile/UserProfile';
+import VoucherPage from '../pages/user/voucherPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn } = useAuthStore();
@@ -33,12 +34,12 @@ const RouterPage = () => {
                 <Route path={PATH.PAGE_CART} element={<CartPage />} />
                 <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />} />
                 <Route path={PATH.USER_PROFILE} element={<UserProfile />} />
+                <Route path={PATH.VOUCHER} element={<VoucherPage />} />
                 {/* Các trang bên dưới vẫn được bọc trong DefaultLayout */}
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
             </Route>
 
             {/* Đặc biệt: không bọc UserProfile trong DefaultLayout */}
-            
 
             {/* ============= ADMIN =================== */}
             <Route
@@ -47,8 +48,7 @@ const RouterPage = () => {
                     <ProtectedRoute redirectPath={PATH.ADMIN_LOGIN}>
                         <AppLayout />
                     </ProtectedRoute>
-                }
-            >
+                }>
                 {/* Route mặc định */}
                 <Route index element={<DashboardManage />} />
                 <Route path={PATH.MANAGE_DASHBOARD} element={<DashboardManage />} />

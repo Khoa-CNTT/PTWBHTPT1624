@@ -45,30 +45,36 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
     }, [voucher]);
     const handleSave = () => {
         const { _id, voucher_users_used, voucher_uses_count, voucher_required_points, voucher_max_price, ...data } = inputFields;
-        
+
         // Cập nhật giá trị mặc định khi cần thiết
-        const updatedFields: Partial<IVoucher> = {
-            ...data,
-            voucher_required_points: data.voucher_type === 'user' ? voucher_required_points ?? 0 : 0,
-            voucher_max_price: data.voucher_method === 'percent' ? voucher_max_price ?? 0 : 0,
-        };
-    
-        // Kiểm tra validation
+        let updatedFields: Partial<IVoucher> = {};
+        if (data.voucher_type === 'user') {
+            updatedFields = {
+                ...data,
+                voucher_required_points,
+            };
+        }
+        if (data.voucher_method === 'percent') {
+            updatedFields = {
+                ...data,
+                voucher_max_price,
+            };
+        }
         if (!validate(updatedFields, setInvalidFields)) {
+            // Kiểm tra validation
             showNotification('Vui lòng nhập đầy đủ thông tin', false);
             return;
         }
-    
         // Cập nhật lại state trước khi gọi hàm onSave
-        setInputFields(prev => ({
+        setInputFields((prev) => ({
             ...prev,
-            ...updatedFields
+            ...updatedFields,
         }));
-    
+
         // Gọi hàm `onSave` với updatedFields
         onSave(voucher ? { _id: voucher._id, ...updatedFields } : updatedFields);
     };
-    
+    console.log(invalidFields);
 
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev: any) => ({ ...prev, [type]: type == 'voucher_is_active' ? e.target.checked : e.target.value }));

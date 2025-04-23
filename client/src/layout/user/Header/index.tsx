@@ -26,7 +26,7 @@ const Header: React.FC = () => {
     }, [setCategories, setBrands]);
 
     return (
-        <header className="w-full px-4 py-4 bg-gradient-to-r from-blue-500 to-green-500 tablet:bg-transparent tablet:bg-[url(https://salt.tikicdn.com/ts/banner/0f/65/5a/cc78315d8fe4d78ac876e8f9005a5cbb.png)] tablet:pb-2 transition-all ease-in-out duration-300">
+        <header className="w-full px-4  bg-gradient-to-r from-blue-500 to-green-500 tablet:bg-transparent tablet:bg-[url(https://salt.tikicdn.com/ts/banner/0f/65/5a/cc78315d8fe4d78ac876e8f9005a5cbb.png)] tablet:pb-2 transition-all ease-in-out duration-300">
             <div className="w-full h-full flex flex-col items-center max-w-[1280px] mx-auto">
                 <HeaderTop />
                 <HeaderBottom />
