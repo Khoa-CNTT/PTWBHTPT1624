@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { adminClient, apiClient } from '../config/httpRequest';
+import { adminClient, apiClient, authClient } from '../config/httpRequest';
 
 // API tìm kiếm sản phẩm theo từ khóa
 const apiSearchProduct = async (keySearch: string | any, query?: any) => {
@@ -205,7 +205,19 @@ const apiSearchProductByImage = async (imageUrl: string) => {
         };
     }
 };
+const apiGetPurchasedProduct = async () => {
+    try {
+        const res = await authClient.get(`/v1/api/purchased/all`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 export {
+    apiGetPurchasedProduct,
     apiSearchProductByImage,
     getTopViewedProduct,
     apiSearchProduct,

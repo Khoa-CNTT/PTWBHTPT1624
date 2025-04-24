@@ -1,9 +1,9 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { memo, useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import { InputReadOnly, Overlay, showNotification } from '..';
 import ButtonOutline from '../buttonOutline';
-
 import SelectOptions from '../selectOptions';
 import { IUserProfile } from '../../interfaces/user.interfaces';
 import { getApiPublicDistrict, getApiPublicProvince, getApiPublicWards } from '../../services/address.service';
@@ -26,7 +26,7 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
     const [wards, setWards] = useState<{ code: number; name: string }[]>();
     const [address, setAddress] = useState<string>('');
     useEffect(() => {
-        setAddress(payload.user_address || '');
+        setAddress(payload.user_address?.detail || '');
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [payload]);
 
@@ -56,26 +56,42 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
     }, [districtId]);
 
     useEffect(() => {
-        if (provinceId || districtId || wardsId) {
-            setAddress(
-                `${wardsId ? wards?.find((e) => e?.code === Number(wardsId))?.name + ', ' : ''}${
-                    districtId ? districts?.find((e) => e?.code === Number(districtId))?.name + ', ' : ''
-                }${provinceId ? provinces?.find((e) => e?.code === Number(provinceId))?.name : ''}`,
-            );
-        }
-        // eslint-disable-next-line react-hooks/exhaustive-deps
+        const province = provinces?.find((e) => e?.code === Number(provinceId));
+        const district = districts?.find((e) => e?.code === Number(districtId));
+        const ward = wards?.find((e) => e?.code === Number(wardsId));
+        const detailAddress = [ward?.name, district?.name, province?.name].filter(Boolean).join(', ');
+        setAddress(detailAddress);
     }, [provinceId, districtId, wardsId]);
 
     const handleSummit = async (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
+        const provinceName = provinces?.find((p) => p?.code === Number(provinceId))?.name || '';
+        const districtName = districts?.find((d) => d?.code === Number(districtId))?.name || '';
+        const wardName = wards?.find((w) => w?.code === Number(wardsId))?.name || '';
+        const newAddress = {
+            city: provinceName,
+            district: districtName,
+            village: wardName,
+            detail: address,
+        };
         if (isEdit) {
-            const res = await apiUpdateProfile({ user_address: address });
+            const res = await apiUpdateProfile({ user_address: newAddress });
             showNotification(res.message, res.success);
-            if (res.success) if (setPayload) setPayload((prev: any) => ({ ...prev, user_address: address }));
+            if (res.success && setPayload) {
+                setPayload((prev: any) => ({
+                    ...prev,
+                    user_address: newAddress,
+                }));
+            }
         } else {
-            if (setPayload) setPayload((prev: any) => ({ ...prev, user_address: address }));
+            if (setPayload) {
+                setPayload((prev: any) => ({
+                    ...prev,
+                    user_address: newAddress,
+                }));
+            }
         }
-        if (setIsOpen) setIsOpen(false);
+        setIsOpen?.(false);
     };
 
     return (

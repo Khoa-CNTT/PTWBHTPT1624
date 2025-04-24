@@ -56,14 +56,13 @@ class OrderController {
         try {
             const { code } = req.params;
             const order = await OrderService.getOrderByCode(code);
-            
+
             if (!order) {
                 return res.status(404).json({
                     success: false,
                     message: 'Order not found',
                 });
             }
-            
             return res.status(200).json({
                 success: true,
                 data: order,
@@ -80,14 +79,14 @@ class OrderController {
         try {
             const { code } = req.params;
             const order = await OrderService.getOfflineOrderByCode(code);
-    
+
             if (!order) {
                 return res.status(404).json({
                     success: false,
                     message: 'Không tìm thấy đơn hàng offline',
                 });
             }
-    
+
             return res.status(200).json({
                 success: true,
                 data: order,
@@ -100,10 +99,6 @@ class OrderController {
             });
         }
     }
-    
-    
-    
-    
 }
 
 module.exports = OrderController;

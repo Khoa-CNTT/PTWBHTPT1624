@@ -1,7 +1,7 @@
 import React from 'react';
-import useFavoriteStore from '../../../store/favoriteStore';
-import ProductItem from '../../../components/item/ProductItem';
-import { NotFound } from '../../../components';
+import useFavoriteStore from '../../../../store/favoriteStore';
+import ProductItem from '../../../../components/item/ProductItem';
+import { NotFound } from '../../../../components';
 
 const FavoritePage: React.FC = () => {
     const { favoriteProducts } = useFavoriteStore();

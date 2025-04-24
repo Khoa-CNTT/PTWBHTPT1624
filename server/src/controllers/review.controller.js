@@ -7,6 +7,14 @@ class ReviewController {
             userId: req.user.id,
             ...req.body,
         });
+        res.status(201).json({ success: true, message: 'Bạn đã nhận được 5000 điểm', review });
+    }
+    static async updateReview(req, res) {
+        const review = await ReviewService.updateReview({
+            userId: req.user.id,
+            reviewId: req.params.id,
+            ...req.body,
+        });
         res.status(201).json({ success: true, message: 'Đánh giá đã được gửi', review });
     }
 

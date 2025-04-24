@@ -3,11 +3,13 @@
 import React, { useState, useEffect } from 'react';
 import validate from '../../../utils/valueDate';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
-import { IUserProfile } from '../../../interfaces/user.interfaces';
-import { InputForm, showNotification } from '../../../components';
+import { InputForm, InputReadOnly, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import ImageCropper from '../../../components/ImageCropper';
+import SelectOptions from '../../../components/selectOptions';
+import { IUserProfile } from '../../../interfaces/user.interfaces';
+import { getApiPublicDistrict, getApiPublicProvince, getApiPublicWards } from '../../../services/address.service';
 
 interface UserModalProps {
     isOpen: boolean;
@@ -21,29 +23,80 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
         user_name: '',
         user_email: '',
         user_password: '', // Thêm mật khẩu
-        user_address: '',
+        user_address: { city: '', detail: '', district: '', village: '' },
         user_mobile: '',
         user_avatar_url: '',
         user_isBlocked: false,
     });
     const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-
+    const [provinces, setProvinces] = useState<{ code: number; name: string }[]>();
+    const [districts, setDistricts] = useState<{ code: number; name: string }[]>();
+    const [provinceId, setProvinceId] = useState<number>();
+    const [districtId, setDistrictId] = useState<number>();
+    const [wardsId, setWardsId] = useState<number>();
+    const [wards, setWards] = useState<{ code: number; name: string }[]>();
     useEffect(() => {
         if (user) {
             setInputFields(user);
         }
     }, [user]);
+    useEffect(() => {
+        const fetchApi = async () => {
+            const response = await getApiPublicProvince();
+            setProvinces(response);
+        };
+        fetchApi();
+    }, []);
+
+    useEffect(() => {
+        setDistrictId(undefined);
+        const fetchApi = async () => {
+            const response = await getApiPublicDistrict(provinceId);
+            setDistricts(response.districts);
+        };
+        fetchApi();
+    }, [provinceId]);
+
+    useEffect(() => {
+        const fetchApi = async () => {
+            const response = await getApiPublicWards(districtId);
+            setWards(response.wards);
+        };
+        fetchApi();
+    }, [districtId]);
+
+    useEffect(() => {
+        if (provinceId || districtId || wardsId) {
+            const province = provinces?.find((e) => e?.code === Number(provinceId));
+            const district = districts?.find((e) => e?.code === Number(districtId));
+            const ward = wards?.find((e) => e?.code === Number(wardsId));
+
+            const detailAddress = [ward?.name, district?.name, province?.name].filter(Boolean).join(', ');
+            setInputFields((prev) => ({
+                ...prev,
+                user_address: {
+                    city: province?.name || '',
+                    district: district?.name || '',
+                    village: ward?.name || '',
+                    detail: detailAddress,
+                },
+            }));
+        }
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [provinceId, districtId, wardsId]);
 
     const handleSave = () => {
         const { user_name, user_email, user_address, user_mobile, user_avatar_url, user_isBlocked, user_password } = inputFields;
         const data = { user_name, user_email, user_address, user_mobile, user_avatar_url, user_isBlocked, user_password };
-
+        if (!user_address?.city || !user_address.district || !user_address.village) {
+            showNotification('Vui lòng nhập đầy đủ địa chỉ');
+            return;
+        }
         if (!validate(data, setInvalidFields)) {
             showNotification('Vui lòng nhập đầy đủ thông tin');
             return;
         }
-
         // Gửi thông tin đến onSave, nếu có id thì gửi _id cùng với dữ liệu
         onSave(user ? { _id: user._id, ...inputFields } : inputFields);
     };
@@ -74,6 +127,24 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
             <div className="no-scrollbar relative w-full max-w-[500px] rounded-3xl bg-white p-6 dark:bg-gray-900">
                 <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white">{user ? 'Chỉnh sửa người dùng' : 'Thêm người dùng'}</h4>
                 <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200  border-gray-200 rounded-md">
+                    <div className="flex flex-col gap-1">
+                        <SelectOptions
+                            label="Tỉnh/Thành phố"
+                            options={provinces}
+                            selectId={provinces?.find((e) => e.code === provinceId)?.code}
+                            setOptionId={setProvinceId}
+                        />
+                        <SelectOptions
+                            label="Quận/Huyện"
+                            options={districts}
+                            selectId={districts?.find((e) => e.code === districtId)?.code}
+                            setOptionId={setDistrictId}
+                        />
+                        <SelectOptions label="Xã/Phường" options={wards} selectId={wards?.find((e) => e.code === wardsId)?.code} setOptionId={setWardsId} />
+                    </div>
+                    <div className="mb-4">
+                        <InputReadOnly col={true} label="Địa chỉ" value={inputFields.user_address?.detail} />
+                    </div>
                     <div className="mb-4">
                         <InputForm
                             col={true}
@@ -103,17 +174,6 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
                             label="Số điện thoại"
                             name_id="user_mobile"
                             value={inputFields.user_mobile}
-                            invalidFields={invalidFields}
-                        />
-                    </div>
-
-                    <div className="mb-4">
-                        <InputForm
-                            col={true}
-                            handleOnchange={(e) => handleInputField(e, 'user_address')}
-                            label="Địa chỉ"
-                            name_id="user_address"
-                            value={inputFields.user_address}
                             invalidFields={invalidFields}
                         />
                     </div>

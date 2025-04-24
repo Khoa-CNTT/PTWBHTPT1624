@@ -1,10 +1,10 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useState } from 'react';
-import { IUserDetail } from '../../../interfaces/user.interfaces';
-import { apiUploadImage } from '../../../services/uploadPicture.service';
-import { showNotification } from '../../../components';
+import { IUserDetail } from '../../../../interfaces/user.interfaces';
+import { apiUploadImage } from '../../../../services/uploadPicture.service';
 import ReactLoading from 'react-loading';
-import { noUser } from '../../../assets';
+import { noUser } from '../../../../assets';
+import ImageCropper from '../../../../components/ImageCropper';
 
 interface AvatarProps {
     setPayload: React.Dispatch<React.SetStateAction<IUserDetail>>;
@@ -14,19 +14,15 @@ interface AvatarProps {
 const AvatarUser: React.FC<AvatarProps> = ({ setPayload, payload }) => {
     const [isLoadingImg, setIsLoadingImg] = useState(false);
 
-    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
-        const files = e.target.files;
-        if (!files) return;
+    const handleImageUpload = async (image: string): Promise<void> => {
         setIsLoadingImg(true);
-        const formData = new FormData();
-        formData.append('file', files[0]);
-        formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET);
-        try {
-            const res = await apiUploadImage(formData);
-            setPayload((prev) => ({ ...prev, user_avatar_url: res.url }));
-        } catch (err) {
-            showNotification('Tải ảnh lên thất bại', false);
-        }
+        const formData: any = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+        const res = await apiUploadImage(formData);
+        setPayload((prev) => ({ ...prev, user_avatar_url: res.url }));
+        // setInputFields((prev) => ({ ...prev, [type]: response.url }));
+        // setInvalidFields((prev: any) => prev.filter((field: { name: string }) => field.name !== type));
         setIsLoadingImg(false);
     };
 
@@ -41,10 +37,7 @@ const AvatarUser: React.FC<AvatarProps> = ({ setPayload, payload }) => {
                     <img className="w-full h-full object-cover" src={payload.user_avatar_url || noUser} alt="Avatar" />
                 )}
             </div>
-            <label className="cursor-pointer border px-4 py-2 rounded text-center">
-                Chọn ảnh
-                <input type="file" hidden onChange={handleImageUpload} />
-            </label>
+            <ImageCropper width={239} height={239} label="Ảnh đại diện" onCropComplete={handleImageUpload} idName="user_avatar_url" />
         </div>
     );
 };

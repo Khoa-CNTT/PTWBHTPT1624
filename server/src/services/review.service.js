@@ -2,123 +2,167 @@
 
 const { RequestError, NotFoundError } = require('../core/error.response');
 const OnlineOrder = require('../models/OnlineOrder');
+const PurchasedModel = require('../models/Purchased.model');
 const Review = require('../models/reviews.model');
+const userModel = require('../models/user.model');
 
 class ReviewService {
     // 📝 Tạo đánh giá mới
     static async createReview(payload) {
-        const { userId, review_productId, review_rating, review_comment, review_images } = payload;
-
+        const { userId, review_productId, review_rating = 0, review_comment, review_images } = payload;
         if (!userId || !review_productId || !review_comment) {
             throw new RequestError('Thiếu thông tin để tạo đánh giá');
         }
-
-        const hasPurchased = await OnlineOrder.findOne({
-            order_user: userId,
-            'order_products.productId': review_productId,
-            order_status: { $in: ['pending', 'confirmed', 'delivered'] },
+        await userModel.findByIdAndUpdate(userId, {
+            $inc: { user_reward_points: 50000 },
+        });
+        const hasPurchased = await PurchasedModel.findOne({
+            pc_userId: userId,
+            pc_productId: review_productId,
         });
 
         if (!hasPurchased && review_rating > 0) {
             throw new RequestError('Chỉ người đã mua sản phẩm mới được đánh giá sao');
         }
 
-        const finalRating = hasPurchased ? review_rating : 0;
-        const isApproved = !!hasPurchased;
+        if (hasPurchased) {
+            hasPurchased.pc_isReviewed = true;
+            await hasPurchased.save();
+        }
 
         const newReview = await Review.create({
             review_user: userId,
             review_productId,
-            review_rating: finalRating,
+            review_rating: hasPurchased ? review_rating : 0,
             review_comment,
             review_images,
-            isApproved,
+            isApproved: !!hasPurchased,
         });
 
         return newReview;
     }
 
-    // 📖 Lấy đánh giá đã duyệt cho sản phẩm cụ thể (public)
+    // ✏️ Cập nhật đánh giá
+    static async updateReview(payload) {
+        const { userId, reviewId, review_productId, review_rating = 0, review_comment, review_images } = payload;
+
+        if (!userId || !reviewId || !review_productId || !review_comment) {
+            throw new RequestError('Thiếu thông tin để cập nhật đánh giá');
+        }
+
+        const hasPurchased = await PurchasedModel.findOne({
+            pc_userId: userId,
+            pc_productId: review_productId,
+        });
+
+        if (!hasPurchased && review_rating > 0) {
+            throw new RequestError('Chỉ người đã mua sản phẩm mới được đánh giá sao');
+        }
+
+        const updatedReview = await Review.findByIdAndUpdate(
+            reviewId,
+            {
+                review_user: userId,
+                review_productId,
+                review_rating: hasPurchased ? review_rating : 0,
+                review_comment,
+                review_images,
+                isApproved: !!hasPurchased,
+            },
+            { new: true },
+        );
+
+        if (!updatedReview) {
+            throw new NotFoundError('Không tìm thấy đánh giá để cập nhật');
+        }
+
+        return updatedReview;
+    }
+
+    // 📖 Lấy đánh giá đã duyệt cho sản phẩm (Public)
     static async getReviews(productId) {
-        const reviews = await Review.find({ review_productId: productId, isApproved: true }).populate('review_user', 'user_name user_avatar_url');
+        if (!productId) {
+            throw new RequestError('Thiếu productId để lấy đánh giá');
+        }
+
+        const reviews = await Review.find({
+            review_productId: productId,
+            isApproved: true,
+        }).populate('review_user', 'user_name user_avatar_url');
+
         return reviews;
     }
 
-    // 📖 Lấy tất cả đánh giá (admin)
-    static async getAllReviews({ limit, page }) {
-        const limitNum = parseInt(limit, 10) || 10;
-        const pageNum = parseInt(page, 10) || 0;
-        const skipNum = pageNum * limitNum;
+    // 📖 Lấy tất cả đánh giá (Admin)
+    static async getAllReviews({ limit = 10, page = 0 }) {
+        const skip = page * limit;
 
-        const Reviews = await Review.find().populate('review_user', 'user_name user_avatar_url').sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
-
-        const totalReview = await Review.countDocuments();
+        const [reviews, totalReview] = await Promise.all([
+            Review.find().populate('review_user', 'user_name user_avatar_url').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            Review.countDocuments(),
+        ]);
 
         return {
-            totalPage: Math.ceil(totalReview / limitNum),
-            currentPage: pageNum,
+            totalPage: Math.ceil(totalReview / limit),
+            currentPage: page,
             totalReview,
-            Reviews,
+            reviews,
         };
     }
 
-    // ✅ Lấy đánh giá đã được duyệt
-    static async getApprovedReviews({ limit, page }) {
-        const limitNum = parseInt(limit, 10) || 10;
-        const pageNum = parseInt(page, 10) || 0;
-        const skipNum = pageNum * limitNum;
+    // ✅ Lấy đánh giá đã duyệt
+    static async getApprovedReviews({ limit = 10, page = 0 }) {
+        const skip = page * limit;
 
-        const Reviews = await Review.find({ isApproved: true })
-            .populate('review_user', 'user_name user_avatar_url')
-            .sort({ createdAt: -1 })
-            .skip(skipNum)
-            .limit(limitNum)
-            .lean();
-
-        const totalReview = await Review.countDocuments({ isApproved: true });
+        const [reviews, totalReview] = await Promise.all([
+            Review.find({ isApproved: true }).populate('review_user', 'user_name user_avatar_url').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            Review.countDocuments({ isApproved: true }),
+        ]);
 
         return {
-            totalPage: Math.ceil(totalReview / limitNum),
-            currentPage: pageNum,
+            totalPage: Math.ceil(totalReview / limit),
+            currentPage: page,
             totalReview,
-            Reviews,
+            reviews,
         };
     }
 
     // ❌ Lấy đánh giá chưa được duyệt
-    static async getPendingReviews({ limit, page }) {
-        const limitNum = parseInt(limit, 10) || 10;
-        const pageNum = parseInt(page, 10) || 0;
-        const skipNum = pageNum * limitNum;
+    static async getPendingReviews({ limit = 10, page = 0 }) {
+        const skip = page * limit;
 
-        const Reviews = await Review.find({ isApproved: false })
-            .populate('review_user', 'user_name user_avatar_url')
-            .sort({ createdAt: -1 })
-            .skip(skipNum)
-            .limit(limitNum)
-            .lean();
-
-        const totalReview = await Review.countDocuments({ isApproved: false });
+        const [reviews, totalReview] = await Promise.all([
+            Review.find({ isApproved: false }).populate('review_user', 'user_name user_avatar_url').sort({ createdAt: -1 }).skip(skip).limit(limit).lean(),
+            Review.countDocuments({ isApproved: false }),
+        ]);
 
         return {
-            totalPage: Math.ceil(totalReview / limitNum),
-            currentPage: pageNum,
+            totalPage: Math.ceil(totalReview / limit),
+            currentPage: page,
             totalReview,
-            Reviews,
+            reviews,
         };
     }
 
     // ✅ Duyệt đánh giá
     static async approveReview(reviewId) {
+        if (!reviewId) throw new RequestError('Thiếu reviewId để duyệt đánh giá');
+
         const review = await Review.findByIdAndUpdate(reviewId, { isApproved: true }, { new: true });
+
         if (!review) throw new NotFoundError('Không tìm thấy đánh giá');
+
         return review;
     }
 
     // ❌ Xóa đánh giá
     static async deleteReview(reviewId) {
+        if (!reviewId) throw new RequestError('Thiếu reviewId để xóa đánh giá');
+
         const review = await Review.findByIdAndDelete(reviewId);
+
         if (!review) throw new NotFoundError('Không tìm thấy đánh giá');
+
         return review;
     }
 }

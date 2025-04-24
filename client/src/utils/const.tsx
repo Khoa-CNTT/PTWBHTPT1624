@@ -111,8 +111,8 @@ import PersonIcon from '@mui/icons-material/Person';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SellIcon from '@mui/icons-material/Sell';
 import { bachhoa, danhchoban, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
-import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
-
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
+import ScheduleIcon from '@mui/icons-material/Schedule';
 export const SIDEBAR_USER = [
     {
         label: 'Thông tin tài khoản',
@@ -125,14 +125,19 @@ export const SIDEBAR_USER = [
         icon: <ShoppingBasketIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
-        label: 'Quản lý bán hàng',
-        path_name: 'sell',
+        label: 'Sản phẩm đã mua',
+        path_name: 'san-pham-da-mua',
         icon: <SellIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
         label: 'Sản phẩm yêu thích',
         path_name: 'san-pham-yeu-thich',
-        icon: <ProductionQuantityLimitsIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: <FavoriteBorderIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+    },
+    {
+        label: 'Đã xem gần đây',
+        path_name: 'san-pham-da-xem',
+        icon: <ScheduleIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
 ];
 

@@ -2,11 +2,11 @@
 import React, { useEffect, useState } from 'react';
 import AvatarUser from './AvatarUser';
 import ChangePassword from './ChangePassword';
-import useUserStore from '../../../store/userStore';
-import { IUserDetail } from '../../../interfaces/user.interfaces';
-import { apiGetDetailUser, apiUpdateProfile } from '../../../services/user.service';
-import { ButtonOutline, InputForm, InputReadOnly, showNotification } from '../../../components';
-import FormEditAddress from '../../../components/form/FormEditAddress';
+import useUserStore from '../../../../store/userStore';
+import { IUserDetail } from '../../../../interfaces/user.interfaces';
+import { apiGetDetailUser, apiUpdateProfile } from '../../../../services/user.service';
+import { ButtonOutline, InputForm, InputReadOnly, showNotification } from '../../../../components';
+import FormEditAddress from '../../../../components/form/FormEditAddress';
 
 const UserProfile: React.FC = () => {
     const { user, setUser } = useUserStore();
@@ -92,7 +92,7 @@ const UserProfile: React.FC = () => {
                                 value={payload.user_mobile || ''}
                                 handleOnchange={(e: any) => handleOnChangeValue(e, 'user_mobile')}
                             />
-                            <InputReadOnly label="Địa chỉ" isEdit value={payload.user_address} handleEdit={() => setIsOpenEditAddress(true)} />
+                            <InputReadOnly label="Địa chỉ" isEdit value={payload.user_address?.detail} handleEdit={() => setIsOpenEditAddress(true)} />
                             <ButtonOutline className="mx-auto px-6 text-white bg-primary" onClick={handleSubmit}>
                                 Cập nhật hồ sơ
                             </ButtonOutline>

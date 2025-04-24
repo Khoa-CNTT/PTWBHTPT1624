@@ -127,7 +127,7 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
                             {user && (
                                 <div className="flex gap-1 text-sm">
                                     Giao đến
-                                    <span className="text-[15px] font-medium underline text-primary">{user.user_address}</span>
+                                    <span className="text-[15px] font-medium underline text-primary">{user.user_address?.detail}</span>
                                 </div>
                             )}
 

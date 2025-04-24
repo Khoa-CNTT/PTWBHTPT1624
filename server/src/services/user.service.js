@@ -85,7 +85,7 @@ class UserService {
     }
 
     static async getProfile(userid) {
-        return await UserModel.findById(userid).select('_id user_name user_email user_isBlocked user_address user_mobile user_avatar_url');
+        return await UserModel.findById(userid).select('_id user_name user_reward_points user_email user_isBlocked user_address user_mobile user_avatar_url');
     }
     static async updateProfile(uid, payload) {
         const { _id, ...updateData } = payload; // Loại bỏ _id khỏi dữ liệu cập nhật

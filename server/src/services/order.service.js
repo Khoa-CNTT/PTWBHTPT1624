@@ -298,29 +298,36 @@ class OrderService {
 
     static async updateOrderStatus({ orderId, newStatus }) {
         if (!orderId) throw new RequestError('Không tìm thấy đơn hàng');
+
         const validStatuses = ['pending', 'confirm', 'shipped', 'delivered', 'cancelled'];
-        if (!validStatuses.includes(newStatus)) throw new RequestError('Trạng thái không hợp lệ');
+        if (!validStatuses.includes(newStatus)) {
+            throw new RequestError('Trạng thái không hợp lệ');
+        }
+
         const updatedOrder = await OnlineOrder.findOneAndUpdate({ _id: orderId }, { order_status: newStatus, updatedAt: new Date() }, { new: true });
+
         if (!updatedOrder) throw new RequestError('Không tìm thấy đơn hàng');
-        // Nếu đơn hàng được giao thành công, thêm sản phẩm vào model PurchasedProduct
+
+        // Nếu đơn hàng đã giao thành công => Cập nhật bảng sản phẩm đã mua
         if (newStatus === 'delivered') {
             const orderItems = updatedOrder.order_products;
+
             for (const item of orderItems) {
-                // Kiểm tra xem sản phẩm đã được mua trước đó chưa
+                const { productId, quantity } = item;
+
                 const existingProduct = await PurchasedModel.findOne({
                     pc_userId: updatedOrder.order_user,
-                    pc_productId: item.productId,
+                    pc_productId: productId,
                 });
+
                 if (existingProduct) {
-                    // Nếu sản phẩm đã tồn tại, cập nhật số lượng
-                    existingProduct.pc_quantity += item.quantity;
+                    existingProduct.pc_quantity += quantity;
                     await existingProduct.save();
                 } else {
-                    // Nếu sản phẩm chưa tồn tại, tạo bản ghi mới
                     await PurchasedModel.create({
                         pc_userId: updatedOrder.order_user,
-                        pc_productId: item.productId,
-                        pc_quantity: item.quantity,
+                        pc_productId: productId,
+                        pc_quantity: quantity,
                         pc_purchaseDate: new Date(),
                     });
                 }
@@ -397,10 +404,8 @@ class OrderService {
     }
 
     static async getOfflineOrderByCode(code) {
-        const order = await OfflineOrder.findOne({ order_code: code })
-            .populate('order_products.productId')
-            .populate('order_staff', 'name email'); // Nếu muốn hiện thông tin nhân viên tạo đơn
-    
+        const order = await OfflineOrder.findOne({ order_code: code }).populate('order_products.productId').populate('order_staff', 'name email'); // Nếu muốn hiện thông tin nhân viên tạo đơn
+
         return order;
     }
 

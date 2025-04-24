@@ -15,10 +15,12 @@ import SearchPage from '../pages/user/searchPage';
 import FilterPage from '../pages/user/filterPage';
 import ForgotPassword from '../feature/forgotPassword';
 import CartPage from '../pages/user/cartPage';
-import UserProfile from '../pages/user/profile/UserProfile';
+import UserProfile from '../pages/user/userPage/profile/UserProfile';
 import VoucherPage from '../pages/user/voucherPage';
 import UserPage from '../pages/user/userPage';
-import FavoritePage from '../pages/user/FavoritePage';
+import FavoritePage from '../pages/user/userPage/FavoritePage';
+import RecentViewPage from '../pages/user/userPage/RecentViewPage';
+import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
@@ -44,6 +46,8 @@ const RouterPage = () => {
                     <Route path={''} element={<Navigate to="profile" />} />
                     <Route path={'profile'} element={<UserProfile />} />
                     <Route path={'san-pham-yeu-thich'} element={<FavoritePage />} />
+                    <Route path={'san-pham-da-xem'} element={<RecentViewPage />} />
+                    <Route path={'san-pham-da-mua'} element={<PurchasedProductsPage />} />
                     {/* <Route path={'purchase'} element={<PurchaseManage />} />
                     <Route path={'sell'} element={<SellManage />} />
                     <Route path={'product'} element={<ProductManage />} />

@@ -8,8 +8,10 @@ import { apiGetProductById } from '../../../services/product.service';
 import { SkeLetonDetailPage } from '../../../components';
 import Seo from '../../../components/seo';
 import { IProductDetail } from '../../../interfaces/product.interfaces';
+import useRecentViewStore from '../../../store/recentViewStore';
 const DetailPage: React.FC = () => {
     const [productDetail, setProductDetail] = useState<IProductDetail>();
+    const { addRecentView } = useRecentViewStore();
     const pid = useParams().pid;
     useEffect(() => {
         if (!pid) return;
@@ -17,6 +19,7 @@ const DetailPage: React.FC = () => {
             const res = await apiGetProductById(pid);
             if (res.success) {
                 setProductDetail(res.data);
+                addRecentView(res.data);
             }
         };
         fetchDetail();

@@ -4,6 +4,7 @@ import { ICategory } from './category.interfaces';
 
 export interface IProductItem {
     _id: string | any;
+    product_code?: string;
     product_name: string;
     product_thumb: string;
     product_price: number;
@@ -41,4 +42,13 @@ export interface IProductDetail extends IProductItem {
     product_brand_id: IBrand; // ID thương hiệu sản phẩm
     product_supplier_id: string; // ID nhà cung cấp sản phẩm
     product_isPublished: boolean; // Trạng thái xuất bản
+}
+
+export interface IPurchasedProduct {
+    _id: string;
+    pc_isReviewed: boolean;
+    pc_productId: IProductItem;
+    pc_purchaseDate: string;
+    pc_quantity: number;
+    pc_userId: string;
 }

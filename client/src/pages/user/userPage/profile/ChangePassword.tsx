@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { InputForm, ButtonOutline, showNotification } from '../../../components';
-import { apiChangePassword } from '../../../services/user.service';
+import { InputForm, ButtonOutline, showNotification } from '../../../../components';
+import { apiChangePassword } from '../../../../services/user.service';
 
 const ChangePassword: React.FC = () => {
     const [oldPassword, setOldPassword] = useState('');
@@ -12,14 +12,14 @@ const ChangePassword: React.FC = () => {
         const specialCharRegex = /[!@#$%^&*(),.?":{}|<>]/;
 
         if (password.length < minLength) {
-            return "Mật khẩu phải có ít nhất 6 ký tự.";
+            return 'Mật khẩu phải có ít nhất 6 ký tự.';
         }
 
         if (!specialCharRegex.test(password)) {
-            return "Mật khẩu phải chứa ít nhất một ký tự đặc biệt.";
+            return 'Mật khẩu phải chứa ít nhất một ký tự đặc biệt.';
         }
 
-        return "";
+        return '';
     };
 
     const handlePasswordChange = async () => {
@@ -75,10 +75,7 @@ const ChangePassword: React.FC = () => {
                     handleOnchange={(e) => setConfirmPassword(e.target.value)}
                 />
                 <div className="flex justify-center">
-                    <ButtonOutline
-                        className="px-6 py-2 text-white bg-primary"
-                        onClick={handlePasswordChange}
-                    >
+                    <ButtonOutline className="px-6 py-2 text-white bg-primary" onClick={handlePasswordChange}>
                         Đổi mật khẩu
                     </ButtonOutline>
                 </div>

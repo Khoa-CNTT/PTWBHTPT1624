@@ -5,6 +5,7 @@ import { PATH, SIDEBAR_USER } from '../../../utils/const';
 import { useActionStore } from '../../../store/actionStore';
 import useUserStore from '../../../store/userStore';
 import useAuthStore from '../../../store/authStore';
+import PaidIcon from '@mui/icons-material/Paid';
 
 export const Sidebar: React.FC = () => {
     const location = useLocation();
@@ -20,7 +21,7 @@ export const Sidebar: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
     return (
-        <div className="flex flex-col w-full gap-6 bg-white py-3 rounded-md overflow-hidden">
+        <div className="flex flex-col w-full gap-4 bg-white py-3 rounded-md overflow-hidden">
             <div className="flex gap-2 items-center ml-2">
                 <div className="w-11 h-11 overflow-hidden rounded-full border-[1px] border-solid border-separate">
                     <img src={user.user_avatar_url || noUser} className="w-full h-full object-cover block" />
@@ -28,6 +29,13 @@ export const Sidebar: React.FC = () => {
                 <div className="flex flex-col text-xs text-secondary">
                     Tài khoản của
                     <span className="text-base font-normal text-black ">{user.user_name}</span>
+                </div>
+            </div>
+            <div className="flex flex-col items-center text-center mx-4 justify-center py-2 px-3 bg-yellow-50 rounded-xl border border-yellow-400 shadow-sm">
+                <span className="text-[14px] text-gray-900">Điểm hiện có</span>
+                <div className="flex items-center gap-1 text-amber-500 font-semibold text-sm mt-1">
+                    {user.user_reward_points?.toLocaleString('vi-VN')}
+                    <PaidIcon fontSize="small" />
                 </div>
             </div>
 
