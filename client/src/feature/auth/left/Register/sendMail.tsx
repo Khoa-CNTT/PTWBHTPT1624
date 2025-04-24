@@ -62,7 +62,7 @@ const sendMail: React.FC<ModeRegister> = (props) => {
     return (
         <>
             <div className="flex flex-col gap-1">
-                <h1 className="text-2xl font-semibold">Tạo tại khoản </h1>
+                <h1 className="text-2xl font-semibold">Tạo tài khoản </h1>
                 <p className="text-base">Vui lòng nhập địa chỉ gmail</p>
             </div>
             <form className="flex flex-col ">

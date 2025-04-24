@@ -5,6 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import { Auth } from '../../feature';
 import useFetchDetailUser from '../../hooks/useFetchDetailUser';
+import Loading from '../../components/common/Loading';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
@@ -42,9 +43,10 @@ const DefaultLayout = () => {
                 </main>
                 <Footer />
                 <Auth />
+                <Loading />
                 {/* <Auth /> */}
                 {/* {!mobile_ui ||!location.pathname.includes(path.PAGE_PAYPAL) &&<Footer />}
-                <Loading />
+             
                 <Chat />
                 <BottomNavigate /> */}
             </div>

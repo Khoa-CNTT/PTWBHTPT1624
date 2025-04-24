@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả người dùng
@@ -98,7 +99,19 @@ const apiChangePassword = async (oldPassword: string, newPassword: string) => {
             oldPassword,
             newPassword,
         });
-        return res.data; // BE trả về { success, message, ... } nên dùng trực tiếp
+        return res.data;
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.response?.data?.message || 'Đã xảy ra lỗi!',
+            code: error?.response?.data?.code || 500,
+        };
+    }
+};
+const apiUpdateProfile = async (data: any) => {
+    try {
+        const res = await authClient.put('/v1/api/user/profile/update', data);
+        return res.data;
     } catch (error: any) {
         return {
             success: false,
@@ -108,5 +121,4 @@ const apiChangePassword = async (oldPassword: string, newPassword: string) => {
     }
 };
 
-
-export {apiChangePassword,apiSearchUsers, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+export { apiChangePassword, apiSearchUsers, apiUpdateProfile, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };

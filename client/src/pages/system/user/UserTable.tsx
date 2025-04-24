@@ -29,15 +29,15 @@ const UserTable = ({ users, onEdit, onBlock, onDelete }: UserTableProps) => {
                     <tbody>
                         {users.map((user) => (
                             <tr key={user._id}>
-                                <td className="text-center px-4 py-2">{user.user_name}</td>
-                                <td className="text-center px-4 py-2">{user.user_email}</td>
-                                <td className="text-center px-4 py-2">
+                                <td className="text-center px-4 py-2 text-sm">{user.user_name}</td>
+                                <td className="text-center px-4 py-2 text-sm">{user.user_email}</td>
+                                <td className="text-center px-4 py-2 text-sm">
                                     <div className="w-12  overflow-hidden flex items-center justify-center">
                                         <img src={user?.user_avatar_url || noUser} alt={user.user_name} className="w-full h-full object-cover rounded-md" />
                                     </div>
                                 </td>
-                                <td className="text-center px-4 py-2">{user.user_mobile || 'Chưa cập nhật'}</td>
-                                <td className="text-center px-4 py-2">
+                                <td className="text-center px-4 py-2 text-sm">{user.user_mobile || 'Chưa cập nhật'}</td>
+                                <td className="text-center px-4 py-2 text-sm">
                                     <FormControl>
                                         <FormControlLabel
                                             control={

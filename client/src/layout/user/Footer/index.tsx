@@ -64,14 +64,13 @@ const Footer: React.FC<FooterProps> = ({ contacts = DEFAULT_CONTACTS }) => {
     const [statistics, setStatistics] = useState<StatisticItem[]>([]);
     const statsRef = useRef<HTMLDivElement>(null);
     useEffect(() => {
- 
         // Fetch product stats from API
         const fetchStats = async () => {
             const result = await apiGetProductStats();
             if (result.success) {
                 setStatistics([
                     { id: 'sold', value: result.data.sold, name: 'Sản phẩm đã bán' },
-                    { id: 'customers', value: result.data.customers, name: 'Khách hàng hài lòng' },
+                    { id: 'customers', value: result.data.customers, name: 'Khách hàng' },
                     { id: 'products', value: result.data.products, name: 'Sản phẩm đa dạng' },
                     { id: 'visits', value: result.data.visits, name: 'Lượt truy cập' },
                 ]);
@@ -81,7 +80,7 @@ const Footer: React.FC<FooterProps> = ({ contacts = DEFAULT_CONTACTS }) => {
         };
 
         fetchStats();
- 
+
         const observer = new IntersectionObserver(
             ([entry]) => {
                 if (entry.isIntersecting) {

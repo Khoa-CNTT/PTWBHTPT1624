@@ -1,8 +1,9 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { IBrand } from './brand.interfaces';
 import { ICategory } from './category.interfaces';
 
 export interface IProductItem {
-    _id?: string;
+    _id: string | any;
     product_name: string;
     product_thumb: string;
     product_price: number;
@@ -30,6 +31,7 @@ export interface IProduct extends IProductItem {
 export interface IProductDetail extends IProductItem {
     product_code: string;
     product_views?: number;
+    product_likes: number;
     product_images: string[]; // Danh sách ảnh sản phẩm
     product_description: string; // Mô tả sản phẩm
     product_quantity: number; // Số lượng sản phẩm trong kho

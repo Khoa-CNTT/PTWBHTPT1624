@@ -130,8 +130,8 @@ export const SIDEBAR_USER = [
         icon: <SellIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
-        label: 'Quản lý sản phẩm',
-        path_name: 'product',
+        label: 'Sản phẩm yêu thích',
+        path_name: 'san-pham-yeu-thich',
         icon: <ProductionQuantityLimitsIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
 ];
