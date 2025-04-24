@@ -18,6 +18,7 @@ import CartPage from '../pages/user/cartPage';
 import UserProfile from '../pages/user/profile/UserProfile';
 import VoucherPage from '../pages/user/voucherPage';
 import UserPage from '../pages/user/userPage';
+import FavoritePage from '../pages/user/FavoritePage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
@@ -42,6 +43,7 @@ const RouterPage = () => {
                 <Route path={PATH.PAGE_USER} element={isUserLoggedIn ? <UserPage /> : <Navigate to="/" />}>
                     <Route path={''} element={<Navigate to="profile" />} />
                     <Route path={'profile'} element={<UserProfile />} />
+                    <Route path={'san-pham-yeu-thich'} element={<FavoritePage />} />
                     {/* <Route path={'purchase'} element={<PurchaseManage />} />
                     <Route path={'sell'} element={<SellManage />} />
                     <Route path={'product'} element={<ProductManage />} />

@@ -144,7 +144,6 @@ class AuthUserService {
         if (!matchPassword) throw new RequestError('Tài khoản hoặc mật khẩu không đúng', 201);
         const tokens = await createTokenPairs(foundUser);
         const { accessToken, refreshToken } = tokens;
-        console.log('accessToken, refreshToken', { accessToken, refreshToken });
         res.cookie('refresh_token', `${refreshToken}`, {
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,

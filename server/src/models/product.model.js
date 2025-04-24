@@ -19,6 +19,7 @@ const productSchema = new Schema(
         product_discounted_price: { type: Number, default: 0 }, // Giá sau chiết khấu
         product_description: { type: String, required: true },
         product_attribute: { type: Schema.Types.Mixed, required: true }, // Thuộc tính của sản phẩm (size, color, ...)
+        product_likes: { type: Number, default: 0 },
         product_ratings: {
             type: Number,
             default: 4.5,

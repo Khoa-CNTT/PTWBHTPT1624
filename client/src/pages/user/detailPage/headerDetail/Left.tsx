@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import { Navigation } from 'swiper/modules';
 import { v4 as uuidv4 } from 'uuid';
-import { iconCopy, iconFacebook, iconMessenger } from '../../../../assets';
+// import { iconCopy, iconFacebook, iconMessenger } from '../../../../assets';
 
 const Left: React.FC<{ productImage: Array<string>; imageUrl: string }> = ({ productImage, imageUrl }) => {
     const [imagePrimary, setImagePrimary] = useState<string>(imageUrl);
@@ -45,7 +45,7 @@ const Left: React.FC<{ productImage: Array<string>; imageUrl: string }> = ({ pro
                     ))}
                 </Swiper>
             </ul>
-            <div className="flex gap-2 items-center mt-4">
+            {/* <div className="flex gap-2 items-center mt-4">
                 <span className="font-normal">Chia sẻ :</span>
                 <span className="cursor-pointer">
                     <img src={iconFacebook} />
@@ -56,7 +56,7 @@ const Left: React.FC<{ productImage: Array<string>; imageUrl: string }> = ({ pro
                 <span className="cursor-pointer">
                     <img src={iconCopy} />
                 </span>
-            </div>
+            </div> */}
         </div>
     );
 };

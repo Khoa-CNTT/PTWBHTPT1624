@@ -1,15 +1,18 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import AvatarUser from './AvatarUser';
 import ChangePassword from './ChangePassword';
 import useUserStore from '../../../store/userStore';
 import { IUserDetail } from '../../../interfaces/user.interfaces';
-import { apiGetDetailUser, apiUpdateUser } from '../../../services/user.service';
+import { apiGetDetailUser, apiUpdateProfile } from '../../../services/user.service';
 import { ButtonOutline, InputForm, InputReadOnly, showNotification } from '../../../components';
+import FormEditAddress from '../../../components/form/FormEditAddress';
 
 const UserProfile: React.FC = () => {
     const { user, setUser } = useUserStore();
     const [payload, setPayload] = useState<IUserDetail>(user);
     const [activeTab, setActiveTab] = useState<string>('info');
+    const [isOpenEditAddress, setIsOpenEditAddress] = useState<boolean>(false);
     const mobile_ui = false;
 
     const fetchUserDetail = async () => {
@@ -27,7 +30,7 @@ const UserProfile: React.FC = () => {
     };
 
     const handleSubmit = async () => {
-        const res = await apiUpdateUser(payload._id, payload);
+        const res = await apiUpdateProfile(payload);
         if (res.success) {
             showNotification('Cập nhật thành công!', true);
             setUser(res.data);
@@ -62,12 +65,9 @@ const UserProfile: React.FC = () => {
                     <div
                         key={tab.tab}
                         className={`flex-1 text-center py-2 cursor-pointer text-sm ${
-                            activeTab === tab.tab
-                                ? 'text-primary border-b-2 border-primary'
-                                : 'text-secondary'
+                            activeTab === tab.tab ? 'text-primary border-b-2 border-primary' : 'text-secondary'
                         }`}
-                        onClick={() => setActiveTab(tab.tab)}
-                    >
+                        onClick={() => setActiveTab(tab.tab)}>
                         {tab.title}
                     </div>
                 ))}
@@ -92,12 +92,7 @@ const UserProfile: React.FC = () => {
                                 value={payload.user_mobile || ''}
                                 handleOnchange={(e: any) => handleOnChangeValue(e, 'user_mobile')}
                             />
-                            <InputForm
-                                label="Địa chỉ"
-                                name_id="user_address"
-                                value={payload.user_address || ''}
-                                handleOnchange={(e: any) => handleOnChangeValue(e, 'user_address')}
-                            />
+                            <InputReadOnly label="Địa chỉ" isEdit value={payload.user_address} handleEdit={() => setIsOpenEditAddress(true)} />
                             <ButtonOutline className="mx-auto px-6 text-white bg-primary" onClick={handleSubmit}>
                                 Cập nhật hồ sơ
                             </ButtonOutline>
@@ -107,6 +102,7 @@ const UserProfile: React.FC = () => {
                                 <AvatarUser setPayload={setPayload} payload={payload} />
                             </div>
                         )}
+                        {isOpenEditAddress && <FormEditAddress payload={payload} isEdit={true} setPayload={setPayload} setIsOpen={setIsOpenEditAddress} />}
                     </div>
                 ) : (
                     <ChangePassword />

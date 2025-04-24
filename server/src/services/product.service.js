@@ -16,24 +16,24 @@ class ProductService {
         if (Object.keys(payload).length === 0) {
             throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
         }
-    
+
         payload.product_code = generateRandomCode(10);
-    
+
         // Xử lý ảnh chỉ nếu có product_thumb
         if (payload?.product_thumb) {
             const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
             const imgDir = path.join(__dirname, 'img');
             const tempPath = path.join(imgDir, randomFileName);
-    
+
             try {
                 // Đảm bảo folder tồn tại
                 await fs.mkdir(imgDir, { recursive: true });
-    
+
                 // Tải ảnh và trích xuất đặc trưng
                 await downloadImage(payload.product_thumb, tempPath);
                 const searchFeatures = await extractFeatures(tempPath);
                 payload.product_image_features = Array.from(searchFeatures.dataSync());
-    
+
                 // Giải phóng Tensor
                 searchFeatures.dispose();
             } catch (err) {
@@ -45,12 +45,12 @@ class ProductService {
                 fs.unlink(tempPath).catch(() => {});
             }
         }
-    
+
         // Tạo sản phẩm mới
         const newProduct = await Product.create(payload);
         return newProduct;
     }
-    
+
     // Lấy sản phẩm theo ID
     static async getProductById(productId) {
         // Fetch product without lean() to retain Mongoose model instance
