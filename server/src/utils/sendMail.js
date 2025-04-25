@@ -1,4 +1,4 @@
-require("dotenv").config();
+require('dotenv').config();
 const nodemailer = require('nodemailer');
 
 const sendMail = async ({ email, html, fullName }) => {
@@ -6,13 +6,13 @@ const sendMail = async ({ email, html, fullName }) => {
         service: 'gmail',
         auth: {
             user: process.env.EMAIL_NAME,
-            pass: process.env.EMAIL_APP_PASSWORD
-        }
+            pass: process.env.EMAIL_APP_PASSWORD,
+        },
     });
 
     // define the email message
     const mailOptions = {
-        from: 'dpshopvn <dpshopvn@gmail.com>',
+        from: 'BanhHoaXanh <dpshopvn@gmail.com>',
         to: email,
         subject: `Xin chào ${fullName}`,
         html,
@@ -28,6 +28,6 @@ const sendMail = async ({ email, html, fullName }) => {
     } finally {
         transporter.close();
     }
-}
+};
 
 module.exports = sendMail;
