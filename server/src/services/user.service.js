@@ -1,19 +1,22 @@
 'use strict';
+const mongoose = require('mongoose');
 
-const { BadRequestError } = require('../core/error.response');
+const { RequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
 const UserModel = require('../models/user.model');
+const OrderModel = require('../models/OnlineOrder');
+const ReviewModel = require('../models/reviews.model');
 
 class UserService {
     static async addUser(payload) {
         const { user_name, user_email, user_password, user_mobile } = payload;
         if (!user_name || !user_email || !user_password || !user_mobile) {
-            throw new BadRequestError('Thiếu thông tin bắt buộc!', 400);
+            throw new RequestError('Thiếu thông tin bắt buộc!', 400);
         }
         const existingUser = await UserModel.findOne({ user_email });
-        if (existingUser) throw new BadRequestError('Email đã tồn tại!', 400);
+        if (existingUser) throw new RequestError('Email đã tồn tại!', 400);
         const existingMobile = await UserModel.findOne({ user_mobile });
-        if (existingMobile) throw new BadRequestError('Số điện thoại đã tồn tại!', 400);
+        if (existingMobile) throw new RequestError('Số điện thoại đã tồn tại!', 400);
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(user_password, salt);
         const newUser = new UserModel({
@@ -24,48 +27,38 @@ class UserService {
         return await newUser.save();
     }
 
-    static async updateUser(uid, payload) {
-        const { user_email, user_password, user_mobile, ...dataUser } = payload;
-
-        const user = await UserModel.findById(uid);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
-
-        if (user_mobile && user_mobile !== user.user_mobile) {
-            const existingMobile = await UserModel.findOne({ user_mobile });
-            if (existingMobile) throw new BadRequestError('Số điện thoại đã tồn tại!', 400);
-            dataUser.user_mobile = user_mobile;
-        }
-
-        if (user_password) {
-            const salt = await bcrypt.genSalt(10);
-            dataUser.user_password = await bcrypt.hash(user_password, salt);
-        }
-        return await UserModel.findByIdAndUpdate(uid, dataUser, {
-            new: true,
-            runValidators: true,
-        });
-    }
-
     static async deleteUser(uid) {
-        const user = await UserModel.findByIdAndDelete(uid);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
+        // Kiểm tra uid có phải ObjectId hợp lệ không
+        if (!mongoose.Types.ObjectId.isValid(uid)) {
+            throw new RequestError('ID người dùng không hợp lệ.');
+        }
+
+        // Kiểm tra xem người dùng đã từng đánh giá chưa
+        const hasReviews = await ReviewModel.exists({ user: new mongoose.Types.ObjectId(uid) });
+
+        if (hasReviews) {
+            throw new RequestError('Không thể xóa tài khoản vì người dùng đã từng đánh giá sản phẩm.');
+        }
+
+        // Tiến hành xóa
+        const deletedUser = await UserModel.findByIdAndDelete(uid);
+        if (!deletedUser) {
+            throw new RequestError('Người dùng không tồn tại.');
+        }
 
         return {
-            _id: user._id,
-            user_name: user.user_name,
-            user_email: user.user_email,
+            message: 'Xóa người dùng thành công.',
         };
     }
-
     static async toggleBlockUser(uid, isBlocked) {
         if (typeof isBlocked !== 'boolean') {
             if (isBlocked === 'true') isBlocked = true;
             else if (isBlocked === 'false') isBlocked = false;
-            else throw new BadRequestError('Trạng thái chặn không hợp lệ!', 400);
+            else throw new RequestError('Trạng thái chặn không hợp lệ!', 400);
         }
 
         const user = await UserModel.findById(uid);
-        if (!user) throw new BadRequestError('Người dùng không tồn tại!', 404);
+        if (!user) throw new RequestError('Người dùng không tồn tại!', 404);
 
         user.user_isBlocked = isBlocked;
         await user.save();
@@ -92,50 +85,139 @@ class UserService {
     }
 
     static async getProfile(userid) {
-        return await UserModel.findById(userid).select('-user_password');
+        return await UserModel.findById(userid).select('_id user_name user_reward_points user_email user_isBlocked user_address user_mobile user_avatar_url');
     }
     static async updateProfile(uid, payload) {
-        const { user_password, ...updateData } = payload; // Không cho phép cập nhật mật khẩu
+        const { _id, ...updateData } = payload; // Loại bỏ _id khỏi dữ liệu cập nhật
 
         // Tìm user theo ID
-        const user = await UserModel.findById(uid); // ✅ Sửa lại `UserModel`
+        const user = await UserModel.findById(uid);
         if (!user) {
-            throw new BadRequestError('Người dùng không tồn tại!', 404);
+            throw new RequestError('Người dùng không tồn tại!', 404);
         }
 
         // Kiểm tra số điện thoại đã tồn tại (nếu có cập nhật số điện thoại)
         if (updateData.user_mobile && updateData.user_mobile !== user.user_mobile) {
-            const existingMobile = await UserModel.findOne({ user_mobile: updateData.user_mobile }); // ✅ Sửa lại `UserModel`
+            const existingMobile = await UserModel.findOne({ user_mobile: updateData.user_mobile });
             if (existingMobile) {
-                throw new BadRequestError('Số điện thoại đã tồn tại!', 201);
+                throw new RequestError('Số điện thoại đã tồn tại!', 409); // Mã lỗi 409 phù hợp hơn cho xung đột
             }
         }
 
         // Cập nhật thông tin
         const updatedUser = await UserModel.findByIdAndUpdate(uid, updateData, {
-            // ✅ Sửa lại `UserModel`
-            new: true,
-            runValidators: true,
+            new: true, // Trả về tài liệu đã cập nhật
+            runValidators: true, // Chạy các validator của schema
         });
 
         return updatedUser;
     }
     static async searchUsers(query) {
-        const { name } = query;  // Lấy từ query parameter
+        const { name } = query; // Lấy từ query parameter
         if (!name) {
-            throw new BadRequestError('Vui lòng cung cấp từ khóa tìm kiếm!', 400);
+            throw new RequestError('Vui lòng cung cấp từ khóa tìm kiếm!', 400);
         }
-    
+
         const users = await UserModel.find({
             $or: [
-                { user_name: { $regex: name, $options: 'i' } },  // Tìm theo tên người dùng
-                { user_email: { $regex: name, $options: 'i' } },  // Tìm theo email
-            ]
+                { user_name: { $regex: name, $options: 'i' } }, // Tìm theo tên người dùng
+                { user_email: { $regex: name, $options: 'i' } }, // Tìm theo email
+            ],
         })
-        .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
-        .lean();
-    
+            .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
+            .lean();
+
         return users;
+    }
+    static async updateUserByAdmin(userId, updateData) {
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            throw new RequestError('Người dùng không tồn tại');
+        }
+
+        // Kiểm tra trùng email với user khác
+        if (updateData.user_email) {
+            const existingEmailUser = await UserModel.findOne({
+                user_email: updateData.user_email,
+                _id: { $ne: userId }, // khác chính user đang update
+            });
+            if (existingEmailUser) {
+                throw new RequestError('Email đã được sử dụng bởi người dùng khác');
+            }
+        }
+
+        // Kiểm tra trùng số điện thoại với user khác
+        if (updateData.user_mobile) {
+            const existingMobileUser = await UserModel.findOne({
+                user_mobile: updateData.user_mobile,
+                _id: { $ne: userId },
+            });
+            if (existingMobileUser) {
+                throw new RequestError('Số điện thoại đã được sử dụng bởi người dùng khác');
+            }
+        }
+
+        // Nếu có mật khẩu mới thì hash lại
+        if (updateData.user_password) {
+            if (updateData.user_password.length < 6) {
+                throw new RequestError('Mật khẩu phải có ít nhất 6 ký tự');
+            }
+            updateData.user_password = await bcrypt.hash(updateData.user_password, 10);
+        }
+
+        // Cập nhật thông tin còn lại
+        for (let key in updateData) {
+            user[key] = updateData[key];
+        }
+
+        await user.save();
+
+        return {
+            message: 'Cập nhật người dùng thành công',
+            user: {
+                _id: user._id,
+                user_name: user.user_name,
+                user_email: user.user_email,
+                user_mobile: user.user_mobile,
+                user_role: user.user_role,
+                user_isBlocked: user.user_isBlocked,
+            },
+        };
+    }
+
+    static async changePassword(uid, oldPassword, newPassword) {
+        // Kiểm tra độ dài mật khẩu mới
+        if (newPassword.length < 6) {
+            throw new RequestError('Mật khẩu mới phải có ít nhất 6 ký tự', 400);
+        }
+
+        // Tìm người dùng theo ID
+        const user = await UserModel.findById(uid);
+        if (!user) {
+            throw new RequestError('Người dùng không tồn tại!', 404);
+        }
+
+        // Kiểm tra mật khẩu cũ
+        const isMatch = await bcrypt.compare(oldPassword, user.user_password);
+        if (!isMatch) {
+            throw new RequestError('Mật khẩu cũ không đúng!', 400);
+        }
+
+        // Mã hóa mật khẩu mới
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(newPassword, salt);
+
+        // Cập nhật mật khẩu mới và thời gian thay đổi
+        user.user_password = hashedPassword;
+        user.user_passwordChangedAt = new Date();
+
+        // Lưu thông tin cập nhật
+        await user.save();
+
+        return {
+            success: true,
+            message: 'Đổi mật khẩu thành công!',
+        };
     }
 }
 
