@@ -1,16 +1,16 @@
 const StatusCode = {
     FORBIDDEN: 403,
     CONFLICT: 409,
-    BAD_REQUEST: 203,  // Thêm mã trạng thái cho BadRequest
-    NOT_FOUND: 404     // Thêm mã trạng thái cho NotFound
-}
+    BAD_REQUEST: 203, // Thêm mã trạng thái cho BadRequest
+    NOT_FOUND: 404, // Thêm mã trạng thái cho NotFound
+};
 
 const ResponseStatusCode = {
-    FORBIDDEN: "Forbidden request error",
-    CONFLICT: "Conflict error",
-    BAD_REQUEST: "Bad request error",  // Sửa thông điệp cho BadRequest
-    NOT_FOUND: "Not found error"      // Sửa thông điệp cho NotFound
-}
+    FORBIDDEN: 'Forbidden request error',
+    CONFLICT: 'Conflict error',
+    BAD_REQUEST: 'Bad request error', // Sửa thông điệp cho BadRequest
+    NOT_FOUND: 'Not found error', // Sửa thông điệp cho NotFound
+};
 
 // Lớp lỗi cơ bản
 class ErrorResponse extends Error {
@@ -21,16 +21,16 @@ class ErrorResponse extends Error {
 }
 
 // Lỗi 400 - Bad Request
-class BadRequestError extends ErrorResponse {
+class RequestError extends ErrorResponse {
     constructor(message = ResponseStatusCode.BAD_REQUEST, status = StatusCode.BAD_REQUEST) {
-        super(message, status);  // Sửa lỗi này để truyền cả message và status đúng cách
+        super(message, status); // Sửa lỗi này để truyền cả message và status đúng cách
     }
 }
 
 // Lỗi 404 - Not Found
 class NotFoundError extends ErrorResponse {
     constructor(message = ResponseStatusCode.NOT_FOUND, status = StatusCode.NOT_FOUND) {
-        super(message, status);  // Truyền đúng message và status
+        super(message, status); // Truyền đúng message và status
     }
 }
 
@@ -52,6 +52,6 @@ module.exports = {
     NotFoundError,
     ForbiddenError,
     ConflictRequestError,
-    BadRequestError,
-    ErrorResponse
-}
+    RequestError,
+    ErrorResponse,
+};

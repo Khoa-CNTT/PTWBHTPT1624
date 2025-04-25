@@ -13,7 +13,7 @@ class UserController {
     }
 
     static async updateUser(req, res) {
-        const updatedUser = await UserService.updateUser(req.params.uid, req.body);
+        const updatedUser = await UserService.updateUserByAdmin(req.params.uid, req.body);
         res.status(200).json({
             success: true,
             message: 'Cập nhật người dùng thành công!',
@@ -80,6 +80,16 @@ class UserController {
                 success: false,
                 message: error.message || 'Lỗi hệ thống!',
             });
+        }
+    }
+    static async changePassword(req, res, next) {
+        try {
+            const { oldPassword, newPassword } = req.body;
+            const uid = req.user._id; // Giả sử user đã đăng nhập và UID có sẵn trong `req.user`
+            const result = await UserService.changePassword(uid, oldPassword, newPassword);
+            return res.status(200).json(result);
+        } catch (error) {
+            next(error);
         }
     }
     

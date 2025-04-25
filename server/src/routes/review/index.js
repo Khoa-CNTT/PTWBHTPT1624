@@ -10,6 +10,7 @@ const router = express.Router();
    📌 API Dành cho Người Dùng
    ================================ */
 router.post('/add', [userAuthentication], asyncHandle(ReviewController.createReview)); // 📝 Tạo đánh giá
+router.put('/:id/update', [userAuthentication], asyncHandle(ReviewController.updateReview)); // 📝 Tạo đánh giá
 router.get('/:productId/search', asyncHandle(ReviewController.getReviews)); // 📖 Lấy đánh giá đã duyệt theo sản phẩm
 
 /* ================================
@@ -22,8 +23,8 @@ router.put('/:reviewId/approve', asyncHandle(ReviewController.approveReview)); /
 router.delete('/:reviewId/delete', asyncHandle(ReviewController.deleteReview)); // ❌ Xoá đánh giá
 
 // 📖 Lấy các tab đánh giá
-router.get('/all', asyncHandle(ReviewController.getAllReviews));         // 📌 Tất cả
+router.get('/all', asyncHandle(ReviewController.getAllReviews)); // 📌 Tất cả
 router.get('/approved', asyncHandle(ReviewController.getApprovedReviews)); // ✅ Đã duyệt
-router.get('/pending', asyncHandle(ReviewController.getPendingReviews));   // ❗ Chờ duyệt
+router.get('/pending', asyncHandle(ReviewController.getPendingReviews)); // ❗ Chờ duyệt
 
 module.exports = router;

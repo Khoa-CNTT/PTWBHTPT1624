@@ -66,6 +66,17 @@ class adminController {
             data: await AdminService.updateProfile(req.admin._id, req.body),
         });
     }
+
+    static async searchAdmins(req, res) {
+        const { keyword } = req.query;
+        const result = await AdminService.searchAdminsByNameOrEmail(keyword);
+        res.status(200).json({
+            success: true,
+            message: 'Tìm kiếm người dùng thành công!',
+            data: result,
+        });
+    }
+    
 }
 
 module.exports = adminController;

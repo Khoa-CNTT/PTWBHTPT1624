@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError } = require('../core/error.response');
+const { RequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
 const AdminModel = require('../models/admin.model');
 
@@ -8,12 +8,12 @@ class AdminService {
     static async addAdmin(payload) {
         const { admin_name, admin_email, admin_password, admin_mobile, admin_type } = payload;
         if (!(admin_name || admin_email || admin_password || admin_mobile || admin_type)) {
-            throw new BadRequestError('Thiếu thông tin bắt buộc!');
+            throw new RequestError('Thiếu thông tin bắt buộc!');
         }
         const existingAdmin = await AdminModel.findOne({ admin_email });
-        if (existingAdmin) throw new BadRequestError('Email đã tồn tại!');
+        if (existingAdmin) throw new RequestError('Email đã tồn tại!');
         const existingMobile = await AdminModel.findOne({ admin_mobile });
-        if (existingMobile) throw new BadRequestError('Số điện thoại đã tồn tại!');
+        if (existingMobile) throw new RequestError('Số điện thoại đã tồn tại!');
         const salt = await bcrypt.genSalt(10);
         const hashedPassword = await bcrypt.hash(admin_password, salt);
         const newAdmin = new AdminModel({
@@ -27,10 +27,10 @@ class AdminService {
     static async updateAdmin(uid, payload) {
         const { admin_email, admin_password, admin_mobile, ...dataAdmin } = payload;
         const admin = await AdminModel.findById(uid);
-        if (!admin) throw new BadRequestError('Người dùng không tồn tại!', 404);
+        if (!admin) throw new RequestError('Người dùng không tồn tại!', 404);
         if (admin_mobile && admin_mobile !== admin.admin_mobile) {
             const existingMobile = await AdminModel.findOne({ admin_mobile });
-            if (existingMobile) throw new BadRequestError('Số điện thoại đã tồn tại!');
+            if (existingMobile) throw new RequestError('Số điện thoại đã tồn tại!');
             dataAdmin.admin_mobile = admin_mobile;
         }
         if (admin_password) {
@@ -45,7 +45,7 @@ class AdminService {
 
     static async deleteAdmin(uid) {
         const admin = await AdminModel.findByIdAndDelete(uid);
-        if (!admin) throw new BadRequestError('Người dùng không tồn tại!', 404);
+        if (!admin) throw new RequestError('Người dùng không tồn tại!', 404);
 
         return {
             _id: admin._id,
@@ -58,10 +58,10 @@ class AdminService {
         if (typeof isBlocked !== 'boolean') {
             if (isBlocked === 'true') isBlocked = true;
             else if (isBlocked === 'false') isBlocked = false;
-            else throw new BadRequestError('Trạng thái chặn không hợp lệ!');
+            else throw new RequestError('Trạng thái chặn không hợp lệ!');
         }
         const admin = await AdminModel.findById(uid);
-        if (!admin) throw new BadRequestError('Người dùng không tồn tại!', 404);
+        if (!admin) throw new RequestError('Người dùng không tồn tại!', 404);
         admin.admin_isBlocked = isBlocked;
         await admin.save();
         return isBlocked ? 'Đã chặn người dùng thành công!' : 'Đã mở chặn người dùng!';
@@ -112,14 +112,14 @@ class AdminService {
         // Tìm admin theo ID
         const admin = await AdminModel.findById(uid); // ✅ Sửa lại `AdminModel`
         if (!admin) {
-            throw new BadRequestError('Người dùng không tồn tại!', 404);
+            throw new RequestError('Người dùng không tồn tại!', 404);
         }
 
         // Kiểm tra số điện thoại đã tồn tại (nếu có cập nhật số điện thoại)
         if (updateData.admin_mobile && updateData.admin_mobile !== admin.admin_mobile) {
             const existingMobile = await AdminModel.findOne({ admin_mobile: updateData.admin_mobile }); // ✅ Sửa lại `AdminModel`
             if (existingMobile) {
-                throw new BadRequestError('Số điện thoại đã tồn tại!');
+                throw new RequestError('Số điện thoại đã tồn tại!');
             }
         }
 
@@ -132,6 +132,21 @@ class AdminService {
 
         return updatedAdmin;
     }
+
+    static async searchAdminsByNameOrEmail(keyword) {
+        if (!keyword || typeof keyword !== 'string') return [];
+    
+        const regex = new RegExp(keyword.trim(), 'i');
+        const results = await AdminModel.find({
+            $or: [{ admin_name: regex }, { admin_email: regex }],
+        })
+            .select('-admin_password -__v')
+            .sort({ createdAt: -1 })
+            .lean();
+    
+        return results;
+    }
+    
 }
 
 module.exports = AdminService;
