@@ -1,6 +1,6 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const Cart = require('../models/cart.model');
 const Product = require('../models/product.model');
 
@@ -8,7 +8,7 @@ class CartService {
     // Thêm sản phẩm vào giỏ hàng
     static async addToCart(userId, productId, quantity) {
         if (!userId || !productId || quantity <= 0) {
-            throw new BadRequestError('Thông tin không hợp lệ.');
+            throw new RequestError('Thông tin không hợp lệ.');
         }
         quantity = Number(quantity); // Ép kiểu để tránh lỗi chuỗi "22"
         const product = await Product.findById(productId);
@@ -37,7 +37,7 @@ class CartService {
         const cart = await Cart.findOne({ cart_user: userId })
             .populate({
                 path: 'cart_products.productId',
-                select: 'product_name product_thumb product_price',
+                select: 'product_name product_thumb product_price product_discounted_price product_slug',
             })
             .lean();
 
@@ -51,6 +51,8 @@ class CartService {
                 product_thumb: item.productId?.product_thumb,
                 product_images: item.productId?.product_images,
                 product_price: item.productId?.product_price,
+                product_slug: item.productId?.product_slug,
+                product_discounted_price: item.productId?.product_discounted_price,
                 quantity: item.quantity,
             })),
         };
@@ -59,7 +61,7 @@ class CartService {
     // Cập nhật số lượng sản phẩm trong giỏ hàng
     static async updateCart(userId, productId, quantity) {
         quantity = Number(quantity);
-        if (quantity <= 0) throw new BadRequestError('Số lượng không hợp lệ.');
+        if (quantity <= 0) throw new RequestError('Số lượng không hợp lệ.');
 
         const cart = await Cart.findOne({ cart_user: userId });
         if (!cart) throw new NotFoundError('Giỏ hàng không tồn tại.');
