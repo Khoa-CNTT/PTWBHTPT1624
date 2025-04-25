@@ -7,6 +7,8 @@ interface UserState {
     user: IUserDetail;
     setUser: (user: IUserDetail) => void;
     clearUser: () => void;
+    addRewardPoints: (points?: number) => void;
+    subtractRewardPoints: (points?: number) => void; // <- Trừ điểm
 }
 
 // Lấy dữ liệu từ localStorage
@@ -24,7 +26,7 @@ const getStoredUser = (): IUserDetail => {
 };
 
 // Tạo Zustand store với localStorage
-const useUserStore = create<UserState>((set) => ({
+const useUserStore = create<UserState>((set, get) => ({
     user: getStoredUser(),
     setUser: (user) => {
         localStorage.setItem('user', JSON.stringify(user));
@@ -41,6 +43,25 @@ const useUserStore = create<UserState>((set) => ({
                 user_email: '',
             },
         });
+    },
+    addRewardPoints: (points: number = 5000) => {
+        const currentUser = get().user;
+        const updatedUser = {
+            ...currentUser,
+            user_reward_points: currentUser.user_reward_points + points,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        set({ user: updatedUser });
+    },
+    subtractRewardPoints: (points: number = 5000) => {
+        const currentUser = get().user;
+        const newPoints = Math.max(currentUser.user_reward_points - points, 0);
+        const updatedUser = {
+            ...currentUser,
+            user_reward_points: newPoints,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        set({ user: updatedUser });
     },
 }));
 

@@ -19,7 +19,7 @@ const VoucherPage: React.FC = () => {
 
     useEffect(() => {
         const fetchProducts = async () => {
-            const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
+            const res = await apiGetAllVouchers({ limit: 10, page: currentPage });
             if (!res?.success) return;
             setVouchers(res.data.vouchers);
             setTotalPage(res.data.totalPage);
@@ -52,7 +52,7 @@ const VoucherPage: React.FC = () => {
                     </div>
                 ))}
             </div>
-            {totalPage > 0 && (
+            {totalPage > 1 && (
                 <div className="mt-6">
                     <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
                 </div>

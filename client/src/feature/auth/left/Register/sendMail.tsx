@@ -13,10 +13,9 @@ interface ModeRegister {
 const sendMail: React.FC<ModeRegister> = (props) => {
     const { setModeRegister } = props;
     const [emailValue, setEmailValue] = useState<string>('');
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const [error, setError] = useState<string>('');
-    // eslint-disable-next-line react-hooks/rules-of-hooks
     const { setEmailToConfirm } = useAuthStore();
+    const { setIsLoading } = useActionStore();
     const { loginUser } = useAuthStore();
     const { setOpenFeatureAuth, setFeatureAuth } = useActionStore();
     const handleSummit = async (e: { preventDefault: () => void }) => {
@@ -30,12 +29,14 @@ const sendMail: React.FC<ModeRegister> = (props) => {
             setError('Email không hợp lệ!');
             return;
         }
+        setIsLoading(true);
         const res = await apiSendVerificationEmail(emailValue);
         if (!res?.success) {
             setError(res?.message);
             return;
         }
         setError('');
+        setIsLoading(false);
         setModeRegister(1);
         setEmailToConfirm(emailValue);
     };
@@ -46,6 +47,7 @@ const sendMail: React.FC<ModeRegister> = (props) => {
             showNotification('Đăng nhập không thành công!', false);
             return;
         }
+        setIsLoading(true);
         const res = await apiLoginWithGoogle(credential);
         if (res.success) {
             localStorage.setItem('access_token', JSON.stringify(res.access_token));
@@ -57,6 +59,7 @@ const sendMail: React.FC<ModeRegister> = (props) => {
             showNotification('Đăng nhập không thành công!', false);
             return;
         }
+        setIsLoading(false);
     };
 
     return (

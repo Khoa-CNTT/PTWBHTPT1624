@@ -8,7 +8,7 @@ const RecentViewPage: React.FC = () => {
     return (
         <div className="tablet:fixed tablet:top-0 tablet:right-0 tablet:z-[1000] w-full h-full bg-white overflow-hidden p-4 laptop:rounded-lg tablet:overflow-y-scroll">
             <div className="w-full mb-4">
-                <h1 className="text-xl">Sản phẩm đã xem</h1>
+                <h1 className="text-xl mb-4">Sản phẩm đã xem</h1>
                 <div className="flex flex-col bg-white pb-8 gap-10 z-0">
                     {recentViewedProducts?.length !== 0 ? (
                         <>

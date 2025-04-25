@@ -2,6 +2,7 @@ export interface Product {
     _id: string;
     product_name: string;
     product_slug: string;
+    product_thumb: string;
 }
 
 export interface OrderProduct {

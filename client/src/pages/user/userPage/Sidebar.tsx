@@ -39,7 +39,7 @@ export const Sidebar: React.FC = () => {
                 </div>
             </div>
 
-            <ul className="w-full h-full ">
+            <ul className="w-full h-full mt-4">
                 {SIDEBAR_USER.map((e) => (
                     <NavLink
                         to={e.path_name}

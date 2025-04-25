@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
 import { apiGetAllOrders, apiGetOrderByCode, apiUpdateOrderStatus } from '../../../services/order.service';
 import { IOrder } from '../../../interfaces/order.interfaces';
@@ -10,7 +11,7 @@ import NotExit from '../../../components/common/NotExit';
 
 import InputSearch from '../../../components/item/inputSearch';
 import PageMeta from '../../../components/common/PageMeta';
-import PageBreadcrumb from '../../../components/common/PageBreadCrumb'; 
+import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 
 const OrderManage: React.FC = () => {
     const SELL_TAB = [
@@ -29,10 +30,10 @@ const OrderManage: React.FC = () => {
     };
 
     const [orders, setOrders] = useState<IOrder[]>([]);
-    const [displayTab, setDisplayTab] = useState<string>(''); 
+    const [displayTab, setDisplayTab] = useState<string>('');
     const [loading, setLoading] = useState<boolean>(false);
-    const [searchQuery, setSearchQuery] = useState<string>(''); 
-    const [isSearching, setIsSearching] = useState<boolean>(false); 
+    const [searchQuery, setSearchQuery] = useState<string>('');
+    const [isSearching, setIsSearching] = useState<boolean>(false);
 
     // Hàm fetch API đã được khai báo bên ngoài useEffect
     const fetchOrders = async () => {
@@ -65,26 +66,23 @@ const OrderManage: React.FC = () => {
             console.error('Vui lòng nhập từ khoá tìm kiếm');
             return;
         }
-        const res = await apiGetOrderByCode(searchQuery.trim());  // Sử dụng apiGetOrderByCode để tìm kiếm
+        const res = await apiGetOrderByCode(searchQuery.trim()); // Sử dụng apiGetOrderByCode để tìm kiếm
         if (res.success) {
             const result = Array.isArray(res.data) ? res.data : [res.data];
-            setOrders(result);  // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
+            setOrders(result); // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
             setIsSearching(true);
         } else {
             console.error('Không tìm thấy đơn hàng:', res.message);
-            setOrders([]);  // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
+            setOrders([]); // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
         }
         setLoading(false);
     };
 
-
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;
         const res = await apiUpdateOrderStatus({ orderId: id, newStatus: updateStatus[displayTab] });
- 
-        if (!res.success) return showNotification(res.message);
-        setOrders(prev => prev.map(order => order._id === id ? { ...order, status: updateStatus[displayTab] } : order));
- 
+        if (!res.success) return showNotification(res.message, res.success);
+        setOrders((prev) => prev.filter((order) => order._id !== id));
         showNotification('Cập nhật thành công', true);
     };
 
@@ -117,11 +115,7 @@ const OrderManage: React.FC = () => {
             <PageBreadcrumb pageTitle="Danh sách đơn hàng" />
             <div className="fixed-mobile w-full dark:border-white/[0.05] dark:bg-white/[0.03] h-full bg-white overflow-y-scroll tablet:overflow-y-scroll">
                 <div className="px-5 py-4">
-                    <InputSearch
-                        handleSearch={handleSearch} 
-                        handleSearchChange={handleSearchChange} 
-                        searchQuery={searchQuery}
-                    />
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
                 </div>
 
                 <div className="tablet:flex tablet:bg-white laptop:w-full sticky top-0 grid grid-cols-6 dark:border-white/[0.05] dark:bg-white/[0.03] bg-white rounded-sm overflow-hidden">
@@ -130,9 +124,7 @@ const OrderManage: React.FC = () => {
                             key={idx}
                             className={`flex tablet:w-4/12 laptop:w-full justify-center text-sm items-center py-2 border-b-[2px] cursor-pointer
               ${displayTab === e.tab ? 'text-primary border-primary' : 'text-secondary border-transparent'}`}
- 
-                            onClick={() => setDisplayTab(e.tab)}
-                        >
+                            onClick={() => setDisplayTab(e.tab)}>
                             {e.title}
                         </div>
                     ))}
@@ -141,7 +133,7 @@ const OrderManage: React.FC = () => {
                 {orders.length > 0 ? (
                     <div className="flex flex-col gap-5 w-full">
                         <OrderTable orders={orders} tab={displayTab} onChangeStatus={handleUpdateStatus} />
- 
+
                         <ButtonOutline onClick={handleExportFile} className="mx-auto my-4">
                             Xuất đơn hàng
                         </ButtonOutline>

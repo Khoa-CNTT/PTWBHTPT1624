@@ -5,16 +5,18 @@ import { useActionStore } from '../../../../store/actionStore';
 
 const Forgot: React.FC = () => {
     const [emailValue, setEmailValue] = useState<string>('');
-    const { setOpenFeatureAuth } = useActionStore();
+    const { setOpenFeatureAuth, setIsLoading } = useActionStore();
 
     const handleForgetPassword = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
+        setIsLoading(true);
         const res = await sendForgotPasswordEmail({ email: emailValue });
         if (!res.success) {
             showNotification(res.message, false);
             return;
         }
         setOpenFeatureAuth(false);
+        setIsLoading(false);
         showNotification('Vui lòng kiểm tra gmail!', true);
     };
     return (

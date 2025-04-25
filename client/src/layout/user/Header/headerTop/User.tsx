@@ -16,16 +16,19 @@ const User: React.FC = () => {
     const { isUserLoggedIn, logoutUser } = useAuthStore();
     const { setOpenFeatureAuth } = useActionStore();
     const { setAddProductInCartFromApi } = useCartStore();
+    const { setIsLoading } = useActionStore();
+
     const handleLogOut = async () => {
-        const res = await apiLogout();
-        console.log('res', res);
         if (confirm('Bạn có muốn đăng xuất')) {
+            setIsLoading(true);
+            const res = await apiLogout();
             if (!res.success) return;
             localStorage.clear();
             setIsOpenMenu(false);
             clearUser();
             logoutUser();
             setAddProductInCartFromApi([]);
+            setIsLoading(false);
             showNotification('Đăng xuất thành công', true);
         }
     };
@@ -45,14 +48,14 @@ const User: React.FC = () => {
                             className="absolute z-[1000] flex flex-col top-[calc(100%+10px)] right-1/2 w-menu_user bg-white py-3 text-black rounded-xl
                         shadow-search after:border-[10px]  after:border-transparent after:border-b-white
                         after:top-[-20px]  after:right-5 after:absolute">
-                            <Link to={`${PATH.PAGE_USER}/profile`} className="menu-user">
+                            <Link to={PATH.PAGE_PROFILE} className="menu-user">
                                 Thông tin tài khoản
                             </Link>
-                            <Link to={`${PATH.PAGE_USER}/sell`} className="menu-user">
+                            <Link to={PATH.PAGE_ORDER} className="menu-user">
                                 Quản lý đơn hàng
                             </Link>
-                            <Link to={`${PATH.PAGE_USER}/purchase`} className="menu-user">
-                                Đơn mua
+                            <Link to={PATH.PAGE_FAVORITE} className="menu-user">
+                                Sản phẩm yêu thích
                             </Link>
                             <span onClick={handleLogOut} className="menu-user">
                                 Đăng xuất

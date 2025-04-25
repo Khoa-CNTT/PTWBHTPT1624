@@ -9,7 +9,7 @@ const FavoritePage: React.FC = () => {
         <div className="tablet:fixed tablet:top-0 tablet:right-0 tablet:z-[1000] w-full h-full bg-white overflow-hidden p-4 laptop:rounded-lg tablet:overflow-y-scroll">
             <div className="w-full mb-4">
                 <h1 className="text-xl">Sản phẩm yêu thích</h1>
-                <div className="flex flex-col bg-white pb-8 gap-10 z-0">
+                <div className="flex flex-col bg-white pb-8 gap-10 z-0 mt-3">
                     {favoriteProducts?.length !== 0 ? (
                         <>
                             <div className="grid mobile:grid-cols-2  tablet:grid-cols-4  laptop:grid-cols-6 ">

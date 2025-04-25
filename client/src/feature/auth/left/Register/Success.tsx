@@ -16,25 +16,26 @@ const Success: React.FC<ModeRegister> = (props) => {
     const [password, setPassword] = useState<string>('');
     const [error, setError] = useState<string>('');
     const { setOpenFeatureAuth } = useActionStore();
-    const { email } = useAuthStore();
-    const { loginUser } = useAuthStore();
+    const { loginUser, email } = useAuthStore();
     const { setUser } = useUserStore();
+    const { setIsLoading } = useActionStore();
     const handleSummit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (!password) return;
         if (password?.length < 6) {
             setError('Mật khẩu tối thiểu 6 ký tự!');
         } else {
+            setIsLoading(true);
             const res = await apiRegister(email, password);
             if (res?.success) {
                 loginUser();
                 showNotification('Đăng ký tài khoản thành công!', true);
                 localStorage.setItem('access_token', JSON.stringify(res?.data.accessToken));
                 setUser(res.data.user);
-                // eslint-disable-next-line react-hooks/exhaustive-deps
             } else {
                 showNotification('Đăng ký tài khoản không thành công!', false);
             }
+            setIsLoading(false);
             setOpenFeatureAuth(false);
         }
     };

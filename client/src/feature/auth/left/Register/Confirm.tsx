@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import useAuthStore from '../../../../store/authStore';
 import { apiConfirmVerificationEmail, apiSendVerificationEmail } from '../../../../services/auth.user.service';
+import { useActionStore } from '../../../../store/actionStore';
 
 interface ModeRegister {
     setModeRegister: React.Dispatch<React.SetStateAction<number>>;
@@ -14,6 +15,7 @@ const Confirm: React.FC<ModeRegister> = (props) => {
     const [token, setToken] = useState<string>('');
     const [error, setError] = useState<string>('');
     const { email } = useAuthStore();
+    const { setIsLoading } = useActionStore();
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function
     useEffect(() => {
@@ -45,12 +47,14 @@ const Confirm: React.FC<ModeRegister> = (props) => {
             setError('Vui lòng nhập mã xác minh(OTP)');
             return;
         }
+        setIsLoading(true);
         const res = await apiConfirmVerificationEmail(email, token);
         if (!res?.success) {
             setError(res?.message);
             return;
         }
         //chuyển sang mode  tiếp theo
+        setIsLoading(false);
         setModeRegister(2);
     };
     return (

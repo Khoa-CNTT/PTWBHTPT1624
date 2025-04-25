@@ -6,8 +6,8 @@ import { IReview } from '../../../interfaces/review.interfaces';
 
 interface ReviewListProps {
     Reviews: IReview[];
-    onDelete: (id: string) => void;
-    onApprove: (id: string) => void;
+    onDelete: (id: string | any) => void;
+    onApprove: (id: string | any) => void;
 }
 
 const ReviewTable: React.FC<ReviewListProps> = ({ Reviews, onDelete, onApprove }) => {

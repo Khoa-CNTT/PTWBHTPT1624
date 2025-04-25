@@ -205,9 +205,11 @@ const apiSearchProductByImage = async (imageUrl: string) => {
         };
     }
 };
-const apiGetPurchasedProduct = async () => {
+const apiGetPurchasedProduct = async (queries?: { limit: number; page: number }) => {
     try {
-        const res = await authClient.get(`/v1/api/purchased/all`);
+        const res = await authClient.get(`/v1/api/purchased/all`, {
+            params: queries,
+        });
         return res.data;
     } catch (error) {
         return {
