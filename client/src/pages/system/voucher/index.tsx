@@ -11,7 +11,7 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
 
-export default function VoucherManage() {
+export default function VoucherManage(): JSX.Element {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);

@@ -37,12 +37,12 @@ const CategoryTable: React.FC<CategoryListProps> = ({ categories, onEdit, onDele
                             <TableRow key={c._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <TableCell className="px-6 py-4 text-gray-700 dark:text-gray-300">{c.category_code}</TableCell>
                                 <TableCell className="px-6 py-4 text-gray-700 dark:text-gray-300">
-                                    <span className="truncate-trailing line-clamp-1 w-[250px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
+                                    <span className="truncate-trailing line-clamp-1 w-[200px] font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                         {c.category_name}
                                     </span>
                                 </TableCell>
-                                <TableCell className="px-6 py-4">
-                                    <div className="w-20 h-20 m-auto overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-lg">
+                                <TableCell className="px-6 py-4 text-center">
+                                    <div className="w-20 h-20 mx-auto overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-lg">
                                         <img src={c.category_thumb} alt={c.category_name} className="w-full h-full object-cover" />
                                     </div>
                                 </TableCell>

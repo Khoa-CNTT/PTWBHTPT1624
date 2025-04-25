@@ -122,6 +122,7 @@ class UserService {
             $or: [
                 { user_name: { $regex: name, $options: 'i' } }, // Tìm theo tên người dùng
                 { user_email: { $regex: name, $options: 'i' } }, // Tìm theo email
+                { user_mobile: { $regex: name, $options: 'i' } }, 
             ],
         })
             .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
