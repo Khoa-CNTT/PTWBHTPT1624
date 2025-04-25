@@ -33,6 +33,8 @@
     "openai": "^4.85.2",
     "sharp": "^0.33.5",
     "slugify": "^1.6.6",
+    "unidecode": "^1.1.0",
+    "unorm": "^1.6.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
