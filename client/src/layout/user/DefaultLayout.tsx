@@ -4,7 +4,7 @@ import { ToastContainer } from 'react-toastify';
 import Header from './Header';
 import Footer from './Footer';
 import { Auth } from '../../feature';
-import useFetchDetailUser from '../../hooks/useFetchDetailUser';
+import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
@@ -16,7 +16,7 @@ import Loading from '../../components/common/Loading';
 // import { BottomNavigate } from '../component/mobile/BottomNavigate';
 // import Chat from '../component/chat';
 const DefaultLayout = () => {
-    useFetchDetailUser();
+    useFetchUser();
     const toastContainer = (
         <ToastContainer
             position="top-center"

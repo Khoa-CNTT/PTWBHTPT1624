@@ -14,13 +14,14 @@ const Login: React.FC = () => {
     const [error, setError] = useState<string>('');
     const { loginUser } = useAuthStore();
     const { setUser } = useUserStore();
-    const { setOpenFeatureAuth, setFeatureAuth } = useActionStore();
+    const { setOpenFeatureAuth, setFeatureAuth, setIsLoading } = useActionStore();
     const handleSummit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (!email || !password) {
             setError('Tài khoản hoặc mật khẩu không chính xác!');
             return;
         }
+        setIsLoading(true);
         const res = await apiLogin(email, password);
         if (res?.success) {
             console.log(res);
@@ -32,6 +33,7 @@ const Login: React.FC = () => {
         } else {
             setError(res.message);
         }
+        setIsLoading(false);
     };
 
     return (

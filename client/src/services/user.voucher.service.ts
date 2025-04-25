@@ -27,7 +27,7 @@ export const apiRedeemVoucher = async (voucherId: any) => {
 
 export const getVoucherByUser = async () => {
     try {
-        const res = await authClient.post('/v1/api/user-voucher/vouchers/user');
+        const res = await authClient.get('/v1/api/user-voucher/vouchers/user');
         return res.data;
     } catch (error) {
         return {

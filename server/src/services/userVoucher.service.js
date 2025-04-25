@@ -101,14 +101,7 @@ class UserVoucherService {
             throw new NotFoundError('Người dùng chưa có voucher nào');
         }
 
-        return userVouchers.vc_vouchers.map((voucher) => ({
-            voucherId: voucher._id,
-            voucherName: voucher.voucher_name,
-            voucherCode: voucher.voucher_code,
-            voucherValue: voucher.voucher_value,
-            voucherType: voucher.voucher_method,
-            expirationDate: voucher.voucher_end_date,
-        }));
+        return userVouchers.vc_vouchers;
     }
 
     // Lấy danh sách voucher còn hạn của user

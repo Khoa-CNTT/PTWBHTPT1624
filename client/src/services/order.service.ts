@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { adminClient } from '../config/httpRequest';
+import { adminClient, authClient } from '../config/httpRequest';
 
 const apiGetAllOrders = async (status: string) => {
     try {
@@ -67,7 +67,7 @@ const apiGetOrderByCode = async (orderCode: string) => {
     } catch (error) {
         return {
             success: false,
-            message:error,
+            message: error,
         };
     }
 };
@@ -83,5 +83,51 @@ const apiGetOfflineOrderByCode = async (orderCode: string) => {
         };
     }
 };
-export {apiGetOfflineOrderByCode, apiGetOrderByCode,apiGetAllOrders, apiUpdateOrderStatus, getOrder, apiCreateOfflineOrders, apiGetAllOfflineOrders };
 
+// --------------------
+
+const apiGetAllOrdersByUser = async (status: string) => {
+    try {
+        const res = await authClient.get('/v1/api/order/by-user', { params: { status } });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiCancelOrder = async (id: string) => {
+    try {
+        const res = await authClient.put(`/v1/api/order/${id}/cancel`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiReorder = async (id: string) => {
+    try {
+        const res = await authClient.put(`/v1/api/order/${id}/re-order`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export {
+    apiReorder,
+    apiCancelOrder,
+    apiGetAllOrdersByUser,
+    apiGetOfflineOrderByCode,
+    apiGetOrderByCode,
+    apiGetAllOrders,
+    apiUpdateOrderStatus,
+    getOrder,
+    apiCreateOfflineOrders,
+    apiGetAllOfflineOrders,
+};

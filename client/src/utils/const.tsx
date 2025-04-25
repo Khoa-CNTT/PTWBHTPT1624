@@ -6,14 +6,19 @@ export const PATH = {
     PAGE_BRAND: '/thuong-hieu/:brand_slug',
     PAGE_SEARCH: '/tim-kiem/:keySearch',
     PAGE_IMAGE_SEARCH: '/tim-kiem-hinh-anh',
-    PAGE_USER: '/nguoi-dung/tai-khoan',
     PAGE_CART: '/gio-hang',
     PAGE_PAYMENT: '/payment',
     PAGE_PAYPAL: '/payment/paypal',
     VOUCHER: '/voucher',
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
-
+    PAGE_USER: '/nguoi-dung',
+    PAGE_ORDER: '/nguoi-dung/don-hang',
+    PAGE_PROFILE: '/nguoi-dung/thong-tin-tai-khoan',
+    PAGE_FAVORITE: '/nguoi-dung/san-pham-yeu-thich',
+    PAGE_RECENT_VIEW: '/nguoi-dung/da-xem-gan-day',
+    PAGE_PURCHASED: '/nguoi-dung/san-pham-da-mua',
+    PAGE_USER_VOUCHER: '/nguoi-dung/voucher-cua-ban',
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
     MANAGE_DASHBOARD: '/quan-ly/dashboard',
@@ -116,27 +121,32 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 export const SIDEBAR_USER = [
     {
         label: 'Thông tin tài khoản',
-        path_name: 'profile',
+        path_name: PATH.PAGE_PROFILE,
         icon: <PersonIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
-        label: 'Đơn mua',
-        path_name: 'purchase',
+        label: 'Danh sách đơn hàng',
+        path_name: PATH.PAGE_ORDER,
         icon: <ShoppingBasketIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
         label: 'Sản phẩm đã mua',
-        path_name: 'san-pham-da-mua',
+        path_name: PATH.PAGE_PURCHASED,
         icon: <SellIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
         label: 'Sản phẩm yêu thích',
-        path_name: 'san-pham-yeu-thich',
+        path_name: PATH.PAGE_FAVORITE,
         icon: <FavoriteBorderIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
         label: 'Đã xem gần đây',
-        path_name: 'san-pham-da-xem',
+        path_name: PATH.PAGE_RECENT_VIEW,
+        icon: <ScheduleIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+    },
+    {
+        label: 'Voucher của bạn',
+        path_name: PATH.PAGE_USER_VOUCHER,
         icon: <ScheduleIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
 ];

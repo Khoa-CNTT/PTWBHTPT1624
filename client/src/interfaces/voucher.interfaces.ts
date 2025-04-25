@@ -14,12 +14,9 @@ export interface IVoucher {
     voucher_min_order_value: number; // Giá trị đơn hàng tối thiểu để áp dụng voucher
     voucher_start_date: Date | string; // Ngày bắt đầu (có thể là Date hoặc string khi làm việc với API)
     voucher_end_date: Date | string; // Ngày kết thúc
-
     voucher_is_active: boolean; // Trạng thái kích hoạt của voucher
-
     voucher_uses_count?: number; // Số lần đã sử dụng (tuỳ chọn)
     voucher_users_used: string[]; // Danh sách ID người dùng đã sử dụng
-
     updatedAt?: Date;
     createdAt?: Date;
 }

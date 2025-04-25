@@ -5,13 +5,14 @@ import { Overlay, showNotification } from '../../components';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
 import { motion } from 'framer-motion';
+import { useActionStore } from '../../store/actionStore';
 
 const ForgotPassword: React.FC = () => {
     const [password, setPassword] = useState<string>('');
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const params = useParams();
     const navigate = useNavigate();
-
+    const { setIsLoading } = useActionStore();
     useEffect(() => {
         if (!params.token) navigate('/');
     }, [params.token, navigate]);
@@ -21,8 +22,10 @@ const ForgotPassword: React.FC = () => {
             showNotification('Mật khẩu cần ít nhất 6 ký tự.', false);
             return;
         }
+        setIsLoading(true);
         const res = await resetPassword(params.token, password);
         showNotification(res.message, res.success);
+        setIsLoading(false);
         navigate('/');
     };
 

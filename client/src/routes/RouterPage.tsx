@@ -21,6 +21,8 @@ import UserPage from '../pages/user/userPage';
 import FavoritePage from '../pages/user/userPage/FavoritePage';
 import RecentViewPage from '../pages/user/userPage/RecentViewPage';
 import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage';
+import OrderPage from '../pages/user/userPage/orderPage';
+import UserVoucherPage from '../pages/user/userPage/UserVoucherPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
@@ -43,11 +45,13 @@ const RouterPage = () => {
                 <Route path="*" element={<Navigate to={PATH.HOME} />} />
 
                 <Route path={PATH.PAGE_USER} element={isUserLoggedIn ? <UserPage /> : <Navigate to="/" />}>
-                    <Route path={''} element={<Navigate to="profile" />} />
-                    <Route path={'profile'} element={<UserProfile />} />
-                    <Route path={'san-pham-yeu-thich'} element={<FavoritePage />} />
-                    <Route path={'san-pham-da-xem'} element={<RecentViewPage />} />
-                    <Route path={'san-pham-da-mua'} element={<PurchasedProductsPage />} />
+                    <Route path={''} element={<Navigate to={PATH.PAGE_PROFILE} />} />
+                    <Route path={PATH.PAGE_PROFILE} element={<UserProfile />} />
+                    <Route path={PATH.PAGE_FAVORITE} element={<FavoritePage />} />
+                    <Route path={PATH.PAGE_RECENT_VIEW} element={<RecentViewPage />} />
+                    <Route path={PATH.PAGE_PURCHASED} element={<PurchasedProductsPage />} />
+                    <Route path={PATH.PAGE_ORDER} element={<OrderPage />} />
+                    <Route path={PATH.PAGE_USER_VOUCHER} element={<UserVoucherPage />} />
                     {/* <Route path={'purchase'} element={<PurchaseManage />} />
                     <Route path={'sell'} element={<SellManage />} />
                     <Route path={'product'} element={<ProductManage />} />

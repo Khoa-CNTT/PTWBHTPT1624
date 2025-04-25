@@ -1,5 +1,4 @@
-import React, { useEffect, useState } from 'react';
-import { apiGetPurchasedProduct } from '../../../../services/product.service';
+import React, { useState } from 'react';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../../../components/ui/table';
 import { IProductItem } from '../../../../interfaces/product.interfaces';
 import { formatDate } from '../../../../utils/format/formatDate';
@@ -7,18 +6,11 @@ import { NotFound } from '../../../../components';
 import PaidIcon from '@mui/icons-material/Paid';
 import usePurchasedStore from '../../../../store/purchasedStore';
 import FormReviews from '../../../../components/form/FormReviews';
+import { Link } from 'react-router';
 const PurchasedProductsPage: React.FC = () => {
     const [openFormReview, setOpenFormReview] = useState<boolean>(false);
     const [productReview, setProductReview] = useState<IProductItem>();
-    const { purchasedProducts, setPurchasedProducts } = usePurchasedStore();
-    useEffect(() => {
-        const fetchApi = async () => {
-            const res = await apiGetPurchasedProduct();
-            if (res.success) setPurchasedProducts(res.data.PurchasedProduct);
-        };
-        fetchApi();
-    }, []);
-
+    const { purchasedProducts } = usePurchasedStore();
     return (
         <div className="tablet:fixed tablet:top-0 tablet:right-0 tablet:z-[1000] w-full h-full bg-white p-6 laptop:rounded-lg overflow-y-auto">
             <div className="w-full mb-6">
@@ -63,8 +55,10 @@ const PurchasedProductsPage: React.FC = () => {
                                                 />
                                             </div>
                                         </TableCell>
-                                        <TableCell className="px-6 py-4 text-sm text-gray-800 max-w-[200px] line-clamp-2">
-                                            {pc.pc_productId.product_name}
+                                        <TableCell className="px-6 py-4 text-sm text-gray-800 max-w-[250px] line-clamp-2">
+                                            <Link className="hover:underline" to={`/${pc.pc_productId.product_slug}/${pc.pc_productId._id}`}>
+                                                {pc.pc_productId.product_name}
+                                            </Link>
                                         </TableCell>
                                         <TableCell className="px-6 py-4 text-sm">
                                             <span className="inline-block bg-blue-100 text-blue-600 px-3 py-1 rounded-full font-medium">{pc.pc_quantity}</span>

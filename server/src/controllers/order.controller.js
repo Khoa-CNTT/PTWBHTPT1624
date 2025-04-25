@@ -10,7 +10,20 @@ class OrderController {
             message: 'Đặt hàng thành công',
         });
     }
-
+    static async cancelOrder(req, res) {
+        res.status(201).json({
+            success: true,
+            data: await OrderService.cancelOrder({ userId: req.user._id, orderId: req.params.id }),
+            message: 'Đơn hàng đã được hủy',
+        });
+    }
+    static async reorder(req, res) {
+        res.status(201).json({
+            success: true,
+            data: await OrderService.reorder({ userId: req.user._id, orderId: req.params.id }),
+            message: 'Đơn hàng đã được đặt lại thành công',
+        });
+    }
     static async createOfflineOrder(req, res) {
         res.status(201).json({
             success: true,
