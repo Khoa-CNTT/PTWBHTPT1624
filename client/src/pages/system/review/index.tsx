@@ -29,11 +29,16 @@ export default function ReviewManage() {
             page: currentPage,
         });
         if (res.success && res.data) {
-            setReviews(res.data.Reviews || []);
+            // Update the state to use res.data.reviews instead of res.data.Reviews
+            setReviews(res.data.reviews || []);
             setTotalPage(res.data.totalPage || 0);
+            setLoading(false);
+        } else {
             setLoading(false);
         }
     };
+    
+    
 
     useEffect(() => {
         fetchReviews();
@@ -88,7 +93,7 @@ export default function ReviewManage() {
                 ) : (
                     <NotExit label="Không có đánh giá nào" />
                 )}
-                {reviews.length > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
             </div>
         </>
     );
