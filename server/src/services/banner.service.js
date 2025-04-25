@@ -1,13 +1,13 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const Banner = require('../models/banner.model');
 
 class BannerService {
     // Tạo banner mới
     static async createBanner(payload) {
         if (Object.keys(payload).length === 0) {
-            throw new BadRequestError('Vui lòng cung cấp dữ liệu banner');
+            throw new RequestError('Vui lòng cung cấp dữ liệu banner');
         }
         return await Banner.create(payload);
     }
@@ -52,9 +52,14 @@ class BannerService {
     }
     //tìm theo tên
     static async searchBannerByName(name) {
+        if (typeof name !== 'string') {
+            throw new BadRequestError('The name parameter must be a string');
+        }
+    
         const banners = await Banner.find({ banner_title: { $regex: name, $options: 'i' } });
         return banners;
     }
+    
 }
 
 module.exports = BannerService;

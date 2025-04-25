@@ -1,14 +1,15 @@
 'use strict';
 
-const { BadRequestError, NotFoundError } = require('../core/error.response');
+const { RequestError, NotFoundError } = require('../core/error.response');
 const Brand = require('../models/brand.model');
 const Product = require('../models/product.model');
+const category = require('../models/category.model');
 
 class BrandService {
     // Tạo thương hiệu mới
     static async createBrand(payload) {
         if (!payload.brand_name || !payload.brand_banner) {
-            throw new BadRequestError('Thiếu thông tin bắt buộc!');
+            throw new RequestError('Thiếu thông tin bắt buộc!');
         }
         return await Brand.create(payload);
     }
@@ -56,17 +57,18 @@ class BrandService {
     static async searchBrandByName(name) {
         return await Brand.find({ brand_name: { $regex: name, $options: 'i' } });
     }
-    static async getBrandsInCategory(categoryId) {
+    static async getBrandsInCategory(category_code) {
+        const foundCategory = await category.findOne({ category_code });
+        if (!foundCategory) throw new RequestError('Danh mục không tồn tại');
         // Sử dụng phương thức distinct để lấy các thương hiệu duy nhất
         const brandIds = await Product.distinct('product_brand_id', {
-            product_category_id: categoryId,
+            product_category_id: foundCategory._id,
             product_isPublished: true,
         });
         // Populate thông tin chi tiết của các thương hiệu
         const brands = await Brand.find({
             _id: { $in: brandIds },
         }).select('_id brand_name brand_slug');
-
         return brands;
     }
 }
