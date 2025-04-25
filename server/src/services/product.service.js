@@ -1,5 +1,5 @@
 'use strict';
-const { NotFoundError } = require('../core/error.response');
+const { NotFoundError, RequestError } = require('../core/error.response');
 const Product = require('../models/product.model');
 const cosineSimilarity = require('../utils/search-image/cosineSimilarity');
 const downloadImage = require('../utils/search-image/downloadImage');
@@ -16,19 +16,62 @@ class ProductService {
         if (Object.keys(payload).length === 0) {
             throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
         }
+
         payload.product_code = generateRandomCode(10);
+
+        // Xử lý ảnh chỉ nếu có product_thumb
+        if (payload?.product_thumb) {
+            const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
+            const imgDir = path.join(__dirname, 'img');
+            const tempPath = path.join(imgDir, randomFileName);
+
+            try {
+                // Đảm bảo folder tồn tại
+                await fs.mkdir(imgDir, { recursive: true });
+
+                // Tải ảnh và trích xuất đặc trưng
+                await downloadImage(payload.product_thumb, tempPath);
+                const searchFeatures = await extractFeatures(tempPath);
+                payload.product_image_features = Array.from(searchFeatures.dataSync());
+
+                // Giải phóng Tensor
+                searchFeatures.dispose();
+            } catch (err) {
+                console.error('Lỗi xử lý ảnh:', err);
+                // Tiếp tục thêm sản phẩm mà không có đặc trưng ảnh
+                payload.product_image_features = [];
+            } finally {
+                // Xóa file tạm
+                fs.unlink(tempPath).catch(() => {});
+            }
+        }
+
         // Tạo sản phẩm mới
         const newProduct = await Product.create(payload);
         return newProduct;
     }
+
     // Lấy sản phẩm theo ID
     static async getProductById(productId) {
-        const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']).lean();
-        if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
-        return product;
+        // Fetch product without lean() to retain Mongoose model instance
+        const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']);
+
+        if (!product) {
+            throw new NotFoundError('Không tìm thấy sản phẩm');
+        }
+
+        // Increment view count
+        product.product_views += 1;
+
+        // Save the updated product
+        await product.save();
+        // Convert to plain object for response, if needed
+        return product.toObject();
     }
     static async ScanProduct(product_code) {
-        const product = await Product.findOne({ product_code }).select('product_thumb product_price product_name product_discount product_code').lean();
+        const product = await Product.findOne({ product_code })
+            .select('product_thumb product_price product_name product_discounted_price product_discount product_code')
+            .lean();
         if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
         return product;
     }
@@ -51,10 +94,9 @@ class ProductService {
         const skipNum = pageNum * limitNum;
         const searchFilter = keySearch ? { $text: { $search: keySearch } } : {};
         const productQuery = Product.find(searchFilter)
-        .select(
-            '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
-          )
-          
+            .select(
+                '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
+            )
             .skip(skipNum)
             .limit(limitNum)
             .lean();
@@ -96,6 +138,7 @@ class ProductService {
         // Transform gte, gt, lte, lt to MongoDB operators
         const queriesString = JSON.stringify(queries).replace(/\b(gte|gt|lte|lt)\b/g, (el) => `$${el}`);
         let newQueryString = JSON.parse(queriesString);
+        console.log('newQueryString', newQueryString);
 
         // Add filters for category and brand if provided
         if (query.product_category_id) {
@@ -104,17 +147,14 @@ class ProductService {
         if (query.product_brand_id) {
             newQueryString.product_brand_id = query.product_brand_id;
         }
-
         // Ensure only published products are returned
         newQueryString.product_isPublished = true;
-
         // Build query
         let products = Product.find(newQueryString)
             .select(
                 '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity',
             )
             .lean();
-
         // Apply sorting
         if (query.sort) {
             const sortBy = query.sort.toString().replace(',', ' ');
@@ -122,16 +162,13 @@ class ProductService {
         } else {
             products = products.sort('-createdAt');
         }
-
         // Apply pagination
         const limit = Math.max(~~query.limit || 10, 1); // Default 10, min 1
         const page = Math.max(~~query.page || 0, 0); // Default 0
         const skip = page * limit;
         products = products.limit(limit).skip(skip);
-
         // Execute query and count concurrently
         const [newProducts, totalProducts] = await Promise.all([products.exec(), Product.countDocuments(newQueryString)]);
-
         // Return result
         return {
             success: true,
@@ -145,17 +182,16 @@ class ProductService {
     static async getFeaturedProducts(limit = 30) {
         return await Product.find({ product_isPublished: true })
             .sort({ product_sold: -1, product_ratings: -1 })
-            .select('_id product_thumb product_name product_price product_slug product_discount product_sold product_ratings')
+            .select('_id product_thumb product_name product_price product_discounted_price product_slug product_discount product_sold product_ratings')
             .limit(limit)
             .lean();
     }
-
     static async getFlashSaleProducts() {
         return await Product.find({
             product_discount: { $gte: 40 },
             product_isPublished: true,
         })
-            .select('_id product_thumb product_sold  product_quantity product_name product_slug product_discount')
+            .select('_id product_thumb product_sold product_discounted_price product_quantity product_name product_slug product_discount')
             .sort({ product_discount: -1 })
             .lean();
     }
@@ -165,7 +201,7 @@ class ProductService {
                 createdAt: { $gte: new Date(new Date().setDate(new Date().getDate() - 30)) },
                 product_isPublished: true,
             })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount')
+            .select('_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount')
             .sort({ createdAt: -1 })
             .lean();
     }
@@ -177,7 +213,7 @@ class ProductService {
             product_category_id: currentProduct.product_category_id,
             product_isPublished: true,
         })
-            .select('_id product_thumb product_name product_slug product_ratings product_sold product_price product_discount')
+            .select('_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount')
             .sort({ sold_count: -1 })
             .limit(10)
             .lean();
@@ -197,40 +233,52 @@ class ProductService {
             .lean();
         return { products };
     }
-
     static async searchProductByImage(imageUrl) {
         if (!imageUrl) throw new NotFoundError('Vui lòng cung cấp URL ảnh!');
         const tempPath = path.join(__dirname, 'temp_search.png');
         // Tải ảnh từ URL về thư mục tạm
-        if (!(await downloadImage(imageUrl, tempPath))) {
-            throw new BadRequestError('Không thể tải ảnh!');
-        }
+        if (!(await downloadImage(imageUrl, tempPath))) throw new RequestError('Không thể tải ảnh!');
         // Trích xuất đặc trưng từ ảnh tìm kiếm
         const searchFeatures = await extractFeatures(tempPath);
-        if (!searchFeatures || searchFeatures.length === 0) {
-            throw new BadRequestError('Không thể trích xuất đặc trưng từ ảnh!');
-        }
+        if (!searchFeatures || searchFeatures.length === 0) throw new RequestError('Không thể trích xuất đặc trưng từ ảnh!');
         // Lấy tất cả sản phẩm trong cơ sở dữ liệu (sử dụng `.lean()` để tối ưu hóa hiệu suất)
         const productFeatures = await Product.find({ product_isPublished: true }).lean();
         const results = await Promise.all(
             productFeatures.map(async (product) => {
                 // Kiểm tra nếu sản phẩm không có đặc trưng hình ảnh
                 if (!product.product_image_features || product.product_image_features.length === 0) {
-                    console.warn(`Skipping product ${product.product_thumb} due to empty features`);
                     return { url: product.product_thumb, similarity: 0, product };
                 }
+                const {
+                    _id,
+                    product_thumb,
+                    product_name,
+                    product_discounted_price,
+                    product_slug,
+                    product_ratings,
+                    product_sold,
+                    product_price,
+                    product_discount,
+                } = product;
                 // Tính toán sự tương đồng cosine giữa ảnh tìm kiếm và sản phẩm
                 const productTensor = tf.tensor1d(product.product_image_features);
                 const similarity = cosineSimilarity(searchFeatures, productTensor);
                 return {
-                    url: product.product_thumb, // Đường dẫn ảnh sản phẩm
-                    similarity: similarity, // Độ tương đồng cosine
-                    product: product, // Trả về thông tin sản phẩm
-                };
+                    similarity,
+                    _id,
+                    product_thumb,
+                    product_name,
+                    product_discounted_price,
+                    product_slug,
+                    product_ratings,
+                    product_sold,
+                    product_price,
+                    product_discount,
+                }; // Trả về thông tin sản phẩm
             }),
         );
         // Sắp xếp kết quả theo độ tương đồng giảm dần và lấy 10 sản phẩm tương tự nhất
-        const sortedResults = results.sort((a, b) => b.similarity - a.similarity).slice(0, 10);
+        const sortedResults = results.sort((a, b) => b.similarity - a.similarity).slice(0, 12);
         // Xóa tệp ảnh tạm sau khi xử lý
         await fs.unlink(tempPath).catch(() => {});
         // Trả về kết quả tìm kiếm với thông tin sản phẩm
@@ -240,10 +288,8 @@ class ProductService {
         const limitNum = parseInt(limit, 10) || 10; // Giới hạn sản phẩm mỗi trang
         const pageNum = parseInt(page, 10) || 0; // Trang hiện tại
         const skipNum = pageNum * limitNum; // Tính toán số lượng bỏ qua
-
         let filter = {};
         const currentDate = new Date(); // Lưu lại ngày hiện tại
-
         // Lọc sản phẩm theo trạng thái hết hạn
         switch (status) {
             case 'expired': // Hết hạn
@@ -266,14 +312,11 @@ class ProductService {
                 };
                 break;
             default:
-                throw new BadRequestError('Trạng thái hạn sử dụng không hợp lệ.');
+                throw new RequestError('Trạng thái hạn sử dụng không hợp lệ.');
         }
-
         // Lấy sản phẩm theo trạng thái
         const products = await Product.find(filter).sort('-product_expiry_date').skip(skipNum).limit(limitNum).lean();
-
         const totalProducts = await Product.countDocuments(filter);
-
         return {
             totalPage: Math.ceil(totalProducts / limitNum) - 1, // Số trang tổng cộng
             currentPage: pageNum, // Trang hiện tại
