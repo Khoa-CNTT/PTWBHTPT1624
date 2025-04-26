@@ -177,8 +177,8 @@ const FormReviews: React.FC<FormReviewsProps> = ({
                             value={rating}
                             precision={0.5}
                             sx={{ fontSize: '40px' }}
-                            onChange={(event, newValue) => {
-                                setRating(newValue);
+                            onChange={(event: any) => {
+                                setRating(event?.target?.value);
                             }}
                             emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
                         />
