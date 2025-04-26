@@ -13,8 +13,8 @@ import {
     apiUpdateShippingCompany,
     apiSearchShippingCompanies, // ✅ API tìm kiếm
 } from '../../../services/shippingCompany.service';
-import ShippingTable from './SupplierTable';
-import ShippingModal from './SupplierModal';
+import ShippingTable from './shippingTable';
+import ShippingModal from './shippingModal';
 import InputSearch from '../../../components/item/inputSearch'; // ✅ InputSearch component
 
 export default function ShippingManage() {
