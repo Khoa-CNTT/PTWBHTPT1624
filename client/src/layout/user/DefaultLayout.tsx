@@ -6,6 +6,7 @@ import Footer from './Footer';
 import { Auth } from '../../feature';
 import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
+import VoucherBanner from '../../components/VoucherBanner/VoucherBanner';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
@@ -44,6 +45,7 @@ const DefaultLayout = () => {
                 <Footer />
                 <Auth />
                 <Loading />
+                <VoucherBanner />
                 {/* <Auth /> */}
                 {/* {!mobile_ui ||!location.pathname.includes(path.PAGE_PAYPAL) &&<Footer />}
              

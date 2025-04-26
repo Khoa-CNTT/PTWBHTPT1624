@@ -2,11 +2,8 @@
 import React, { useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
-import StarRateIcon from '@mui/icons-material/StarRate';
-import StarOutlineIcon from '@mui/icons-material/StarOutline';
 import { v4 as uuidv4 } from 'uuid';
 import { ButtonOutline, Overlay, showNotification } from '..';
-import { RATING_REVIEW } from '../../utils/const';
 import { Review } from '../../interfaces/dashboard.interface';
 import { IProductItem } from '../../interfaces/product.interfaces';
 import { IReviews } from '../../interfaces/reviews.interfaces';
@@ -16,6 +13,8 @@ import usePurchasedStore from '../../store/purchasedStore';
 import { apiUploadImage } from '../../services/uploadPicture.service';
 import { useActionStore } from '../../store/actionStore';
 import { apiCreateReview, apiUpdateReview } from '../../services/review.service';
+import StarIcon from '@mui/icons-material/Star';
+import { Rating } from '@mui/material';
 
 interface FormReviewsProps {
     setReviews?: React.Dispatch<React.SetStateAction<Review[]>>;
@@ -47,7 +46,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
     const [isLoad, setIsLoad] = useState(false);
     const [valueInput, setValueInput] = useState('');
     const [imagesUrl, setImagesUrl] = useState<string[]>([]);
-    const [rating, setRating] = useState(5);
+    const [rating, setRating] = useState<number | any>(5);
     const { user, addRewardPoints } = useUserStore();
     const { isUserLoggedIn } = useAuthStore();
     const { setIsLoading, setOpenFeatureAuth } = useActionStore();
@@ -173,9 +172,19 @@ const FormReviews: React.FC<FormReviewsProps> = ({
                         <img className="h-20 w-20" src={productReview.product_thumb} alt="Product" />
                         <span className="text-sm">{productReview.product_name}</span>
                     </div>
-
-                    <ul className="flex gap-2 justify-center">
-                        {RATING_REVIEW.map((s) => (
+                    <div className="flex gap-2 justify-center my-2">
+                        <Rating
+                            value={rating}
+                            precision={0.5}
+                            sx={{ fontSize: '40px' }}
+                            onChange={(event, newValue) => {
+                                setRating(newValue);
+                            }}
+                            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                        />
+                    </div>
+                    {/*   <ul className="flex gap-2 justify-center">
+                        {/* {RATING_REVIEW.map((s) => (
                             <li
                                 key={s.start}
                                 className="flex flex-col items-center gap-1 text-[rgb(243,153,74)] cursor-pointer"
@@ -194,7 +203,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
                                 <span className={`text-xs ${s.start === rating ? 'font-bold' : 'font-medium'}`}>{s.text}</span>
                             </li>
                         ))}
-                    </ul>
+                    </ul> */}
 
                     <div className="flex flex-col border border-gray-300 rounded-md py-1 w-10/12 mx-auto">
                         <textarea
