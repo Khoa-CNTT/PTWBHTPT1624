@@ -40,6 +40,10 @@ const ChangePassword: React.FC = () => {
             showNotification('Vui lòng nhập đầy đủ tất cả các trường', false);
             return;
         }
+        if (newPassword === oldPassword) {
+            showNotification('Mật khẩu mới không được trùng với mật khẩu cũ', false);
+            return;
+        }
 
         if (!isPasswordMatch) {
             showNotification('Mật khẩu xác nhận không khớp', false);
