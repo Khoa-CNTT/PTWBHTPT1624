@@ -111,13 +111,13 @@ export const SORT_BAR = [
         },
     },
 ];
-
+import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SellIcon from '@mui/icons-material/Sell';
 import { bachhoa, danhchoban, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
-import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import ScheduleIcon from '@mui/icons-material/Schedule';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 export const SIDEBAR_USER = [
     {
         label: 'Thông tin tài khoản',
@@ -137,17 +137,17 @@ export const SIDEBAR_USER = [
     {
         label: 'Sản phẩm yêu thích',
         path_name: PATH.PAGE_FAVORITE,
-        icon: <FavoriteBorderIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: <FavoriteIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
         label: 'Đã xem gần đây',
         path_name: PATH.PAGE_RECENT_VIEW,
-        icon: <ScheduleIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: <AccessTimeFilledIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
         label: 'Voucher của bạn',
         path_name: PATH.PAGE_USER_VOUCHER,
-        icon: <ScheduleIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: <AutoStoriesIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
 ];
 
