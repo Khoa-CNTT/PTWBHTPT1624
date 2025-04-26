@@ -15,6 +15,7 @@ const Login: React.FC = () => {
     const { loginUser } = useAuthStore();
     const { setUser } = useUserStore();
     const { setOpenFeatureAuth, setFeatureAuth, setIsLoading } = useActionStore();
+
     const handleSummit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (!email || !password) {
@@ -30,6 +31,11 @@ const Login: React.FC = () => {
             setOpenFeatureAuth(false);
             loginUser();
             setUser(res.data.user);
+
+            // 👉 Thêm để hiển thị lại banner voucher khi vừa đăng nhập
+            localStorage.setItem('justLoggedIn', 'true');
+            sessionStorage.removeItem('voucherBannerShown');
+            window.location.reload();
         } else {
             setError(res.message);
         }
@@ -44,13 +50,13 @@ const Login: React.FC = () => {
             </div>
             <form className="flex flex-col gap-5">
                 <div>
-                    <div className="border-b-[1px]  py-2">
+                    <div className="border-b-[1px] py-2">
                         <input
                             type="email"
                             required
                             value={email}
                             onChange={(e) => setEmail(e.target.value)}
-                            className="w-full text-base outline-none border-none "
+                            className="w-full text-base outline-none border-none"
                             placeholder="dpshopvn@gmail.com"
                         />
                     </div>
@@ -58,7 +64,7 @@ const Login: React.FC = () => {
                         <input
                             id="name"
                             required
-                            className=" text-sm w-full bg-transparent outline-none border-solid border-b-[1px] py-2"
+                            className="text-sm w-full bg-transparent outline-none border-solid border-b-[1px] py-2"
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}
@@ -75,12 +81,13 @@ const Login: React.FC = () => {
                 <div className="flex flex-col gap-2">
                     <button
                         onClick={handleSummit}
-                        className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80  transition duration-200 ">
+                        className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80 transition duration-200"
+                    >
                         Đăng nhập
                     </button>
                 </div>
             </form>
-            <div className="flex flex-col gap-1 w-full h-full ">
+            <div className="flex flex-col gap-1 w-full h-full">
                 <p className="text-sm text-primary cursor-pointer" onClick={() => setFeatureAuth(2)}>
                     Quên mật khẩu?
                 </p>

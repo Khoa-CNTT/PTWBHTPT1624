@@ -13,6 +13,9 @@ router.get("/all", asyncHandle(VoucherController.getAllVouchers));
 // Áp dụng mã giảm giá (người dùng sử dụng)
 router.post("/apply", asyncHandle(VoucherController.applyVoucher));
 
+// ✅ Lấy danh sách voucher đang hoạt động dùng cho banner (client)
+router.get("/active-banners", asyncHandle(VoucherController.getActiveBannerVouchers));
+
 // --- Admin routes ---
 router.use(adminAuthentication); // Kiểm tra xem người dùng có phải admin không
 router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE)); // Kiểm tra quyền quản lý voucher

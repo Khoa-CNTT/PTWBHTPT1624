@@ -14,7 +14,7 @@ class ReviewService {
             throw new RequestError('Thiếu thông tin để tạo đánh giá');
         }
         await userModel.findByIdAndUpdate(userId, {
-            $inc: { user_reward_points: 50000 },
+            $inc: { user_reward_points: 5000 },
         });
         const hasPurchased = await PurchasedModel.findOne({
             pc_userId: userId,

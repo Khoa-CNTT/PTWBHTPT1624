@@ -162,6 +162,33 @@ class VoucherService {
             voucherId: voucher._id,
         };
     }
+    // Lấy danh sách voucher đang active và trong thời gian hiển thị banner
+static async getActiveBannerVouchers() {
+    const now = new Date();
+
+    const vouchers = await voucherModel.find({
+        voucher_is_active: true,
+        voucher_start_date: { $lte: now },
+        voucher_end_date: { $gte: now },
+    })
+    .sort({ createdAt: -1 })
+    .select('-__v');
+
+    return vouchers;
 }
+}
+// Fix lại API client
+const apiGetActiveBannerVouchers = async () => {
+    try {
+        const res = await authClient.get('/v1/api/voucher/active-banners'); // thêm 's' cho đúng
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
 
 module.exports = VoucherService;

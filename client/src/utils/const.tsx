@@ -62,7 +62,7 @@ export const SEARCH_UTILITY = [
     {
         id: 3,
         image: revodoi,
-        title: 'Rẽ vô đối',
+        title: 'Rẻ vô đối',
     },
 ];
 

@@ -91,5 +91,17 @@ const apiApplyVoucher = async (voucherData: { code: string; orderValue: number }
         };
     }
 };
+// API lấy danh sách voucher đang active cho banner
+const apiGetActiveBannerVouchers = async () => {
+    try {
+        const res = await adminClient.get('/v1/api/voucher/active-banners');
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiApplyVoucher, apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };
+export { apiGetActiveBannerVouchers,apiApplyVoucher, apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };

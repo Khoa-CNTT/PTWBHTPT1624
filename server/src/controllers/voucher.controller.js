@@ -64,13 +64,31 @@ const VoucherController = {
     applyVoucher: async (req, res) => {
         const { code, orderValue } = req.body;
         // Gọi dịch vụ để áp dụng voucher
-            const result = await VoucherService.applyVoucher({ code, orderValue });
-            // Trả về kết quả khi áp dụng voucher thành công
+        const result = await VoucherService.applyVoucher({ code, orderValue });
+        // Trả về kết quả khi áp dụng voucher thành công
+        return res.status(200).json({
+            success: true,
+            message: 'Áp dụng mã thành công',
+            data: result,
+        });
+    },
+
+    // ✅ Lấy danh sách voucher đang active cho banner
+    getActiveBannerVouchers: async (req, res) => {
+        try {
+            const vouchers = await VoucherService.getActiveBannerVouchers();
             return res.status(200).json({
                 success: true,
-                message: 'Áp dụng mã thành công',
-                data: result,
+                data: vouchers,
+                message: 'Lấy voucher đang hoạt động thành công!',
             });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: 'Đã xảy ra lỗi khi lấy voucher active cho banner!',
+                error: error.message,
+            });
+        }
     }
 };
 
