@@ -349,21 +349,12 @@ class OrderService {
 
     static async getOrder(orderId) {
         if (!orderId) throw new ErrorResponse('Không tìm thấy đơn hàng');
-        const order = await OnlineOrder.findById(orderId).populate('order_user', 'user_name').populate('order_products.productId', 'product_thumb'); // Populate productId with only product_thumb
+        const order = await OnlineOrder.findById(orderId)
+            .populate('order_user', 'user_name')
+            .populate('order_products.productId', '_id product_name product_thumb product_slug'); // Populate productId with only product_thumb
         if (!order) throw new ErrorResponse('Không tìm thấy đơn hàng');
-        // Transform products array
-        const products = order.order_products.map((p) => ({
-            product_thumb: p.productId?.product_thumb,
-            quantity: p.quantity,
-            discount: p.discount,
-            price: p.price,
-        }));
 
-        // Convert to plain object and replace order_products
-        const orderObject = order.toObject();
-        orderObject.order_products = products;
-
-        return orderObject;
+        return order;
     }
     // Tìm đơn hàng theo order_code
     static async getOrderByCode(code) {

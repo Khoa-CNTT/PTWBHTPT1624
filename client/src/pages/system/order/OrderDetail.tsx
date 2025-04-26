@@ -69,7 +69,7 @@ const OrderDetail: React.FC = () => {
                 </div>
             </div>
 
-            {order && <OrderItem order={order} view={true} />}
+            {order && <OrderItem order={order} view />}
 
             <div className="my-3">
                 <Link className="text-sm text-primary" to={`${PATH.MANAGE_ORDER}`}>

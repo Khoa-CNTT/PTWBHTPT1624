@@ -42,9 +42,9 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancel
             {/* Danh sách sản phẩm */}
             <div className="my-6">
                 {order?.order_products?.map((product, index) => (
-                    <div key={`${product.productId._id}-${index}`} className="flex w-full border-b border-bgSecondary py-3 px-4">
+                    <div key={`${product.productId?._id}-${index}`} className="flex w-full border-b border-bgSecondary py-3 px-4">
                         <div className="w-[70px] h-[70px] mr-3 p-1 border border-bgSecondary rounded-md overflow-hidden">
-                            <img className="w-full h-full object-cover" src={product?.productId.product_thumb} alt={product?.productId?.product_name} />
+                            <img className="w-full h-full object-cover" src={product?.productId?.product_thumb} alt={product?.productId?.product_name} />
                         </div>
                         <div className="flex-1 flex flex-col gap-1 truncate">
                             <h2 className="text-sm">{product?.productId?.product_name}</h2>
