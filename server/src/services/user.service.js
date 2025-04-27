@@ -220,6 +220,25 @@ class UserService {
             message: 'Đổi mật khẩu thành công!',
         };
     }
+    static async playLuckyBox(userId) {
+        const rewards = [1000, 2000, 5000];  // Điểm cho mỗi hộp
+        const randomIndex = Math.floor(Math.random() * rewards.length);  // Chọn ngẫu nhiên hộp
+        const rewardPoints = rewards[randomIndex];  // Điểm nhận được từ hộp
+
+        // Cập nhật điểm người dùng
+        const user = await UserModel.findById(userId);
+        if (!user) {
+            throw new RequestError('Người dùng không tồn tại!', 404);
+        }
+
+        user.user_reward_points = (user.user_reward_points || 0) + rewardPoints;  // Cộng điểm vào tài khoản
+        await user.save();
+
+        return {
+            rewardPoints,
+            totalPoints: user.user_reward_points,  // Trả về tổng điểm sau khi cộng thêm
+        };
+    }
 }
 
 module.exports = UserService;

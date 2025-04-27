@@ -92,6 +92,22 @@ class UserController {
             next(error);
         }
     }
+    static async playLuckyBox(req, res) {
+        try {
+            const userId = req.user._id;
+            const result = await UserService.playLuckyBox(userId);
+            res.status(200).json({
+                success: true,
+                message: 'Chúc mừng bạn đã nhận phần thưởng!',
+                data: result,
+            });
+        } catch (error) {
+            res.status(error.statusCode || 500).json({
+                success: false,
+                message: error.message || 'Lỗi hệ thống!',
+            });
+        }
+    }
     
 
 }

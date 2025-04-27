@@ -120,5 +120,31 @@ const apiUpdateProfile = async (data: any) => {
         };
     }
 };
+// API gọi để chơi Lucky Box
+import { AxiosError } from 'axios'; // Đảm bảo bạn đã import AxiosError từ axios
 
-export { apiChangePassword, apiSearchUsers, apiUpdateProfile, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+// API gọi để chơi Lucky Box
+const apiPlayLuckyBox = async (userId: string) => {
+    try {
+        const res = await authClient.post('/v1/api/user/luckbox', { userId });
+        return res.data;
+    } catch (error) {
+        // Kiểm tra nếu lỗi là một instance của AxiosError
+        if (error instanceof AxiosError) {
+            // Kiểm tra có response hay không và lấy thông báo lỗi
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi!';
+            return {
+                success: false,
+                message: errorMessage,
+            };
+        } else {
+            // Nếu không phải lỗi từ Axios, trả về lỗi chung
+            return {
+                success: false,
+                message: 'Đã xảy ra lỗi không xác định!',
+            };
+        }
+    }
+};
+
+export { apiPlayLuckyBox,apiChangePassword, apiSearchUsers, apiUpdateProfile, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
