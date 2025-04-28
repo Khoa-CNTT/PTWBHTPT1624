@@ -11,6 +11,8 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
 import { useActionStore } from '../../../store/actionStore';
+import { sendNotificationToAll } from '../../../services/notification.service';
+import { INotification } from '../../../interfaces/notification.interfaces';
 
 export default function VoucherManage(): JSX.Element {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -54,6 +56,15 @@ export default function VoucherManage(): JSX.Element {
             res = await apiUpdateVoucher(data._id, data);
         } else {
             res = await apiAddVoucher(data);
+            if (res?.data?.voucher_type === 'system') {
+                const notification: INotification = {
+                    notification_title: '🎁 Ưu đãi đặc biệt sắp kết thúc!',
+                    notification_subtitle: `⏳ Nhanh tay sở hữu sản phẩm yêu thích trước khi hết hàng! Cơ hội có hạn 🌟`,
+                    notification_imageUrl: res?.data?.voucher_thumb,
+                    notification_link: `/voucher`,
+                };
+                await sendNotificationToAll(notification);
+            }
         }
         setIsLoading(false);
         showNotification(res?.message, res?.success);

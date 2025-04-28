@@ -90,8 +90,8 @@ export default function ProductManage() {
             if (res.success) {
                 const product = res?.data;
                 const notification: INotification = {
-                    notification_title: 'Sản phẩm mới sắp hết hàng!',
-                    notification_subtitle: 'Nhanh tay mua ngay trước khi hết hàng. Số lượng có hạn!',
+                    notification_title: '🔥 Sản phẩm mới sắp hết hàng!',
+                    notification_subtitle: `⏰ Nhanh tay mua ngay trước khi hết hàng! Số lượng có hạn ⚡`,
                     notification_imageUrl: product.product_thumb, // Hình ảnh cảnh báo hết hàng
                     notification_link: `/${product.product_slug}/${product._id}`, // Liên kết đến sản phẩm
                 };
