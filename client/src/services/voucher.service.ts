@@ -1,9 +1,35 @@
 import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả voucher
-const apiGetAllVouchers = async (queries: { limit: number; page: number; type?: string }) => {
+const apiGetAllVouchers = async (queries: { limit: number; page: number }) => {
     try {
         const res = await adminClient.get('/v1/api/voucher/all', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const getAllSystemVouchers = async (queries: { limit: number; page: number }) => {
+    try {
+        const res = await adminClient.get('/v1/api/voucher/system', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const getAllRedeemVouchers = async (queries: { limit: number; page: number }) => {
+    try {
+        const res = await adminClient.get('/v1/api/voucher/redeem', {
             params: queries,
         });
         return res.data;
@@ -104,4 +130,15 @@ const apiGetActiveBannerVouchers = async () => {
     }
 };
 
-export { apiGetActiveBannerVouchers,apiApplyVoucher, apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };
+export {
+    getAllSystemVouchers,
+    getAllRedeemVouchers,
+    apiGetActiveBannerVouchers,
+    apiApplyVoucher,
+    apiGetAllVouchers,
+    apiSearchVoucherByName,
+    apiAddVoucher,
+    apiGetVoucherById,
+    apiUpdateVoucher,
+    apiDeleteVoucher,
+};

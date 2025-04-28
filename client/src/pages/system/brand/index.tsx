@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -128,10 +129,11 @@ export default function BrandManage() {
                 {brands.length === 0 ? (
                     <NotExit label="Không có thương hiệu nào" />
                 ) : (
-                    <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                    </>
                 )}
-
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa thương hiệu */}

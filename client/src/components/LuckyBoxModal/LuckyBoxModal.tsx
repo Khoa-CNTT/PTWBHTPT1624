@@ -3,15 +3,15 @@ import { apiPlayLuckyBox } from '../../services/user.service'; // Import API g�
 
 interface LuckyBoxModalProps {
     onClose: () => void;
-    userId: string;  // Thêm userId để gửi tới API
+    userId: string; // Thêm userId để gửi tới API
 }
 
 const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
     const [isOpen, setIsOpen] = useState(false);
     const [reward, setReward] = useState<number | string>(''); // Lưu phần thưởng
-    const [totalPoints, setTotalPoints] = useState<number | string>('');  // Tổng điểm sau khi nhận thưởng
-    const [loading, setLoading] = useState(false);  // Quản lý trạng thái loading
-    const [error, setError] = useState<string>('');  // Quản lý lỗi
+    const [totalPoints, setTotalPoints] = useState<number | string>(''); // Tổng điểm sau khi nhận thưởng
+    const [loading, setLoading] = useState(false); // Quản lý trạng thái loading
+    const [error, setError] = useState<string>(''); // Quản lý lỗi
     const [showCongratulation, setShowCongratulation] = useState(false); // Quản lý hiển thị form chúc mừng
 
     const handleOpenBox = async (boxNumber: number) => {
@@ -27,17 +27,17 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
             // Gọi API playLuckyBox
             const res = await apiPlayLuckyBox(userId);
             if (res.success) {
-                setReward(res.data.rewardPoints);  // Lưu phần thưởng nhận được
-                setTotalPoints(res.data.totalPoints);  // Lưu tổng điểm mới
-                setShowCongratulation(true);  // Hiển thị form chúc mừng
+                setReward(res.data.rewardPoints); // Lưu phần thưởng nhận được
+                setTotalPoints(res.data.totalPoints); // Lưu tổng điểm mới
+                setShowCongratulation(true); // Hiển thị form chúc mừng
             } else {
-                setReward('Không thể nhận thưởng!');  // Trường hợp lỗi
-                setTotalPoints('');  // Reset totalPoints
+                setReward('Không thể nhận thưởng!'); // Trường hợp lỗi
+                setTotalPoints(''); // Reset totalPoints
             }
         } catch (error) {
             setError('Có lỗi xảy ra, vui lòng thử lại!');
-            setReward('');  // Reset reward khi có lỗi
-            setTotalPoints('');  // Reset totalPoints khi có lỗi
+            setReward(''); // Reset reward khi có lỗi
+            setTotalPoints(''); // Reset totalPoints khi có lỗi
         } finally {
             setLoading(false);
             setIsOpen(true);
@@ -54,7 +54,7 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
 
                 <div className="flex justify-center gap-6 mb-6">
                     {/* Hộp 1 */}
-                    <button 
+                    <button
                         className="bg-green-500 p-10 rounded-xl shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110 hover:rotate-3 hover:shake"
                         onClick={() => handleOpenBox(1)}
                         disabled={loading}>
@@ -62,7 +62,7 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
                     </button>
 
                     {/* Hộp 2 */}
-                    <button 
+                    <button
                         className="bg-blue-500 p-10 rounded-xl shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110 hover:rotate-3 hover:shake"
                         onClick={() => handleOpenBox(2)}
                         disabled={loading}>
@@ -70,7 +70,7 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
                     </button>
 
                     {/* Hộp 3 */}
-                    <button 
+                    <button
                         className="bg-red-500 p-10 rounded-xl shadow-lg cursor-pointer transform transition-all duration-300 hover:scale-110 hover:rotate-3 hover:shake"
                         onClick={() => handleOpenBox(3)}
                         disabled={loading}>

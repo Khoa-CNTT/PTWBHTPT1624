@@ -14,7 +14,7 @@ class ProductService {
     // Tạo sản phẩm mới với số lượng tồn kho
     static async createProduct(payload) {
         if (Object.keys(payload).length === 0) {
-            throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
+            throw new RequestError('Vui lòng cung cấp dữ liệu sản phẩm');
         }
 
         payload.product_code = generateRandomCode(10);

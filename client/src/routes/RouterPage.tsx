@@ -23,6 +23,7 @@ import RecentViewPage from '../pages/user/userPage/RecentViewPage';
 import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage';
 import OrderPage from '../pages/user/userPage/orderPage';
 import UserVoucherPage from '../pages/user/userPage/UserVoucherPage';
+import RedeemVoucher from '../pages/user/userPage/RedeemVoucher';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
@@ -52,6 +53,7 @@ const RouterPage = () => {
                     <Route path={PATH.PAGE_PURCHASED} element={<PurchasedProductsPage />} />
                     <Route path={PATH.PAGE_ORDER} element={<OrderPage />} />
                     <Route path={PATH.PAGE_USER_VOUCHER} element={<UserVoucherPage />} />
+                    <Route path={PATH.PAGE_REDEEM_VOUCHER} element={<RedeemVoucher />} />
                     {/* <Route path={'purchase'} element={<PurchaseManage />} />
                     <Route path={'sell'} element={<SellManage />} />
                     <Route path={'product'} element={<ProductManage />} />
