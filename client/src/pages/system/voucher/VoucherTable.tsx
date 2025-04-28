@@ -31,9 +31,6 @@ const VoucherTable: React.FC<VoucherListProps> = ({ vouchers, onEdit, onDelete }
                                 Loại
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
-                                Giá trị voucher
-                            </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
                                 Ngày hết hạn
                             </TableCell>
                             <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-center text-theme-xs dark:text-gray-400">
@@ -51,7 +48,7 @@ const VoucherTable: React.FC<VoucherListProps> = ({ vouchers, onEdit, onDelete }
                                         {voucher?.voucher_code}
                                     </span>
                                 </TableCell>
-                                <TableCell className="px-5 text-gray-700 text-center dark:text-gray-300">
+                                <TableCell className="px-5 text-gray-700 dark:text-gray-300">
                                     <span className="truncate-trailing line-clamp-1 font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                         {voucher?.voucher_name}
                                     </span>
@@ -64,11 +61,6 @@ const VoucherTable: React.FC<VoucherListProps> = ({ vouchers, onEdit, onDelete }
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
                                     <span className="truncate-trailing line-clamp-1 font-medium text-gray-800 text-theme-sm dark:text-white/90">
                                         {voucher?.voucher_type === 'system' ? 'Hệ thống' : 'Đổi điểm'}
-                                    </span>
-                                </TableCell>
-                                <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
-                                    <span className="truncate-trailing line-clamp-1 font-medium text-gray-800 text-theme-sm dark:text-white/90">
-                                        {voucher?.voucher_value} {voucher?.voucher_method === 'percent' ? '%' : 'VND'}
                                     </span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
