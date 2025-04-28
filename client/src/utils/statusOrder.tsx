@@ -40,3 +40,33 @@ export const statusOrder = (order: IOrder) => {
             };
     }
 };
+
+export const statusOrderNotification = (order: IOrder) => {
+    switch (order.order_status) {
+        case 'confirm':
+            return {
+                title: 'Đã được xác nhận',
+                icon: <LocalShippingIcon style={{ fontSize: '15px', color: 'rgb(30, 144, 255)' }} />, // Màu xanh dương
+            };
+        case 'shipped':
+            return {
+                title: 'Đang được vận chuyển',
+                icon: <DeliveryDiningIcon style={{ fontSize: '15px', color: 'rgb(0, 123, 255)' }} />,
+            };
+        case 'delivered':
+            return {
+                title: 'Giao hàng thành công',
+                icon: <CheckIcon style={{ fontSize: '15px', color: 'rgb(0 136 72)' }} />,
+            };
+        case 'cancelled':
+            return {
+                title: 'Đã hủy',
+                icon: <CancelIcon style={{ fontSize: '15px', color: 'rgb(255, 0, 0)' }} />,
+            };
+        default:
+            return {
+                title: 'Không rõ trạng thái',
+                icon: <DoneAllIcon style={{ fontSize: '15px', color: '#ccc' }} />,
+            };
+    }
+};
