@@ -8,5 +8,5 @@ export interface INotification {
     notification_link: string;
     notification_isWatched?: boolean;
     notification_type?: string;
-    createdAt: string;
+    createdAt?: string;
 }

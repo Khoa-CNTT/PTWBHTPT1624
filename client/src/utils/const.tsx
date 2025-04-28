@@ -19,6 +19,7 @@ export const PATH = {
     PAGE_RECENT_VIEW: '/nguoi-dung/da-xem-gan-day',
     PAGE_PURCHASED: '/nguoi-dung/san-pham-da-mua',
     PAGE_USER_VOUCHER: '/nguoi-dung/voucher-cua-ban',
+    PAGE_REDEEM_VOUCHER: '/nguoi-dung/doi-phieu-mua-hang',
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
     MANAGE_DASHBOARD: '/quan-ly/dashboard',
@@ -145,8 +146,13 @@ export const SIDEBAR_USER = [
         icon: <AccessTimeFilledIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
     {
-        label: 'Voucher của bạn',
+        label: 'Kho voucher',
         path_name: PATH.PAGE_USER_VOUCHER,
+        icon: <AutoStoriesIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+    },
+    {
+        label: 'Đổi voucher',
+        path_name: PATH.PAGE_REDEEM_VOUCHER,
         icon: <AutoStoriesIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
     },
 ];

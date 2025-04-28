@@ -25,6 +25,7 @@ import {
 } from '@mui/material';
 import { apiGetAllRoles } from '../../../services/role.service';
 import { IRole } from '../../../interfaces/role.interfaces';
+import { useActionStore } from '../../../store/actionStore';
 
 interface EmployeeModalProps {
     isOpen: boolean;
@@ -41,7 +42,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
         admin_roles: '',
         admin_password: '',
     });
-    const [isUploading, setIsUploading] = useState(false);
+    const { setIsLoading } = useActionStore();
     const [roles, setRoles] = useState<IRole[]>([]);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
@@ -77,14 +78,14 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
     };
 
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
-        setIsUploading(true);
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('file', image);
         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
         const response = await apiUploadImage(formData);
         setInputFields((prev) => ({ ...prev, [type]: response.url }));
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-        setIsUploading(false);
+        setIsLoading(false);
     };
 
     const handleChange = (event: SelectChangeEvent<string[]>) => {
@@ -166,7 +167,6 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
                         </FormControl>
                     )}
                     <ImageCropper width={200} height={200} label="Thêm thêm ảnh" idName="admin_avatar_url" onCropComplete={handleImageUpload} />
-                    {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                     {inputFields?.admin_avatar_url && <img className="my-2  w-1/2 rounded-sm" src={inputFields?.admin_avatar_url} alt="" />}
                     {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
                 </div>

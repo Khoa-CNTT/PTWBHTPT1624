@@ -18,6 +18,9 @@ import ProductModal from './ProductModal';
 import TableSkeleton from '../../../components/skeleton/TableSkeleton';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit';
+import { INotification } from '../../../interfaces/notification.interfaces';
+import { sendNotificationToAll } from '../../../services/notification.service';
+import { useActionStore } from '../../../store/actionStore';
 
 export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -28,7 +31,7 @@ export default function ProductManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // State tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
     const [loading, setLoading] = useState<boolean>(false);
-
+    const { setIsLoading } = useActionStore();
     // Tab lọc sản phẩm
     const PRODUCT_TAB = [
         { tab: '', title: 'Tất cả sản phẩm' },
@@ -79,11 +82,23 @@ export default function ProductManage() {
 
     const handleSave = async (data: Partial<IProduct>) => {
         let res;
+        setIsLoading(true);
         if (data?._id) {
             res = await apiUpdateProduct(data?._id, data);
         } else {
             res = await apiCreateProduct(data);
+            if (res.success) {
+                const product = res?.data;
+                const notification: INotification = {
+                    notification_title: 'Sản phẩm mới sắp hết hàng!',
+                    notification_subtitle: 'Nhanh tay mua ngay trước khi hết hàng. Số lượng có hạn!',
+                    notification_imageUrl: product.product_thumb, // Hình ảnh cảnh báo hết hàng
+                    notification_link: `/${product.product_slug}/${product._id}`, // Liên kết đến sản phẩm
+                };
+                await sendNotificationToAll(notification);
+            }
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();

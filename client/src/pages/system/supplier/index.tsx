@@ -11,6 +11,7 @@ import InputSearch from '../../../components/item/inputSearch';
 import { ISupplier } from '../../../interfaces/supplier.interfaces';
 import NotExit from '../../../components/common/NotExit';
 import Pagination from '../../../components/pagination';
+import { useActionStore } from '../../../store/actionStore';
 
 export default function SupplierManage() {
     const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
@@ -20,6 +21,7 @@ export default function SupplierManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // Trạng thái ô tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
     const [isUploading, setIsUploading] = useState<boolean>(false); // Trạng thái đang tải dữ liệu
+    const { setIsLoading } = useActionStore();
 
     const { openModal, isOpen, closeModal } = useModal();
 
@@ -31,7 +33,6 @@ export default function SupplierManage() {
         setSuppliers(data.suppliers);
         setTotalPage(data.totalPage);
         setIsUploading(false);
-
     };
 
     useEffect(() => {
@@ -53,24 +54,25 @@ export default function SupplierManage() {
 
     const handleSave = async (data: ISupplier) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateSupplier(data._id, data);
         } else {
             res = await apiCreateSupplier(data);
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
-        setSuppliers((prev) =>
-            data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev],
-        );
-
+        setSuppliers((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
 
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteSupplier(id);
+        setIsLoading(false);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;

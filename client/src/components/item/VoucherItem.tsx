@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import React from 'react';
 import { formatMoney } from '../../utils/formatMoney';
 import { formatDate } from '../../utils/format/formatDate';
@@ -8,12 +9,15 @@ interface VoucherProps {
     voucher: IVoucher;
     category?: string;
     onSave?: (voucher: IVoucher) => void;
+    userOwnedVouchers: string[] | any;
 }
 
-const VoucherItem: React.FC<VoucherProps> = ({ voucher, category = 'Toàn Ngành Hàng', onSave }) => {
-    // Hàm xử lý sự kiện click nút "Lưu"
+const VoucherItem: React.FC<VoucherProps> = ({ voucher, category = 'Toàn Ngành Hàng', onSave, userOwnedVouchers }) => {
+    const isOwned = userOwnedVouchers.includes(voucher._id || '');
+
+    // Hàm xử lý sự kiện click nút "Đổi"
     const handleSave = () => {
-        if (onSave) {
+        if (onSave && !isOwned) {
             onSave(voucher);
         }
     };
@@ -22,15 +26,15 @@ const VoucherItem: React.FC<VoucherProps> = ({ voucher, category = 'Toàn Ngành
     const maxDiscount = voucher.voucher_max_price ?? voucher.voucher_value;
 
     return (
-        <div className="flex items-center border border-gray-200 px-2 rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow duration-200">
+        <div className="flex items-stretch border border-gray-200 rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow duration-200 w-full max-w-md mx-auto min-h-24">
             {/* Phần bên trái: Logo và danh mục */}
-            <div className="bg-orange-600 text-white p-3 rounded-tl-lg rounded-bl-lg text-center w-[30%]">
-                <span className="block text-sm font-bold uppercase">Voucher Xtra</span>
-                <span className="block text-xs mt-1">{category}</span>
+            <div className="bg-green-500 text-white p-3 rounded-l-lg text-center w-1/4 flex flex-col justify-center">
+                <span className="text-sm font-bold uppercase">Voucher Xtra</span>
+                <span className="text-xs mt-1">{category}</span>
             </div>
 
             {/* Phần giữa: Thông tin voucher */}
-            <div className="flex-1 p-3">
+            <div className="flex-1 p-3 w-1/2 flex flex-col justify-center">
                 <span className="block text-base font-bold text-gray-800">
                     {voucher.voucher_name} - Giảm tối đa {formatMoney(maxDiscount)}
                 </span>
@@ -39,12 +43,17 @@ const VoucherItem: React.FC<VoucherProps> = ({ voucher, category = 'Toàn Ngành
             </div>
 
             {/* Phần bên phải: Nút hành động */}
-            <div className="p-3">
+            <div className="p-3 w-1/4 flex items-center justify-center">
                 <button
                     type="button"
                     onClick={handleSave}
-                    className="bg-[#FB5630] text-white border-none py-2 px-5 rounded-lg cursor-pointer font-medium hover:bg-orange-700 transition-colors duration-200">
-                    Lưu
+                    disabled={isOwned}
+                    className={`px-4 py-2 rounded-full text-sm font-semibold transition-all duration-300 whitespace-nowrap ${
+                        isOwned
+                            ? 'bg-gradient-to-r from-slate-400 to-gray-500 text-white cursor-not-allowed hover:brightness-105'
+                            : 'bg-gradient-to-r from-pink-500 to-yellow-500 text-white hover:brightness-110'
+                    }`}>
+                    <span>{isOwned ? 'Đã sở hữu' : 'Lưu ngay'}</span>
                 </button>
             </div>
         </div>
