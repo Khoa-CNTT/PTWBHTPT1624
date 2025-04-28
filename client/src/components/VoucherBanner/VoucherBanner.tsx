@@ -1,16 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FaTimes } from 'react-icons/fa';
-import { Swiper, SwiperSlide } from 'swiper/react';
-import { Autoplay } from 'swiper/modules';
-import 'swiper/css'; // Nhập CSS của Swiper
 import { apiGetActiveBannerVouchers } from '../../services/voucher.service';
 import { IVoucher } from '../../interfaces/voucher.interfaces';
-import { Overlay } from '..';
+import Overlay from '../common/Overlay';
 
 const VoucherBanner: React.FC = () => {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
     const [isVisible, setIsVisible] = useState(false);
+    const [currentIndex, setCurrentIndex] = useState(0); // Current slide index
 
     useEffect(() => {
         const fetchVouchers = async () => {
@@ -20,7 +18,7 @@ const VoucherBanner: React.FC = () => {
                 // Check if banner should be shown based on last closed time
                 const lastClosedTime = localStorage.getItem('voucherBannerLastClosed');
                 const currentTime = Date.now();
-                const fiveMinutesInMs = 30 * 1000; // 5 minutes in milliseconds
+                const fiveMinutesInMs = 15 * 1000; // 5 minutes in milliseconds
 
                 if (!lastClosedTime || currentTime - parseInt(lastClosedTime) >= fiveMinutesInMs) {
                     setIsVisible(true);
@@ -33,9 +31,13 @@ const VoucherBanner: React.FC = () => {
     useEffect(() => {
         if (!isVisible) {
             // Schedule the banner to reappear after 5 minutes
-            const fiveMinutesInMs = 30 * 1000; // 5 minutes in milliseconds
+            const fiveMinutesInMs = 15 * 1000; // 5 minutes in milliseconds
             const timer = setTimeout(() => {
                 if (vouchers.length > 0) {
+                    setCurrentIndex((prevIndex) => {
+                        // Increase index and loop back to 0 when it exceeds the number of vouchers
+                        return (prevIndex + 1) % vouchers.length;
+                    });
                     setIsVisible(true);
                 }
             }, fiveMinutesInMs);
@@ -66,22 +68,16 @@ const VoucherBanner: React.FC = () => {
                     aria-label="Close voucher banner">
                     <FaTimes className="text-xl" />
                 </button>
-                <Swiper
-                    autoplay={{
-                        delay: 10000,
-                    }}
-                    loop={vouchers.length > 1}
-                    allowTouchMove={false}
-                    modules={[Autoplay]}
-                    className="w-full h-full rounded-lg overflow-hidden">
-                    {vouchers.map((voucher) => (
-                        <SwiperSlide key={voucher._id}>
-                            <Link to="/voucher" onClick={handleCloseBanner} className="block w-full h-full">
-                                <img className="w-full h-full object-cover" src={voucher.voucher_banner_image} alt={`Voucher ${voucher._id}`} />
-                            </Link>
-                        </SwiperSlide>
-                    ))}
-                </Swiper>
+
+                <div className="w-full h-full rounded-lg overflow-hidden">
+                    <Link to="/voucher" onClick={handleCloseBanner} className="block w-full h-full">
+                        <img
+                            className="w-full h-full object-cover"
+                            src={vouchers[currentIndex]?.voucher_banner_image}
+                            alt={`Voucher ${vouchers[currentIndex]._id}`}
+                        />
+                    </Link>
+                </div>
             </div>
         </Overlay>
     );
