@@ -6,6 +6,7 @@ const bcrypt = require('bcrypt');
 const UserModel = require('../models/user.model');
 const OrderModel = require('../models/OnlineOrder');
 const ReviewModel = require('../models/reviews.model');
+const Voucher = require('../models/voucher.model');
 
 class UserService {
     static async addUser(payload) {
@@ -239,6 +240,69 @@ class UserService {
             totalPoints: user.user_reward_points,  // Trả về tổng điểm sau khi cộng thêm
         };
     }
+
+    // Lấy 3 voucher mới nhất
+    static async getLatestVouchers() {
+        return await Voucher.find({
+            voucher_type: 'user',
+            voucher_is_active: true,
+            voucher_end_date: { $gte: new Date() }, // Chỉ lấy voucher còn hạn
+        })
+        .sort({ createdAt: -1 })
+        .limit(3);
+    }
+
+    // Lấy một voucher ngẫu nhiên còn hiệu lực
+    static async getRandomVoucher() {
+        const vouchers = await Voucher.find({
+            voucher_type: 'user',
+            voucher_is_active: true,
+            voucher_end_date: { $gte: new Date() },
+        });
+
+        const randomIndex = Math.floor(Math.random() * vouchers.length);
+        return vouchers[randomIndex];
+    }
+
+    // Chơi game Lucky Box
+    static async vongquay(userId) {
+        const rewardChance = Math.random(); // Khả năng trúng giải
+    
+        let reward;
+        if (rewardChance <= 0.5) {
+            // 50% trúng điểm thưởng
+            const points = [1000, 2000, 5000, 10000]; // Các giá trị điểm thưởng có thể
+            reward = { type: 'points', value: points[Math.floor(Math.random() * points.length)] };
+        } else if (rewardChance <= 0.7) {
+            // 20% trúng voucher
+            const latestVouchers = await this.getLatestVouchers();
+            if (latestVouchers.length === 0) {
+                throw new RequestError('Không có voucher hợp lệ!', 404);
+            }
+            const randomVoucher = await this.getRandomVoucher();
+            const allVouchers = [...latestVouchers, randomVoucher];
+            reward = {
+                type: 'voucher',
+                voucher: allVouchers[Math.floor(Math.random() * allVouchers.length)],
+            };
+        } else {
+            // 30% trúng "chúc may mắn lần sau"
+            reward = { type: 'lucky', message: 'Chúc may mắn lần sau!' };
+        }
+    
+        // Cập nhật điểm thưởng cho người chơi nếu trúng điểm thưởng
+        if (reward.type === 'points') {
+            const user = await UserModel.findById(userId);
+            if (!user) {
+                throw new RequestError('Người dùng không tồn tại!', 404);
+            }
+            user.user_reward_points += reward.value;
+            await user.save();
+        }
+    
+        return reward;
+    }
+    
 }
 
 module.exports = UserService;

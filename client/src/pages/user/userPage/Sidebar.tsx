@@ -1,4 +1,5 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState, useEffect } from 'react';
+
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { noUser } from '../../../assets';
 import { PATH, SIDEBAR_USER } from '../../../utils/const';
@@ -6,6 +7,7 @@ import { useActionStore } from '../../../store/actionStore';
 import useUserStore from '../../../store/userStore';
 import useAuthStore from '../../../store/authStore';
 import PaidIcon from '@mui/icons-material/Paid';
+import GameWheelModal from '../../../components/WheelSpinModalProps/WheelSpinModalProps';  // Import modal Vòng Quay
 import LuckyBoxModal from '../../../components/LuckyBoxModal/LuckyBoxModal';  // Import modal Lucky Box
 
 export const Sidebar: React.FC = () => {
@@ -15,7 +17,8 @@ export const Sidebar: React.FC = () => {
     const { user } = useUserStore();
     const { isUserLoggedIn } = useAuthStore();
     
-    const [isLuckyBoxOpen, setLuckyBoxOpen] = useState(false);  // State to control modal visibility
+    const [isGameModalOpen, setGameModalOpen] = useState(false);  // State to control modal visibility
+    const [selectedGame, setSelectedGame] = useState<'luckyBox' | 'vongQuay'>('vongQuay');  // Default to "Vòng Quay"
 
     useEffect(() => {
         if (location.pathname === PATH.PAGE_USER && !isUserLoggedIn) {
@@ -25,12 +28,13 @@ export const Sidebar: React.FC = () => {
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
 
-    const handleOpenLuckyBox = () => {
-        setLuckyBoxOpen(true);  // Open the Lucky Box modal
+    const handleOpenGameModal = (game: 'luckyBox' | 'vongQuay') => {
+        setSelectedGame(game);  // Set selected game to either "Lucky Box" or "Vòng Quay"
+        setGameModalOpen(true);  // Open game modal
     };
 
-    const handleCloseLuckyBox = () => {
-        setLuckyBoxOpen(false);  // Close the Lucky Box modal
+    const handleCloseGameModal = () => {
+        setGameModalOpen(false);  // Close the game modal
     };
 
     return (
@@ -50,10 +54,10 @@ export const Sidebar: React.FC = () => {
                     {user.user_reward_points?.toLocaleString('vi-VN')}
                     <PaidIcon fontSize="small" />
                 </div>
-                {/* Button to trigger the game */}
+                {/* Button to trigger the game selection */}
                 <button
                     className="mt-4 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                    onClick={handleOpenLuckyBox}>
+                    onClick={() => handleOpenGameModal('vongQuay')}>
                     Nhận điểm
                 </button>
             </div>
@@ -72,8 +76,9 @@ export const Sidebar: React.FC = () => {
                 ))}
             </ul>
 
-            {/* Lucky Box Modal */}
-            {isLuckyBoxOpen && <LuckyBoxModal onClose={handleCloseLuckyBox} userId={user._id} />}
+            {/* Game Modal */}
+            {isGameModalOpen && selectedGame === 'vongQuay' && <GameWheelModal onClose={handleCloseGameModal} userId={user._id} />}
+            {isGameModalOpen && selectedGame === 'luckyBox' && <LuckyBoxModal onClose={handleCloseGameModal} userId={user._id} />}
         </div>
     );
 };
