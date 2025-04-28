@@ -113,7 +113,17 @@ class ProductService {
         const limitNum = Math.max(~~limit || 10, 1); // Fast parse, default 10, min 1
         const pageNum = Math.max(~~page || 0, 0); // Fast parse, default 0
         const skipNum = pageNum * limitNum;
-        const searchFilter = keySearch ? { $text: { $search: keySearch } } : {};
+    
+        // Sử dụng $regex để tìm kiếm gần giống
+        const searchFilter = keySearch
+            ? {
+                  $or: [
+                      { product_name: { $regex: keySearch, $options: 'i' } }, // Tìm kiếm tên sản phẩm không phân biệt chữ hoa/thường
+                      { product_slug: { $regex: keySearch, $options: 'i' } }, // Tìm kiếm slug sản phẩm (nếu cần)
+                  ],
+              }
+            : {};
+    
         const productQuery = Product.find(searchFilter)
             .select(
                 '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
@@ -121,8 +131,17 @@ class ProductService {
             .skip(skipNum)
             .limit(limitNum)
             .lean();
-        productQuery.sort(sort);
-        const [products, totalProducts] = await Promise.all([productQuery.exec(), Product.countDocuments(searchFilter)]);
+    
+        // Áp dụng sort
+        if (sort) {
+            productQuery.sort(sort);
+        }
+    
+        const [products, totalProducts] = await Promise.all([
+            productQuery.exec(),
+            Product.countDocuments(searchFilter),
+        ]);
+    
         return {
             totalPage: Math.max(Math.ceil(totalProducts / limitNum) - 1, 0),
             currentPage: pageNum,
@@ -130,6 +149,7 @@ class ProductService {
             products,
         };
     }
+    
     // Lấy tất cả sản phẩm (với các filter)
     static async getAllProductsByAdmin({ limit, page }) {
         const limitNum = parseInt(limit, 10) || 10;

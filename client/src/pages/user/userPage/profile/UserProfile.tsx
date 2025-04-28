@@ -38,7 +38,7 @@ const UserProfile: React.FC = () => {
             if (res.code === 203) {
                 showNotification('Số điện thoại đã được sử dụng bởi người dùng khác', false);
             } else {
-                showNotification('Cập nhật thất bại: ' + res.message, false);
+                showNotification( res.message, false);
             }
         }
     };
