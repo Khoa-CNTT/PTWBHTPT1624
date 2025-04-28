@@ -9,6 +9,7 @@ import { apiAddAdmin, apiDeleteAdmin, apiGetAllAdmin, apiUpdateAdmin, apiSearchA
 import EmployeeTable from './EmployeeTable';
 import EmployeeModal from './EmployeeModal';
 import InputSearch from '../../../components/item/inputSearch';
+import { useActionStore } from '../../../store/actionStore';
 
 export default function EmployeeManage() {
     const [employees, setEmployees] = useState<IAdmin[]>([]);
@@ -18,7 +19,7 @@ export default function EmployeeManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // Ô tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
-
+    const { setIsLoading } = useActionStore();
     // Fetch dữ liệu người dùng
     const fetchApi = async () => {
         const res = await apiGetAllAdmin();
@@ -27,7 +28,6 @@ export default function EmployeeManage() {
         setEmployees(data.admins);
         setTotalPage(data.totalPage);
     };
-    
 
     useEffect(() => {
         if (!isSearching) {
@@ -50,23 +50,25 @@ export default function EmployeeManage() {
     // Lưu thông tin nhân viên
     const handleSave = async (data: IAdmin) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateAdmin(data._id, data);
         } else {
             res = await apiAddAdmin(data);
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
-        
+
         // Sau khi thành công, gọi lại API để làm mới danh sách nhân viên
         fetchApi();
         closeModal();
     };
-    
 
     // Xóa nhân viên
     const handleDelete = async (id: string) => {
         if (!id || !confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteAdmin(id);
         if (res?.success) {
             setEmployees((prev) => prev.filter((item) => item._id !== id));
@@ -74,6 +76,7 @@ export default function EmployeeManage() {
         } else {
             showNotification(res?.message || 'Xóa thất bại', false);
         }
+        setIsLoading(false);
     };
 
     // Xử lý thay đổi ô tìm kiếm

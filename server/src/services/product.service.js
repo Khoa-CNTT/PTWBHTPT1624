@@ -16,15 +16,12 @@ class ProductService {
         if (Object.keys(payload).length === 0) {
             throw new RequestError('Vui lòng cung cấp dữ liệu sản phẩm');
         }
-
         payload.product_code = generateRandomCode(10);
-
         // Xử lý ảnh chỉ nếu có product_thumb
         if (payload?.product_thumb) {
             const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
             const imgDir = path.join(__dirname, 'img');
             const tempPath = path.join(imgDir, randomFileName);
-
             try {
                 // Đảm bảo folder tồn tại
                 await fs.mkdir(imgDir, { recursive: true });
@@ -76,8 +73,32 @@ class ProductService {
         return product;
     }
     // Cập nhật sản phẩm (bao gồm cập nhật số lượng tồn kho nếu có)
-    static async updateProduct(productId, updateData) {
-        const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+    static async updateProduct(productId, payload) {
+        if (payload?.product_thumb) {
+            const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
+            const imgDir = path.join(__dirname, 'img');
+            const tempPath = path.join(imgDir, randomFileName);
+            try {
+                // Đảm bảo folder tồn tại
+                await fs.mkdir(imgDir, { recursive: true });
+
+                // Tải ảnh và trích xuất đặc trưng
+                await downloadImage(payload.product_thumb, tempPath);
+                const searchFeatures = await extractFeatures(tempPath);
+                payload.product_image_features = Array.from(searchFeatures.dataSync());
+
+                // Giải phóng Tensor
+                searchFeatures.dispose();
+            } catch (err) {
+                console.error('Lỗi xử lý ảnh:', err);
+                // Tiếp tục thêm sản phẩm mà không có đặc trưng ảnh
+                payload.product_image_features = [];
+            } finally {
+                // Xóa file tạm
+                fs.unlink(tempPath).catch(() => {});
+            }
+        }
+        const updatedProduct = await Product.findByIdAndUpdate(productId, payload, { new: true });
         if (!updatedProduct) throw new NotFoundError('Không tìm thấy sản phẩm để cập nhật');
         return updatedProduct;
     }

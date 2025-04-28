@@ -5,10 +5,12 @@ import useAdminStore from '../../../store/adminStore';
 import { IAdmin } from '../../../interfaces/admin.interfaces';
 import { apiUpdateProfileAmin } from '../../../services/admin.service';
 import { ButtonOutline, InputForm, InputReadOnly, showNotification } from '../../../components';
+import { useActionStore } from '../../../store/actionStore';
 
 const AdminProfile: React.FC = () => {
     const [payload, setPayload] = useState<IAdmin>({} as IAdmin);
     const { admin, setAdmin } = useAdminStore();
+    const { setIsLoading } = useActionStore();
     // const { mobile_ui } = useAppSelector((state) => state.action);
     const mobile_ui = false;
     useEffect(() => {
@@ -18,15 +20,14 @@ const AdminProfile: React.FC = () => {
     const handleOnChangeValue = (e: React.ChangeEvent<HTMLInputElement>, name_id: string): void => {
         setPayload((prevState) => ({ ...prevState, [name_id]: e.target.value }));
     };
-    console.log('payload', payload);
     const handleSummit = async () => {
-        console.log('handleSummit', payload);
-
+        setIsLoading(true);
         const res = await apiUpdateProfileAmin(payload);
         if (!res.success) {
             showNotification('Cập nhật không thành công');
             return;
         }
+        setIsLoading(false);
         setAdmin(res.data);
         showNotification('Cập nhật thành công', true);
     };

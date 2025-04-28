@@ -7,12 +7,13 @@ import { IReview } from '../../../interfaces/review.interfaces';
 import { apiApproveReview, apiDeleteReview, apiGetAdminReviews } from '../../../services/review.service';
 import NotExit from '../../../components/common/NotExit';
 import Pagination from '../../../components/pagination';
+import { useActionStore } from '../../../store/actionStore';
 
 export default function ReviewManage() {
     const [reviews, setReviews] = useState<IReview[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
-
+    const { setIsLoading } = useActionStore();
     const [loading, setLoading] = useState<boolean>(false);
     const [tab, setTab] = useState<'all' | 'pending' | 'approved'>('all');
 
@@ -37,8 +38,6 @@ export default function ReviewManage() {
             setLoading(false);
         }
     };
-    
-    
 
     useEffect(() => {
         fetchReviews();
@@ -47,18 +46,22 @@ export default function ReviewManage() {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa đánh giá này không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteReview(id);
         if (!res?.success) return showNotification(res?.message, false);
         setReviews((prev) => prev.filter((item) => item._id !== id));
+        setIsLoading(false);
         showNotification('Xóa thành công', true);
     };
 
     const handleApprove = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn duyệt đánh giá này không?')) return;
+        setIsLoading(true);
         const res = await apiApproveReview(id);
         if (!res?.success) return showNotification(res?.message, false);
         setReviews((prev) => prev.map((item) => (item._id === id ? { ...item, isApproved: true } : item)));
+        setIsLoading(false);
         showNotification('Duyệt thành công', true);
     };
 

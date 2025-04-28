@@ -17,7 +17,7 @@ import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
-
+import { useActionStore } from '../../../store/actionStore';
 
 export default function CategoryManage() {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -27,7 +27,7 @@ export default function CategoryManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // ✅ ô tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // ✅ trạng thái tìm kiếm
     const [isUploading, setIsUploading] = useState(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
 
     const fetchApi = async () => {
@@ -59,12 +59,14 @@ export default function CategoryManage() {
 
     const handleSave = async (data: ICategory) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateCategory(data._id, data);
         } else {
             res = await apiCreateCategory(data);
         }
         showNotification(res?.message, res?.success);
+        setIsLoading(false);
         if (!res?.success) return;
         closeModal();
         setCategories((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
@@ -73,13 +75,14 @@ export default function CategoryManage() {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteCategory(id);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
         }
-
         setCategories((prev) => prev.filter((item) => item._id !== id));
+        setIsLoading(false);
         showNotification('Xóa thành công', true);
     };
 
@@ -117,7 +120,6 @@ export default function CategoryManage() {
         <>
             <PageMeta title="Quản lý danh mục" />
             <PageBreadcrumb pageTitle="Danh mục" />
-
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* ✅ Ô tìm kiếm */}
