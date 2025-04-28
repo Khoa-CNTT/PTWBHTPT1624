@@ -58,11 +58,12 @@ export default function VoucherManage(): JSX.Element {
             res = await apiAddVoucher(data);
             if (res?.data?.voucher_type === 'system') {
                 const notification: INotification = {
-                    notification_title: '🎁 Ưu đãi độc quyền sắp hết hạn!',
-                    notification_subtitle: `⏳ Nhanh tay nhận voucher trước khi hết! Số lượng giới hạn 🌟`,
+                    notification_title: '🎁 Ưu đãi độc quyền sắp hết hạn!🔥', // Thêm nhiều icon vào tiêu đề
+                    notification_subtitle: `${res?.data?.voucher_name} ⏳ Nhanh tay nhận voucher trước khi hết! Số lượng giới hạn 🌟🚀`,
                     notification_imageUrl: res?.data?.voucher_thumb,
                     notification_link: `/voucher`,
                 };
+
                 await sendNotificationToAll(notification);
             }
         }
