@@ -167,7 +167,8 @@ export default function ProductManage() {
             setProducts(res.data.products);
             setTotalPage(res.data.totalPage);
         }
-        setSearchQuery('');
+        // Xóa dòng này để không làm mất từ khóa tìm kiếm sau khi bấm tìm kiếm
+        // setSearchQuery('');
     };
 
     if (loading) return <TableSkeleton />;
