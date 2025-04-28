@@ -8,17 +8,8 @@ class VoucherService {
     // Tạo voucher mới
     static async createVoucher(payload) {
         // Kiểm tra các trường bắt buộc
-        if (
-            !payload.voucher_name ||
-            !payload.voucher_description ||
-            !payload.voucher_start_date ||
-            !payload.voucher_end_date ||
-            !payload.voucher_method ||
-            !payload.voucher_value ||
-            !payload.voucher_max_uses ||
-            !payload.voucher_min_order_value
-        ) {
-            throw new RequestError('Thiếu thông tin bắt buộc!');
+        if (Object.keys(payload).length === 0) {
+            throw new RequestError('Vui lòng cung cấp dữ liệu!');
         }
 
         // Kiểm tra tên voucher có bị trùng không
@@ -53,12 +44,61 @@ class VoucherService {
     }
 
     // Lấy danh sách tất cả voucher
-    static async getAllVouchers({ limit, page, type = 'system' }) {
+    static async getAllVouchers({ limit, page }) {
         const limitNum = parseInt(limit, 10); // Mặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
+        const vouchers = await voucherModel.find().sort({ createdAt: -1 }).skip(skipNum).select(' -createdAt -updatedAt -__v').limit(limitNum).lean();
+        const totalVoucher = await voucherModel.countDocuments();
+        return {
+            totalPage: Math.ceil(totalVoucher / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            currentPage: pageNum || 0,
+            totalVoucher,
+            vouchers,
+        };
+    }
+    static async getAllSystemVouchers({ limit, page }) {
+        const limitNum = parseInt(limit, 10) || 10; // Mặc định limit = 10
+        const pageNum = parseInt(page, 10) || 0; // Mặc định page = 0
+        const skipNum = pageNum * limitNum;
+        const now = new Date(); // Lấy thời gian hiện tại
         const vouchers = await voucherModel
-            .find({ voucher_type: type })
+            .find({
+                voucher_type: 'system',
+                voucher_start_date: { $lte: now }, // voucher đã bắt đầu
+                voucher_end_date: { $gte: now }, // voucher chưa hết hạn
+            })
+            .sort({ createdAt: -1 })
+            .skip(skipNum)
+            .select('-__v -createdAt -updatedAt')
+            .limit(limitNum)
+            .lean();
+
+        const totalVoucher = await voucherModel.countDocuments({
+            voucher_type: 'system',
+            voucher_start_date: { $lte: now },
+            voucher_end_date: { $gte: now },
+        });
+
+        return {
+            totalPage: Math.ceil(totalVoucher / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            currentPage: pageNum,
+            totalVoucher,
+            vouchers,
+        };
+    }
+
+    static async getAllRedeemVouchers({ limit, page }) {
+        const limitNum = parseInt(limit, 10); // Mặc định limit = 10
+        const pageNum = parseInt(page, 10); // Mặc định page = 0
+        const skipNum = pageNum * limitNum;
+        const currentDate = new Date();
+        const vouchers = await voucherModel
+            .find({
+                voucher_type: 'user',
+                voucher_start_date: { $lte: currentDate }, // voucher đã bắt đầu
+                voucher_end_date: { $gte: currentDate },
+            })
             .sort({ createdAt: -1 })
             .skip(skipNum)
             .select('-__v -createdAt -updatedAt')
@@ -163,32 +203,19 @@ class VoucherService {
         };
     }
     // Lấy danh sách voucher đang active và trong thời gian hiển thị banner
-static async getActiveBannerVouchers() {
-    const now = new Date();
+    static async getActiveBannerVouchers() {
+        const currentDate = new Date();
+        const vouchers = await voucherModel
+            .find({
+                voucher_is_active: true,
+                voucher_start_date: { $lte: currentDate },
+                voucher_end_date: { $gte: currentDate },
+            })
+            .sort({ createdAt: -1 })
+            .select('-__v');
 
-    const vouchers = await voucherModel.find({
-        voucher_is_active: true,
-        voucher_start_date: { $lte: now },
-        voucher_end_date: { $gte: now },
-    })
-    .sort({ createdAt: -1 })
-    .select('-__v');
-
-    return vouchers;
-}
-}
-// Fix lại API client
-const apiGetActiveBannerVouchers = async () => {
-    try {
-        const res = await authClient.get('/v1/api/voucher/active-banners'); // thêm 's' cho đúng
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
+        return vouchers;
     }
-};
-
+}
 
 module.exports = VoucherService;

@@ -47,6 +47,7 @@ export default function VoucherManage(): JSX.Element {
     };
 
     const handleSave = async (data: IVoucher) => {
+        console.log('data', data);
         let res;
         if (data._id) {
             res = await apiUpdateVoucher(data._id, data);
@@ -56,19 +57,16 @@ export default function VoucherManage(): JSX.Element {
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
-    
+
         // Nếu update thành công, update lại voucher trong state mà không cần F5
         if (data._id) {
             // Nếu có _id, thay thế voucher cũ bằng voucher mới (được cập nhật)
-            setVouchers((prev) =>
-                prev.map((item) => (item._id === data._id ? { ...item, ...data } : item))
-            );
+            setVouchers((prev) => prev.map((item) => (item._id === data._id ? { ...item, ...data } : item)));
         } else {
             // Nếu là tạo mới, thêm voucher vào đầu danh sách
             setVouchers((prev) => [res.data, ...prev]);
         }
     };
-    
 
     const handleDelete = async (id: string) => {
         if (!id) return;

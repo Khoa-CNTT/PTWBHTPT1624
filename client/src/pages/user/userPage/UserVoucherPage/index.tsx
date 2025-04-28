@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'; // Thêm dòng này
 import { NotFound } from '../../../../components';
 import useUserVoucherStore from '../../../../store/userVoucherStore';
 import { formatMoney } from '../../../../utils/formatMoney';
-import { formatDate } from '../../../../utils/format/formatDate';
+import { calculateVoucherStatus } from '../../../../utils/calculateVoucherStatus';
 
 const UserVoucherPage: React.FC = () => {
     const { userVouchers } = useUserVoucherStore();
@@ -31,14 +31,12 @@ const UserVoucherPage: React.FC = () => {
                                         key={voucher._id}
                                         className={`relative flex items-stretch border rounded-xl shadow-sm bg-white transition-all duration-300 hover:shadow-md ${
                                             expired ? 'opacity-60 bg-gray-100' : 'hover:scale-[1.02]'
-                                        }`}
-                                    >
+                                        }`}>
                                         {/* Left Section: Logo and Category */}
-                                        <div className="bg-gradient-to-br from-orange-500 to-orange-600 text-white p-4 rounded-l-xl flex flex-col items-center justify-center w-1/3">
+                                        <div className="bg-primary text-white p-4 rounded-l-xl flex flex-col items-center justify-center w-1/3">
                                             <span className="text-sm font-semibold uppercase tracking-wide">Voucher Xtra</span>
                                             <span className="text-xs mt-1">Toàn Ngành Hàng</span>
                                         </div>
-
                                         {/* Right Section: Voucher Details */}
                                         <div className="flex-1 p-4 flex flex-col justify-between">
                                             <div>
@@ -48,13 +46,20 @@ const UserVoucherPage: React.FC = () => {
                                                 <span className="block text-sm text-gray-600 mt-1">
                                                     Đơn tối thiểu {formatMoney(voucher.voucher_min_order_value)}
                                                 </span>
-                                                <span className="block text-sm text-gray-600 mt-1">
-                                                    Hiệu lực đến: {formatDate(voucher.voucher_end_date)}
-                                                </span>
 
                                                 {/* Voucher Code */}
                                                 <span className="block text-sm text-gray-600 mt-1">
                                                     Mã voucher: <strong>{voucher.voucher_code}</strong>
+                                                </span>
+                                                <span
+                                                    className={`block text-base mt-1 font-semibold ${
+                                                        calculateVoucherStatus(voucher).includes('Sắp hết hạn')
+                                                            ? 'text-primary'
+                                                            : calculateVoucherStatus(voucher).includes('Còn hiệu lực')
+                                                            ? 'text-green-600'
+                                                            : 'text-gray-600'
+                                                    }`}>
+                                                    {calculateVoucherStatus(voucher)}
                                                 </span>
                                             </div>
 
@@ -64,11 +69,8 @@ const UserVoucherPage: React.FC = () => {
                                                     disabled={expired}
                                                     onClick={handleUseVoucher} // Bấm là chuyển sang /gio-hang
                                                     className={`px-4 py-2 rounded-full text-sm font-semibold ${
-                                                        expired
-                                                            ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                                                            : 'bg-orange-500 hover:bg-orange-600 text-white transition-colors'
-                                                    }`}
-                                                >
+                                                        expired ? 'bg-gray-300 text-gray-500 cursor-not-allowed' : 'bg-primary text-white transition-colors'
+                                                    }`}>
                                                     Dùng ngay
                                                 </button>
                                             </div>
