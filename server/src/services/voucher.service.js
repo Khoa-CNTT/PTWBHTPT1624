@@ -122,26 +122,39 @@ class VoucherService {
 
     // Cập nhật voucher theo ID
     static async updateVoucher(id, payload) {
-        // Kiểm tra tên voucher có bị trùng với voucher khác (khác _id)
+        // Kiểm tra id hợp lệ
+        if (!id) {
+            throw new RequestError('Thiếu id voucher cần cập nhật!');
+        }
+
+        // Kiểm tra payload hợp lệ
+        if (!payload || !payload.voucher_name) {
+            throw new RequestError('Thiếu dữ liệu cập nhật voucher!');
+        }
+
+        // Kiểm tra tên voucher có bị trùng với voucher khác (bỏ qua voucher hiện tại)
         const existingVoucher = await voucherModel.findOne({
             voucher_name: payload.voucher_name,
-            _id: { $ne: id }, // bỏ qua chính nó
+            _id: { $ne: id },
         });
 
         if (existingVoucher) {
             throw new RequestError('Tên voucher đã tồn tại!');
         }
 
+        // Cập nhật voucher
         const updatedVoucher = await voucherModel.findByIdAndUpdate(
             id,
             {
                 ...payload,
                 voucher_code: autoCode(payload.voucher_name),
             },
-            { new: true },
+            { new: true, runValidators: true }, // runValidators để đảm bảo các validate trong Schema được kiểm tra
         );
 
-        if (!updatedVoucher) throw new NotFoundError('Voucher không tồn tại!');
+        if (!updatedVoucher) {
+            throw new NotFoundError('Voucher không tồn tại!');
+        }
 
         return updatedVoucher;
     }
@@ -207,12 +220,13 @@ class VoucherService {
         const currentDate = new Date();
         const vouchers = await voucherModel
             .find({
+                voucher_type: 'system',
                 voucher_is_active: true,
                 voucher_start_date: { $lte: currentDate },
                 voucher_end_date: { $gte: currentDate },
             })
             .sort({ createdAt: -1 })
-            .select('-__v');
+            .lean();
 
         return vouchers;
     }

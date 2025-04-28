@@ -73,7 +73,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         }));
 
         // Gọi hàm `onSave` với updatedFields
-        onSave(voucher ? { _id: voucher._id, ...updatedFields } : inputFields);
+        onSave(voucher ? { _id: voucher._id, ...inputFields } : inputFields);
     };
     console.log(invalidFields);
 
