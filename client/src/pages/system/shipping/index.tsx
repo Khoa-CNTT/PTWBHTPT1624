@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
-import { showNotification, TableSkeleton } from '../../../components';
+import { showNotification } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { IShipping } from '../../../interfaces/shipping.interfaces';
