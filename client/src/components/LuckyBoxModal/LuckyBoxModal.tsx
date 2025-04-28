@@ -13,8 +13,9 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
     const [loading, setLoading] = useState(false); // Quản lý trạng thái loading
     const [error, setError] = useState<string>(''); // Quản lý lỗi
     const [showCongratulation, setShowCongratulation] = useState(false); // Quản lý hiển thị form chúc mừng
-
+    console.log(isOpen);
     const handleOpenBox = async (boxNumber: number) => {
+        console.log(boxNumber);
         if (!userId) {
             setError('Người dùng không hợp lệ.');
             return;
@@ -22,26 +23,18 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
 
         setLoading(true);
         setError(''); // Reset error mỗi lần mở hộp
-
-        try {
-            // Gọi API playLuckyBox
-            const res = await apiPlayLuckyBox(userId);
-            if (res.success) {
-                setReward(res.data.rewardPoints); // Lưu phần thưởng nhận được
-                setTotalPoints(res.data.totalPoints); // Lưu tổng điểm mới
-                setShowCongratulation(true); // Hiển thị form chúc mừng
-            } else {
-                setReward('Không thể nhận thưởng!'); // Trường hợp lỗi
-                setTotalPoints(''); // Reset totalPoints
-            }
-        } catch (error) {
-            setError('Có lỗi xảy ra, vui lòng thử lại!');
-            setReward(''); // Reset reward khi có lỗi
-            setTotalPoints(''); // Reset totalPoints khi có lỗi
-        } finally {
-            setLoading(false);
-            setIsOpen(true);
+        // Gọi API playLuckyBox
+        const res = await apiPlayLuckyBox(userId);
+        if (res.success) {
+            setReward(res.data.rewardPoints); // Lưu phần thưởng nhận được
+            setTotalPoints(res.data.totalPoints); // Lưu tổng điểm mới
+            setShowCongratulation(true); // Hiển thị form chúc mừng
+        } else {
+            setReward('Không thể nhận thưởng!'); // Trường hợp lỗi
+            setTotalPoints(''); // Reset totalPoints
         }
+        setLoading(false);
+        setIsOpen(true);
     };
 
     return (
