@@ -17,6 +17,7 @@ import {
 import ShippingTable from './shippingTable';
 import ShippingModal from './shippingModal';
 import InputSearch from '../../../components/item/inputSearch'; // ✅ InputSearch component
+import NotExit from '../../../components/common/NotExit'; // Import NotExit component
 import { useActionStore } from '../../../store/actionStore';
 
 export default function ShippingManage() {
@@ -107,10 +108,9 @@ export default function ShippingManage() {
             setIsSearching(true);
         } else {
             showNotification(res.message || 'Không tìm thấy công ty vận chuyển nào', false);
+            setShippings([]); // Clear the shippings if no results are found
         }
     };
-
-    if (shippings.length === 0) return <TableSkeleton />;
 
     return (
         <>
@@ -129,11 +129,15 @@ export default function ShippingManage() {
                     </button>
                 </div>
 
-                {/* Bảng công ty vận chuyển */}
-                <ShippingTable shippings={shippings} onEdit={handleEdit} onDelete={handleDelete} />
-
-                {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                {/* Danh sách công ty vận chuyển */}
+                {shippings.length === 0 ? (
+                    <NotExit label="Không có công ty vận chuyển nào" />
+                ) : (
+                    <>
+                        <ShippingTable shippings={shippings} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                    </>
+                )}
             </div>
 
             {/* Modal thêm/sửa */}

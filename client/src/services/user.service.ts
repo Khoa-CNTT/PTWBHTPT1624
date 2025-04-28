@@ -170,5 +170,26 @@ const apiPlayVongQuay = async (userId: string) => {
         }
     }
 };
+// API lấy phần thưởng vòng quay
+const apiGetWheelRewards = async () => {
+    try {
+        const res = await authClient.get('/v1/api/user/wheel/rewards');
+        return res.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi!';
+            return {
+                success: false,
+                message: errorMessage,
+            };
+        } else {
+            return {
+                success: false,
+                message: 'Đã xảy ra lỗi không xác định!',
+            };
+        }
+    }
+};
 
-export { apiPlayVongQuay,apiPlayLuckyBox,apiChangePassword, apiSearchUsers, apiUpdateProfile, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+
+export {apiGetWheelRewards, apiPlayVongQuay,apiPlayLuckyBox,apiChangePassword, apiSearchUsers, apiUpdateProfile, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };

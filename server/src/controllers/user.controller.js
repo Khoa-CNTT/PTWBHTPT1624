@@ -133,6 +133,21 @@ class UserController {
             });
         }
     }
+    static async getWheelRewards(req, res) {
+        try {
+            const rewards = await UserService.getWheelRewards();
+            res.status(200).json({
+                success: true,
+                message: 'Lấy phần thưởng thành công!',
+                data: rewards,
+            });
+        } catch (error) {
+            res.status(500).json({
+                success: false,
+                message: error.message || 'Không thể lấy danh sách phần quà',
+            });
+        }
+    }
 
 }
 

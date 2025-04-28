@@ -9,6 +9,7 @@ import { apiAddAdmin, apiDeleteAdmin, apiGetAllAdmin, apiUpdateAdmin, apiSearchA
 import EmployeeTable from './EmployeeTable';
 import EmployeeModal from './EmployeeModal';
 import InputSearch from '../../../components/item/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import NotExit component
 import { useActionStore } from '../../../store/actionStore';
 
 export default function EmployeeManage() {
@@ -20,6 +21,7 @@ export default function EmployeeManage() {
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
     const { setIsLoading } = useActionStore();
+    
     // Fetch dữ liệu người dùng
     const fetchApi = async () => {
         const res = await apiGetAllAdmin();
@@ -101,12 +103,14 @@ export default function EmployeeManage() {
             setEmployees(res.data); // Cập nhật danh sách nhân viên tìm được
             setTotalPage(0); // Không cần phân trang khi tìm kiếm
         } else {
+            setEmployees([]); // Xóa danh sách nhân viên khi không tìm thấy kết quả
+            setTotalPage(0);
             showNotification(res.message || 'Không tìm thấy nhân viên', false);
         }
     };
 
-    if (employees.length === 0) return <TableSkeleton />;
-
+    if (employees.length === 0 && !isSearching) return <TableSkeleton />;
+    
     return (
         <>
             <PageMeta title="Quản lý Nhân viên" />
@@ -123,11 +127,18 @@ export default function EmployeeManage() {
                         Thêm
                     </button>
                 </div>
-                {/* Bảng danh sách nhân viên */}
-                <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
-                {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+
+                {/* Danh sách nhân viên */}
+                {employees.length === 0 ? (
+                    <NotExit label="Không có nhân viên nào" />
+                ) : (
+                    <>
+                        <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                    </>
+                )}
             </div>
+
             {/* Modal thêm/sửa nhân viên */}
             {isOpen && <EmployeeModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} employee={selectedEmployee} />}
         </>

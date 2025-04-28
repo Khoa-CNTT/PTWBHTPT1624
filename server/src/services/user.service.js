@@ -302,6 +302,30 @@ class UserService {
     
         return reward;
     }
+
+    static async getWheelRewards() {
+        const points = [1000, 2000, 5000, 10000].map((value) => ({
+            type: 'points',
+            value,
+            label: `${value} điểm`,
+        }));
+        
+        const vouchers = await Voucher.find({
+            voucher_type: 'user',
+            voucher_is_active: true,
+            voucher_end_date: { $gte: new Date() },
+        }).limit(5); // Lấy tối đa 2 voucher
+        
+        const voucherRewards = vouchers.map((voucher) => ({
+            type: 'voucher',
+            voucher_name: voucher.voucher_name,
+            label: voucher.voucher_name,
+        }));
+        
+        const luckyReward = { type: 'lucky', message: 'Chúc may mắn lần sau', label: 'Chúc may mắn' };
+
+        return [...points, ...voucherRewards, luckyReward];
+    }
     
 }
 
