@@ -5,13 +5,14 @@ import { IOrder } from '../../../interfaces/order.interfaces';
 import { ButtonOutline, showNotification, TableSkeleton } from '../../../components';
 import OrderTable from './OrderTable';
 import { formatMoney } from '../../../utils/formatMoney';
-import { statusOrder } from '../../../utils/statusOrder';
+import { statusOrder, statusOrderNotification } from '../../../utils/statusOrder';
 import * as XLSX from 'xlsx';
 import NotExit from '../../../components/common/NotExit';
-
 import InputSearch from '../../../components/item/inputSearch';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
+import { INotification } from '../../../interfaces/notification.interfaces';
+import { sendNotificationToUser } from '../../../services/notification.service';
 
 const OrderManage: React.FC = () => {
     const SELL_TAB = [
@@ -83,6 +84,15 @@ const OrderManage: React.FC = () => {
         const res = await apiUpdateOrderStatus({ orderId: id, newStatus: updateStatus[displayTab] });
         if (!res.success) return showNotification(res.message, res.success);
         setOrders((prev) => prev.filter((order) => order._id !== id));
+        const notification: INotification = {
+            notification_user: res?.data?.order_user,
+            notification_title: '🚚 Cập nhật trạng thái đơn hàng',
+            notification_subtitle: `📦 Đơn hàng của bạn đã được cập nhật: ${statusOrderNotification(res?.data?.order_status)} ✅ • Cảm ơn bạn đã mua sắm! 🎉`,
+            notification_imageUrl:
+                'https://geso.us/wp-content/uploads/2024/06/1-quan-ly-don-hang-hieu-qua-giup-doanh-nghiep-kiem-soat-toan-bo-quy-trinh-ban-hang.jpg',
+            notification_link: `/nguoi-dung/chi-tiet-don-hang/${id}`,
+        };
+        await sendNotificationToUser(res?.data?.order_user, notification);
         showNotification('Cập nhật thành công', true);
     };
 
