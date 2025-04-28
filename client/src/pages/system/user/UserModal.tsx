@@ -10,6 +10,7 @@ import ImageCropper from '../../../components/ImageCropper';
 import SelectOptions from '../../../components/selectOptions';
 import { IUserProfile } from '../../../interfaces/user.interfaces';
 import { getApiPublicDistrict, getApiPublicProvince, getApiPublicWards } from '../../../services/address.service';
+import { useActionStore } from '../../../store/actionStore';
 
 interface UserModalProps {
     isOpen: boolean;
@@ -28,7 +29,6 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
         user_avatar_url: '',
         user_isBlocked: false,
     });
-    const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     const [provinces, setProvinces] = useState<{ code: number; name: string }[]>();
     const [districts, setDistricts] = useState<{ code: number; name: string }[]>();
@@ -36,6 +36,8 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
     const [districtId, setDistrictId] = useState<number>();
     const [wardsId, setWardsId] = useState<number>();
     const [wards, setWards] = useState<{ code: number; name: string }[]>();
+    const { setIsLoading } = useActionStore();
+
     useEffect(() => {
         if (user) {
             setInputFields(user);
@@ -108,7 +110,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
 
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
         try {
-            setIsUploading(true);
+            setIsLoading(true);
             const formData: any = new FormData();
             formData.append('file', image);
             formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
@@ -118,7 +120,7 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
         } catch (error) {
             console.error('Lỗi upload ảnh:', error);
         } finally {
-            setIsUploading(false);
+            setIsLoading(false);
         }
     };
 
@@ -195,7 +197,6 @@ const UserModal: React.FC<UserModalProps> = ({ isOpen, closeModal, onSave, user 
                         <div className="flex w-full items-center text-secondary text-sm">
                             <ImageCropper width={239} height={239} label="Thêm ảnh đại diện" onCropComplete={handleImageUpload} idName="user_avatar_url" />
                         </div>
-                        {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                         {inputFields.user_avatar_url && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.user_avatar_url} />}
                         {invalidFields?.some((i) => i.name === 'user_avatar_url') && (
                             <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>

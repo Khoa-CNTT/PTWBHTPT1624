@@ -7,6 +7,7 @@ import { IMessage } from '../../../interfaces/messages.interfaces';
 import ChatMessage from '../../../components/ChatMessage';
 import SendIcon from '@mui/icons-material/Send';
 import { showNotification } from '../../../components';
+import { useActionStore } from '../../../store/actionStore';
 interface ChatWindowProps {
     selectedConversation: IConversation | any;
 }
@@ -16,10 +17,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
     const [value, setValue] = useState<string>();
     const scroll = useRef<any>(null);
     // const [image, setImage] = useState<string>();
+    const { setIsLoading } = useActionStore();
     useEffect(() => {
         const fetchApi = async () => {
             const res = await apiGetMessagesByConversation(selectedConversation._id);
-
             if (!res.success) return;
             const data = res.data;
             setMessages(data);
@@ -41,11 +42,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
     const handleOnClick = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
         if (value) {
+            setIsLoading(true);
             const res = await apiSendMessageByAdmin({
                 conversationId: selectedConversation._id,
                 text: value,
                 // image: image,
             });
+            setIsLoading(false);
             setValue('');
             showNotification(res.message, res.success);
             if (res.success) {

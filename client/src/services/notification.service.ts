@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { adminClient, apiClient, authClient } from '../config/httpRequest';
+import { INotification } from '../interfaces/notification.interfaces';
 
 // API lấy danh sách thông báo của người dùng
 export const apiGetUserNotifications = async () => {
@@ -59,9 +60,9 @@ export const getAdminNotifications = async () => {
         };
     }
 };
-export const sendNotificationToAll = async (data: any) => {
+export const sendNotificationToAll = async (data: INotification) => {
     try {
-        const res = await adminClient.post(`/v1/api/notification/all-admin`, data);
+        const res = await adminClient.post(`/v1/api/notification/send-to-all`, data);
         return res.data;
     } catch (error) {
         return {

@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import {
@@ -18,6 +19,7 @@ import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
 import NotExit from '../../../components/common/NotExit';
 import InputSearch from '../../../components/item/inputSearch';
+import { useActionStore } from '../../../store/actionStore';
 
 export default function UserManage() {
     const [users, setUsers] = useState<IUserProfile[]>([]);
@@ -27,7 +29,7 @@ export default function UserManage() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isUploading, setIsUploading] = useState(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
 
     // Fetch danh sách người dùng
@@ -59,11 +61,13 @@ export default function UserManage() {
 
     const handleSave = async (data: IUserProfile) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateUser(data._id, data);
         } else {
             res = await apiAddUser(data);
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
 
@@ -101,7 +105,9 @@ export default function UserManage() {
 
     const handleBlock = (id: string, isBlocked: boolean) => {
         const toggleBlock = async () => {
+            setIsLoading(true);
             const res = await apiToggleBlockUser(id, isBlocked);
+            setIsLoading(false);
             if (res.success) {
                 setUsers((prevUsers) => prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user)));
                 showNotification(isBlocked ? 'Chặn người dùng thành công' : 'Bỏ chặn người dùng thành công', true);
@@ -114,7 +120,9 @@ export default function UserManage() {
 
     const handleDelete = async (id: string) => {
         if (window.confirm('Bạn có muốn xóa người dùng này không?')) {
+            setIsLoading(true);
             const res = await apiDeleteUser(id);
+            setIsLoading(false);
             if (res.success) {
                 setUsers((prevUsers) => prevUsers.filter((user) => user._id !== id));
                 showNotification('Xóa người dùng thành công', true);
@@ -145,14 +153,13 @@ export default function UserManage() {
                 {users.length === 0 ? (
                     <NotExit label="Không có người dùng nào" />
                 ) : (
-                    <UserTable 
-                        users={users} 
-                        onEdit={handleEdit} 
+                    <UserTable
+                        users={users}
+                        onEdit={handleEdit}
                         onBlock={handleBlock}
-                        onDelete={handleDelete}  // Pass the handleDelete function
+                        onDelete={handleDelete} // Pass the handleDelete function
                     />
                 )}
-
 
                 {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>

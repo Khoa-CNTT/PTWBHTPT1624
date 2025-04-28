@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -11,7 +12,8 @@ import { Pagination, showNotification, TableSkeleton } from '../../../components
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/item/inputSearch';
-import NotExit from '../../../components/common/NotExit';  // Import component NotExit
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import { useActionStore } from '../../../store/actionStore';
 
 export default function BannerManage() {
     const [banners, setBanners] = useState<IBanner[]>([]);
@@ -23,7 +25,7 @@ export default function BannerManage() {
     const [isUploading, setIsUploading] = useState(false);
 
     const { openModal, isOpen, closeModal } = useModal();
-
+    const { setIsLoading } = useActionStore();
     const fetchApi = async () => {
         setIsUploading(true);
         const res = await apiGetAllBanners({ limit: 5, page: currentPage });
@@ -52,6 +54,7 @@ export default function BannerManage() {
 
     const handleSave = async (data: IBanner) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateBanner(data._id, data);
         } else {
@@ -66,6 +69,7 @@ export default function BannerManage() {
         } else {
             setBanners((prev) => [res.data, ...prev]);
         }
+        setIsLoading(false);
     };
 
     const handleDelete = async (id: string) => {

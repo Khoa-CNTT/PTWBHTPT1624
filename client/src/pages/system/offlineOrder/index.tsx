@@ -9,6 +9,7 @@ import { CartTabs } from './CartTable';
 import { CartTable } from './CartTabs';
 import { PaymentSection } from './PaymentSection';
 import { IProductInCart } from '../../../interfaces/cart.interfaces';
+import { useActionStore } from '../../../store/actionStore';
 
 const OfflineOrder: React.FC = () => {
     const [carts, setCarts] = useState<IProductInCart[][]>([[]]);
@@ -20,7 +21,7 @@ const OfflineOrder: React.FC = () => {
     const [voucherId, setVoucherId] = useState<string>('');
     const [cashReceived, setCashReceived] = useState<number | ''>('');
     const [openModal, setOpenModal] = useState<boolean>(false);
-
+    const { setIsLoading } = useActionStore();
     // Sử dụng useMemo để tính toán các giá trị
     const subtotal = useMemo(() => {
         return carts[currentTab].reduce((sum, item) => sum + item.product_price * item.quantity, 0);
@@ -45,12 +46,14 @@ const OfflineOrder: React.FC = () => {
     useEffect(() => {
         const handleScanResult = async () => {
             if (!qrResult) return;
+            setIsLoading(true);
             const res = await apiGetScanProduct(qrResult);
             showNotification(res.message, res.success);
             if (res.success && res.data) {
                 const newProduct: IProduct = res.data;
                 updateCartWithNewProduct(newProduct);
             }
+            setIsLoading(false);
             if (!res.success) {
                 showNotification('Không tìm thấy sản phẩm', res.success);
             }
@@ -64,7 +67,6 @@ const OfflineOrder: React.FC = () => {
         const updatedCarts = [...carts];
         const currentCart = [...updatedCarts[currentTab]];
         const existingProductIndex = currentCart.findIndex((item) => item.productId === newProduct._id);
-
         if (existingProductIndex >= 0) {
             currentCart[existingProductIndex].quantity += 1;
         } else {

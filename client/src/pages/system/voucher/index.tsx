@@ -10,6 +10,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import { useActionStore } from '../../../store/actionStore';
 
 export default function VoucherManage(): JSX.Element {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -19,7 +20,7 @@ export default function VoucherManage(): JSX.Element {
     const [searchQuery, setSearchQuery] = useState<string>(''); // Tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
     const [loading, setLoading] = useState<boolean>(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
 
     useEffect(() => {
@@ -47,17 +48,17 @@ export default function VoucherManage(): JSX.Element {
     };
 
     const handleSave = async (data: IVoucher) => {
-        console.log('data', data);
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateVoucher(data._id, data);
         } else {
             res = await apiAddVoucher(data);
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
-
         // Nếu update thành công, update lại voucher trong state mà không cần F5
         if (data._id) {
             // Nếu có _id, thay thế voucher cũ bằng voucher mới (được cập nhật)
@@ -71,7 +72,9 @@ export default function VoucherManage(): JSX.Element {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteVoucher(id);
+        setIsLoading(false);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
@@ -99,7 +102,9 @@ export default function VoucherManage(): JSX.Element {
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
         if (!searchQuery.trim()) return;
+        setIsLoading(true);
         const res = await apiSearchVoucherByName(searchQuery.trim());
+        setIsLoading(false);
         if (res.success) {
             setVouchers(res.data);
             setTotalPage(0); // Không phân trang khi tìm kiếm

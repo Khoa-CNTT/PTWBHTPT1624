@@ -13,6 +13,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import { useActionStore } from '../../../store/actionStore';
 
 export default function BrandManage() {
     const [brands, setBrands] = useState<IBrand[]>([]);
@@ -22,7 +23,7 @@ export default function BrandManage() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isUploading, setIsUploading] = useState(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
 
     const fetchApi = async () => {
@@ -53,6 +54,7 @@ export default function BrandManage() {
 
     const handleSave = async (data: IBrand) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateBrand(data._id, data);
         } else {
@@ -67,17 +69,20 @@ export default function BrandManage() {
         } else {
             setBrands((prev) => [res.data, ...prev]);
         }
+        setIsLoading(false);
     };
 
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteBrand(id);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
         }
         setBrands((prev) => prev.filter((item) => item._id !== id));
+        setIsLoading(true);
         showNotification('Xóa thành công', true);
     };
 
@@ -95,6 +100,7 @@ export default function BrandManage() {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
             return;
         }
+        setIsLoading(true);
         const res = await apiSearchBrand(searchQuery.trim());
         if (res.success) {
             setBrands(res.data); // vì API trả về dạng mảng
@@ -103,6 +109,7 @@ export default function BrandManage() {
         } else {
             showNotification(res.message || 'Không tìm thấy thương hiệu', false);
         }
+        setIsLoading(false);
     };
 
     if (isUploading) return <TableSkeleton />;

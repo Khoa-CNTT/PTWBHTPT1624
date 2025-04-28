@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import { useModal } from '../../../hooks/useModal';
@@ -6,7 +7,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { IShipping } from '../../../interfaces/shipping.interfaces';
 import Pagination from '../../../components/pagination';
-import { 
+import {
     apiGetAllShippingCompanies,
     apiCreateShippingCompany,
     apiDeleteShippingCompany,
@@ -16,6 +17,7 @@ import {
 import ShippingTable from './shippingTable';
 import ShippingModal from './shippingModal';
 import InputSearch from '../../../components/item/inputSearch'; // ✅ InputSearch component
+import { useActionStore } from '../../../store/actionStore';
 
 export default function ShippingManage() {
     const [shippings, setShippings] = useState<IShipping[]>([]);
@@ -24,6 +26,7 @@ export default function ShippingManage() {
     const [selectedShipping, setSelectedCategory] = useState<IShipping | null>(null);
     const [searchQuery, setSearchQuery] = useState<string>(''); // ✅ ô tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // ✅ trạng thái tìm kiếm
+    const { setIsLoading } = useActionStore();
 
     const { openModal, isOpen, closeModal } = useModal();
 
@@ -54,25 +57,25 @@ export default function ShippingManage() {
 
     const handleSave = async (data: IShipping) => {
         let res;
+        setIsLoading(true);
         if (data?._id) {
             res = await apiUpdateShippingCompany(data?._id, data);
         } else {
             res = await apiCreateShippingCompany(data);
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
-        setShippings((prev) =>
-            data._id
-                ? prev.map((item) => (item._id === data._id ? res.data : item))
-                : [res.data, ...prev]
-        );
+        setShippings((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
     };
 
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteShippingCompany(id);
+        setIsLoading(false);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
@@ -108,7 +111,7 @@ export default function ShippingManage() {
     };
 
     if (shippings.length === 0) return <TableSkeleton />;
-    
+
     return (
         <>
             <PageMeta title="Quản lý công ty vận chuyển" />
@@ -116,11 +119,7 @@ export default function ShippingManage() {
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* ✅ Ô tìm kiếm */}
-                    <InputSearch 
-                        handleSearch={handleSearch} 
-                        handleSearchChange={handleSearchChange} 
-                        searchQuery={searchQuery} 
-                    />
+                    <InputSearch handleSearch={handleSearch} handleSearchChange={handleSearchChange} searchQuery={searchQuery} />
                     {/* Button thêm */}
                     <button
                         onClick={handleAdd}
