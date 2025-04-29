@@ -33,7 +33,7 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, onSelectChat }) => {
                     </button>
 
                     <div className="relative my-2 w-full">
-                        <form>
+                        <div>
                             <button className="absolute left-4 top-1/2 -translate-y-1/2">
                                 <svg
                                     className="fill-gray-500 dark:fill-gray-400"
@@ -55,7 +55,7 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, onSelectChat }) => {
                                 placeholder="Search..."
                                 className="h-11 w-full rounded-lg border border-gray-300 bg-transparent py-2.5 pl-[42px] pr-3.5 text-sm text-gray-800 shadow-xs placeholder:text-gray-400 focus:border-brand-300 focus:outline-none focus:ring-3 focus:ring-brand-500/10 dark:border-gray-700 dark:bg-gray-900 dark:text-white/90 dark:placeholder:text-white/30 dark:focus:border-brand-800"
                             />
-                        </form>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -90,7 +90,9 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, onSelectChat }) => {
                             <div
                                 key={c?.user?.user_name}
                                 onClick={() => onSelectChat(c)}
-                                className="flex cursor-pointer items-center gap-3 rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03]">
+                                className={`flex cursor-pointer items-center gap-3 ${
+                                    c?.seen ? '' : 'bg-green-50'
+                                }  rounded-lg p-3 hover:bg-gray-100 dark:hover:bg-white/[0.03]`}>
                                 <div className="relative h-12 w-full max-w-[48px] rounded-full">
                                     <img
                                         src={c?.user?.user_avatar_url || userAvatar}

@@ -12,4 +12,5 @@ export interface IConversation {
     participants: string[];
     createdAt: string;
     updatedAt: string;
+    seen: boolean;
 }

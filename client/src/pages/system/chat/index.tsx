@@ -5,12 +5,15 @@ import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 import { getAllConversations } from '../../../services/conversation';
 import { IConversation } from '../../../interfaces/conversation.interfaces';
+import { apiMarkMessagesAsSeenByAdmin } from '../../../services/message.service';
 
 const ChatManage: React.FC = () => {
     const [selectedConversation, setSelectedConversation] = useState<IConversation>();
 
     const [conversations, setConversations] = useState<IConversation[]>([]);
-    const handleSelectChat = (conversation: IConversation) => {
+    const handleSelectChat = async (conversation: IConversation) => {
+        await apiMarkMessagesAsSeenByAdmin(conversation._id);
+        setConversations((prev) => prev.map((i) => (i._id === conversation._id ? { ...i, seen: true } : i)));
         setSelectedConversation(conversation);
     };
 
