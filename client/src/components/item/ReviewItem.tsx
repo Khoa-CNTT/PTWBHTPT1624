@@ -19,7 +19,7 @@ interface ReviewsProps {
 
 const ReviewItem: React.FC<ReviewsProps> = ({ review, handleDelete, handleEdit }) => {
     moment.locale('vi');
-    const { review_comment: comment, review_images: images, review_rating: rating, review_user: reviewUser, createdAt: createdAt } = review;
+    const { review_comment: review_comment, review_images, review_rating, review_user, createdAt } = review;
     const { user } = useUserStore();
 
     return (
@@ -28,26 +28,26 @@ const ReviewItem: React.FC<ReviewsProps> = ({ review, handleDelete, handleEdit }
                 {/* Thông tin người dùng */}
                 <div className="flex items-start gap-3 laptop:w-3/12 tablet:w-full">
                     <div className="w-10 h-10 rounded-full shrink-0 overflow-hidden">
-                        <img className="object-cover w-full h-full" src={reviewUser?.user_avatar_url || noUser} alt="Avatar" />
+                        <img className="object-cover w-full h-full" src={review_user?.user_avatar_url || noUser} alt="Avatar" />
                     </div>
                     <div className="flex flex-col justify-center gap-1">
                         <div className="flex items-center gap-3">
-                            <h3 className="text-base font-medium">{reviewUser?.user_name}</h3>
+                            <h3 className="text-base font-medium">{review_user?.user_name}</h3>
                         </div>
-                        <span className="text-xs text-text_secondary">Đã tham gia {moment(reviewUser?.createdAt).fromNow()}</span>
+                        <span className="text-xs text-text_secondary">Đã tham gia {moment(review_user?.createdAt).fromNow()}</span>
                     </div>
                 </div>
 
                 {/* Nội dung đánh giá */}
                 <div className="flex flex-col justify-center gap-3 pr-6 laptop:w-9/12 tablet:w-full">
                     <div className="flex flex-col gap-2 w-full">
-                        {rating > 0 && (
+                        {review_rating > 0 && (
                             <div className="flex items-center gap-2 w-full">
-                                <div className="flex">{formatStar(rating, '20px')}</div>
-                                <span className="text-sm font-semibold">{RATING_REVIEW?.find((r) => r.start === rating)?.text}</span>
+                                <div className="flex">{formatStar(review_rating, '20px')}</div>
+                                <span className="text-sm font-semibold">{RATING_REVIEW?.find((r) => r.start === review_rating)?.text}</span>
                             </div>
                         )}
-                        {rating > 0 && (
+                        {review_rating > 0 && (
                             <div className="flex w-full">
                                 <span className="flex items-center py-[1px] px-1 text-[10px] font-semibold text-pink-500 border border-solid border-pink-500 rounded-sm gap-1">
                                     <MoodIcon style={{ fontSize: '12px' }} />
@@ -58,7 +58,7 @@ const ReviewItem: React.FC<ReviewsProps> = ({ review, handleDelete, handleEdit }
                     </div>
 
                     <div className="flex flex-col w-full h-full  gap-1">
-                        <span className="text-sm text-capitalize">{comment} </span>
+                        <span className="text-sm text-capitalize">{review_comment} </span>
                         <ul className="w-full h-full">
                             <Swiper
                                 loop={false}
@@ -82,7 +82,7 @@ const ReviewItem: React.FC<ReviewsProps> = ({ review, handleDelete, handleEdit }
                                         slidesPerGroup: 3,
                                     },
                                 }}>
-                                {images?.map((i) => (
+                                {review_images?.map((i) => (
                                     <SwiperSlide key={uuidv4()}>
                                         <div className=" h-[200px]  mx-auto">
                                             <img className="w-full h-full object-contain block" src={i} />
@@ -99,9 +99,9 @@ const ReviewItem: React.FC<ReviewsProps> = ({ review, handleDelete, handleEdit }
                             {likesReviews.includes(user._id) ? <ThumbUpAltIcon fontSize="small" /> : <ThumbUpOffAltIcon fontSize="small" />}
                             Hữu ích <span>{likesReviews.length}</span>
                         </ButtonOutline> */}
-                        {user._id === reviewUser?._id && (
+                        {user._id === review_user?._id && (
                             <div className="flex gap-6 text-primary">
-                                {user?._id === reviewUser?._id && (
+                                {user?._id === review_user?._id && (
                                     <button className="text-sm hover:opacity-80" onClick={handleEdit}>
                                         Chỉnh sửa
                                     </button>
