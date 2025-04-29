@@ -1,3 +1,8 @@
+declare module 'moment/dist/locale/vi';
+declare module 'moment/locale/vi';
+declare module 'swiper/css';
+declare module 'swiper/css/navigation';
+declare module 'swiper/css/pagination';
 /* eslint-disable @typescript-eslint/no-explicit-any */
 // src/types/react-weblineindia-qrcode-scanner.d.ts
 declare module 'react-weblineindia-qrcode-scanner' {

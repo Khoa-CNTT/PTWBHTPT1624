@@ -22,7 +22,7 @@ class PurchasedProductService {
 
         const totalProducts = await PurchasedModel.countDocuments({ order_user: userId });
         return {
-            totalPage: Math.ceil(totalProducts / limitNum) - 1, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalProducts / limitNum), // Tổng số trang (0-based)
             currentPage: pageNum,
             totalProducts,
             PurchasedProduct,

@@ -23,7 +23,7 @@ class BannerService {
         const banners = await Banner.find().sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
         const totalBanner = await Banner.countDocuments();
         return {
-            totalPage: Math.ceil(totalBanner / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalBanner / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalBanner,
             banners,
@@ -55,11 +55,10 @@ class BannerService {
         if (typeof name !== 'string') {
             throw new BadRequestError('The name parameter must be a string');
         }
-    
+
         const banners = await Banner.find({ banner_title: { $regex: name, $options: 'i' } });
         return banners;
     }
-    
 }
 
 module.exports = BannerService;

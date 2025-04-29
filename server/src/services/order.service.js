@@ -131,7 +131,7 @@ class OrderService {
             .lean();
         const totalOrders = await OfflineOrder.countDocuments();
         return {
-            totalPage: Math.ceil(totalOrders / limitNum) - 1, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalOrders / limitNum), // Tổng số trang (0-based)
             currentPage: pageNum,
             totalOrders,
             orders,

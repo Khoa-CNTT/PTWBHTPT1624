@@ -51,7 +51,7 @@ class VoucherService {
         const vouchers = await voucherModel.find().sort({ createdAt: -1 }).skip(skipNum).select(' -createdAt -updatedAt -__v').limit(limitNum).lean();
         const totalVoucher = await voucherModel.countDocuments();
         return {
-            totalPage: Math.ceil(totalVoucher / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalVoucher / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalVoucher,
             vouchers,
@@ -81,7 +81,7 @@ class VoucherService {
         });
 
         return {
-            totalPage: Math.ceil(totalVoucher / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalVoucher / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum,
             totalVoucher,
             vouchers,
@@ -106,7 +106,7 @@ class VoucherService {
             .lean();
         const totalVoucher = await voucherModel.countDocuments();
         return {
-            totalPage: Math.ceil(totalVoucher / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalVoucher / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalVoucher,
             vouchers,

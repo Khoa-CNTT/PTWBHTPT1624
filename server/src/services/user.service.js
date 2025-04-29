@@ -79,7 +79,7 @@ class UserService {
             .lean();
         const totalUser = await UserModel.countDocuments();
         return {
-            totalPage: Math.ceil(totalUser / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalUser / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalUser,
             users,
@@ -124,7 +124,7 @@ class UserService {
             $or: [
                 { user_name: { $regex: name, $options: 'i' } }, // Tìm theo tên người dùng
                 { user_email: { $regex: name, $options: 'i' } }, // Tìm theo email
-                { user_mobile: { $regex: name, $options: 'i' } }, 
+                { user_mobile: { $regex: name, $options: 'i' } },
             ],
         })
             .select('user_name user_email user_isBlocked user_mobile user_avatar_url')
@@ -223,9 +223,9 @@ class UserService {
         };
     }
     static async playLuckyBox(userId) {
-        const rewards = [1000, 2000, 5000];  // Điểm cho mỗi hộp
-        const randomIndex = Math.floor(Math.random() * rewards.length);  // Chọn ngẫu nhiên hộp
-        const rewardPoints = rewards[randomIndex];  // Điểm nhận được từ hộp
+        const rewards = [1000, 2000, 5000]; // Điểm cho mỗi hộp
+        const randomIndex = Math.floor(Math.random() * rewards.length); // Chọn ngẫu nhiên hộp
+        const rewardPoints = rewards[randomIndex]; // Điểm nhận được từ hộp
 
         // Cập nhật điểm người dùng
         const user = await UserModel.findById(userId);
@@ -233,12 +233,12 @@ class UserService {
             throw new RequestError('Người dùng không tồn tại!', 404);
         }
 
-        user.user_reward_points = (user.user_reward_points || 0) + rewardPoints;  // Cộng điểm vào tài khoản
+        user.user_reward_points = (user.user_reward_points || 0) + rewardPoints; // Cộng điểm vào tài khoản
         await user.save();
 
         return {
             rewardPoints,
-            totalPoints: user.user_reward_points,  // Trả về tổng điểm sau khi cộng thêm
+            totalPoints: user.user_reward_points, // Trả về tổng điểm sau khi cộng thêm
         };
     }
 
@@ -249,8 +249,8 @@ class UserService {
             voucher_is_active: true,
             voucher_end_date: { $gte: new Date() },
         })
-        .sort({ createdAt: -1 })
-        .limit(3);
+            .sort({ createdAt: -1 })
+            .limit(3);
     }
 
     // Lấy một voucher ngẫu nhiên còn hiệu lực
@@ -269,8 +269,9 @@ class UserService {
 
     // Chơi game Lucky Box
     static async vongquay(userId) {
+ 
         const rewardChance = Math.random(); // Xác suất trúng
-        const pointsList = [1000, 2000, 5000, 10000];
+        const pointsList = [1000, 2000, 5000, 10000]; 
 
         let reward;
 
@@ -324,7 +325,8 @@ class UserService {
             reward = { type: 'lucky', message: 'Chúc may mắn lần sau!' };
         }
 
-        // Nếu có điểm thì cộng vào user
+ 
+        // Nếu có điểm thì cộng vào user 
         if (reward.type === 'points') {
             const user = await UserModel.findById(userId);
             if (!user) {
@@ -347,8 +349,9 @@ class UserService {
         const vouchers = await Voucher.find({
             voucher_type: 'user',
             voucher_is_active: true,
-            voucher_end_date: { $gte: new Date() },
-        }).limit(5);
+            voucher_end_date: { $gte: new Date() }, 
+        }).limit(5); // Lấy tối đa 2 voucher
+ 
 
         const voucherRewards = vouchers.map((voucher) => ({
             type: 'voucher',
@@ -356,15 +359,16 @@ class UserService {
             label: voucher.voucher_name,
         }));
 
+ 
         const luckyReward = {
             type: 'lucky',
             message: 'Chúc may mắn lần sau',
             label: 'Chúc may mắn'
         };
 
+
         return [...points, ...voucherRewards, luckyReward];
     }
-    
 }
 
 module.exports = UserService;

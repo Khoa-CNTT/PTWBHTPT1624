@@ -25,7 +25,7 @@ class BrandService {
         const brands = await Brand.find().sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
         const totalBrand = await Brand.countDocuments();
         return {
-            totalPage: Math.ceil(totalBrand / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalBrand / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalBrand,
             brands,

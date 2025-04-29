@@ -30,7 +30,7 @@ class SupplierService {
         const suppliers = await Supplier.find().sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
         const totalSupplier = await Supplier.countDocuments();
         return {
-            totalPage: Math.ceil(totalSupplier / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalSupplier / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalSupplier,
             suppliers,

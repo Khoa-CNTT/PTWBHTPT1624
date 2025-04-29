@@ -4,9 +4,7 @@ import CloseIcon from '@mui/icons-material/Close';
 import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { v4 as uuidv4 } from 'uuid';
 import { ButtonOutline, Overlay, showNotification } from '..';
-import { Review } from '../../interfaces/dashboard.interface';
-import { IProductItem } from '../../interfaces/product.interfaces';
-import { IReviews } from '../../interfaces/reviews.interfaces';
+import { IProductDetail } from '../../interfaces/product.interfaces';
 import useUserStore from '../../store/userStore';
 import useAuthStore from '../../store/authStore';
 import usePurchasedStore from '../../store/purchasedStore';
@@ -15,17 +13,20 @@ import { useActionStore } from '../../store/actionStore';
 import { apiCreateReview, apiUpdateReview } from '../../services/review.service';
 import StarIcon from '@mui/icons-material/Star';
 import { Rating } from '@mui/material';
+import { IReview } from '../../interfaces/review.interfaces';
+import { INotification } from '../../interfaces/notification.interfaces';
+import { sendNotificationToAdmin } from '../../services/notification.service';
 
 interface FormReviewsProps {
-    setReviews?: React.Dispatch<React.SetStateAction<Review[]>>;
-    reviews?: IReviews[];
-    reviewEdit?: IReviews;
-    productReview: IProductItem | any;
+    setReviews?: React.Dispatch<React.SetStateAction<IReview[]>>;
+    reviews?: IReview[];
+    reviewEdit?: IReview;
+    productReview: IProductDetail | any;
     setOpenFormReview?: React.Dispatch<React.SetStateAction<boolean>>;
-    // setRatings?: React.Dispatch<React.SetStateAction<{ _id: string; rating: number }[]>>;
+    setRatings?: React.Dispatch<React.SetStateAction<any>>;
     title: string;
     isEdit?: boolean;
-    isReview?: boolean;
+    isReviewed?: boolean;
     titleButton?: string;
     // socketRef: React.MutableRefObject<SocketIOClient.Socket | null>;
 }
@@ -33,17 +34,16 @@ interface FormReviewsProps {
 const FormReviews: React.FC<FormReviewsProps> = ({
     setReviews,
     reviews,
+    isReviewed,
     isEdit,
     productReview,
     reviewEdit,
-    isReview = false,
     setOpenFormReview,
     titleButton = 'Gửi đánh giá',
     title,
-    // setRatings,
+    setRatings,
     // socketRef,
 }) => {
-    const [isLoad, setIsLoad] = useState(false);
     const [valueInput, setValueInput] = useState('');
     const [imagesUrl, setImagesUrl] = useState<string[]>([]);
     const [rating, setRating] = useState<number | any>(5);
@@ -57,7 +57,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
             setValueInput(reviewEdit.review_comment);
             setRating(reviewEdit.review_rating);
         }
-        if (!purchasedProducts.some((pc) => pc.pc_productId._id === productReview._id)) {
+        if (purchasedProducts.find((pc) => pc.pc_productId._id === productReview._id)?.pc_isReviewed) {
             setRating(0);
         }
     }, [isEdit, reviewEdit, productReview, purchasedProducts, user._id]);
@@ -65,7 +65,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const files = e.target.files;
         if (!files) return;
-        setIsLoad(true);
+        setIsLoading(true);
         const formData = new FormData();
         for (const file of files) {
             formData.append('file', file);
@@ -78,60 +78,63 @@ const FormReviews: React.FC<FormReviewsProps> = ({
             }
         }
 
-        setIsLoad(false);
+        setIsLoading(false);
     };
 
     const postComment = async () => {
         setIsLoading(true);
-        const res = await apiCreateReview({ review_comment: valueInput, review_images: imagesUrl, review_rating: rating, review_productId: productReview._id });
+        const res = await apiCreateReview({
+            review_comment: valueInput,
+            review_images: imagesUrl,
+            review_rating: isReviewed ? 0 : rating,
+            review_productId: productReview._id,
+        });
         showNotification(res.message, res.success);
         if (!res.success) {
             setIsLoading(false);
             return;
         }
-        setIsReviewedPurchasedProduct(productReview._id);
-        addRewardPoints();
-        // const notification: INotification = {
-        //     image_url: productReview.image_url,
-        //     shopId: productReview.user?._id || '',
-        //     title: productReview.title,
-        //     user_name: formatUserName(user),
-        //     subtitle: 'đã đánh giá sản phẩm của bạn',
-        //     link: location.pathname,
-        // };
 
-        // const response = await apiCreateNotification(notification);
-        // response.success && socketRef.current?.emit('sendNotification', response.data);
-        if (!isReview) {
-            setReviews?.((prev) => [{ ...res.data, user: user }, ...prev]);
-            // setRatings?.((prev) => [...prev, { _id: res._id, rating }]);
+        const notification: INotification = {
+            notification_user: res?.review?.review_user,
+            notification_title: 'Đánh giá mới đang chờ bạn duyệt! 📝',
+            notification_subtitle: 'Một đánh giá vừa được gửi cho sản phẩm. Hãy kiểm tra và phê duyệt ngay! ✅',
+            notification_imageUrl: productReview?.product_thumb,
+            notification_link: '/quan-ly/danh-gia',
+        };
+        await sendNotificationToAdmin(notification);
+        if (res.review.isApproved) {
+            setReviews?.((prev) => [{ ...res.review, review_user: user }, ...prev]);
+            setRatings?.(
+                (
+                    prev: {
+                        review_rating: number;
+                        _id: string;
+                    }[],
+                ) => [...prev, { _id: res._id, review_rating: rating }],
+            );
+            setIsReviewedPurchasedProduct(productReview._id);
+            addRewardPoints();
         }
         setOpenFormReview?.(false);
         setIsLoading(false);
     };
 
     const editComment = async () => {
-        const res = await apiUpdateReview(reviewEdit!._id, {
+        setIsLoading(true);
+        const res = await apiUpdateReview(reviewEdit?._id, {
             review_comment: valueInput,
             review_images: imagesUrl,
-            review_rating: rating,
             review_productId: productReview._id,
         });
-
-        if (!res.success) {
-            showNotification('Cập nhật không thành công!', true);
-            return;
-        }
+        showNotification(res.message, res.success);
+        setIsLoading(false);
+        if (!res.success) return;
         if (reviews) {
             const updatedReviews = reviews.filter((r) => r._id !== reviewEdit!._id);
-            if (!isReview) {
-                setReviews?.(() => [{ ...res.data, rating, user: user }, ...updatedReviews]);
-                // setRatings?.((prev) => [...prev, { _id: res._id, rating }]);
-            }
+            setReviews?.(() => [{ ...res.review, review_user: user }, ...updatedReviews]);
         }
         setOpenFormReview?.(false);
-        showNotification('Cập nhật thành công!', true);
-        setIsLoading(false);
     };
 
     const handleSubmit = async (e: React.MouseEvent) => {
@@ -139,10 +142,6 @@ const FormReviews: React.FC<FormReviewsProps> = ({
 
         if (!isUserLoggedIn) {
             setOpenFeatureAuth(true);
-            return;
-        }
-        if (isLoad) {
-            showNotification('Đang tải ảnh, vui lòng chờ!', true);
             return;
         }
         if (!valueInput.trim()) {
@@ -172,17 +171,19 @@ const FormReviews: React.FC<FormReviewsProps> = ({
                         <img className="h-20 w-20" src={productReview.product_thumb} alt="Product" />
                         <span className="text-sm">{productReview.product_name}</span>
                     </div>
-                    <div className="flex gap-2 justify-center my-2">
-                        <Rating
-                            value={rating}
-                            precision={0.5}
-                            sx={{ fontSize: '40px' }}
-                            onChange={(event: any) => {
-                                setRating(event?.target?.value);
-                            }}
-                            emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
-                        />
-                    </div>
+                    {!isReviewed && (
+                        <div className="flex gap-2 justify-center my-2">
+                            <Rating
+                                value={rating}
+                                precision={0.5}
+                                sx={{ fontSize: '40px' }}
+                                onChange={(event: any) => {
+                                    setRating(event?.target?.value);
+                                }}
+                                emptyIcon={<StarIcon style={{ opacity: 0.55 }} fontSize="inherit" />}
+                            />
+                        </div>
+                    )}
                     {/*   <ul className="flex gap-2 justify-center">
                         {/* {RATING_REVIEW.map((s) => (
                             <li
@@ -225,7 +226,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
                                 <ul className="grid grid-cols-6 gap-3 px-4">
                                     {imagesUrl.map((image) => (
                                         <li key={uuidv4()} className="relative w-full h-[60px] border border-bgSecondary my-4">
-                                            <img src={image} className="w-full h-full object-fill" alt="review" />
+                                            <img src={image} className="w-full h-full object-contain" alt="review" />
                                             <CloseIcon
                                                 className="absolute top-0 right-1 cursor-pointer"
                                                 style={{ fontSize: '25px', color: '#C8C8CB' }}
@@ -238,9 +239,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
                         )}
                     </div>
                     <div className="flex gap-2 items-center mt-6">
-                        <ButtonOutline
-                            className={`w-4/12 text-lg mx-auto bg-primary text-white ${isLoad || !valueInput ? 'opacity-60' : ''}`}
-                            onClick={handleSubmit}>
+                        <ButtonOutline className="w-4/12 text-lg mx-auto bg-primary text-white" onClick={handleSubmit}>
                             {titleButton}
                         </ButtonOutline>
                     </div>
