@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 interface ReviewUser {
     _id: string;
     user_name: string;
@@ -7,7 +8,7 @@ interface ReviewUser {
 
 export interface IReview {
     _id?: string;
-    review_rating: number;
+    review_rating?: number | any;
     review_user?: ReviewUser;
     review_comment: string;
     review_images: string[];

@@ -19,7 +19,7 @@ interface ReviewsProps {
 
 const ReviewItem: React.FC<ReviewsProps> = ({ review, handleDelete, handleEdit }) => {
     moment.locale('vi');
-    const { review_comment: review_comment, review_images, review_rating, review_user, createdAt } = review;
+    const { review_comment, review_images, review_rating, review_user, createdAt } = review;
     const { user } = useUserStore();
 
     return (
