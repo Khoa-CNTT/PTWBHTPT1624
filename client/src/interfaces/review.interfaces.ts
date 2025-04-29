@@ -7,7 +7,7 @@ interface ReviewUser {
 
 export interface IReview {
     _id?: string;
-    review_rating?: number;
+    review_rating: number;
     review_user?: ReviewUser;
     review_comment: string;
     review_images: string[];
