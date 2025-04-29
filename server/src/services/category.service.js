@@ -27,7 +27,7 @@ class CategoryService {
         const categories = await Category.find().sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
         const totalCategory = await Category.countDocuments();
         return {
-            totalPage: Math.ceil(totalCategory / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalCategory / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalCategory,
             categories,

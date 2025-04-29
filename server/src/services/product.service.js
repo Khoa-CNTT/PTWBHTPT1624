@@ -113,7 +113,7 @@ class ProductService {
         const limitNum = Math.max(~~limit || 10, 1); // Fast parse, default 10, min 1
         const pageNum = Math.max(~~page || 0, 0); // Fast parse, default 0
         const skipNum = pageNum * limitNum;
-    
+
         // Sử dụng $regex để tìm kiếm gần giống
         const searchFilter = keySearch
             ? {
@@ -123,7 +123,7 @@ class ProductService {
                   ],
               }
             : {};
-    
+
         const productQuery = Product.find(searchFilter)
             .select(
                 '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
@@ -131,25 +131,22 @@ class ProductService {
             .skip(skipNum)
             .limit(limitNum)
             .lean();
-    
+
         // Áp dụng sort
         if (sort) {
             productQuery.sort(sort);
         }
-    
-        const [products, totalProducts] = await Promise.all([
-            productQuery.exec(),
-            Product.countDocuments(searchFilter),
-        ]);
-    
+
+        const [products, totalProducts] = await Promise.all([productQuery.exec(), Product.countDocuments(searchFilter)]);
+
         return {
-            totalPage: Math.max(Math.ceil(totalProducts / limitNum) - 1, 0),
+            totalPage: Math.max(Math.ceil(totalProducts / limitNum), 0),
             currentPage: pageNum,
             totalProducts,
             products,
         };
     }
-    
+
     // Lấy tất cả sản phẩm (với các filter)
     static async getAllProductsByAdmin({ limit, page }) {
         const limitNum = parseInt(limit, 10) || 10;
@@ -163,7 +160,7 @@ class ProductService {
             .lean();
         const totalProducts = await Product.countDocuments({ product_isPublished: true });
         return {
-            totalPage: Math.ceil(totalProducts / limitNum) - 1,
+            totalPage: Math.ceil(totalProducts / limitNum),
             currentPage: pageNum,
             totalProducts,
             products,
@@ -359,7 +356,7 @@ class ProductService {
         const products = await Product.find(filter).sort('-product_expiry_date').skip(skipNum).limit(limitNum).lean();
         const totalProducts = await Product.countDocuments(filter);
         return {
-            totalPage: Math.ceil(totalProducts / limitNum) - 1, // Số trang tổng cộng
+            totalPage: Math.ceil(totalProducts / limitNum), // Số trang tổng cộng
             currentPage: pageNum, // Trang hiện tại
             totalProducts, // Tổng số sản phẩm
             products, // Danh sách sản phẩm

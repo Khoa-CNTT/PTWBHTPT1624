@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/exhaustive-deps */
-import React, { useEffect, useState, useCallback } from 'react';
+import React, { useState, useCallback } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 import ShoppingCartOutlinedIcon from '@mui/icons-material/ShoppingCartOutlined';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
@@ -7,7 +7,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { IconExcept } from '../../../../assets';
 import { formatMoney } from '../../../../utils/formatMoney';
 import { formatStar } from '../../../../utils/formatStar';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { ButtonOutline, showNotification } from '../../../../components';
 import { IProductDetail } from '../../../../interfaces/product.interfaces';
 import useAuthStore from '../../../../store/authStore';
@@ -21,26 +21,12 @@ import useFavoriteStore from '../../../../store/favoriteStore';
 
 const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) => {
     const [quantity, setQuantity] = useState<number>(1);
-    const [isFavorite, setIsFavorite] = useState<boolean>(false);
-    const [likeCount, setLikeCount] = useState<number>(productDetail?.product_likes || 0);
-    const { setIsLoading } = useActionStore();
     const { isUserLoggedIn } = useAuthStore();
     const { setOpenFeatureAuth } = useActionStore();
     const { user } = useUserStore();
     const { setAddProductInCartFromApi, setSelectedProducts, selectedProducts } = useCartStore();
     const { favoriteProducts, setFavorite, removeFavorite } = useFavoriteStore();
     const navigate = useNavigate();
-    const { pid } = useParams();
-
-    // Setup initial state
-    useEffect(() => {
-        if (user && productDetail?._id) {
-            const liked = favoriteProducts?.some((p) => p._id === productDetail._id);
-            setIsFavorite(liked);
-            setLikeCount(productDetail.product_likes || 0);
-        }
-        setQuantity(1);
-    }, [pid, user, productDetail]);
 
     // Toggle Favorite Product
     const handleToggleFavorite = useCallback(async () => {
@@ -49,30 +35,14 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
             showNotification('Vui lòng đăng nhập để thích sản phẩm', false);
             return;
         }
-        let res;
-        setIsLoading(true);
-        if (isFavorite) {
-            res = await removeFavoriteProduct(productDetail._id);
-            if (res.success) {
-                removeFavorite(productDetail._id);
-                setLikeCount((prev) => prev - 1);
-                showNotification('Đã bỏ thích sản phẩm', true);
-            }
+        if (favoriteProducts.some((i) => i._id === productDetail._id)) {
+            removeFavorite(productDetail._id);
+            await removeFavoriteProduct(productDetail._id);
         } else {
-            res = await addFavoriteProduct(productDetail._id);
-            if (res.success) {
-                setFavorite(productDetail);
-                setLikeCount((prev) => prev + 1);
-                showNotification('Đã thích sản phẩm', true);
-            }
+            setFavorite(productDetail);
+            await addFavoriteProduct(productDetail._id);
         }
-        if (!res?.success) {
-            showNotification(res?.message || 'Không thể cập nhật trạng thái yêu thích', false);
-        } else {
-            setIsFavorite(!isFavorite);
-        }
-        setIsLoading(false);
-    }, [isFavorite, isUserLoggedIn, productDetail, setOpenFeatureAuth]);
+    }, [isUserLoggedIn, favoriteProducts, productDetail, setOpenFeatureAuth]);
 
     // Handle Add to Cart
     const handleAddToCart = async (isBuy: boolean) => {
@@ -162,8 +132,14 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
                             <div className="text-sm text-primary font-medium">Lượt xem: {productDetail.product_views || 0}</div>
 
                             <div className="flex gap-1 cursor-pointer mt-4 items-center hover:text-red_custom" onClick={handleToggleFavorite}>
-                                <span className="text-red-500">{isFavorite ? <FavoriteIcon fontSize="large" /> : <FavoriteBorderIcon fontSize="large" />}</span>
-                                <span>Đã thích ({likeCount})</span>
+                                <span className="text-red-500">
+                                    {favoriteProducts.some((i) => i._id === productDetail._id) ? (
+                                        <FavoriteIcon fontSize="large" />
+                                    ) : (
+                                        <FavoriteBorderIcon fontSize="large" />
+                                    )}
+                                </span>
+                                <span>Đã thích ({favoriteProducts?.length})</span>
                             </div>
                         </div>
                     </div>

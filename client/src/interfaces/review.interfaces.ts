@@ -1,11 +1,13 @@
 interface ReviewUser {
     _id: string;
     user_name: string;
+    user_avatar_url: string;
+    createdAt: string;
 }
 
 export interface IReview {
     _id?: string;
-    review_rating: number;
+    review_rating?: number;
     review_user?: ReviewUser;
     review_comment: string;
     review_images: string[];

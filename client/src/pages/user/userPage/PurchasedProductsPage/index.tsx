@@ -99,6 +99,7 @@ const PurchasedProductsPage: React.FC = () => {
             </div>
             {openFormReview && (
                 <FormReviews
+                    isReviewed={false}
                     isReview
                     title="Nhận xét"
                     titleButton="Gửi bình luận"

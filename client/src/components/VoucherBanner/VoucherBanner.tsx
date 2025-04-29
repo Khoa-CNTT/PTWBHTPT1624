@@ -18,8 +18,7 @@ const VoucherBanner: React.FC = () => {
                 // Check if banner should be shown based on last closed time
                 const lastClosedTime = localStorage.getItem('voucherBannerLastClosed');
                 const currentTime = Date.now();
-                const fiveMinutesInMs = 15 * 1000; // 5 minutes in milliseconds
-
+                const fiveMinutesInMs = 5 * 15 * 1000; // 5 minutes in milliseconds
                 if (!lastClosedTime || currentTime - parseInt(lastClosedTime) >= fiveMinutesInMs) {
                     setIsVisible(true);
                 }
@@ -31,7 +30,7 @@ const VoucherBanner: React.FC = () => {
     useEffect(() => {
         if (!isVisible) {
             // Schedule the banner to reappear after 5 minutes
-            const fiveMinutesInMs = 15 * 1000; // 5 minutes in milliseconds
+            const fiveMinutesInMs = 5 * 15 * 1000; // 5 minutes in milliseconds
             const timer = setTimeout(() => {
                 if (vouchers.length > 0) {
                     setCurrentIndex((prevIndex) => {
@@ -41,7 +40,6 @@ const VoucherBanner: React.FC = () => {
                     setIsVisible(true);
                 }
             }, fiveMinutesInMs);
-
             // Cleanup the timer when component unmounts or isVisible changes
             return () => clearTimeout(timer);
         }

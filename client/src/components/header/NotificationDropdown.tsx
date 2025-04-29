@@ -89,11 +89,9 @@ export default function NotificationDropdown() {
                                 <div className="w-10 h-10 shrink-0">
                                     <img src={n?.notification_imageUrl} className="w-full h-full object-cover" />
                                 </div>
-                                <div className="w-ful text-base">
-                                    <h3 className="font-normal text-black truncate-trailing line-clamp-1  ">{n?.notification_title}</h3>
-                                    <div className="flex gap-1 items-center">
-                                        <span className="text-xs text-secondary shrink-0">{n?.notification_subtitle}</span>
-                                    </div>
+                                <div className="flex-1 flex flex-col gap-0.5">
+                                    <h3 className="text-sm font-medium text-gray-900 line-clamp-2">{n?.notification_title}</h3>
+                                    <p className="text-sm text-gray-600 line-clamp-3">{n?.notification_subtitle}</p>
                                 </div>
                             </Link>
                         </li>

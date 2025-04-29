@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import { showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';

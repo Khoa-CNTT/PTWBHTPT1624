@@ -86,8 +86,8 @@ const OrderManage: React.FC = () => {
         setOrders((prev) => prev.filter((order) => order._id !== id));
         const notification: INotification = {
             notification_user: res?.data?.order_user,
-            notification_title: '🚚 Cập nhật trạng thái đơn hàng',
-            notification_subtitle: `📦 Đơn hàng của bạn đã được cập nhật: ${statusOrderNotification(res?.data?.order_status)} ✅ • Cảm ơn bạn đã mua sắm! 🎉`,
+            notification_title: statusOrderNotification(res?.data?.order_status).subtitle,
+            notification_subtitle: statusOrderNotification(res?.data?.order_status).message,
             notification_imageUrl:
                 'https://geso.us/wp-content/uploads/2024/06/1-quan-ly-don-hang-hieu-qua-giup-doanh-nghiep-kiem-soat-toan-bo-quy-trinh-ban-hang.jpg',
             notification_link: `/nguoi-dung/chi-tiet-don-hang/${id}`,

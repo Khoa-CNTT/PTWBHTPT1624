@@ -218,6 +218,7 @@ const apiGetPurchasedProduct = async (queries?: { limit: number; page: number })
         };
     }
 };
+
 export {
     apiGetPurchasedProduct,
     apiSearchProductByImage,

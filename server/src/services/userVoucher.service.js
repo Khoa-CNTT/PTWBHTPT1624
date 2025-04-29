@@ -91,7 +91,7 @@ class UserVoucherService {
         const userVouchers = await userVoucherModel.findOne({ vc_user_id: userId }).populate('vc_vouchers');
 
         if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
-            throw new NotFoundError('Người dùng chưa có voucher nào');
+            throw new RequestError('Người dùng chưa có voucher nào');
         }
 
         return userVouchers.vc_vouchers;
@@ -107,7 +107,7 @@ class UserVoucherService {
         });
 
         if (!userVouchers || userVouchers.vc_vouchers.length === 0) {
-            throw new NotFoundError('Người dùng chưa có voucher nào còn hạn');
+            throw new RequestError('Người dùng chưa có voucher nào còn hạn');
         }
 
         return userVouchers.vc_vouchers;

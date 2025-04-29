@@ -20,7 +20,7 @@ class ProductController {
     // Cập nhật sản phẩm
     static async updateProduct(req, res) {
         const updatedProduct = await ProductService.updateProduct(req.params.id, req.body);
-        res.status(200).json({ success: true, data: updatedProduct, message: 'cập nhật sản phẩm thành công'  });
+        res.status(200).json({ success: true, data: updatedProduct, message: 'cập nhật sản phẩm thành công' });
     }
     static async getListSearchProduct(req, res) {
         const { keySearch } = req.params;

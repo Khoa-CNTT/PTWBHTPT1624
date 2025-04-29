@@ -29,7 +29,7 @@ class RoleService {
         const roles = await Role.find().sort({ createdAt: -1 }).skip(skipNum).limit(limitNum).lean();
         const totalRole = await Role.countDocuments();
         return {
-            totalPage: Math.ceil(totalRole / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalRole / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
             totalRole,
             roles,

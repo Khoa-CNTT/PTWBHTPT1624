@@ -9,6 +9,7 @@ import { SkeLetonDetailPage } from '../../../components';
 import Seo from '../../../components/seo';
 import { IProductDetail } from '../../../interfaces/product.interfaces';
 import useRecentViewStore from '../../../store/recentViewStore';
+import ReviewsProduct from './reviewsProduct';
 const DetailPage: React.FC = () => {
     const [productDetail, setProductDetail] = useState<IProductDetail>();
     const { addRecentView } = useRecentViewStore();
@@ -39,7 +40,7 @@ const DetailPage: React.FC = () => {
             <HeaderDetail productDetail={productDetail} />
             <SimilarProducts productId={productDetail._id} />
             <ProductDescription productDetail={productDetail} />
-            {/* <ReviewsProduct productDetail={productDetail} userBought={productDetail.userBought} /> */}
+            <ReviewsProduct productDetail={productDetail} />
         </>
     ) : (
         <SkeLetonDetailPage />
