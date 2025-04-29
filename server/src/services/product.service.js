@@ -14,17 +14,14 @@ class ProductService {
     // Tạo sản phẩm mới với số lượng tồn kho
     static async createProduct(payload) {
         if (Object.keys(payload).length === 0) {
-            throw new Error('Vui lòng cung cấp dữ liệu sản phẩm');
+            throw new RequestError('Vui lòng cung cấp dữ liệu sản phẩm');
         }
-
         payload.product_code = generateRandomCode(10);
-
         // Xử lý ảnh chỉ nếu có product_thumb
         if (payload?.product_thumb) {
             const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
             const imgDir = path.join(__dirname, 'img');
             const tempPath = path.join(imgDir, randomFileName);
-
             try {
                 // Đảm bảo folder tồn tại
                 await fs.mkdir(imgDir, { recursive: true });
@@ -76,8 +73,32 @@ class ProductService {
         return product;
     }
     // Cập nhật sản phẩm (bao gồm cập nhật số lượng tồn kho nếu có)
-    static async updateProduct(productId, updateData) {
-        const updatedProduct = await Product.findByIdAndUpdate(productId, updateData, { new: true });
+    static async updateProduct(productId, payload) {
+        if (payload?.product_thumb) {
+            const randomFileName = `temp_search_${Date.now()}_${Math.random().toString(36).substr(2, 5)}.JPG`;
+            const imgDir = path.join(__dirname, 'img');
+            const tempPath = path.join(imgDir, randomFileName);
+            try {
+                // Đảm bảo folder tồn tại
+                await fs.mkdir(imgDir, { recursive: true });
+
+                // Tải ảnh và trích xuất đặc trưng
+                await downloadImage(payload.product_thumb, tempPath);
+                const searchFeatures = await extractFeatures(tempPath);
+                payload.product_image_features = Array.from(searchFeatures.dataSync());
+
+                // Giải phóng Tensor
+                searchFeatures.dispose();
+            } catch (err) {
+                console.error('Lỗi xử lý ảnh:', err);
+                // Tiếp tục thêm sản phẩm mà không có đặc trưng ảnh
+                payload.product_image_features = [];
+            } finally {
+                // Xóa file tạm
+                fs.unlink(tempPath).catch(() => {});
+            }
+        }
+        const updatedProduct = await Product.findByIdAndUpdate(productId, payload, { new: true });
         if (!updatedProduct) throw new NotFoundError('Không tìm thấy sản phẩm để cập nhật');
         return updatedProduct;
     }
@@ -92,7 +113,17 @@ class ProductService {
         const limitNum = Math.max(~~limit || 10, 1); // Fast parse, default 10, min 1
         const pageNum = Math.max(~~page || 0, 0); // Fast parse, default 0
         const skipNum = pageNum * limitNum;
-        const searchFilter = keySearch ? { $text: { $search: keySearch } } : {};
+    
+        // Sử dụng $regex để tìm kiếm gần giống
+        const searchFilter = keySearch
+            ? {
+                  $or: [
+                      { product_name: { $regex: keySearch, $options: 'i' } }, // Tìm kiếm tên sản phẩm không phân biệt chữ hoa/thường
+                      { product_slug: { $regex: keySearch, $options: 'i' } }, // Tìm kiếm slug sản phẩm (nếu cần)
+                  ],
+              }
+            : {};
+    
         const productQuery = Product.find(searchFilter)
             .select(
                 '_id product_thumb product_name product_discounted_price product_slug product_ratings product_sold product_price product_discount product_quantity product_expiry_date',
@@ -100,8 +131,17 @@ class ProductService {
             .skip(skipNum)
             .limit(limitNum)
             .lean();
-        productQuery.sort(sort);
-        const [products, totalProducts] = await Promise.all([productQuery.exec(), Product.countDocuments(searchFilter)]);
+    
+        // Áp dụng sort
+        if (sort) {
+            productQuery.sort(sort);
+        }
+    
+        const [products, totalProducts] = await Promise.all([
+            productQuery.exec(),
+            Product.countDocuments(searchFilter),
+        ]);
+    
         return {
             totalPage: Math.max(Math.ceil(totalProducts / limitNum) - 1, 0),
             currentPage: pageNum,
@@ -109,6 +149,7 @@ class ProductService {
             products,
         };
     }
+    
     // Lấy tất cả sản phẩm (với các filter)
     static async getAllProductsByAdmin({ limit, page }) {
         const limitNum = parseInt(limit, 10) || 10;

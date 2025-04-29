@@ -138,7 +138,7 @@ class AdminService {
     
         const regex = new RegExp(keyword.trim(), 'i');
         const results = await AdminModel.find({
-            $or: [{ admin_name: regex }, { admin_email: regex }],
+            $or: [{ admin_mobile: regex },{ admin_name: regex }, { admin_email: regex }],
         })
             .select('-admin_password -__v')
             .sort({ createdAt: -1 })

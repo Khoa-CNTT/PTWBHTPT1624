@@ -32,8 +32,7 @@ class UserVoucherService {
             userVouchers.vc_vouchers.push(voucherId);
             await userVouchers.save();
         }
-
-        return { message: 'Voucher đã được lưu thành công' };
+        return userVoucherModel.findOne({ vc_user_id: userId }).populate('vc_vouchers').lean();
     }
 
     // Đổi voucher
@@ -62,13 +61,11 @@ class UserVoucherService {
             vc_vouchers: voucherId,
         });
         if (existingVoucher) throw new RequestError('Bạn đã sở hữu voucher này');
-
         // Kiểm tra user đã sử dụng hay chưa
         const userVoucherCount = voucher.voucher_users_used.some((userUsedId) => userUsedId.toString() === userId.toString());
         if (userVoucherCount) {
             throw new RequestError('Bạn đã đạt giới hạn số lần sử dụng voucher này');
         }
-
         // Kiểm tra điểm của người dùng để đổi voucher
         if (user.user_reward_points < voucher.voucher_required_points) {
             throw new RequestError(`Không đủ điểm để đổi voucher. Cần ${voucher.voucher_required_points} điểm`);
@@ -83,12 +80,8 @@ class UserVoucherService {
             { $push: { vc_vouchers: voucherId }, $addToSet: { vc_users_used: userId } },
             { new: true, upsert: true },
         );
-
         await user.save();
-
-        return {
-            message: 'Đổi voucher thành công',
-        };
+        return userVoucherModel.findOne({ vc_user_id: userId }).populate('vc_vouchers').lean();
     }
 
     // Lấy danh sách voucher của user
@@ -101,14 +94,7 @@ class UserVoucherService {
             throw new NotFoundError('Người dùng chưa có voucher nào');
         }
 
-        return userVouchers.vc_vouchers.map((voucher) => ({
-            voucherId: voucher._id,
-            voucherName: voucher.voucher_name,
-            voucherCode: voucher.voucher_code,
-            voucherValue: voucher.voucher_value,
-            voucherType: voucher.voucher_method,
-            expirationDate: voucher.voucher_end_date,
-        }));
+        return userVouchers.vc_vouchers;
     }
 
     // Lấy danh sách voucher còn hạn của user

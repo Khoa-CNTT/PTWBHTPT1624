@@ -20,7 +20,22 @@ const VoucherController = {
             message: 'Lấy danh sách voucher thành công!',
         });
     },
-
+    getAllRedeemVouchers: async (req, res) => {
+        const vouchers = await VoucherService.getAllRedeemVouchers(req.query);
+        res.status(200).json({
+            success: true,
+            data: vouchers,
+            message: 'Lấy danh sách voucher thành công!',
+        });
+    },
+    getAllSystemVouchers: async (req, res) => {
+        const vouchers = await VoucherService.getAllSystemVouchers(req.query);
+        res.status(200).json({
+            success: true,
+            data: vouchers,
+            message: 'Lấy danh sách voucher thành công!',
+        });
+    },
     // Lấy chi tiết voucher theo ID
     getVoucherById: async (req, res) => {
         const voucher = await VoucherService.getVoucherById(req.params.id);
@@ -64,14 +79,24 @@ const VoucherController = {
     applyVoucher: async (req, res) => {
         const { code, orderValue } = req.body;
         // Gọi dịch vụ để áp dụng voucher
-            const result = await VoucherService.applyVoucher({ code, orderValue });
-            // Trả về kết quả khi áp dụng voucher thành công
-            return res.status(200).json({
-                success: true,
-                message: 'Áp dụng mã thành công',
-                data: result,
-            });
-    }
+        const result = await VoucherService.applyVoucher({ code, orderValue });
+        // Trả về kết quả khi áp dụng voucher thành công
+        return res.status(200).json({
+            success: true,
+            message: 'Áp dụng mã thành công',
+            data: result,
+        });
+    },
+
+    // ✅ Lấy danh sách voucher đang active cho banner
+    getActiveBannerVouchers: async (req, res) => {
+        const vouchers = await VoucherService.getActiveBannerVouchers();
+        return res.status(200).json({
+            success: true,
+            data: vouchers,
+            message: 'Lấy voucher đang hoạt động thành công!',
+        });
+    },
 };
 
 module.exports = VoucherController;
