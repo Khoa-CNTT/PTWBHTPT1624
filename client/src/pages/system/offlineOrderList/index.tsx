@@ -77,7 +77,7 @@ export default function OfflineOrderListManage() {
     return (
         <>
             <PageMeta title="Quản lý hóa đơn tại quầy" />
-            <PageBreadcrumb pageTitle="Hóa đơn bán hàng tại quầy" />
+            <PageBreadcrumb pageTitle="Danh sách hóa đơn tại quầy" />
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 
                 {/* Thêm ô tìm kiếm */}

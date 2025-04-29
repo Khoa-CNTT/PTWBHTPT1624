@@ -7,6 +7,7 @@ const UserModel = require('../models/user.model');
 const OrderModel = require('../models/OnlineOrder');
 const ReviewModel = require('../models/reviews.model');
 const Voucher = require('../models/voucher.model');
+const UserVoucherModel = require('../models/userVoucher.model');
 
 class UserService {
     static async addUser(payload) {
@@ -243,10 +244,10 @@ class UserService {
 
     // Lấy 3 voucher mới nhất
     static async getLatestVouchers() {
-        return await Voucher.find({
+        return Voucher.find({
             voucher_type: 'user',
             voucher_is_active: true,
-            voucher_end_date: { $gte: new Date() }, // Chỉ lấy voucher còn hạn
+            voucher_end_date: { $gte: new Date() },
         })
         .sort({ createdAt: -1 })
         .limit(3);
@@ -260,37 +261,70 @@ class UserService {
             voucher_end_date: { $gte: new Date() },
         });
 
+        if (!vouchers.length) return null;
+
         const randomIndex = Math.floor(Math.random() * vouchers.length);
         return vouchers[randomIndex];
     }
 
     // Chơi game Lucky Box
     static async vongquay(userId) {
-        const rewardChance = Math.random(); // Khả năng trúng giải
-    
+        const rewardChance = Math.random(); // Xác suất trúng
+        const pointsList = [1000, 2000, 5000, 10000];
+
         let reward;
+
         if (rewardChance <= 0.5) {
-            // 50% trúng điểm thưởng
-            const points = [1000, 2000, 5000, 10000]; // Các giá trị điểm thưởng có thể
-            reward = { type: 'points', value: points[Math.floor(Math.random() * points.length)] };
+            // 50% trúng điểm
+            const point = pointsList[Math.floor(Math.random() * pointsList.length)];
+            reward = { type: 'points', value: point };
+
         } else if (rewardChance <= 0.7) {
             // 20% trúng voucher
-            const latestVouchers = await this.getLatestVouchers();
-            if (latestVouchers.length === 0) {
+            const [latestVouchers, randomVoucher] = await Promise.all([
+                this.getLatestVouchers(),
+                this.getRandomVoucher()
+            ]);
+
+            const voucherMap = new Map();
+            latestVouchers.forEach(v => voucherMap.set(v._id.toString(), v));
+            if (randomVoucher) voucherMap.set(randomVoucher._id.toString(), randomVoucher);
+
+            const allVouchers = Array.from(voucherMap.values());
+
+            if (allVouchers.length === 0) {
                 throw new RequestError('Không có voucher hợp lệ!', 404);
             }
-            const randomVoucher = await this.getRandomVoucher();
-            const allVouchers = [...latestVouchers, randomVoucher];
-            reward = {
-                type: 'voucher',
-                voucher: allVouchers[Math.floor(Math.random() * allVouchers.length)],
-            };
+
+            const selectedVoucher = allVouchers[Math.floor(Math.random() * allVouchers.length)];
+
+            // Kiểm tra người dùng đã có chưa
+            const existed = await UserVoucherModel.findOne({
+                vc_user_id: userId,
+                vc_vouchers: selectedVoucher._id
+            });
+
+            if (existed) {
+                reward = {
+                    type: 'points',
+                    message: 'Bạn đã có voucher này, giá trị đã được thay đổi thành 10,000 điểm.',
+                    value: 10000
+                };
+            } else {
+                await UserVoucherModel.findOneAndUpdate(
+                    { vc_user_id: userId },
+                    { $addToSet: { vc_vouchers: selectedVoucher._id } },
+                    { upsert: true }
+                );
+                reward = { type: 'voucher', voucher: selectedVoucher };
+            }
+
         } else {
-            // 30% trúng "chúc may mắn lần sau"
+            // 30% trượt
             reward = { type: 'lucky', message: 'Chúc may mắn lần sau!' };
         }
-    
-        // Cập nhật điểm thưởng cho người chơi nếu trúng điểm thưởng
+
+        // Nếu có điểm thì cộng vào user
         if (reward.type === 'points') {
             const user = await UserModel.findById(userId);
             if (!user) {
@@ -299,30 +333,34 @@ class UserService {
             user.user_reward_points += reward.value;
             await user.save();
         }
-    
+
         return reward;
     }
 
     static async getWheelRewards() {
-        const points = [1000, 2000, 5000, 10000].map((value) => ({
+        const points = [1000, 2000, 5000].map((value) => ({
             type: 'points',
             value,
             label: `${value} điểm`,
         }));
-        
+
         const vouchers = await Voucher.find({
             voucher_type: 'user',
             voucher_is_active: true,
             voucher_end_date: { $gte: new Date() },
-        }).limit(5); // Lấy tối đa 2 voucher
-        
+        }).limit(5);
+
         const voucherRewards = vouchers.map((voucher) => ({
             type: 'voucher',
             voucher_name: voucher.voucher_name,
             label: voucher.voucher_name,
         }));
-        
-        const luckyReward = { type: 'lucky', message: 'Chúc may mắn lần sau', label: 'Chúc may mắn' };
+
+        const luckyReward = {
+            type: 'lucky',
+            message: 'Chúc may mắn lần sau',
+            label: 'Chúc may mắn'
+        };
 
         return [...points, ...voucherRewards, luckyReward];
     }
