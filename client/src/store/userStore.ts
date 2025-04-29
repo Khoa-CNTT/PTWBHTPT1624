@@ -8,7 +8,8 @@ interface UserState {
     setUser: (user: IUserDetail) => void;
     clearUser: () => void;
     addRewardPoints: (points?: number) => void;
-    subtractRewardPoints: (points?: number) => void; // <- Trừ điểm
+    subtractRewardPoints: (points?: number) => void; // Trừ điểm
+    setUserRewardPoints: (points: number) => void; // Cập nhật điểm
 }
 
 // Lấy dữ liệu từ localStorage
@@ -63,6 +64,15 @@ const useUserStore = create<UserState>((set, get) => ({
         localStorage.setItem('user', JSON.stringify(updatedUser));
         set({ user: updatedUser });
     },
+    setUserRewardPoints: (points: number) => { // Thêm hành động cập nhật điểm
+        const currentUser = get().user;
+        const updatedUser = {
+            ...currentUser,
+            user_reward_points: points,
+        };
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        set({ user: updatedUser });
+    }
 }));
 
 export default useUserStore;

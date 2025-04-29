@@ -30,7 +30,10 @@ const VoucherBanner: React.FC = () => {
     useEffect(() => {
         if (!isVisible) {
             // Schedule the banner to reappear after 5 minutes
+
             const fiveMinutesInMs = 5 * 15 * 1000; // 5 minutes in milliseconds
+
+          
             const timer = setTimeout(() => {
                 if (vouchers.length > 0) {
                     setCurrentIndex((prevIndex) => {
