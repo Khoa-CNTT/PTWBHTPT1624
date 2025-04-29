@@ -6,7 +6,7 @@ import { apiGetMessagesByConversation, apiSendMessageByAdmin } from '../../../se
 import { IMessage } from '../../../interfaces/messages.interfaces';
 import ChatMessage from '../../../components/ChatMessage';
 import SendIcon from '@mui/icons-material/Send';
-import { showNotification } from '../../../components';
+import { apiUploadImage } from '../../../services/uploadPicture.service';
 import { useActionStore } from '../../../store/actionStore';
 interface ChatWindowProps {
     selectedConversation: IConversation | any;
@@ -14,9 +14,9 @@ interface ChatWindowProps {
 
 const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
-    const [value, setValue] = useState<string>();
+    const [value, setValue] = useState<string>('');
     const scroll = useRef<any>(null);
-    // const [image, setImage] = useState<string>();
+    const [image, setImage] = useState<string>('');
     const { setIsLoading } = useActionStore();
     useEffect(() => {
         const fetchApi = async () => {
@@ -39,28 +39,37 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
             </div>
         );
     }
-    const handleOnClick = async (e: { preventDefault: () => void }) => {
-        e.preventDefault();
-        if (value) {
-            setIsLoading(true);
+    const handleOnClick = async () => {
+        if (value || image) {
             const res = await apiSendMessageByAdmin({
                 conversationId: selectedConversation._id,
                 text: value,
-                // image: image,
+                image: image,
             });
-            setIsLoading(false);
             setValue('');
-            showNotification(res.message, res.success);
+            setImage('');
             if (res.success) {
                 setMessages((prev) => [...prev, res.data]);
             }
         }
     };
+    const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (!file) return;
+        setIsLoading(true);
+        const formData = new FormData();
+        formData.append('file', file);
+        formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+        const response = await apiUploadImage(formData);
+        const uploadedUrl = response.url;
+        setImage(uploadedUrl);
+        setIsLoading(false);
+    };
 
     return (
         <div className="flex h-full flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] xl:w-2/3">
             <div className="sticky flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800 xl:px-6">
-                <div className="flex items-center gap-3">
+                <div className="flex w-full items-center gap-3">
                     <div className="relative h-12 w-full max-w-[48px] rounded-full">
                         <img
                             src={selectedConversation.user.user_avatar_url || userAvatar}
@@ -108,8 +117,13 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
             </div>
 
             <div className="sticky bottom-0 border-t border-gray-200 p-3 dark:border-gray-800">
-                <form className="flex items-center justify-between">
-                    <div className="relative w-full">
+                <div className="relative flex items-center justify-between">
+                    {image && (
+                        <div>
+                            <img className="absolute w-[150px] bottom-[50px] left-0 " src={image} />
+                        </div>
+                    )}
+                    <div className="w-full">
                         <div className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90 sm:left-3">
                             <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                                 <path
@@ -129,23 +143,32 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
                         />
                     </div>
                     <div className="flex items-center">
-                        <button className="mr-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
-                            <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                                <path
-                                    fillRule="evenodd"
-                                    clipRule="evenodd"
-                                    d="M12.9522 14.4422C12.9522 14.452 12.9524 14.4618 12.9527 14.4714V16.1442C12.9527 16.6699 12.5265 17.0961 12.0008 17.0961C11.475 17.0961 11.0488 16.6699 11.0488 16.1442V6.15388C11.0488 5.73966 10.7131 5.40388 10.2988 5.40388C9.88463 5.40388 9.54885 5.73966 9.54885 6.15388V16.1442C9.54885 17.4984 10.6466 18.5961 12.0008 18.5961C13.355 18.5961 14.4527 17.4983 14.4527 16.1442V6.15388C14.4527 6.14308 14.4525 6.13235 14.452 6.12166C14.4347 3.84237 12.5817 2 10.2983 2C8.00416 2 6.14441 3.85976 6.14441 6.15388V14.4422C6.14441 14.4492 6.1445 14.4561 6.14469 14.463V16.1442C6.14469 19.3783 8.76643 22 12.0005 22C15.2346 22 17.8563 19.3783 17.8563 16.1442V9.55775C17.8563 9.14354 17.5205 8.80775 17.1063 8.80775C16.6921 8.80775 16.3563 9.14354 16.3563 9.55775V16.1442C16.3563 18.5498 14.4062 20.5 12.0005 20.5C9.59485 20.5 7.64469 18.5498 7.64469 16.1442V9.55775C7.64469 9.55083 7.6446 9.54393 7.64441 9.53706L7.64441 6.15388C7.64441 4.68818 8.83259 3.5 10.2983 3.5C11.764 3.5 12.9522 4.68818 12.9522 6.15388L12.9522 14.4422Z"
-                                    fill=""
+                        <div className="mr-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
+                            <label htmlFor="comment_input" className="cursor-pointer">
+                                <input
+                                    id="comment_input"
+                                    type="file"
+                                    multiple
+                                    hidden
+                                    onChange={(e) => handleImageUpload(e)} // bạn có thể thay handleImageUpload bằng hàm bạn đã định nghĩa
                                 />
-                            </svg>
-                        </button>
+                                <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                                    <path
+                                        fillRule="evenodd"
+                                        clipRule="evenodd"
+                                        d="M12.9522 14.4422C12.9522 14.452 12.9524 14.4618 12.9527 14.4714V16.1442C12.9527 16.6699 12.5265 17.0961 12.0008 17.0961C11.475 17.0961 11.0488 16.6699 11.0488 16.1442V6.15388C11.0488 5.73966 10.7131 5.40388 10.2988 5.40388C9.88463 5.40388 9.54885 5.73966 9.54885 6.15388V16.1442C9.54885 17.4984 10.6466 18.5961 12.0008 18.5961C13.355 18.5961 14.4527 17.4983 14.4527 16.1442V6.15388C14.4527 6.14308 14.4525 6.13235 14.452 6.12166C14.4347 3.84237 12.5817 2 10.2983 2C8.00416 2 6.14441 3.85976 6.14441 6.15388V14.4422C6.14441 14.4492 6.1445 14.4561 6.14469 14.463V16.1442C6.14469 19.3783 8.76643 22 12.0005 22C15.2346 22 17.8563 19.3783 17.8563 16.1442V9.55775C17.8563 9.14354 17.5205 8.80775 17.1063 8.80775C16.6921 8.80775 16.3563 9.14354 16.3563 9.55775V16.1442C16.3563 18.5498 14.4062 20.5 12.0005 20.5C9.59485 20.5 7.64469 18.5498 7.64469 16.1442V9.55775C7.64469 9.55083 7.6446 9.54393 7.64441 9.53706L7.64441 6.15388C7.64441 4.68818 8.83259 3.5 10.2983 3.5C11.764 3.5 12.9522 4.68818 12.9522 6.15388L12.9522 14.4422Z"
+                                    />
+                                </svg>
+                            </label>
+                        </div>
+
                         <button
                             onClick={handleOnClick}
                             className="ml-3 flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500 text-white hover:bg-brand-600 xl:ml-5">
                             <SendIcon />
                         </button>
                     </div>
-                </form>
+                </div>
             </div>
         </div>
     );

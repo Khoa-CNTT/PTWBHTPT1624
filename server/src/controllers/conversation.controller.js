@@ -2,95 +2,52 @@ const conversationModel = require('../models/conversation.model');
 const User = require('../models/user.model');
 const { BadRequestError } = require('../core/error.response');
 
-/**
- * @desc Tạo cuộc trò chuyện mới
- */
 const createConversation = async (req, res) => {
     const userId = req.user._id;
 
-    // Kiểm tra xem userId có hợp lệ không
     if (!userId) {
         return res.status(400).json({
             success: false,
             message: 'Người dùng không hợp lệ',
         });
     }
-
     try {
-        // Kiểm tra xem người dùng đã có cuộc trò chuyện nào chưa
-        const existingConversation = await conversationModel.findOne({ user: userId });
+        // Kiểm tra xem đã có cuộc trò chuyện chưa
+        let conversation = await conversationModel.findOne({ user: userId });
 
-        if (existingConversation) {
-            return res.status(400).json({
-                success: false,
-                message: 'Người dùng đã có một cuộc trò chuyện',
+        if (conversation) {
+            // Nếu đã có, trả về cuộc trò chuyện đó
+            return res.status(200).json({
+                success: true,
+                data: conversation,
             });
         }
 
-        // Tạo cuộc trò chuyện mới
+        // Nếu chưa có, tạo mới
         const newConversation = new conversationModel({
-            user: userId, // người tạo cuộc trò chuyện
-            participants: [userId], // người tham gia cuộc trò chuyện (chỉ có userId ban đầu)
+            user: userId,
+            participants: [userId],
         });
-
-        // Lưu cuộc trò chuyện vào cơ sở dữ liệu
-        const savedConversation = await newConversation.save();
-
+        conversation = await newConversation.save();
         return res.status(201).json({
             success: true,
             message: 'Tạo cuộc trò chuyện thành công',
-            data: savedConversation,
+            data: conversation,
         });
     } catch (err) {
-        console.error('Lỗi khi tạo cuộc trò chuyện:', err);
         return res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi tạo cuộc trò chuyện',
         });
     }
 };
-
-/**
- * @desc Lấy tất cả cuộc trò chuyện của người dùng
- */
-const getConversationUser = async (req, res) => {
-    try {
-        // Lấy cuộc trò chuyện của người dùng hiện tại
-        const conversation = await conversationModel
-            .findOne({ user: req.user._id })
-            .populate('participants', 'admin_avatar_url admin_name')
-            .populate('participants', 'user_avatar_url user_name') // Lấy thông tin của admin
-            .sort({ createdAt: -1 });
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không có cuộc trò chuyện nào',
-            });
-        }
-        res.status(200).json({
-            success: true,
-            message: 'Lấy cuộc trò chuyện thành công',
-            data: conversation,
-        });
-    } catch (err) {
-        console.error('Lỗi khi lấy cuộc trò chuyện:', err);
-        res.status(500).json({
-            success: false,
-            message: 'Đã xảy ra lỗi khi lấy cuộc trò chuyện',
-        });
-    }
-};
-
 /**
  * @desc Lấy tất cả cuộc trò chuyện
  */
 const getAllConversations = async (req, res) => {
     try {
         // Lấy tất cả cuộc trò chuyện
-        const conversation = await conversationModel
-            .find()
-            .populate('user', 'user_avatar_url user_name')
-            .sort({ createdAt: -1 });
+        const conversation = await conversationModel.find().populate('user', 'user_avatar_url user_name').sort({ createdAt: -1 });
         if (!conversation) {
             return res.status(404).json({
                 success: false,
@@ -186,9 +143,7 @@ const getConversationByUserName = async (req, res) => {
     const user = await User.findOne({ user_name: { $regex: name, $options: 'i' } });
     if (!user) throw new BadRequestError('Không tìm thấy người dùng');
 
-    const conversation = await conversationModel.findOne({ user: user._id })
-        .populate('user', 'user_name user_email')
-        .populate('participants');
+    const conversation = await conversationModel.findOne({ user: user._id }).populate('user', 'user_name user_email').populate('participants');
 
     if (!conversation) throw new BadRequestError('Không tìm thấy cuộc hội thoại');
 
@@ -202,7 +157,6 @@ module.exports = {
     getConversationByUserName,
     createConversation,
     getAllConversations,
-    getConversationUser,
     addAdminToConversation,
     deleteConversation,
 };

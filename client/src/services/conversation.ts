@@ -12,17 +12,6 @@ export const apiCreateConversation = async () => {
         };
     }
 };
-export const apiGetConversationUser = async () => {
-    try {
-        const res = await authClient.get('/v1/api/conversation/user');
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
 export const getAllConversations = async () => {
     try {
         const res = await adminClient.get('/v1/api/conversation');
@@ -60,7 +49,7 @@ export const deleteConversation = async (conversationId: string) => {
 export const apiSearchConversation = async (searchQuery: string) => {
     try {
         const res = await adminClient.get(`/v1/api/conversation/search`, {
-            params: { name: searchQuery }  // Hoặc 'phone' nếu bạn muốn tìm theo số điện thoại
+            params: { name: searchQuery }, // Hoặc 'phone' nếu bạn muốn tìm theo số điện thoại
         });
         return res.data;
     } catch (error) {
@@ -70,4 +59,3 @@ export const apiSearchConversation = async (searchQuery: string) => {
         };
     }
 };
-

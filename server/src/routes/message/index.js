@@ -6,6 +6,7 @@ const {
     markMessagesAsSeenByAdmin,
     markMessagesAsSeenByUser,
     sendMessageByAdmin,
+    getUnreadMessagesCount,
 } = require('../../controllers/message.controller');
 const { adminAuthentication, restrictTo } = require('../../middlewares/auth.admin.middleware');
 const PERMISSIONS = require('../../config/permissions');
@@ -15,6 +16,7 @@ const router = express.Router();
 router.get('/:conversationId', getMessagesByConversation);
 router.post('/by-user', [userAuthentication], sendMessageByUSer);
 router.patch('/seen-by-user/:conversationId', [userAuthentication], markMessagesAsSeenByUser);
+router.get('/:conversationId/unread', [userAuthentication], getUnreadMessagesCount);
 // Lấy tin nhắn theo conversationId
 router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.MESSAGE_MANAGE));

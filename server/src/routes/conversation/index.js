@@ -1,7 +1,6 @@
 const express = require('express');
 const {
     createConversation,
-    getConversationUser,
     getAllConversations,
     deleteConversation,
     addAdminToConversation,
@@ -15,10 +14,7 @@ const router = express.Router();
 
 // Route tạo cuộc trò chuyện mới
 router.post('/create', [userAuthentication], createConversation);
-// Route lấy tất cả cuộc trò chuyện của người dùng
-router.get('/user', [userAuthentication], getConversationUser);
 // Route lấy tất cả cuộc trò chuyện
-
 
 router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.MESSAGE_MANAGE));

@@ -96,9 +96,8 @@ const FormReviews: React.FC<FormReviewsProps> = ({
         }
 
         const notification: INotification = {
-            notification_user: res?.review?.review_user,
-            notification_title: 'Đánh giá mới đang chờ bạn duyệt! 📝',
-            notification_subtitle: 'Một đánh giá vừa được gửi cho sản phẩm. Hãy kiểm tra và phê duyệt ngay! ✅',
+            notification_title: '⭐ Đánh giá mới cần duyệt!',
+            notification_subtitle: '📝 Khách hàng vừa gửi đánh giá cho sản phẩm. ✅ Duyệt ngay để cập nhật! 🚀',
             notification_imageUrl: productReview?.product_thumb,
             notification_link: '/quan-ly/danh-gia',
         };

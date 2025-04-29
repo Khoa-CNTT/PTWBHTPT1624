@@ -19,6 +19,10 @@ const conversationSchema = new Schema(
                 ref: 'Admin', // Admin tham gia cuộc trò chuyện
             },
         ],
+        seen: {
+            type: Boolean,
+            default: false,
+        },
     },
     { timestamps: true },
 );

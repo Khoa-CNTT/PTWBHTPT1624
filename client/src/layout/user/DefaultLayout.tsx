@@ -7,6 +7,7 @@ import { Auth } from '../../feature';
 import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
 import VoucherBanner from '../../components/VoucherBanner/VoucherBanner';
+import Chat from '../../components/chat';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
@@ -46,10 +47,10 @@ const DefaultLayout = () => {
                 <Auth />
                 <Loading />
                 <VoucherBanner />
+                <Chat />
                 {/* <Auth /> */}
                 {/* {!mobile_ui ||!location.pathname.includes(path.PAGE_PAYPAL) &&<Footer />}
              
-                <Chat />
                 <BottomNavigate /> */}
             </div>
             {toastContainer}
