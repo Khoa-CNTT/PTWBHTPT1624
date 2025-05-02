@@ -15,7 +15,6 @@ interface ModeRegister {
 const Success: React.FC<ModeRegister> = ({ setModeRegister }) => {
     const [showPassword, setShowPassword] = useState<boolean>(false);
     const [password, setPassword] = useState<string>('');
-    const [error, setError] = useState<string>('');
 
     const [isLengthValid, setIsLengthValid] = useState<boolean>(false);
     const [hasNumber, setHasNumber] = useState<boolean>(false);
@@ -60,11 +59,8 @@ const Success: React.FC<ModeRegister> = ({ setModeRegister }) => {
 
         const isValid = validatePassword(password);
         if (!isValid) {
-            setError(''); // Xóa thông báo lỗi khi không hợp lệ
             return;
         }
-
-        setError('');
         setIsLoading(true);
         const res = await apiRegister(email, password);
         if (res?.success) {
@@ -109,10 +105,7 @@ const Success: React.FC<ModeRegister> = ({ setModeRegister }) => {
                     {/* Thanh độ mạnh mật khẩu */}
                     <div className="flex gap-1 h-1.5 mt-2 justify-start">
                         {[0, 1, 2].map((i) => (
-                            <div
-                                key={i}
-                                className={`w-[10%] h-full rounded-sm transition-all duration-300 ${validCount > i ? getColor() : 'bg-gray-300'}`}
-                            />
+                            <div key={i} className={`w-[10%] h-full rounded-sm transition-all duration-300 ${validCount > i ? getColor() : 'bg-gray-300'}`} />
                         ))}
                     </div>
 
@@ -124,13 +117,9 @@ const Success: React.FC<ModeRegister> = ({ setModeRegister }) => {
                             <li className={getBlinkEffect(hasSpecialChar)}>• Có ít nhất 1 ký tự đặc biệt</li>
                         </ul>
                     </div>
-
                 </div>
 
-                <button
-                    type="submit"
-                    className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80 transition duration-200"
-                >
+                <button type="submit" className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80 transition duration-200">
                     Tạo tài khoản
                 </button>
             </form>
