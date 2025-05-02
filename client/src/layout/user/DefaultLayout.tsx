@@ -8,6 +8,7 @@ import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
 import VoucherBanner from '../../components/VoucherBanner/VoucherBanner';
 import Chat from '../../components/chat';
+import ChatBoxAI from '../../components/chatboxAI';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
@@ -47,7 +48,10 @@ const DefaultLayout = () => {
                 <Auth />
                 <Loading />
                 <VoucherBanner />
-                <Chat />
+                <div className="fixed bottom-4 right-5 bg-blue-600 rounded-lg shadow-lg p-2 flex flex-col items-center justify-center space-y-2  z-[999] ">
+                    <ChatBoxAI />
+                    <Chat />
+                </div>
                 {/* <Auth /> */}
                 {/* {!mobile_ui ||!location.pathname.includes(path.PAGE_PAYPAL) &&<Footer />}
              

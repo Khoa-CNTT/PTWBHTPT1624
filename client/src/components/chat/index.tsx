@@ -1,11 +1,11 @@
 /* eslint-disable react-hooks/exhaustive-deps */
 import React, { useEffect, useState } from 'react';
-import MessageIcon from '@mui/icons-material/Message';
 import useAuthStore from '../../store/authStore';
 import { useActionStore } from '../../store/actionStore';
 import ChatModal from './chatModal';
 import { apiCreateConversation } from '../../services/conversation';
 import { apiGetUnreadMessagesCount } from '../../services/message.service';
+import MessageIcon from '@mui/icons-material/Message';
 
 const Chat: React.FC = () => {
     // const { socketRef } = useAppSelector((state) => state.action);
@@ -27,10 +27,6 @@ const Chat: React.FC = () => {
     }, [conversationId]);
 
     useEffect(() => {
-        if (!isUserLoggedIn) {
-            setOpenFeatureAuth(true);
-            return;
-        }
         const fetchApi = async () => {
             const res = await apiCreateConversation();
             if (res?.success) {
@@ -43,19 +39,25 @@ const Chat: React.FC = () => {
         setIsOpenChat(true);
     };
     return (
-        <div className="tablet:hidden fixed bottom-1 right-5 z-[999] ">
+        // fixed bottom-1 right-5
+        <div className="tablet:hidden z-[999] ">
             <div
-                className="relative flex items-center justify-center p-3 bg-blue-500 rounded-full text-white cursor-pointer hover:bg-blue-600 transition-colors"
                 onClick={() => {
                     if (!isUserLoggedIn) {
                         setOpenFeatureAuth(true);
                         return;
                     }
                     handleAddConversation();
-                }}>
-                <MessageIcon fontSize="large" />
+                }}
+                className="flex flex-col  items-center  cursor-pointer justify-center  h-12 text-white rounded-md text-sm   relative transition duration-200">
+                <span className="mr-2">
+                    <MessageIcon />
+                </span>
+                Tin mới
                 {isUserLoggedIn && unreadMessages > 0 && (
-                    <span className="absolute -top-1 -right-1 bg-purple-500 text-white text-xs px-2 py-0.5 rounded-full">{unreadMessages}</span>
+                    <span className="absolute top-2 right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
+                        {unreadMessages}
+                    </span>
                 )}
             </div>
             <ChatModal conversationId={conversationId} SetUnreadMessages={SetUnreadMessages} />

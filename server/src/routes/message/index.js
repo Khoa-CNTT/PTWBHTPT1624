@@ -12,6 +12,38 @@ const { adminAuthentication, restrictTo } = require('../../middlewares/auth.admi
 const PERMISSIONS = require('../../config/permissions');
 const { userAuthentication } = require('../../middlewares/auth.user.middleware');
 const router = express.Router();
+const dialogflow = require('@google-cloud/dialogflow');
+const uuid = require('uuid');
+const sessionClient = new dialogflow.SessionsClient();
+const projectId = 'ecommerce-cxlm';
+
+router.post('/chatbot', async (req, res) => {
+    console.log('ded');
+    const sessionId = uuid.v4();
+    const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId); // Cập nhật tại đây
+
+    const request = {
+        session: sessionPath,
+        queryInput: {
+            text: {
+                text: req.body.message,
+                languageCode: 'vi',
+            },
+        },
+    };
+
+    try {
+        const responses = await sessionClient.detectIntent(request);
+        const result = responses[0].queryResult;
+        res.send({ fulfillmentText: result.fulfillmentText });
+    } catch (error) {
+        console.error('Dialogflow error details:', error.message); // Ghi lại thông báo lỗi
+        console.error('Error Stack:', error.stack); // Ghi lại thông tin chi tiết của lỗi
+
+        res.status(500).send({ error: 'Error communicating with Dialogflow', details: error.message });
+    }
+});
+
 // Gửi tin nhắn
 router.get('/:conversationId', getMessagesByConversation);
 router.post('/by-user', [userAuthentication], sendMessageByUSer);

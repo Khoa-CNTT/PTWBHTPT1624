@@ -36,7 +36,9 @@ body {
     background-color: black;
     opacity: 0.1;
 }
-
+.df-messenger-wrapper {
+    bottom: 68px !important;
+}
 #sock-discount .swiper-button-next {
     border-radius: 4px 0 4px 0;
 }
