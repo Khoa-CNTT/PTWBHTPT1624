@@ -11,6 +11,7 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
+    "@google-cloud/dialogflow": "^7.0.1",
     "@tensorflow-models/mobilenet": "^2.1.1",
     "@tensorflow/tfjs": "^4.22.0",
     "axios": "^1.7.9",
@@ -35,6 +36,7 @@
     "slugify": "^1.6.6",
     "unidecode": "^1.1.0",
     "unorm": "^1.6.0",
+    "uuid": "^11.1.0",
     "winston": "^3.17.0"
   },
   "devDependencies": {
