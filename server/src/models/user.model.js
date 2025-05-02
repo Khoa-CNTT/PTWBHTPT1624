@@ -18,6 +18,7 @@ const userSchema = mongoose.Schema(
         user_passwordResetToken: { type: String },
         user_passwordTokenExpires: { type: String },
         user_isBlocked: { type: Boolean, default: false },
+        
     },
     {
         timestamps: true,

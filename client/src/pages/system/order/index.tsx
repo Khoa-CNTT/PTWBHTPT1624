@@ -60,24 +60,28 @@ const OrderManage: React.FC = () => {
         }
     };
 
-    // Hàm tìm kiếm đơn hàng theo mã
-    const handleSearch = async () => {
-        setLoading(true);
-        if (!searchQuery.trim()) {
-            console.error('Vui lòng nhập từ khoá tìm kiếm');
-            return;
-        }
-        const res = await apiGetOrderByCode(searchQuery.trim()); // Sử dụng apiGetOrderByCode để tìm kiếm
-        if (res.success) {
-            const result = Array.isArray(res.data) ? res.data : [res.data];
-            setOrders(result); // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
-            setIsSearching(true);
-        } else {
-            console.error('Không tìm thấy đơn hàng:', res.message);
-            setOrders([]); // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
-        }
+   // Hàm tìm kiếm đơn hàng theo mã
+const handleSearch = async () => {
+    setLoading(true);
+    if (!searchQuery.trim()) {
+        // Hiển thị thông báo nếu từ khóa tìm kiếm trống
+        showNotification('Vui lòng nhập từ khoá tìm kiếm', false);  // Thông báo lỗi khi không có từ khoá
         setLoading(false);
-    };
+        return;
+    }
+
+    const res = await apiGetOrderByCode(searchQuery.trim());  // Sử dụng apiGetOrderByCode để tìm kiếm
+    if (res.success) {
+        const result = Array.isArray(res.data) ? res.data : [res.data];
+        setOrders(result);  // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
+        setIsSearching(true);
+    } else {
+        console.error('Không tìm thấy đơn hàng:', res.message);
+        setOrders([]);  // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
+    }
+    setLoading(false);
+};
+
 
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;

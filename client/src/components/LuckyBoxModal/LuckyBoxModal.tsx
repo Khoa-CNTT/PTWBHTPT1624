@@ -33,8 +33,8 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
 
         setLoading(true);
         setError(''); // Reset error mỗi lần mở hộp
-        // Gọi API playLuckyBox
-        const res = await apiPlayLuckyBox(userId);
+        // Gọi API playLuckyBox và truyền boxNumber
+        const res = await apiPlayLuckyBox(userId);  // Truyền boxNumber vào API
         if (res.success) {
             setReward(res.data.rewardPoints); // Lưu phần thưởng nhận được
             setTotalPoints(res.data.totalPoints); // Lưu tổng điểm mới
@@ -49,8 +49,8 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-gray-800 bg-opacity-60 flex items-center justify-center z-50">
-            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-lg w-96 shadow-2xl transform transition-all scale-100 hover:scale-105 duration-300">
+        <div className="fixed inset-0 bg-gray-800 bg-opacity-70 flex items-center justify-center z-50 p-4">
+            <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-8 rounded-lg w-full max-w-lg shadow-2xl transform transition-all scale-100 hover:scale-105 duration-300">
                 <div className="text-center mb-6">
                     <h2 className="text-3xl font-bold text-white mb-2">Chúc mừng bạn!</h2>
                     <p className="text-lg text-gray-200">Chọn một hộp quà để nhận thưởng!</p>
@@ -60,9 +60,7 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
                     {/* Hộp 1 */}
                     <animated.button
                         style={boxSpring}
-                        className={`bg-gradient-to-r from-green-400 to-green-600 p-12 rounded-xl shadow-xl cursor-pointer transform transition-all duration-300 ${
-                            openedBox === 1 ? 'scale-125' : 'hover:scale-110'
-                        }`}
+                        className={`bg-gradient-to-r from-green-400 to-green-600 p-12 rounded-xl shadow-xl cursor-pointer transform transition-all duration-300 ${openedBox === 1 ? 'scale-125' : 'hover:scale-110'}`}
                         onClick={() => handleOpenBox(1)}
                         disabled={loading || openedBox !== null}
                     >
@@ -72,9 +70,7 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
                     {/* Hộp 2 */}
                     <animated.button
                         style={boxSpring}
-                        className={`bg-gradient-to-r from-blue-400 to-blue-600 p-12 rounded-xl shadow-xl cursor-pointer transform transition-all duration-300 ${
-                            openedBox === 2 ? 'scale-125' : 'hover:scale-110'
-                        }`}
+                        className={`bg-gradient-to-r from-blue-400 to-blue-600 p-12 rounded-xl shadow-xl cursor-pointer transform transition-all duration-300 ${openedBox === 2 ? 'scale-125' : 'hover:scale-110'}`}
                         onClick={() => handleOpenBox(2)}
                         disabled={loading || openedBox !== null}
                     >
@@ -84,9 +80,7 @@ const LuckyBoxModal: React.FC<LuckyBoxModalProps> = ({ onClose, userId }) => {
                     {/* Hộp 3 */}
                     <animated.button
                         style={boxSpring}
-                        className={`bg-gradient-to-r from-red-400 to-red-600 p-12 rounded-xl shadow-xl cursor-pointer transform transition-all duration-300 ${
-                            openedBox === 3 ? 'scale-125' : 'hover:scale-110'
-                        }`}
+                        className={`bg-gradient-to-r from-red-400 to-red-600 p-12 rounded-xl shadow-xl cursor-pointer transform transition-all duration-300 ${openedBox === 3 ? 'scale-125' : 'hover:scale-110'}`}
                         onClick={() => handleOpenBox(3)}
                         disabled={loading || openedBox !== null}
                     >

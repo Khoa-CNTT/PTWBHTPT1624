@@ -91,20 +91,27 @@ export default function SupplierManage() {
     };
 
     const handleSearch = async () => {
-        setIsUploading(true);
+        // Nếu từ khoá tìm kiếm trống, hiển thị thông báo lỗi mà không làm lại cuộc gọi API
         if (!searchQuery.trim()) {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
-            return;
+            return; // Dừng lại, không gọi API
         }
+    
+        setIsUploading(true); // Bắt đầu loading
+    
+        // Gửi request API tìm kiếm
         const res = await apiSearchSupplier(searchQuery.trim());
+        
+        // Xử lý kết quả trả về
         if (res.success) {
-            setSuppliers(res.data); // API trả về danh sách nhà cung cấp
-            setTotalPage(0);
-            setIsSearching(true);
+            setSuppliers(res.data); // Cập nhật danh sách nhà cung cấp từ API
+            setTotalPage(0); // Không phân trang khi tìm kiếm
+            setIsSearching(true); // Đánh dấu đang tìm kiếm
         } else {
             showNotification(res.message || 'Không tìm thấy nhà cung cấp nào', false);
         }
-        setIsUploading(false);
+    
+        setIsUploading(false); // Kết thúc loading
     };
 
     if (isUploading) return <TableSkeleton />;

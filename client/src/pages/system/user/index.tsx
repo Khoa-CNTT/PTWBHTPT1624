@@ -87,20 +87,27 @@ export default function UserManage() {
     };
 
     const handleSearch = async () => {
-        setIsUploading(true);
+        // Nếu từ khoá tìm kiếm trống, hiển thị thông báo lỗi mà không làm lại cuộc gọi API
         if (!searchQuery.trim()) {
-            showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
-            return;
+            showNotification('Vui lòng nhập từ khoá tìm kiếm', false);  // Thông báo khi không có từ khoá
+            return; // Dừng lại, không gọi API
         }
+    
+        setIsUploading(true); // Bắt đầu loading
+    
+        // Gửi request API tìm kiếm
         const res = await apiSearchUsers(searchQuery.trim());
+        
+        // Xử lý kết quả trả về
         if (res.success) {
-            setUsers(res.data);
-            setTotalPage(0);
-            setIsSearching(true);
+            setUsers(res.data); // Cập nhật danh sách người dùng từ API
+            setTotalPage(0); // Không phân trang khi tìm kiếm
+            setIsSearching(true); // Đánh dấu đang tìm kiếm
         } else {
             showNotification(res.message || 'Không tìm thấy người dùng nào', false);
         }
-        setIsUploading(false);
+    
+        setIsUploading(false); // Kết thúc loading
     };
 
     const handleBlock = (id: string, isBlocked: boolean) => {

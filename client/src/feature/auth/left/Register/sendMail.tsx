@@ -30,16 +30,24 @@ const sendMail: React.FC<ModeRegister> = (props) => {
             return;
         }
         setIsLoading(true);
+        
+        // Gọi API gửi email xác minh
         const res = await apiSendVerificationEmail(emailValue);
+        
         if (!res?.success) {
-            setError(res?.message);
+            // Nếu có lỗi (ví dụ: email đã tồn tại), dừng loading và hiển thị thông báo lỗi
+            setIsLoading(false);
+            setError(res?.message || 'Lỗi xảy ra. Vui lòng thử lại.');
             return;
         }
+    
+        // Nếu không có lỗi, reset error và chuyển sang màn hình tiếp theo
         setError('');
         setIsLoading(false);
         setModeRegister(1);
         setEmailToConfirm(emailValue);
     };
+    
 
     const responseGoogle = async (response: any) => {
         const { credential } = response;
