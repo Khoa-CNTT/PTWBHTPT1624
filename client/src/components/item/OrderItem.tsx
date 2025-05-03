@@ -61,12 +61,6 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancel
 
             {/* Tổng tiền và phí vận chuyển */}
             <div className="flex flex-col gap-2 w-full">
-                {view && (
-                    <div className="flex justify-end text-sm text-secondary">
-                        Phí vận chuyển
-                        <span className="text-end min-w-[100px]">{formatMoney(order?.order_shipping_price)}</span>
-                    </div>
-                )}
                 <div className="flex justify-end text-xl text-secondary gap-1">
                     Tổng tiền:
                     <span className="text-red_custom text-end min-w-[100px]">{formatMoney(order?.order_total_price)}</span>

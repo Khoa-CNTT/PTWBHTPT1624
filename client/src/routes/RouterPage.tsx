@@ -24,6 +24,8 @@ import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage'
 import OrderPage from '../pages/user/userPage/orderPage';
 import UserVoucherPage from '../pages/user/userPage/UserVoucherPage';
 import RedeemVoucher from '../pages/user/userPage/RedeemVoucher';
+import PaymentPage from '../pages/user/paymentPage';
+import PaymentConfirm from '../pages/user/PaymentConfirm';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
@@ -41,10 +43,10 @@ const RouterPage = () => {
                 <Route path={PATH.PAGE_CART} element={<CartPage />} />
                 <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />} />
                 <Route path={PATH.VOUCHER} element={<VoucherPage />} />
-
+                <Route path={PATH.PAGE_PAYMENT} element={<PaymentPage />}></Route>
+                <Route path={PATH.PAGE_PAYMENT_CONFIRM} element={<PaymentConfirm />} />
                 {/* Các trang bên dưới vẫn được bọc trong DefaultLayout */}
-                <Route path="*" element={<Navigate to={PATH.HOME} />} />
-
+                {/* <Route path="*" element={<Navigate to={PATH.HOME} />} /> */}
                 <Route path={PATH.PAGE_USER} element={isUserLoggedIn ? <UserPage /> : <Navigate to="/" />}>
                     <Route path={''} element={<Navigate to={PATH.PAGE_PROFILE} />} />
                     <Route path={PATH.PAGE_PROFILE} element={<UserProfile />} />
@@ -54,10 +56,6 @@ const RouterPage = () => {
                     <Route path={PATH.PAGE_ORDER} element={<OrderPage />} />
                     <Route path={PATH.PAGE_USER_VOUCHER} element={<UserVoucherPage />} />
                     <Route path={PATH.PAGE_REDEEM_VOUCHER} element={<RedeemVoucher />} />
-                    {/* <Route path={'purchase'} element={<PurchaseManage />} />
-                    <Route path={'sell'} element={<SellManage />} />
-                    <Route path={'product'} element={<ProductManage />} />
-                    <Route path={'view/:oid'} element={<ViewOrder />} /> */}
                 </Route>
             </Route>
 
@@ -90,7 +88,6 @@ const RouterPage = () => {
                 <Route path={PATH.MANAGE_PROFILE} element={<AdminProfile />} />
                 <Route path="*" element={<Navigate to={PATH.MANAGE_DASHBOARD} />} />
             </Route>
-
             {/* Trang đăng nhập admin */}
             <Route path={PATH.ADMIN_LOGIN} element={isAdminLoggedIn ? <Navigate to={PATH.ADMIN_DASHBOARD} /> : <AdminLogin />} />
         </Routes>

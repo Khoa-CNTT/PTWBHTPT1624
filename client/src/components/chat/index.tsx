@@ -27,6 +27,7 @@ const Chat: React.FC = () => {
     }, [conversationId]);
 
     useEffect(() => {
+        if (!isUserLoggedIn) return;
         const fetchApi = async () => {
             const res = await apiCreateConversation();
             if (res?.success) {

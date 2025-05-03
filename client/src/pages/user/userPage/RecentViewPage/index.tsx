@@ -12,7 +12,7 @@ const RecentViewPage: React.FC = () => {
                 <div className="flex flex-col bg-white pb-8 gap-10 z-0">
                     {recentViewedProducts?.length !== 0 ? (
                         <>
-                            <div className="grid mobile:grid-cols-2  tablet:grid-cols-4  laptop:grid-cols-6 ">
+                            <div className="grid mobile:grid-cols-1  tablet:grid-cols-2  laptop:grid-cols-4">
                                 {recentViewedProducts?.map((p) => (
                                     <ProductItem key={p._id} props={p} />
                                 ))}

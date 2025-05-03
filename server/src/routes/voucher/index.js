@@ -17,7 +17,7 @@ router.post('/apply', asyncHandle(VoucherController.applyVoucher));
 
 // ✅ Lấy danh sách voucher đang hoạt động dùng cho banner (client)
 router.get('/active-banners', asyncHandle(VoucherController.getActiveBannerVouchers));
-
+router.get('/:code', asyncHandle(VoucherController.getVoucherByCode));
 // --- Admin routes ---
 router.use(adminAuthentication); // Kiểm tra xem người dùng có phải admin không
 router.use(restrictTo(PERMISSIONS.VOUCHER_MANAGE)); // Kiểm tra quyền quản lý voucher
@@ -27,9 +27,6 @@ router.get('/search', asyncHandle(VoucherController.searchVoucherByName));
 
 // Thêm mới voucher (Admin)
 router.post('/add', asyncHandle(VoucherController.createVoucher));
-
-// Lấy chi tiết voucher theo ID (Admin)
-router.get('/:id', asyncHandle(VoucherController.getVoucherById));
 
 // Cập nhật voucher theo ID (Admin)
 router.put('/:id/update', asyncHandle(VoucherController.updateVoucher));

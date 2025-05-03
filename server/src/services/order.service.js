@@ -1,5 +1,5 @@
 'use strict';
-const { ErrorResponse, NotFoundError } = require('../core/error.response');
+
 const Product = require('../models/product.model'); // Mô hình sản phẩm
 const Voucher = require('../models/voucher.model'); // Mô hình mã giảm giá
 const Cart = require('../models/cart.model'); // Mô hình giỏ hàng
@@ -9,6 +9,7 @@ const { default: mongoose } = require('mongoose');
 const PurchasedModel = require('../models/Purchased.model');
 const OnlineOrder = require('../models/OnlineOrder');
 const OfflineOrder = require('../models/OfflineOrder');
+const { RequestError } = require('../core/error.response');
 
 class OrderService {
     static async createOfflineOrder(payload) {
@@ -23,7 +24,7 @@ class OrderService {
         const productChecks = await Promise.all(
             order_products.map(async (item) => {
                 const product = await Product.findById(item.productId); // Tìm sản phẩm trong DB theo ID
-                if (!product) throw new NotFoundError('Không tìm thấy sản phẩm'); // Nếu không tìm thấy, báo lỗi
+                if (!product) throw new RequestError('Không tìm thấy sản phẩm'); // Nếu không tìm thấy, báo lỗi
                 return {
                     name: product.product_name, // Tên sản phẩm
                     available: product.product_quantity >= item.quantity, // Kiểm tra số lượng đủ hay không
@@ -36,7 +37,7 @@ class OrderService {
             .map((check) => check.name); // Lấy tên của các sản phẩm đó
         // Kiểm tra nếu có sản phẩm hết hàng thì báo lỗi với danh sách tên
         if (outOfStockProducts.length > 0) {
-            throw new ErrorResponse(`Các sản phẩm đã hết hàng: ${outOfStockProducts.join(', ')}`); // Báo lỗi với danh sách sản phẩm hết hàng
+            throw new RequestError(`Các sản phẩm đã hết hàng: ${outOfStockProducts.join(', ')}`); // Báo lỗi với danh sách sản phẩm hết hàng
         }
         // Bước 2: Tính tổng tiền đơn hàng và bổ sung thông tin product list
         let totalPrice = 0;
@@ -63,16 +64,16 @@ class OrderService {
                 vc_vouchers: { $in: [order_voucherId] },
             });
             if (!userVoucher) {
-                throw new NotFoundError('Bạn không sở hữu voucher này');
+                throw new RequestError('Bạn không sở hữu voucher này');
             }
             // Tìm mã giảm giá trong DB
             const voucher = await Voucher.findById(order_voucherId);
             if (!voucher) {
-                throw new NotFoundError('Không tìm thấy voucher');
+                throw new RequestError('Không tìm thấy voucher');
             }
             // Giá trị đơn hàng tối thiểu để áp dụng voucher
             if (totalPrice < voucher.voucher_min_order_value) {
-                throw new ErrorResponse(`Giá trị đơn hàng tối thiểu ${voucher.voucher_min_order_value}`);
+                throw new RequestError(`Giá trị đơn hàng tối thiểu ${voucher.voucher_min_order_value}`);
             }
             if (voucher.voucher_method === 'percent') {
                 // Nếu giảm giá theo phần trăm
@@ -153,7 +154,7 @@ class OrderService {
         const productChecks = await Promise.all(
             order_products.map(async (item) => {
                 const product = await Product.findById(item.productId); // Tìm sản phẩm trong DB theo ID
-                if (!product) throw new NotFoundError('Không tìm thấy sản phẩm'); // Nếu không tìm thấy, báo lỗi
+                if (!product) throw new RequestError('Không tìm thấy sản phẩm'); // Nếu không tìm thấy, báo lỗi
                 return {
                     name: product.product_name, // Tên sản phẩm
                     available: product.product_quantity >= item.quantity, // Kiểm tra số lượng đủ hay không
@@ -167,7 +168,7 @@ class OrderService {
             .map((check) => check.name); // Lấy tên của các sản phẩm đó
         // Kiểm tra nếu có sản phẩm hết hàng thì báo lỗi với danh sách tên
         if (outOfStockProducts.length > 0) {
-            throw new ErrorResponse(`Các sản phẩm đã hết hàng: ${outOfStockProducts.join(', ')}`); // Báo lỗi với danh sách sản phẩm hết hàng
+            throw new RequestError(`Các sản phẩm đã hết hàng: ${outOfStockProducts.join(', ')}`); // Báo lỗi với danh sách sản phẩm hết hàng
         }
         // Bước 2: Tính tổng tiền đơn hàng và bổ sung thông tin product list
         let totalPrice = 0;
@@ -194,21 +195,21 @@ class OrderService {
                 vc_vouchers: { $in: [order_voucherId] },
             });
             if (!userVoucher) {
-                throw new NotFoundError('Bạn không sở hữu voucher này');
+                throw new RequestError('Bạn không sở hữu voucher này');
             }
             // Tìm mã giảm giá trong DB
             const voucher = await Voucher.findById(order_voucherId);
             if (!voucher) {
-                throw new NotFoundError('Không tìm thấy voucher');
+                throw new RequestError('Không tìm thấy voucher');
             }
             // Kiểm tra xem user đã sử dụng voucher này chưa
             const hasUserUsedVoucher = voucher.voucher_users_used.some((userUsedId) => userUsedId.toString() === userId.toString());
             if (hasUserUsedVoucher) {
-                throw new ErrorResponse('Bạn đã đạt giới hạn số lần sử dụng voucher này');
+                throw new RequestError('Bạn đã đạt giới hạn số lần sử dụng voucher này');
             }
             // Giá trị đơn hàng tối thiểu để áp dụng voucher
             if (totalPrice < voucher.voucher_min_order_value) {
-                throw new ErrorResponse(`Giá trị đơn hàng tối thiểu ${voucher.voucher_min_order_value}`);
+                throw new RequestError(`Giá trị đơn hàng tối thiểu ${voucher.voucher_min_order_value}`);
             }
             if (voucher.voucher_method === 'percent') {
                 // Nếu giảm giá theo phần trăm
@@ -219,11 +220,12 @@ class OrderService {
                 // Nếu giảm giá theo số tiền cố định
                 totalApplyDiscount += voucher.voucher_value; //
             }
+            await userVoucherModel.findOneAndUpdate({ vc_user_id: userId }, { $pull: { vc_vouchers: order_voucherId } }, { new: true, upsert: true });
         }
         // Bước 4: Thêm phí vận chuyển
         const shipping = await shippingCompany.findById(order_shipping_company); // Tìm công ty vận chuyển
-        if (!shipping) throw new NotFoundError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
-        const shippingPrice = shipping.sc_shipping_price || 0; // Lấy phí vận chuyển, mặc định là 0 nếu không có
+        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
+        const shippingPrice = shipping.sc_shipping_price; // Lấy phí vận chuyển, mặc định là 0 nếu không có
         // Tạo đơn hàng mới trong DB
         const order_date_shipping = {
             from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000), // Thời gian hiện tại
@@ -282,7 +284,9 @@ class OrderService {
         const fillter = { order_user: userId };
         if (status) fillter.order_status = status;
         const orders = await OnlineOrder.find(fillter)
-            .select('order_code order_date_shipping order_shipping_address order_total_apply_discount order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
+            .select(
+                'order_code order_date_shipping order_payment_method order_shipping_price order_shipping_address order_total_apply_discount order_status order_total_price order_products createdAt',
+            ) // chọn thêm createdAt nếu cần
             .populate({
                 path: 'order_products.productId',
                 select: 'product_name product_thumb product_slug',
@@ -294,16 +298,16 @@ class OrderService {
     }
 
     static async updateOrderStatus({ orderId, newStatus }) {
-        if (!orderId) throw new ErrorResponse('Không tìm thấy đơn hàng');
+        if (!orderId) throw new RequestError('Không tìm thấy đơn hàng');
 
         const validStatuses = ['pending', 'confirm', 'shipped', 'delivered', 'cancelled'];
         if (!validStatuses.includes(newStatus)) {
-            throw new ErrorResponse('Trạng thái không hợp lệ');
+            throw new RequestError('Trạng thái không hợp lệ');
         }
 
         const updatedOrder = await OnlineOrder.findOneAndUpdate({ _id: orderId }, { order_status: newStatus, updatedAt: new Date() }, { new: true });
 
-        if (!updatedOrder) throw new ErrorResponse('Không tìm thấy đơn hàng');
+        if (!updatedOrder) throw new RequestError('Không tìm thấy đơn hàng');
 
         // Nếu đơn hàng đã giao thành công => Cập nhật bảng sản phẩm đã mua
         if (newStatus === 'delivered') {
@@ -334,9 +338,8 @@ class OrderService {
     static async getAllOrders({ status }) {
         const fillter = {};
         if (status) fillter.order_status = status;
-
         const orders = await OnlineOrder.find(fillter)
-            .select('order_code order_shipping_address order_total_apply_discount order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
+            .select('order_code order_shipping_address order_payment_method order_total_apply_discount order_status order_total_price order_products createdAt') // chọn thêm createdAt nếu cần
             .populate({
                 path: 'order_products.productId',
                 select: 'product_name product_thumb product_slug',
@@ -348,11 +351,11 @@ class OrderService {
     }
 
     static async getOrder(orderId) {
-        if (!orderId) throw new ErrorResponse('Không tìm thấy đơn hàng');
+        if (!orderId) throw new RequestError('Không tìm thấy đơn hàng');
         const order = await OnlineOrder.findById(orderId)
             .populate('order_user', 'user_name')
             .populate('order_products.productId', '_id product_name product_thumb product_slug'); // Populate productId with only product_thumb
-        if (!order) throw new ErrorResponse('Không tìm thấy đơn hàng');
+        if (!order) throw new RequestError('Không tìm thấy đơn hàng');
 
         return order;
     }
@@ -379,12 +382,12 @@ class OrderService {
 
     static async cancelOrder({ userId, orderId }) {
         if (!userId || !orderId) {
-            throw new ErrorResponse('Thiếu thông tin bắt buộc');
+            throw new RequestError('Thiếu thông tin bắt buộc');
         }
         // Find the order by ID
         const order = await OnlineOrder.findOne({ _id: orderId, order_user: userId });
         if (!order) {
-            throw new ErrorResponse(`Đơn hàng không tồn tại`);
+            throw new RequestError(`Đơn hàng không tồn tại`);
         }
         await Promise.all(
             order.order_products.map((item) =>
@@ -403,7 +406,7 @@ class OrderService {
     static async reorder({ userId, orderId }) {
         // Validate inputs
         if (!userId || !orderId) {
-            throw new ErrorResponse('Thiếu thông tin userId hoặc orderId');
+            throw new RequestError('Thiếu thông tin userId hoặc orderId');
         }
         // Find the cancelled order
         const cancelledOrder = await OnlineOrder.findOne({
@@ -413,15 +416,15 @@ class OrderService {
         });
 
         if (!cancelledOrder) {
-            throw new ErrorResponse('Đơn hàng không tồn tại hoặc không phải đơn hàng đã hủy');
+            throw new RequestError('Đơn hàng không tồn tại hoặc không phải đơn hàng đã hủy');
         }
         const productUpdates = cancelledOrder.order_products.map(async (item) => {
             const product = await Product.findById(item.productId);
             if (!product) {
-                throw new ErrorResponse(`Sản phẩm ${item.productId} không tồn tại`);
+                throw new RequestError(`Sản phẩm ${item.productId} không tồn tại`);
             }
             if (product.product_quantity < item.quantity) {
-                throw new ErrorResponse(`Sản phẩm ${product.product_name} không đủ số lượng tồn kho`);
+                throw new RequestError(`Sản phẩm ${product.product_name} không đủ số lượng tồn kho`);
             }
             await Product.findByIdAndUpdate(item.productId, {
                 $inc: {
@@ -445,7 +448,7 @@ class OrderService {
         // });
         // Bước 4: Thêm phí vận chuyển
         const shipping = await shippingCompany.findById(cancelledOrder.order_shipping_company); // Tìm công ty vận chuyển
-        if (!shipping) throw new NotFoundError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
+        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
         // Tạo đơn hàng mới trong DB
         const order_date_shipping = {
             from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000), // Thời gian hiện tại

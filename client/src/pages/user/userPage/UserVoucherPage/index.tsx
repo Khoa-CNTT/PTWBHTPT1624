@@ -33,9 +33,8 @@ const UserVoucherPage: React.FC = () => {
                                             expired ? 'opacity-60 bg-gray-100' : 'hover:scale-[1.02]'
                                         }`}>
                                         {/* Left Section: Logo and Category */}
-                                        <div className="bg-primary text-white p-4 rounded-l-xl flex flex-col items-center justify-center w-1/3">
-                                            <span className="text-sm font-semibold uppercase tracking-wide">Voucher Xtra</span>
-                                            <span className="text-xs mt-1">Toàn Ngành Hàng</span>
+                                        <div className="border-l-4 border-dashed border-green-500 p-2 rounded-l-md">
+                                            <img src={voucher.voucher_thumb} className="w-32 rounded-md" />
                                         </div>
                                         {/* Right Section: Voucher Details */}
                                         <div className="flex-1 p-4 flex flex-col justify-between">

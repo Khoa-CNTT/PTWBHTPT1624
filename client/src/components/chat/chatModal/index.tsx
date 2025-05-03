@@ -10,6 +10,7 @@ import { useActionStore } from '../../../store/actionStore';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
+
 const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: number) => void }> = ({ conversationId, SetUnreadMessages }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [isOpenBox, setIsOpenBox] = useState<boolean>(false);
@@ -19,6 +20,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
     const { isOpenChat, setIsOpenChat, mobile_ui, setIsLoading } = useActionStore();
     const navigate = useNavigate();
     // const { socketRef } = useAppSelector((state) => state.action);
+
     useEffect(() => {
         if (isOpenChat) {
             setIsOpenBox(true);
@@ -44,6 +46,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
         };
         fetchApi();
     }, [conversationId, isOpenBox]);
+
     const scroll = useRef<any>(null);
     useEffect(() => {
         scroll.current?.scrollIntoView({
@@ -70,6 +73,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
             }
         }
     };
+
     const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0];
         if (!file) return;
@@ -82,13 +86,15 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
         setImage(uploadedUrl);
         setIsLoading(false);
     };
+
     if (!isOpenBox) return <></>;
+
     return (
         <div
-            className={`tablet:fixed tablet:top-0 table:right-0 tablet:left-0 table:w-full  tablet:h-full absolute bottom-0 right-0 w-auto h-[460px] bg-white shadow-search rounded-md  duration-1000 origin-bottom-right z-[1000]  ${
+            className={`tablet:fixed tablet:top-0 table:right-0 tablet:left-0 table:w-full tablet:h-full absolute bottom-0 right-0 w-auto h-[460px] bg-white shadow-search rounded-md duration-1000 origin-bottom-right z-[1000] ${
                 isOpenChat ? 'laptop:animate-active-openChat' : 'laptop:animate-active-openChatOff'
             }`}>
-            <div className="flex h-full w-[400px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] ">
+            <div className="flex h-full w-[400px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
                 <div className="sticky flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800 xl:px-6">
                     <div className="flex w-full items-center gap-3">
                         <div className="relative h-12 w-full max-w-[48px] rounded-full">
@@ -97,17 +103,13 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                                 alt="profile"
                                 className="h-full w-full overflow-hidden rounded-full object-cover object-center"
                             />
-                            {/* <span
-                   className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 ${
-                       selectedConversation.user.status === 'online' ? 'bg-success-500' : 'bg-warning-500'
-                   }`}></span> */}
                             <span
-                                className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 ${'bg-success-500'}`}></span>
+                                className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 bg-success-500`}></span>
                         </div>
                         <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400">Hỏi Trợ lý cá nhân</h5>
                     </div>
                     <div className="flex items-center gap-3">
-                        <div className="flex gap-2 ">
+                        <div className="flex gap-2">
                             <div
                                 className="text-secondary cursor-pointer"
                                 onClick={() => {
@@ -125,8 +127,8 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
 
                 <div className="custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6">
                     {messages?.map((message, index) => (
-                        <div ref={scroll}>
-                            <ChatMessage key={index} message={message} isSentByUser={message?.sender._id === user?._id} />
+                        <div ref={scroll} key={index}>
+                            <ChatMessage message={message} isSentByUser={message?.sender._id === user?._id} />
                         </div>
                     ))}
                 </div>
@@ -135,7 +137,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                     <div className="relative flex items-center justify-between">
                         {image && (
                             <div>
-                                <img className="absolute w-[150px] bottom-[50px] left-0 " src={image} />
+                                <img className="absolute w-[150px] bottom-[50px] left-0" src={image} alt="Uploaded preview" />
                             </div>
                         )}
                         <div className="w-full">
@@ -152,6 +154,11 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                             <input
                                 type="text"
                                 onChange={(e) => setValue(e?.target?.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter' && !e.shiftKey) {
+                                        handleOnClick();
+                                    }
+                                }}
                                 placeholder="Nhập tin nhắn"
                                 value={value}
                                 className="h-9 w-full border-none bg-transparent pl-12 pr-5 text-sm text-gray-800 outline-none placeholder:text-gray-400 focus:border-0 focus:ring-0 dark:text-white/90"
@@ -160,13 +167,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                         <div className="flex items-center">
                             <div className="mr-2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
                                 <label htmlFor="comment_input" className="cursor-pointer">
-                                    <input
-                                        id="comment_input"
-                                        type="file"
-                                        multiple
-                                        hidden
-                                        onChange={handleImageUpload} // bạn có thể thay handleImageUpload bằng hàm bạn đã định nghĩa
-                                    />
+                                    <input id="comment_input" type="file" multiple hidden onChange={handleImageUpload} />
                                     <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                                         <path
                                             fillRule="evenodd"
@@ -176,7 +177,6 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                                     </svg>
                                 </label>
                             </div>
-
                             <button
                                 onClick={handleOnClick}
                                 className="ml-3 flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500 text-white hover:bg-brand-600 xl:ml-5">

@@ -38,10 +38,7 @@ const ProductInCartItem: React.FC<{ product: IProductInCart; isSelector?: boolea
     }, [quantity]);
 
     return (
-        <div
-            className={`flex tablet:flex-col bg-white px-3  justify-between rounded-lg items-center  ${
-                isSelector ? 'border-solid border-b-[1px] border-separate py-6' : 'py-2'
-            }`}>
+        <div className={`flex tablet:flex-col bg-white px-3  justify-between rounded-lg items-center  ${'border-solid border-b-[1px] border-separate py-6'}`}>
             <div className="tablet:w-full w-[35%] flex gap-3 items-center">
                 {isSelector && (
                     <input
@@ -63,7 +60,7 @@ const ProductInCartItem: React.FC<{ product: IProductInCart; isSelector?: boolea
                     <img className="object-cover" src={product?.product_thumb} alt="" />
                 </div>
                 <span
-                    className={`w-[70%] truncate text-sm ${isSelector ? 'cursor-pointer' : ''}`}
+                    className={`w-[70%] truncate-trailing line-clamp-2  text-sm ${isSelector ? 'cursor-pointer' : ''}`}
                     onClick={() => {
                         if (isSelector) {
                             navigate(`/${product?.product_slug}/${product?.productId}`);

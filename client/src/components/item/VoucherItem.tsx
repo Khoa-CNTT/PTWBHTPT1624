@@ -7,12 +7,11 @@ import { IVoucher } from '../../interfaces/voucher.interfaces';
 // Định nghĩa kiểu cho props của component VoucherItem
 interface VoucherProps {
     voucher: IVoucher;
-    category?: string;
     onSave?: (voucher: IVoucher) => void;
     userOwnedVouchers: string[] | any;
 }
 
-const VoucherItem: React.FC<VoucherProps> = ({ voucher, category = 'Toàn Ngành Hàng', onSave, userOwnedVouchers }) => {
+const VoucherItem: React.FC<VoucherProps> = ({ voucher, onSave, userOwnedVouchers }) => {
     const isOwned = userOwnedVouchers.includes(voucher._id || '');
 
     // Hàm xử lý sự kiện click nút "Đổi"
@@ -28,9 +27,8 @@ const VoucherItem: React.FC<VoucherProps> = ({ voucher, category = 'Toàn Ngành
     return (
         <div className="flex items-stretch border border-gray-200 rounded-lg bg-white shadow-md hover:shadow-lg transition-shadow duration-200 w-full max-w-md mx-auto min-h-24">
             {/* Phần bên trái: Logo và danh mục */}
-            <div className="bg-green-500 text-white p-3 rounded-l-lg text-center w-1/4 flex flex-col justify-center">
-                <span className="text-sm font-bold uppercase">Voucher Xtra</span>
-                <span className="text-xs mt-1">{category}</span>
+            <div className="border-l-4 border-dashed border-green-500 p-2 rounded-l-md">
+                <img src={voucher.voucher_thumb} className="w-20 rounded-sm" />
             </div>
 
             {/* Phần giữa: Thông tin voucher */}

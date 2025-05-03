@@ -1,6 +1,6 @@
 'use strict';
 const Voucher = require('../models/voucher.model');
-const { RequestError, NotFoundError } = require('../core/error.response');
+const { RequestError } = require('../core/error.response');
 const voucherModel = require('../models/voucher.model');
 const autoCode = require('../utils/autoCode');
 
@@ -89,7 +89,7 @@ class VoucherService {
     }
 
     static async getAllRedeemVouchers({ limit, page }) {
-        const limitNum = parseInt(limit, 10); // Mặc định limit = 10
+        const limitNum = parseInt(limit, 10); // Mgit ặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
         const currentDate = new Date();
@@ -104,7 +104,11 @@ class VoucherService {
             .select('-__v -createdAt -updatedAt')
             .limit(limitNum)
             .lean();
-        const totalVoucher = await voucherModel.countDocuments();
+        const totalVoucher = await voucherModel.countDocuments({
+            voucher_type: 'user',
+            voucher_start_date: { $lte: currentDate }, // voucher đã bắt đầu
+            voucher_end_date: { $gte: currentDate },
+        });
         return {
             totalPage: Math.ceil(totalVoucher / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum || 0,
@@ -114,9 +118,9 @@ class VoucherService {
     }
 
     // Lấy voucher theo ID
-    static async getVoucherById(id) {
-        const voucher = await voucherModel.findById(id);
-        if (!voucher) throw new NotFoundError('Voucher không tồn tại!');
+    static async getVoucherByCode(code) {
+        const voucher = await voucherModel.findOne({ voucher_code: code });
+        if (!voucher) throw new RequestError('Voucher không tồn tại!');
         return voucher;
     }
 
@@ -153,7 +157,7 @@ class VoucherService {
         );
 
         if (!updatedVoucher) {
-            throw new NotFoundError('Voucher không tồn tại!');
+            throw new RequestError('Voucher không tồn tại!');
         }
 
         return updatedVoucher;
@@ -162,7 +166,7 @@ class VoucherService {
     // Xóa voucher theo ID
     static async deleteVoucher(id) {
         const voucher = await voucherModel.findByIdAndDelete(id);
-        if (!voucher) throw new NotFoundError('Voucher không tồn tại!');
+        if (!voucher) throw new RequestError('Voucher không tồn tại!');
         return voucher;
     }
 
@@ -173,7 +177,7 @@ class VoucherService {
         });
 
         if (!vouchers.length) {
-            throw new NotFoundError('Không tìm thấy voucher phù hợp!');
+            throw new RequestError('Không tìm thấy voucher phù hợp!');
         }
 
         return vouchers;
