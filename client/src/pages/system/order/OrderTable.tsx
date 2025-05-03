@@ -45,9 +45,7 @@ const OrderTable: React.FC<OrderListProps> = ({ orders, tab, onChangeStatus }) =
                         {orders?.map((order, index) => (
                             <TableRow key={order?._id} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                                 <TableCell className="px-5 text-gray-70 dark:text-gray-300">
-                                    <span className="truncate-trailing text-[rgb(128,128,137)] line-clamp-2 text-theme-sm dark:text-white/90">
-                                        {index + 1}
-                                    </span>
+                                    <span className="truncate-trailing text-[rgb(128,128,137)] line-clamp-2 text-theme-sm dark:text-white/90">{index + 1}</span>
                                 </TableCell>
                                 <TableCell className="px-5 py-3">
                                     <span className="truncate-trailing text-[rgb(128,128,137)] line-clamp-1 text-theme-sm dark:text-white/90">
@@ -64,8 +62,7 @@ const OrderTable: React.FC<OrderListProps> = ({ orders, tab, onChangeStatus }) =
                                         {order?.order_products?.length > 0 ? (
                                             order.order_products.map((p) => (
                                                 <p key={p._id}>
-                                                    {p.productId?.product_name || 'Tên sản phẩm không có'}{' '}
-                                                    <span className="text-red-500">x{p.quantity}</span>
+                                                    {p.productId?.product_name || 'Tên sản phẩm không có'} <span className="text-red-500">x{p.quantity}</span>
                                                 </p>
                                             ))
                                         ) : (
@@ -76,22 +73,16 @@ const OrderTable: React.FC<OrderListProps> = ({ orders, tab, onChangeStatus }) =
 
                                 <TableCell className="px-5 py-3 text-center dark:text-gray-300">
                                     <span className="truncate-trailing text-[rgb(128,128,137)] line-clamp-1 text-theme-sm dark:text-white/90">
-                                        {formatMoney(order?.order_total_price)}
+                                        {order.order_payment_method == 'VNPAY' ? 'Đã thanh toán' : formatMoney(order?.order_total_price)}
                                     </span>
                                 </TableCell>
                                 <TableCell className="text-center space-y-1">
                                     {['pending', 'confirm', 'shipped']?.includes(tab) && (
-                                        <p
-                                            className="text-[13px] text-primary underline cursor-pointer"
-                                            onClick={() => onChangeStatus(order._id)}
-                                        >
+                                        <p className="text-[13px] text-primary underline cursor-pointer" onClick={() => onChangeStatus(order._id)}>
                                             Xác nhận
                                         </p>
                                     )}
-                                    <Link
-                                        to={`/quan-ly/don-hang-chi-tiet/${order._id}`}
-                                        className="text-[13px] text-primary underline cursor-pointer block"
-                                    >
+                                    <Link to={`/quan-ly/don-hang-chi-tiet/${order._id}`} className="text-[13px] text-primary underline cursor-pointer block">
                                         Xem chi tiết
                                     </Link>
                                 </TableCell>

@@ -37,8 +37,8 @@ const VoucherController = {
         });
     },
     // Lấy chi tiết voucher theo ID
-    getVoucherById: async (req, res) => {
-        const voucher = await VoucherService.getVoucherById(req.params.id);
+    getVoucherByCode: async (req, res) => {
+        const voucher = await VoucherService.getVoucherByCode(req.params.code);
         res.status(200).json({
             success: true,
             data: voucher,

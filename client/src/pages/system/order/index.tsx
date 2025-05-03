@@ -60,28 +60,27 @@ const OrderManage: React.FC = () => {
         }
     };
 
-   // Hàm tìm kiếm đơn hàng theo mã
-const handleSearch = async () => {
-    setLoading(true);
-    if (!searchQuery.trim()) {
-        // Hiển thị thông báo nếu từ khóa tìm kiếm trống
-        showNotification('Vui lòng nhập từ khoá tìm kiếm', false);  // Thông báo lỗi khi không có từ khoá
+    // Hàm tìm kiếm đơn hàng theo mã
+    const handleSearch = async () => {
+        setLoading(true);
+        if (!searchQuery.trim()) {
+            // Hiển thị thông báo nếu từ khóa tìm kiếm trống
+            showNotification('Vui lòng nhập từ khoá tìm kiếm', false); // Thông báo lỗi khi không có từ khoá
+            setLoading(false);
+            return;
+        }
+
+        const res = await apiGetOrderByCode(searchQuery.trim()); // Sử dụng apiGetOrderByCode để tìm kiếm
+        if (res.success) {
+            const result = Array.isArray(res.data) ? res.data : [res.data];
+            setOrders(result); // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
+            setIsSearching(true);
+        } else {
+            console.error('Không tìm thấy đơn hàng:', res.message);
+            setOrders([]); // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
+        }
         setLoading(false);
-        return;
-    }
-
-    const res = await apiGetOrderByCode(searchQuery.trim());  // Sử dụng apiGetOrderByCode để tìm kiếm
-    if (res.success) {
-        const result = Array.isArray(res.data) ? res.data : [res.data];
-        setOrders(result);  // Cập nhật danh sách đơn hàng với kết quả tìm kiếm
-        setIsSearching(true);
-    } else {
-        console.error('Không tìm thấy đơn hàng:', res.message);
-        setOrders([]);  // Nếu không tìm thấy đơn hàng, cập nhật danh sách là rỗng
-    }
-    setLoading(false);
-};
-
+    };
 
     const handleUpdateStatus = async (id: string) => {
         if (!confirm('Bạn có muốn xác nhận không?')) return;
@@ -93,7 +92,7 @@ const handleSearch = async () => {
             notification_title: statusOrderNotification(res?.data?.order_status).subtitle,
             notification_subtitle: statusOrderNotification(res?.data?.order_status).message,
             notification_imageUrl:
-                'https://geso.us/wp-content/uploads/2024/06/1-quan-ly-don-hang-hieu-qua-giup-doanh-nghiep-kiem-soat-toan-bo-quy-trinh-ban-hang.jpg',
+                'https://png.pngtree.com/png-clipart/20240619/original/pngtree-delivery-icon-with-scooter-and-boy-vector-png-image_15370581.png',
             notification_link: `/nguoi-dung/chi-tiet-don-hang/${id}`,
         };
         await sendNotificationToUser(res?.data?.order_user, notification);

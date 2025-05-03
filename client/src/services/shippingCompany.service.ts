@@ -1,7 +1,7 @@
 import { adminClient, apiClient } from '../config/httpRequest';
 
 // API lấy danh sách tất cả công ty vận chuyển
-const apiGetAllShippingCompanies = async (queries: { limit: number; page: number }) => {
+const apiGetAllShippingCompanies = async (queries?: { limit: number; page: number }) => {
     try {
         const res = await apiClient.get('/v1/api/shippingCompany/all', {
             params: queries,

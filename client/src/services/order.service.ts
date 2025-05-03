@@ -119,8 +119,21 @@ const apiReorder = async (id: string) => {
         };
     }
 };
+
+const apiCreateOrders = async (data: any) => {
+    try {
+        const res = await authClient.post('/v1/api/order/add', data);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 export {
     apiReorder,
+    apiCreateOrders,
     apiCancelOrder,
     apiGetAllOrdersByUser,
     apiGetOfflineOrderByCode,

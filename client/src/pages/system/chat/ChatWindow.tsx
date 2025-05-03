@@ -136,6 +136,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
                         </div>
                         <input
                             type="text"
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    handleOnClick();
+                                }
+                            }}
                             onChange={(e) => setValue(e?.target?.value)}
                             placeholder="Nhập tin nhắn"
                             value={value}

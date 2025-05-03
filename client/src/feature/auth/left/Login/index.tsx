@@ -31,11 +31,9 @@ const Login: React.FC = () => {
             setOpenFeatureAuth(false);
             loginUser();
             setUser(res.data.user);
-
             // 👉 Thêm để hiển thị lại banner voucher khi vừa đăng nhập
             localStorage.setItem('justLoggedIn', 'true');
             sessionStorage.removeItem('voucherBannerShown');
-            window.location.reload();
         } else {
             setError(res.message);
         }
@@ -81,8 +79,7 @@ const Login: React.FC = () => {
                 <div className="flex flex-col gap-2">
                     <button
                         onClick={handleSummit}
-                        className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80 transition duration-200"
-                    >
+                        className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80 transition duration-200">
                         Đăng nhập
                     </button>
                 </div>

@@ -7,8 +7,8 @@ export const PATH = {
     PAGE_SEARCH: '/tim-kiem/:keySearch',
     PAGE_IMAGE_SEARCH: '/tim-kiem-hinh-anh',
     PAGE_CART: '/gio-hang',
-    PAGE_PAYMENT: '/payment',
-    PAGE_PAYPAL: '/payment/paypal',
+    PAGE_PAYMENT: '/thanh-toan',
+    PAGE_PAYMENT_CONFIRM: '/xac-nhan-thanh-toan',
     VOUCHER: '/voucher',
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
@@ -116,7 +116,7 @@ import AutoStoriesIcon from '@mui/icons-material/AutoStories';
 import PersonIcon from '@mui/icons-material/Person';
 import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
 import SellIcon from '@mui/icons-material/Sell';
-import { bachhoa, danhchoban, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
+import { bachhoa, danhchoban, hangmoi, imgPayInCash, vnpay, revodoi } from '../assets';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
 export const SIDEBAR_USER = [
@@ -166,9 +166,9 @@ export const PAYMENT_METHOD = {
             img: imgPayInCash,
         },
         {
-            code: 'PAYPAL',
-            label: 'Thanh toán bằng PAYPAL',
-            img: paypal,
+            code: 'VNPAY',
+            label: 'Thanh toán bằng VNPAY',
+            img: vnpay,
         },
     ],
 };

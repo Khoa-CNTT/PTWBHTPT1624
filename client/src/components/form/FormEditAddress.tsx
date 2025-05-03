@@ -1,13 +1,13 @@
-/* eslint-disable react-hooks/exhaustive-deps */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { memo, useEffect, useState } from 'react';
 import CloseIcon from '@mui/icons-material/Close';
-import { InputReadOnly, Overlay, showNotification } from '..';
+import { InputForm, InputReadOnly, Overlay, showNotification } from '..';
 import ButtonOutline from '../buttonOutline';
 import SelectOptions from '../selectOptions';
 import { IUserProfile } from '../../interfaces/user.interfaces';
 import { getApiPublicDistrict, getApiPublicProvince, getApiPublicWards } from '../../services/address.service';
 import { apiUpdateProfile } from '../../services/user.service';
+import useUserStore from '../../store/userStore';
 
 interface FormEditAddressProps {
     payload: IUserProfile;
@@ -16,7 +16,6 @@ interface FormEditAddressProps {
     isEdit?: boolean;
 }
 
-// eslint-disable-next-line react-refresh/only-export-components
 const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, setIsOpen, isEdit }) => {
     const [provinces, setProvinces] = useState<{ code: number; name: string }[]>();
     const [districts, setDistricts] = useState<{ code: number; name: string }[]>();
@@ -25,10 +24,8 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
     const [wardsId, setWardsId] = useState<number>();
     const [wards, setWards] = useState<{ code: number; name: string }[]>();
     const [address, setAddress] = useState<string>('');
-    useEffect(() => {
-        setAddress(payload.user_address?.detail || '');
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [payload]);
+    const [specificAddress, setSpecificAddress] = useState<string>('');
+    const { setUser } = useUserStore();
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -59,11 +56,11 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
         const province = provinces?.find((e) => e?.code === Number(provinceId));
         const district = districts?.find((e) => e?.code === Number(districtId));
         const ward = wards?.find((e) => e?.code === Number(wardsId));
-        const detailAddress = [ward?.name, district?.name, province?.name].filter(Boolean).join(', ');
-        setAddress(detailAddress);
-    }, [provinceId, districtId, wardsId]);
+        const detailAddress = [specificAddress, ward?.name, district?.name, province?.name].filter(Boolean).join(', ');
+        setAddress(detailAddress || payload.user_address?.detail || '');
+    }, [provinceId, districtId, wardsId, specificAddress, provinces, districts, wards, payload]);
 
-    const handleSummit = async (e: { stopPropagation: () => void }) => {
+    const handleSubmit = async (e: { stopPropagation: () => void }) => {
         e.stopPropagation();
         const provinceName = provinces?.find((p) => p?.code === Number(provinceId))?.name || '';
         const districtName = districts?.find((d) => d?.code === Number(districtId))?.name || '';
@@ -77,6 +74,7 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
         if (isEdit) {
             const res = await apiUpdateProfile({ user_address: newAddress });
             showNotification(res.message, res.success);
+            if (res.success) setUser(res.data);
             if (res.success && setPayload) {
                 setPayload((prev: any) => ({
                     ...prev,
@@ -94,6 +92,10 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
         setIsOpen?.(false);
     };
 
+    const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        setSpecificAddress(e.target.value);
+    };
+
     return (
         <Overlay
             className="z-[1000]"
@@ -102,7 +104,7 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
                 if (setIsOpen) setIsOpen(false);
             }}>
             <div
-                className="relative  flex flex-col w-[600px] h-[400px] p-6 bg-white rounded-lg overflow-hidden"
+                className="relative flex flex-col w-[600px] h-[400px] p-6 bg-white rounded-lg overflow-hidden"
                 onClick={(e) => {
                     e.stopPropagation();
                     if (setIsOpen) setIsOpen(true);
@@ -123,13 +125,13 @@ const FormEditAddress: React.FC<FormEditAddressProps> = ({ payload, setPayload, 
                             setOptionId={setDistrictId}
                         />
                         <SelectOptions label="Xã/Phường" options={wards} selectId={wards?.find((e) => e.code === wardsId)?.code} setOptionId={setWardsId} />
+                        <InputForm name_id="specificAddress" handleOnchange={handleInputChange} label="Địa chỉ cụ thể" value={specificAddress} />
                     </div>
                     <InputReadOnly label="Địa chỉ" value={address} />
                 </div>
-                <ButtonOutline className="mx-auto px-6 text-white bg-primary mt-6" onClick={handleSummit}>
+                <ButtonOutline className="mx-auto px-6 text-white bg-primary mt-6" onClick={handleSubmit}>
                     Lưu
                 </ButtonOutline>
-                {/* ---------- close --------- */}
                 <span
                     className="absolute top-2 right-2 cursor-pointer"
                     onClick={(e) => {

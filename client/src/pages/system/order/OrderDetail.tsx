@@ -56,7 +56,7 @@ const OrderDetail: React.FC = () => {
                             <span className="font-normal text-primary">{formatShippingDate(order?.order_date_shipping)}</span> đến
                         </p>
                         <p className="text-sm text-gray-600">
-                            Phí vận chuyển: <span className="font-semibold text-red-500">{formatMoney(Number(order?.order_total_price))}</span>
+                            Phí vận chuyển: <span className="font-semibold text-red-500">{formatMoney(Number(order?.order_shipping_price))}</span>
                         </p>
                     </div>
                 </div>

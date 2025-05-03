@@ -34,14 +34,14 @@ const DefaultLayout = () => {
             theme="light"
         />
     );
-    // const location = useLocation();
+
     // const { mobile_ui } = useAppSelector((state) => state.action);
     return (
         <>
-            <div className="flex flex-col w-screen h-full mx-auto  bg-background_primary">
-                {/* {!location.pathname.includes(path.PAGE_PAYMENT) && <Header />} */}
+            <div className="flex flex-col h-full mx-auto  bg-background_primary">
                 <Header />
-                <main className="flex flex-col tablet:pb-20 tablet:bg-white  bg-background_primary  h-full w-full max-w-[1280px] tablet:px-0 px-5  mx-auto  ">
+
+                <main className="flex flex-col tablet:pb-20 tablet:bg-white  bg-background_primary  h-full w-full max-w-[1200px] tablet:px-0  mx-auto  ">
                     <Outlet />
                 </main>
                 <Footer />
