@@ -10,7 +10,10 @@ export const ENV = {
     ARB_BANK_CODE: import.meta.env.VITE_REACT_ARB_BANK_CODE,
     GEMINI_API_KEY: import.meta.env.VITE_GEMINI_API_KEY,
     // VNPAY
-    vnp_TmnCode: import.meta.env.VITE_REACT_vnp_TmnCode,
-    vnp_HashSecret: import.meta.env.VITE_REACT_vnp_HashSecret,
-    vnp_Url: import.meta.env.VITE_REACT_vnp_Url,
+    // vnp_TmnCode: import.meta.env.VITE_REACT_vnp_TmnCode,
+    // vnp_HashSecret: import.meta.env.VITE_REACT_vnp_HashSecret,
+    // vnp_Url: import.meta.env.VITE_REACT_vnp_Url,
+    vnp_TmnCode: "RSRU7CDQ",
+    vnp_HashSecret: "0ADS9PK4TONFW8U9N3SDOEV8CUU6RW0U",
+    vnp_Url: "https://sandbox.vnpayment.vn/paymentv2/vpcpay.html",
 };

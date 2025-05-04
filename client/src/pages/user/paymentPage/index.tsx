@@ -134,6 +134,7 @@ const PaymentPage: React.FC = () => {
         const vnp_HashSecret = ENV.vnp_HashSecret;
         const vnp_Url = ENV.vnp_Url;
         const returnUrl = `${ENV.BASE_URL}${PATH.PAGE_PAYMENT_CONFIRM}`;
+        console.log({vnp_HashSecret,vnp_Url,vnp_TmnCode,returnUrl})
         if (!vnp_HashSecret || !vnp_Url || !vnp_TmnCode || !returnUrl) {
             alert('Không thể thực hiện thanh toán, thiếu thông tin cấu hình.');
             return;
@@ -144,7 +145,7 @@ const PaymentPage: React.FC = () => {
             new Date().getHours().toString().padStart(2, '0') + new Date().getMinutes().toString().padStart(2, '0') + Math.floor(Math.random() * 10000); // Mã giao dịch duy nhất
         // Dữ liệu thanh toán
         const paymentData: any = {
-            vnp_Amount: totalPayment, // Chuyển đổi sang đơn vị VNPay
+            vnp_Amount: totalPayment * 100, // Chuyển đổi sang đơn vị VNPay
             vnp_Command: 'pay',
             vnp_CreateDate: createDate,
             vnp_CurrCode: 'VND',
