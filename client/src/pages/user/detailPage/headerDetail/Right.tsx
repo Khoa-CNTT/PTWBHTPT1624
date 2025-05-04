@@ -35,14 +35,22 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
             showNotification('Vui lòng đăng nhập để thích sản phẩm', false);
             return;
         }
-        if (favoriteProducts.some((i) => i._id === productDetail._id)) {
-            removeFavorite(productDetail._id);
-            await removeFavoriteProduct(productDetail._id);
-        } else {
-            setFavorite(productDetail);
-            await addFavoriteProduct(productDetail._id);
+    
+        try {
+            if (favoriteProducts.some((i) => i._id === productDetail._id)) {
+                removeFavorite(productDetail._id);
+                await removeFavoriteProduct(productDetail._id);
+                showNotification('Đã xoá sản phẩm khỏi danh sách yêu thích', true);
+            } else {
+                setFavorite(productDetail);
+                await addFavoriteProduct(productDetail._id);
+                showNotification('Đã thêm sản phẩm vào danh sách yêu thích', true);
+            }
+        } catch (error) {
+            showNotification('Đã xảy ra lỗi. Vui lòng thử lại.', false);
         }
     }, [isUserLoggedIn, favoriteProducts, productDetail, setOpenFeatureAuth]);
+    
 
     // Handle Add to Cart
     const handleAddToCart = async (isBuy: boolean) => {
