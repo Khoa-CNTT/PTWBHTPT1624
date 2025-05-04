@@ -53,9 +53,7 @@ const PaymentConfirm: React.FC = () => {
                     notification_link: '/quan-ly/don-hang',
                 };
                 await sendNotificationToAdmin(notification);
-                selectedProducts.forEach((e) => {
-                    setRemoveProductInCart(e.productId);
-                });
+                await Promise.all(selectedProducts.map((e) => setRemoveProductInCart(e.productId)));
                 navigate(PATH.PAGE_ORDER);
             } else {
                 showNotification('Thanh toán không thành công', false);

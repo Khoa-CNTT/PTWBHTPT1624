@@ -9,19 +9,26 @@ import usePurchasedStore from '../store/purchasedStore';
 import { apiGetPurchasedProduct } from '../services/product.service';
 import { getVoucherByUser } from '../services/user.voucher.service';
 import useUserVoucherStore from '../store/userVoucherStore';
+import { useCartStore } from '../store/cartStore';
 
 const useFetchUser = () => {
     const { setUser } = useUserStore();
-    const { isUserLoggedIn } = useAuthStore();
     const { setFavoriteProducts } = useFavoriteStore();
     const { setPurchasedProducts } = usePurchasedStore();
     const { setUserVouchers } = useUserVoucherStore();
-
+    const { clearUser } = useUserStore();
+    const { isUserLoggedIn, logoutUser } = useAuthStore();
+    const { setAddProductInCartFromApi } = useCartStore();
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
         if (!accessToken) return;
         const fetchApiDetailUser = async () => {
             const res = await apiGetDetailUser();
+            if (!res.success) {
+                clearUser();
+                logoutUser();
+                setAddProductInCartFromApi([]);
+            }
             const resFavorite = await apiGetUserFavoriteProducts();
             const resPurchased = await apiGetPurchasedProduct();
             const resVoucher = await getVoucherByUser();

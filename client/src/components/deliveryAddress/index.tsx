@@ -8,11 +8,11 @@ const DeliveryAddress: React.FC = () => {
 
     return (
         <>
-            <div className="rounded-lg bg-white p-4 shadow-sm">
+            <div className="rounded-lg bg-white p-4 ">
                 <div className="flex items-center justify-between">
-                    <h2 className="text-lg font-semibold text-orange-500">Địa Chỉ Nhận Hàng</h2>
+                    <h2 className="text-lg font-semibold text-orange-500">Địa chỉ nhận hàng</h2>
                     <span className="cursor-pointer text-base text-blue-600 hover:text-blue-800" onClick={() => setIsOpenEditAddress(true)}>
-                        Thay Đổi
+                        Thay đổi
                     </span>
                 </div>
                 <div className="mt-2 flex items-center gap-3">

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { imgCartEmpty } from '../../../assets';
 import { useNavigate } from 'react-router-dom';
 import { useCartStore } from '../../../store/cartStore';
@@ -21,11 +21,7 @@ const CartPage: React.FC = () => {
         }, 0);
         return result;
     }, [selectedProducts]);
-    useEffect(() => {
-        if (productInCart.length === 0) {
-            navigate('/');
-        }
-    }, []);
+
     const handleBuyProducts = () => {
         if (user.user_address && user.user_mobile) {
             if (selectedProducts?.length === 0) {
@@ -41,7 +37,7 @@ const CartPage: React.FC = () => {
     };
     if (productInCart?.length === 0) {
         return (
-            <div className="flex flex-col items-center w-full h-full py-6 bg-white rounded-md mb-10">
+            <div className="flex flex-col items-center w-full h-screen py-6 bg-white rounded-md my-4">
                 <img src={imgCartEmpty} className="w-[190px] h-[160px]" />
                 <h3 className="text-base text-secondary my-2">Không có sản phẩm nào trong giỏ hàng của bạn.</h3>
                 <ButtonOutline className="mt-2 px-8" onClick={() => navigate(PATH.HOME)}>

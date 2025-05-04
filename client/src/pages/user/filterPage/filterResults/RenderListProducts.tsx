@@ -71,7 +71,7 @@ const RenderListProducts: React.FC = () => {
             {!isLoading ? (
                 products?.length !== 0 ? (
                     <>
-                        <div className="grid mobile:grid-cols-2  tablet:grid-cols-4  laptop:grid-cols-6 ">
+                        <div className="grid mobile:grid-cols-2  tablet:grid-cols-2  laptop:grid-cols-6 ">
                             {products?.map((p) => (
                                 <ProductItem key={uuidv4()} props={p} />
                             ))}

@@ -13,7 +13,7 @@ import useDebounce from '../../hooks/useDebounce';
 
 // eslint-disable-next-line react-refresh/only-export-components
 const ProductInCartItem: React.FC<{ product: IProductInCart; isSelector?: boolean }> = ({ product, isSelector }) => {
-    const { selectedProducts, setRemoveProductInCart, setSelectedProducts, setIncreaseProduct, setDecreaseProduct } = useCartStore();
+    const { selectedProducts, setRemoveProductInCart, setSelectedProduct, setIncreaseProduct, setDecreaseProduct } = useCartStore();
     const navigate = useNavigate();
     const handleDeleteProductInCart = async (product: IProductInCart) => {
         if (confirm('Bạn có muốn xóa sản phẩm đang chọn?')) {
@@ -42,11 +42,11 @@ const ProductInCartItem: React.FC<{ product: IProductInCart; isSelector?: boolea
             <div className="tablet:w-full w-[35%] flex gap-3 items-center">
                 {isSelector && (
                     <input
-                        className="cursor-pointer"
+                        className="cursor-pointer rounded-md"
                         type="checkbox"
                         checked={selectedProducts?.some((i) => i?.productId === product?.productId)}
                         onChange={() => {
-                            setSelectedProducts(product);
+                            setSelectedProduct(product);
                         }}
                     />
                 )}

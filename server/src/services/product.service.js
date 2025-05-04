@@ -30,7 +30,6 @@ class ProductService {
                 await downloadImage(payload.product_thumb, tempPath);
                 const searchFeatures = await extractFeatures(tempPath);
                 payload.product_image_features = Array.from(searchFeatures.dataSync());
-
                 // Giải phóng Tensor
                 searchFeatures.dispose();
             } catch (err) {
@@ -316,7 +315,7 @@ class ProductService {
             }),
         );
         // Sắp xếp kết quả theo độ tương đồng giảm dần và lấy 10 sản phẩm tương tự nhất
-        const sortedResults = results.sort((a, b) => b.similarity - a.similarity).slice(0, 12);
+        const sortedResults = results.filter((p) => p.similarity > 0.996).sort((a, b) => b.similarity - a.similarity);
         // Xóa tệp ảnh tạm sau khi xử lý
         await fs.unlink(tempPath).catch(() => {});
         // Trả về kết quả tìm kiếm với thông tin sản phẩm

@@ -18,13 +18,14 @@ import { IProductInCart } from '../../../../interfaces/cart.interfaces';
 import useUserStore from '../../../../store/userStore';
 import { addFavoriteProduct, removeFavoriteProduct } from '../../../../services/favoriteProduct.service';
 import useFavoriteStore from '../../../../store/favoriteStore';
+import { PATH } from '../../../../utils/const';
 
 const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) => {
     const [quantity, setQuantity] = useState<number>(1);
     const { isUserLoggedIn } = useAuthStore();
-    const { setOpenFeatureAuth } = useActionStore();
+    const { setOpenFeatureAuth, setIsLoading } = useActionStore();
     const { user } = useUserStore();
-    const { setAddProductInCartFromApi, setSelectedProducts, selectedProducts } = useCartStore();
+    const { setAddProductInCartFromApi, setSelectedProduct, selectedProducts } = useCartStore();
     const { favoriteProducts, setFavorite, removeFavorite } = useFavoriteStore();
     const navigate = useNavigate();
 
@@ -59,20 +60,20 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
             showNotification('Vui lòng đăng nhập để thêm vào giỏ hàng', false);
             return;
         }
+        setIsLoading(true);
         const res = await apiAddToCart({ quantity, productId: productDetail?._id });
+        setIsLoading(false);
         if (res?.success) {
             setAddProductInCartFromApi(res.data.cart_products);
-            showNotification('Sản phẩm đã được thêm vào giỏ hàng', true);
-
-            if (isBuy) {
-                if (!selectedProducts.some((p) => p.productId._id === productDetail._id)) {
-                    const selected = res.data.cart_products.filter((p: IProductInCart) => p.productId === productDetail._id);
-                    setSelectedProducts(selected);
-                }
-                navigate('/cart');
+            if (!selectedProducts.some((p) => p.productId?._id === productDetail?._id)) {
+                const selected = res.data.cart_products.find((p: IProductInCart) => p.productId === productDetail._id);
+                setSelectedProduct(selected);
             }
-        } else {
-            showNotification(res?.message || 'Không thể thêm sản phẩm vào giỏ', false);
+            if (isBuy) {
+                navigate(PATH.PAGE_CART);
+            } else {
+                showNotification(res?.message, res?.success);
+            }
         }
     };
 
