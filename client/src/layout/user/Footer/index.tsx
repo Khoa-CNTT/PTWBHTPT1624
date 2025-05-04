@@ -99,39 +99,41 @@ const Footer: React.FC<FooterProps> = ({ contacts = DEFAULT_CONTACTS }) => {
     }, []);
 
     return (
-        <footer
-            className="mx-auto mt-4 w-full max-w-7xl rounded-lg border-4 border-dashed border-blue-100 bg-white  p-6 shadow-lg md:p-8"
-            aria-labelledby="footer-title">
+        <footer className=" mt-4 h-full w-full border-t-4 border-dashed border-blue-100 bg-white  p-4 shadow-lg" aria-labelledby="footer-title">
             {/* Header Image */}
-            <img src="https://phongtro123.com/images/support-bg.jpg" alt="Hỗ trợ khách hàng" className="h-48 w-full rounded-md object-contain" />
+            <div className="mx-auto h-full w-full max-w-[1200px]  ">
+                <img src="https://phongtro123.com/images/support-bg.jpg" alt="Hỗ trợ khách hàng" className="h-48 w-full rounded-md object-contain" />
 
-            {/* Title and Description */}
-            <h3 id="footer-title" className="mt-6 text-center text-2xl font-bold  text-gray-900 ">
-                Về cửa hàng của chúng tôi
-            </h3>
-            <p className="mx-auto mt-2 max-w-3xl text-center text-base font-normal leading-relaxed text-gray-600 md:text-lg">
-                Chào mừng bạn đến với cửa hàng của chúng tôi! Chúng tôi cung cấp các sản phẩm chất lượng cao và dịch vụ tận tâm, mang đến trải nghiệm mua sắm
-                tuyệt vời nhất cho bạn.
-            </p>
+                {/* Title and Description */}
+                <h3 id="footer-title" className="mt-6 text-center text-2xl font-bold  text-gray-900 ">
+                    Về cửa hàng của chúng tôi
+                </h3>
+                <p className="mx-auto mt-2 max-w-3xl text-center text-base font-normal leading-relaxed text-gray-600 md:text-lg">
+                    Chào mừng bạn đến với cửa hàng của chúng tôi! Chúng tôi cung cấp các sản phẩm chất lượng cao và dịch vụ tận tâm, mang đến trải nghiệm mua
+                    sắm tuyệt vời nhất cho bạn.
+                </p>
 
-            {/* Statistics */}
-            <div ref={statsRef} className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
-                {statistics.map((stat) => (
-                    <StatisticCard key={stat.id} stat={stat} isVisible={isVisible} />
-                ))}
-            </div>
-
-            {/* Contact Information */}
-            <div className="mt-8">
-                <h4 className="mb-4 text-center text-xl font-semibold tracking-tight text-gray-900">Liên hệ với chúng tôi</h4>
-                <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
-                    {contacts.map((contact) => (
-                        <ContactCard key={contact.id} contact={contact} />
+                {/* Statistics */}
+                <div ref={statsRef} className="mt-6 grid grid-cols-2 gap-4 md:grid-cols-4 md:gap-6">
+                    {statistics.map((stat) => (
+                        <StatisticCard key={stat.id} stat={stat} isVisible={isVisible} />
                     ))}
                 </div>
+
+                {/* Contact Information */}
+                <div className="mt-8">
+                    <h4 className="mb-4 text-center text-xl font-semibold tracking-tight text-gray-900">Liên hệ với chúng tôi</h4>
+                    <div className="grid grid-cols-1 gap-4 sm:grid-cols-3">
+                        {contacts.map((contact) => (
+                            <ContactCard key={contact.id} contact={contact} />
+                        ))}
+                    </div>
+                </div>
+                {/* Copyright */}
+                <p className="mt-6 text-center text-sm leading-relaxed text-gray-500">
+                    © {new Date().getFullYear()} Cửa hàng của chúng tôi. All rights reserved.
+                </p>
             </div>
-            {/* Copyright */}
-            <p className="mt-6 text-center text-sm leading-relaxed text-gray-500">© {new Date().getFullYear()} Cửa hàng của chúng tôi. All rights reserved.</p>
         </footer>
     );
 };

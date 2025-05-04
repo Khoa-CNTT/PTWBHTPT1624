@@ -192,5 +192,17 @@ const apiGetWheelRewards = async () => {
     }
 };
 
-
-export {apiGetWheelRewards, apiPlayVongQuay,apiPlayLuckyBox,apiChangePassword, apiSearchUsers, apiUpdateProfile, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+export {
+    apiGetWheelRewards,
+    apiPlayVongQuay,
+    apiPlayLuckyBox,
+    apiChangePassword,
+    apiSearchUsers,
+    apiUpdateProfile,
+    apiGetDetailUser,
+    apiGetAllUser,
+    apiAddUser,
+    apiUpdateUser,
+    apiDeleteUser,
+    apiToggleBlockUser,
+};

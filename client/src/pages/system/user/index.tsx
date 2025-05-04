@@ -89,15 +89,15 @@ export default function UserManage() {
     const handleSearch = async () => {
         // Nếu từ khoá tìm kiếm trống, hiển thị thông báo lỗi mà không làm lại cuộc gọi API
         if (!searchQuery.trim()) {
-            showNotification('Vui lòng nhập từ khoá tìm kiếm', false);  // Thông báo khi không có từ khoá
+            showNotification('Vui lòng nhập từ khoá tìm kiếm', false); // Thông báo khi không có từ khoá
             return; // Dừng lại, không gọi API
         }
-    
+
         setIsUploading(true); // Bắt đầu loading
-    
+
         // Gửi request API tìm kiếm
         const res = await apiSearchUsers(searchQuery.trim());
-        
+
         // Xử lý kết quả trả về
         if (res.success) {
             setUsers(res.data); // Cập nhật danh sách người dùng từ API
@@ -106,7 +106,7 @@ export default function UserManage() {
         } else {
             showNotification(res.message || 'Không tìm thấy người dùng nào', false);
         }
-    
+
         setIsUploading(false); // Kết thúc loading
     };
 
@@ -160,15 +160,16 @@ export default function UserManage() {
                 {users.length === 0 ? (
                     <NotExit label="Không có người dùng nào" />
                 ) : (
-                    <UserTable
-                        users={users}
-                        onEdit={handleEdit}
-                        onBlock={handleBlock}
-                        onDelete={handleDelete} // Pass the handleDelete function
-                    />
+                    <>
+                        <UserTable
+                            users={users}
+                            onEdit={handleEdit}
+                            onBlock={handleBlock}
+                            onDelete={handleDelete} // Pass the handleDelete function
+                        />
+                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 )}
-
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {isOpen && <UserModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} user={selectedUser} />}

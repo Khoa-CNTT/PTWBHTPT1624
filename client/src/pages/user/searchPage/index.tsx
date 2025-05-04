@@ -11,6 +11,7 @@ import { NotFound, SkeletonProducts } from '../../../components';
 import Pagination from '../../../components/pagination';
 import ProductItem from '../../../components/item/ProductItem';
 import { useActionStore } from '../../../store/actionStore';
+import { PATH } from '../../../utils/const';
 
 const SearchPage: React.FC = () => {
     const location = useLocation();
@@ -58,7 +59,10 @@ const SearchPage: React.FC = () => {
     const { searchImage } = useActionStore();
 
     useEffect(() => {
-        if (searchImage === '') return;
+        if (!(searchImage || params?.keySearch)) {
+            navigate(PATH.HOME);
+            return;
+        }
         const fetchProducts = async () => {
             setIsLoading(true);
             const res = await apiSearchProductByImage(searchImage);
@@ -82,12 +86,12 @@ const SearchPage: React.FC = () => {
                 </div>
             )}
             <div className="flex flex-col w-full h-full gap-2">
-                <SortBar />
-                <div className="flex flex-col bg-white pb-8 gap-10">
+                {searchImage ? <div className="flex text-2xl p-4 items-center ">Kết quả tìm kiếm</div> : <SortBar />}
+                <div className="flex flex-col bg-white  p-4 gap-10">
                     {!isLoading ? (
                         products?.length !== 0 ? (
                             <>
-                                <div className="grid mobile:grid-cols-2  tablet:grid-cols-4  laptop:grid-cols-6 ">
+                                <div className="grid mobile:grid-cols-2  tablet:grid-cols-2  laptop:grid-cols-6 ">
                                     {products?.map((p, index) => (
                                         <ProductItem key={p._id} props={p} scrollIntoView={index === 0} />
                                     ))}

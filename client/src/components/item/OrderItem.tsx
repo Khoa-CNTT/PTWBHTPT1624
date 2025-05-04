@@ -68,7 +68,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancel
             </div>
 
             {/* Hành động */}
-            {!view && (
+            {!view && order.order_payment_method === 'VNPAY' && (
                 <div className="flex justify-end mt-2 gap-2">
                     {order?.order_status !== 'delivered' && (
                         <>

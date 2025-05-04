@@ -58,11 +58,11 @@ const Login: React.FC = () => {
                             placeholder="dpshopvn@gmail.com"
                         />
                     </div>
-                    <div className="flex w-full justify-between items-center mt-5">
+                    <div className="flex w-full justify-between bg-transparent  items-center mt-5">
                         <input
                             id="name"
                             required
-                            className="text-sm w-full bg-transparent outline-none border-solid border-b-[1px] py-2"
+                            className="text-sm w-full outline-none border-none py-2"
                             type={showPassword ? 'text' : 'password'}
                             value={password}
                             onChange={(e) => setPassword(e.target.value)}

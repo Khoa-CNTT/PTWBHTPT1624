@@ -4,6 +4,7 @@ import ArrowBackIosIcon from '@mui/icons-material/ArrowBackIos';
 import useAuthStore from '../../../../store/authStore';
 import { apiConfirmVerificationEmail, apiSendVerificationEmail } from '../../../../services/auth.user.service';
 import { useActionStore } from '../../../../store/actionStore';
+import { InputOtp } from 'primereact/inputotp';
 
 interface ModeRegister {
     setModeRegister: React.Dispatch<React.SetStateAction<number>>;
@@ -12,7 +13,7 @@ const Confirm: React.FC<ModeRegister> = (props) => {
     const { setModeRegister } = props;
     const [waitingTime, setWaitingTime] = useState<number>(30);
     const [sentBack, setSentBack] = useState<boolean>(false);
-    const [token, setToken] = useState<string>('');
+    const [token, setTokens] = useState<any>('');
     const [error, setError] = useState<string>('');
     const { email } = useAuthStore();
     const { setIsLoading } = useActionStore();
@@ -39,7 +40,7 @@ const Confirm: React.FC<ModeRegister> = (props) => {
             setSentBack(false);
             setWaitingTime(30);
             setError('');
-            setToken('');
+            setTokens('');
         }
     };
     const handleSummit = async () => {
@@ -49,12 +50,12 @@ const Confirm: React.FC<ModeRegister> = (props) => {
         }
         setIsLoading(true);
         const res = await apiConfirmVerificationEmail(email, token);
+        setIsLoading(false);
         if (!res?.success) {
             setError(res?.message);
             return;
         }
         //chuyển sang mode  tiếp theo
-        setIsLoading(false);
         setModeRegister(2);
     };
     return (
@@ -66,17 +67,10 @@ const Confirm: React.FC<ModeRegister> = (props) => {
                 <h1 className="text-2xl font-semibold">Nhập mã xác minh</h1>
                 <p className="text-base">Nhập mã xác minh vừa được gửi đến gmail của bạn</p>
             </div>
-            <div className="flex flex-col w-full justify-center mt-10 mb-5 gap-2">
-                <input
-                    className=" text-4xl outline-none  w-full  text-center "
-                    maxLength={6}
-                    type="text"
-                    value={token}
-                    onChange={(e) => setToken(e.target.value)}
-                    placeholder="0 0 0 0 0 0"
-                />
-                {error && <p className="text-red-400 text-sm mx-auto">{error}</p>}
+            <div className="card flex justify-content-center mx-auto my-2">
+                <InputOtp value={token} onChange={(e) => setTokens(e.value)} length={6} />
             </div>
+            {error && <p className="text-red-400 text-sm mx-auto">{error}</p>}
             <button
                 onClick={handleSummit}
                 className="w-full bg-pink-500 py-2 rounded-sm text-white text-xl font-normal hover:opacity-80  transition duration-200 ">

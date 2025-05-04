@@ -34,7 +34,7 @@ const Search: React.FC = () => {
     const inputRef = useRef<HTMLInputElement>(null);
     const navigate = useNavigate();
 
-    const { setSearchImage } = useActionStore();
+    const { setSearchImage, setIsLoading } = useActionStore();
     // Lấy lịch sử tìm kiếm từ localStorage khi component mount
     useEffect(() => {
         const storedHistory = localStorage.getItem('searchHistory');
@@ -104,8 +104,10 @@ const Search: React.FC = () => {
         const formData: any = new FormData();
         formData.append('file', image);
         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+        setIsLoading(true);
         const response = await apiUploadImage(formData);
         setSearchImage(response.url);
+        setIsLoading(false);
         navigate(PATH.PAGE_IMAGE_SEARCH);
     };
     // Xử lý phím Enter
@@ -233,7 +235,16 @@ const Search: React.FC = () => {
                             </div>
                         )}
 
-                        <ImageCropper width={550} height={550} type="search" label="Ảnh thumbnail" idName="product_thumb" onCropComplete={handleImageUpload} />
+                        {!searchValue && (
+                            <ImageCropper
+                                width={550}
+                                height={550}
+                                type="search"
+                                label="Ảnh thumbnail"
+                                idName="product_thumb"
+                                onCropComplete={handleImageUpload}
+                            />
+                        )}
                     </div>
                     <button className="tablet:hidden outline-none bg-[rgb(9,115,69)] w-[150px] h-[40px] text-white rounded-r-[2px]" onClick={handleSummit}>
                         <SearchIcon /> <span>Tìm kiếm</span>

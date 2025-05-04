@@ -7,9 +7,9 @@ interface CartState {
     selectedProducts: IProductInCart[];
     productInCart: IProductInCart[];
     setAddProductInCartFromApi: (products: IProductInCart[]) => void;
-    setSelectedProducts: (product: IProductInCart) => void;
-    setSelectedProductsAll: (products: IProductInCart[]) => void;
-    setSelectedProductsEmpty: () => void;
+    setSelectedProduct: (product: IProductInCart) => void;
+    setSelectedProductAll: (products: IProductInCart[]) => void;
+    setSelectedProductEmpty: () => void;
     setIncreaseProduct: (productId: string) => void;
     setDecreaseProduct: (productId: string) => void;
     setRemoveProductInCart: (productId: string) => void;
@@ -31,9 +31,11 @@ export const useCartStore = create<CartState>((set) => ({
         });
     },
 
-    setSelectedProducts: (product) => {
+    setSelectedProduct: (product) => {
         set((state) => {
             const isSelected = state.selectedProducts.some((i) => i.productId === product.productId);
+            console.log('isSelected', isSelected);
+            console.log(product);
             const newSelectedProducts = isSelected
                 ? state.selectedProducts.filter((i) => i.productId !== product.productId)
                 : [...state.selectedProducts, product];
@@ -42,7 +44,7 @@ export const useCartStore = create<CartState>((set) => ({
         });
     },
 
-    setSelectedProductsAll: (products) => {
+    setSelectedProductAll: (products) => {
         set((state) => {
             const newSelectedProducts = state.selectedProducts.length === products.length ? [] : products;
             localStorage.setItem('selectedProducts', JSON.stringify(newSelectedProducts));
@@ -50,7 +52,7 @@ export const useCartStore = create<CartState>((set) => ({
         });
     },
 
-    setSelectedProductsEmpty: () => {
+    setSelectedProductEmpty: () => {
         set((state) => {
             localStorage.setItem('selectedProducts', JSON.stringify([]));
             return { ...state, selectedProducts: [], productsByShopId: [] };

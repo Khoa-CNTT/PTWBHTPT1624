@@ -5,7 +5,7 @@ import { showNotification } from '../../../components';
 import ProductInCartItem from '../../../components/item/ProductInCartItem';
 
 const ProductList: React.FC = () => {
-    const { selectedProducts, productInCart, setRemoveProductInCart, setSelectedProductsAll } = useCartStore();
+    const { selectedProducts, productInCart, setRemoveProductInCart, setSelectedProductAll } = useCartStore();
 
     // const totalPriceMemo = useMemo(() => {
     //     const result = selectedProducts.reduce((total, e) => {
@@ -32,11 +32,11 @@ const ProductList: React.FC = () => {
                 <div className="flex items-center bg-white p-3 rounded-lg overflow-hidden">
                     <div className="w-[40%] flex gap-1">
                         <input
-                            className="cursor-pointer"
+                            className="cursor-pointer rounded-md"
                             type="checkbox"
                             checked={selectedProducts?.length === productInCart?.length}
                             onChange={() => {
-                                setSelectedProductsAll(productInCart);
+                                setSelectedProductAll(productInCart);
                             }}
                         />
                         <span className="text-sm text-secondary ml-1">Tất cả ({productInCart?.length} sản phẩm)</span>
