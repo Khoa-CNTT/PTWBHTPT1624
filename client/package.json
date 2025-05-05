@@ -46,6 +46,7 @@
         "date-fns": "^4.1.0",
         "dayjs": "^1.11.13",
         "dialogflow": "^1.2.0",
+        "esbuild": "^0.25.3",
         "express": "^5.1.0",
         "firebase": "^11.6.1",
         "flatpickr": "^4.6.13",
