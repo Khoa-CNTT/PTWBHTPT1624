@@ -2,7 +2,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import Header from './Header';
 import DeliveryAddress from '../../../components/deliveryAddress';
 import { useCartStore } from '../../../store/cartStore';
 import { useActionStore } from '../../../store/actionStore';
@@ -11,7 +10,6 @@ import { PATH } from '../../../utils/const';
 import { sendNotificationToAdmin } from '../../../services/notification.service';
 import { showNotification } from '../../../components/common/showNotification';
 import { ENV } from '../../../config/ENV';
-import ProductList from './ProductList';
 import useUserStore from '../../../store/userStore';
 import { IShipping } from '../../../interfaces/shipping.interfaces';
 import { IVoucher } from '../../../interfaces/voucher.interfaces';
@@ -24,6 +22,8 @@ import DeliveryMethods from './DeliveryMethods';
 import VoucherSelection from './VoucherSelection';
 import PaymentMethods from './PaymentMethods';
 import OrderSummary from './OrderSummary';
+import Header from './Header';
+import ProductList from './ProductList';
 
 const PaymentPage: React.FC = () => {
     const navigate = useNavigate();

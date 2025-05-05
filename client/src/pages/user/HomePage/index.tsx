@@ -1,6 +1,6 @@
 // HomePage.tsx
 import React from 'react';
-import Banner from './Banner';
+import Banner from './banner';
 import Categories from './categories';
 import ShockDiscount from './shockDiscount';
 import ProductsFeatured from './productsFeatured';

@@ -11,22 +11,22 @@ import { NoPermission } from '../components';
 import AdminProfile from '../pages/system/profile';
 import HomePage from '../pages/user/HomePage';
 import DetailPage from '../pages/user/detailPage';
-import SearchPage from '../pages/user/SearchPage';
 import FilterPage from '../pages/user/filterPage';
 import ForgotPassword from '../feature/forgotPassword';
-import CartPage from '../pages/user/CartPage';
-import VoucherPage from '../pages/user/VoucherPage';
 import UserPage from '../pages/user/userPage';
 import FavoritePage from '../pages/user/userPage/FavoritePage';
 import RecentViewPage from '../pages/user/userPage/RecentViewPage';
 import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage';
 import OrderPage from '../pages/user/userPage/orderPage';
 import UserVoucherPage from '../pages/user/userPage/UserVoucherPage';
-import PaymentPage from '../pages/user/PaymentPage';
+import PaymentPage from '../pages/user/paymentPage';
 import UserProfilePage from '../pages/user/userPage/UserProfilePage';
 import RedeemVoucherPage from '../pages/user/userPage/RedeemVoucherPage';
 import OrderDetailPage from '../pages/user/userPage/orderDetailPage';
-import PaymentConfirmPage from '../pages/user/PaymentConfirmPage';
+import PaymentConfirmPage from '../pages/user/paymentConfirmPage';
+import SearchPage from '../pages/user/searchPage';
+import CartPage from '../pages/user/cartPage';
+import VoucherPage from '../pages/user/voucherPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
