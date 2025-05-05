@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { useEffect, useRef, useState } from 'react';
 import { IConversation } from '../../../interfaces/conversation.interfaces';
-import { userAvatar } from '../../../assets';
+import { notificationAudio, userAvatar } from '../../../assets';
 import { apiGetMessagesByConversation, apiSendMessageByAdmin } from '../../../services/message.service';
 import { IMessage } from '../../../interfaces/messages.interfaces';
 import ChatMessage from '../../../components/ChatMessage';
@@ -35,6 +35,10 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
         // Handle 'getMessageByAdmin' event
         const handleGetMessageByAdmin = (data: IMessage) => {
             setMessages((prev) => [...prev, data]);
+            const audio = new Audio(notificationAudio);
+            audio.play().catch((err) => {
+                console.warn('🔇 Không thể phát âm thanh:', err);
+            });
         };
         // Register socket event listeners
         socket.on('getMessageByAdmin', handleGetMessageByAdmin);

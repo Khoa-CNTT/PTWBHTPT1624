@@ -27,6 +27,7 @@ const createConversation = async (req, res) => {
         const newConversation = new conversationModel({
             user: userId,
             participants: [userId],
+            seen: true,
         });
         conversation = await newConversation.save();
         return res.status(201).json({
@@ -47,7 +48,7 @@ const createConversation = async (req, res) => {
 const getAllConversations = async (req, res) => {
     try {
         // Lấy tất cả cuộc trò chuyện
-        const conversation = await conversationModel.find().populate('user', 'user_avatar_url user_name').sort({ createdAt: -1 });
+        const conversation = await conversationModel.find().populate('user', 'user_avatar_url user_name').sort({ updatedAt: -1 });
         if (!conversation) {
             return res.status(404).json({
                 success: false,

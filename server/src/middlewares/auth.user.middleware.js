@@ -25,8 +25,6 @@ const userAuthentication = asyncHandle(async (req, res, next) => {
             message: 'Token truy cập không hợp lệ',
         });
     }
-    console.log('hihi', user);
-    console.log(user.user_isBlocked);
     if (user.user_isBlocked) {
         return res.status(301).json({
             success: false,
