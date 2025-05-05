@@ -8,7 +8,7 @@ import { apiGetDetailUser, apiUpdateProfile } from '../../../../services/user.se
 import { ButtonOutline, InputForm, InputReadOnly, showNotification } from '../../../../components';
 import FormEditAddress from '../../../../components/form/FormEditAddress';
 
-const UserProfile: React.FC = () => {
+const UserProfilePage: React.FC = () => {
     const { user, setUser } = useUserStore();
     const [payload, setPayload] = useState<IUserDetail>(user);
     const [activeTab, setActiveTab] = useState<string>('info');
@@ -30,6 +30,14 @@ const UserProfile: React.FC = () => {
     };
 
     const handleSubmit = async () => {
+        if (payload.user_mobile) {
+            const phoneRegex = /^[0-9]{10,11}$/;
+            const phonePattern = /^(0[3|5|7|8|9])[0-9]{8}$/;
+            if (!phoneRegex.test(payload.user_mobile) || !phonePattern.test(payload.user_mobile)) {
+                showNotification('Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.', false);
+                return;
+            }
+        }
         const res = await apiUpdateProfile(payload);
         if (res.success) {
             showNotification('Cập nhật thành công!', true);
@@ -38,7 +46,7 @@ const UserProfile: React.FC = () => {
             if (res.code === 203) {
                 showNotification('Số điện thoại đã được sử dụng bởi người dùng khác', false);
             } else {
-                showNotification( res.message, false);
+                showNotification(res.message, false);
             }
         }
     };
@@ -89,6 +97,7 @@ const UserProfile: React.FC = () => {
                             <InputForm
                                 label="Số điện thoại"
                                 name_id="user_mobile"
+                                type="number"
                                 value={payload.user_mobile || ''}
                                 handleOnchange={(e: any) => handleOnChangeValue(e, 'user_mobile')}
                             />
@@ -112,4 +121,4 @@ const UserProfile: React.FC = () => {
     );
 };
 
-export default UserProfile;
+export default UserProfilePage;

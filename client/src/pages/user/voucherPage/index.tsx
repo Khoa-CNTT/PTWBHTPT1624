@@ -36,9 +36,9 @@ const VoucherPage: React.FC = () => {
         }
         setIsLoading(true);
         const res = await apiSaveVoucherForUser(voucher._id);
+        setIsLoading(false);
         showNotification(res.message, res.success);
         if (res.success) setUserVouchers(res.data.vc_vouchers);
-        setIsLoading(false);
     };
 
     return (
@@ -59,7 +59,7 @@ const VoucherPage: React.FC = () => {
             </div>
             {totalPage > 1 && (
                 <div className="mt-6">
-                    <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
+                    <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />
                 </div>
             )}
         </div>

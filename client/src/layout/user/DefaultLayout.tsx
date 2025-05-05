@@ -6,7 +6,6 @@ import Footer from './Footer';
 import { Auth } from '../../feature';
 import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
-import VoucherBanner from '../../components/VoucherBanner/VoucherBanner';
 import Chat from '../../components/chat';
 import ChatBoxAI from '../../components/chatboxAI';
 // import { Auth } from '../feature';
@@ -47,7 +46,6 @@ const DefaultLayout = () => {
 
                 <Auth />
                 <Loading />
-                <VoucherBanner />
                 <div className="fixed bottom-4 right-5 bg-blue-600 rounded-lg shadow-lg p-2 flex flex-col items-center justify-center space-y-2  z-[999] ">
                     <ChatBoxAI />
                     <Chat />

@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useParams } from 'react-router-dom';
-import { IOrder } from '../../../interfaces/order.interfaces';
-import { getOrder } from '../../../services/order.service';
-import { OrderItem, SkeletonViewOrder } from '../../../components';
-import { statusOrder } from '../../../utils/statusOrder';
-import { formatShippingDate } from '../../../utils/format/formatShippingDate';
-import { formatMoney } from '../../../utils/formatMoney';
-import { PATH } from '../../../utils/const';
+import { IOrder } from '../../../../interfaces/order.interfaces';
+import { getOrder } from '../../../../services/order.service';
+import { statusOrder } from '../../../../utils/statusOrder';
+import { formatMoney } from '../../../../utils/formatMoney';
+import { OrderItem, SkeletonViewOrder } from '../../../../components';
+import { PATH } from '../../../../utils/const';
+import { formatShippingDate } from '../../../../utils/format/formatShippingDate';
 
-const OrderDetail: React.FC = () => {
+const OrderDetailPage: React.FC = () => {
     const param = useParams();
     const [order, setOrder] = useState<IOrder>();
 
@@ -70,12 +70,12 @@ const OrderDetail: React.FC = () => {
 
             {/* Sản phẩm */}
             <div className="mt-8">
-                <OrderItem order={order} view={true} />
+                <OrderItem order={order} view />
             </div>
 
             {/* Back link */}
             <div className="mt-6">
-                <Link className="text-sm text-primary hover:underline flex items-center gap-1" to={PATH.MANAGE_ORDER}>
+                <Link className="text-sm text-primary hover:underline flex items-center gap-1" to={PATH.PAGE_ORDER}>
                     <span>&laquo;</span> Quay lại danh sách đơn hàng
                 </Link>
             </div>
@@ -83,4 +83,4 @@ const OrderDetail: React.FC = () => {
     );
 };
 
-export default OrderDetail;
+export default OrderDetailPage;

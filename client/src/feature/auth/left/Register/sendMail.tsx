@@ -52,6 +52,7 @@ const sendMail: React.FC<ModeRegister> = (props) => {
         }
         setIsLoading(true);
         const res = await apiLoginWithGoogle(credential);
+        setIsLoading(false);
         if (res.success) {
             localStorage.setItem('access_token', JSON.stringify(res.access_token));
             showNotification('Đăng nhập thành công!', true);
@@ -62,7 +63,6 @@ const sendMail: React.FC<ModeRegister> = (props) => {
             showNotification('Đăng nhập không thành công!', false);
             return;
         }
-        setIsLoading(false);
     };
 
     return (

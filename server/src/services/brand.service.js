@@ -4,6 +4,7 @@ const { RequestError, NotFoundError } = require('../core/error.response');
 const Brand = require('../models/brand.model');
 const Product = require('../models/product.model');
 const category = require('../models/category.model');
+const productModel = require('../models/product.model');
 
 class BrandService {
     // Tạo thương hiệu mới
@@ -48,6 +49,10 @@ class BrandService {
 
     // Xóa thương hiệu theo ID
     static async deleteBrand(id) {
+        const totalProducts = await productModel.countDocuments({ product_brand_id: id }).exec();
+        if (totalProducts > 0) {
+            throw new RequestError(`Thương hiệu hiện có ${totalProducts} sản phẩm`);
+        }
         const brand = await Brand.findByIdAndDelete(id);
         if (!brand) throw new NotFoundError('Thương hiệu không tồn tại!');
         return brand;

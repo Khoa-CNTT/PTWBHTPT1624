@@ -28,7 +28,7 @@ export default function BannerManage() {
     const { setIsLoading } = useActionStore();
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllBanners({ limit: 5, page: currentPage });
+        const res = await apiGetAllBanners({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setBanners(data.banners);
@@ -132,10 +132,11 @@ export default function BannerManage() {
                 {banners.length === 0 ? (
                     <NotExit label="Không có banner nào" /> // Hiển thị khi không có kết quả tìm kiếm
                 ) : (
-                    <BannerTable banners={banners} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <BannerTable banners={banners} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 )}
-
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa banner */}

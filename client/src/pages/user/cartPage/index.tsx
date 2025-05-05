@@ -5,10 +5,10 @@ import { useCartStore } from '../../../store/cartStore';
 import Seo from '../../../components/seo';
 import ButtonOutline from '../../../components/buttonOutline';
 import { PATH } from '../../../utils/const';
-import ProductList from './ProductList';
 import { formatMoney } from '../../../utils/formatMoney';
 import useUserStore from '../../../store/userStore';
 import { showNotification } from '../../../components';
+import ProductList from './ProductList';
 
 const CartPage: React.FC = () => {
     const { productInCart } = useCartStore();
@@ -23,7 +23,8 @@ const CartPage: React.FC = () => {
     }, [selectedProducts]);
 
     const handleBuyProducts = () => {
-        if (user.user_address && user.user_mobile) {
+        const hasAddressInfo = user?.user_name && user?.user_mobile && user?.user_address?.detail;
+        if (hasAddressInfo) {
             if (selectedProducts?.length === 0) {
                 showNotification('Vui lòng chọn sản phẩm!');
                 return;

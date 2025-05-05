@@ -9,36 +9,36 @@ import usePurchasedStore from '../store/purchasedStore';
 import { apiGetPurchasedProduct } from '../services/product.service';
 import { getVoucherByUser } from '../services/user.voucher.service';
 import useUserVoucherStore from '../store/userVoucherStore';
-import { useCartStore } from '../store/cartStore';
+import { apiLogout } from '../services/auth.user.service';
 
 const useFetchUser = () => {
     const { setUser } = useUserStore();
     const { setFavoriteProducts } = useFavoriteStore();
     const { setPurchasedProducts } = usePurchasedStore();
     const { setUserVouchers } = useUserVoucherStore();
-    const { clearUser } = useUserStore();
     const { isUserLoggedIn, logoutUser } = useAuthStore();
-    const { setAddProductInCartFromApi } = useCartStore();
+
     useEffect(() => {
         const accessToken = localStorage.getItem('access_token');
-        if (!accessToken) return;
-        const fetchApiDetailUser = async () => {
-            const res = await apiGetDetailUser();
-            if (!res.success) {
-                clearUser();
+        if (!accessToken || !isUserLoggedIn) return;
+
+        const fetchUserData = async () => {
+            const userRes = await apiGetDetailUser();
+            if (!userRes.success) {
+                console.warn('Failed to fetch user:', userRes);
+                await apiLogout();
                 logoutUser();
-                setAddProductInCartFromApi([]);
+                return;
             }
-            const resFavorite = await apiGetUserFavoriteProducts();
-            const resPurchased = await apiGetPurchasedProduct();
-            const resVoucher = await getVoucherByUser();
-            setUserVouchers(resVoucher.data || []);
-            setFavoriteProducts(resFavorite.data.fp_products || []);
-            setPurchasedProducts(resPurchased.data.PurchasedProduct || []);
-            if (res.success) setUser(res.data);
+            setUser(userRes.data);
+            const [favoriteRes, purchasedRes, voucherRes] = await Promise.all([apiGetUserFavoriteProducts(), apiGetPurchasedProduct(), getVoucherByUser()]);
+            setFavoriteProducts(favoriteRes?.data?.fp_products || []);
+            setPurchasedProducts(purchasedRes?.data?.PurchasedProduct || []);
+            setUserVouchers(voucherRes?.data || []);
         };
-        fetchApiDetailUser();
-    }, [setUser, setFavoriteProducts, setPurchasedProducts, setUserVouchers, isUserLoggedIn]);
+
+        fetchUserData();
+    }, [isUserLoggedIn, setUser, setFavoriteProducts, setPurchasedProducts, setUserVouchers, logoutUser]);
 };
 
 export default useFetchUser;

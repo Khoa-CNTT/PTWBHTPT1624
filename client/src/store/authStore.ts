@@ -42,6 +42,14 @@ const useAuthStore = create<AuthState>((set) => ({
     // Đăng xuất người dùng
     logoutUser: () => {
         localStorage.removeItem('isUserLoggedIn');
+        localStorage.removeItem('purchasedProducts');
+        localStorage.removeItem('favoriteProducts');
+        localStorage.removeItem('selectedProducts');
+        localStorage.removeItem('productInCart');
+        localStorage.removeItem('access_token');
+        localStorage.removeItem('searchHistory');
+        localStorage.removeItem('userVouchers');
+        localStorage.removeItem('user');
         set({ isUserLoggedIn: false });
     },
 

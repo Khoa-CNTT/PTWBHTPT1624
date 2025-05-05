@@ -24,7 +24,7 @@ export default function RoleManage() {
     useEffect(() => {
         const fetchApi = async () => {
             setLoading(true);
-            const res = await apiGetAllRoles({ limit: 5, page: currentPage });
+            const res = await apiGetAllRoles({ limit: 10, page: currentPage });
             if (!res.success) return;
             const data = res.data;
             setRoles(data.roles);
@@ -94,7 +94,7 @@ export default function RoleManage() {
                     </button>
                 </div>
                 <RoleTable roles={roles} onEdit={handleEdit} onDelete={handleDelete} />
-                {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
             </div>
             {isOpen && <RoleModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} role={selectedRole} />}
         </>

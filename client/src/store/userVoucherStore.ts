@@ -5,7 +5,6 @@ import { IVoucher } from '../interfaces/voucher.interfaces';
 interface UserVoucherState {
     userVouchers: IVoucher[];
     setUserVouchers: (vouchers: IVoucher[]) => void;
-    clearUserVouchers: () => void;
 }
 
 const LOCAL_STORAGE_KEY = 'userVouchers';
@@ -30,10 +29,6 @@ const useUserVoucherStore = create<UserVoucherState>((set) => ({
     setUserVouchers: (vouchers) => {
         saveToLocalStorage(vouchers);
         set({ userVouchers: vouchers });
-    },
-    clearUserVouchers: () => {
-        localStorage.removeItem(LOCAL_STORAGE_KEY);
-        set({ userVouchers: [] });
     },
 }));
 

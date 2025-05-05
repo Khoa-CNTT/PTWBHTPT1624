@@ -27,7 +27,7 @@ export default function SupplierManage() {
 
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllSuppliers({ limit: 5, page: currentPage });
+        const res = await apiGetAllSuppliers({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setSuppliers(data.suppliers);
@@ -96,12 +96,12 @@ export default function SupplierManage() {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
             return; // Dừng lại, không gọi API
         }
-    
+
         setIsUploading(true); // Bắt đầu loading
-    
+
         // Gửi request API tìm kiếm
         const res = await apiSearchSupplier(searchQuery.trim());
-        
+
         // Xử lý kết quả trả về
         if (res.success) {
             setSuppliers(res.data); // Cập nhật danh sách nhà cung cấp từ API
@@ -110,7 +110,7 @@ export default function SupplierManage() {
         } else {
             showNotification(res.message || 'Không tìm thấy nhà cung cấp nào', false);
         }
-    
+
         setIsUploading(false); // Kết thúc loading
     };
 
@@ -142,7 +142,7 @@ export default function SupplierManage() {
                 )}
 
                 {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa */}

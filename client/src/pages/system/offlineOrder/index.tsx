@@ -48,12 +48,12 @@ const OfflineOrder: React.FC = () => {
             if (!qrResult) return;
             setIsLoading(true);
             const res = await apiGetScanProduct(qrResult);
+            setIsLoading(false);
             showNotification(res.message, res.success);
             if (res.success && res.data) {
                 const newProduct: IProduct = res.data;
                 updateCartWithNewProduct(newProduct);
             }
-            setIsLoading(false);
             if (!res.success) {
                 showNotification('Không tìm thấy sản phẩm', res.success);
             }

@@ -27,7 +27,7 @@ export default function ReviewManage() {
     const fetchReviews = async () => {
         setLoading(true);
         const res = await apiGetAdminReviews(tab, {
-            limit: 20,
+            limit: 10,
             page: currentPage,
         });
         if (res.success && res.data) {
@@ -93,11 +93,13 @@ export default function ReviewManage() {
 
                 {/* Danh sách đánh giá */}
                 {reviews.length > 0 ? (
-                    <ReviewTable Reviews={reviews} onDelete={handleDelete} onApprove={handleApprove} />
+                    <>
+                        <ReviewTable Reviews={reviews} onDelete={handleDelete} onApprove={handleApprove} />
+                        {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 ) : (
                     <NotExit label="Không có đánh giá nào" />
                 )}
-                <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />
             </div>
         </>
     );

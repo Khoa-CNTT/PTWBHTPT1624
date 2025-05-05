@@ -35,6 +35,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         voucher_uses_count: 0,
         voucher_value: 0,
         voucher_thumb: '',
+        voucher_is_active: true,
     });
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     const { setIsLoading } = useActionStore();
@@ -225,7 +226,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
                         </div>
                     </div>
 
-                    <div className="flex w-full gap-2">
+                    <div className="flex w-full gap-2 mb-2">
                         <div className="w-1/2">
                             <ImageCropper width={128} height={128} label="Thêm hình ảnh" idName="voucher_thumb" onCropComplete={handleImageUpload} />
                             {inputFields.voucher_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.voucher_thumb} alt="Brand Thumbnail" />}
@@ -244,7 +245,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={inputFields.voucher_is_active} // true hoặc false
+                                    checked={inputFields?.voucher_is_active} // true hoặc false
                                     onChange={(e) => handleInputField(e, 'voucher_is_active')}
                                 />
                             }

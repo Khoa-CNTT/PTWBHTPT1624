@@ -63,6 +63,7 @@ const Success: React.FC<ModeRegister> = ({ setModeRegister }) => {
         }
         setIsLoading(true);
         const res = await apiRegister(email, password);
+        setIsLoading(false);
         if (res?.success) {
             loginUser();
             showNotification('Đăng ký tài khoản thành công!', true);
@@ -72,7 +73,6 @@ const Success: React.FC<ModeRegister> = ({ setModeRegister }) => {
         } else {
             showNotification('Đăng ký tài khoản không thành công!', false);
         }
-        setIsLoading(false);
     };
 
     return (

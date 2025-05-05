@@ -6,6 +6,7 @@ import ShockDiscount from './shockDiscount';
 import ProductsFeatured from './productsFeatured';
 import ProductsNew from './productsNew';
 import Products from './products';
+import VoucherBanner from '../../../components/VoucherBanner/VoucherBanner';
 const HomePage: React.FC = () => {
     return (
         <div className="flex flex-col">
@@ -18,6 +19,7 @@ const HomePage: React.FC = () => {
                 <ProductsFeatured />
             </div>
             <Products />
+            <VoucherBanner />
         </div>
     );
 };

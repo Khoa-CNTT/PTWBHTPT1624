@@ -11,7 +11,7 @@ import { apiRedeemVoucher } from '../../../../services/user.voucher.service';
 import useUserStore from '../../../../store/userStore';
 import { useActionStore } from '../../../../store/actionStore';
 
-const RedeemVoucher: React.FC = () => {
+const RedeemVoucherPage: React.FC = () => {
     const [redeemVouchers, setRedeemVoucher] = useState<IVoucher[]>([]);
     const [currentPage, setCurrentPage] = useState<number>(0);
     const [totalPage, setTotalPage] = useState<number>(0);
@@ -56,7 +56,7 @@ const RedeemVoucher: React.FC = () => {
                                     />
                                 ))}
                             </div>
-                            {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                            {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                         </>
                     ) : (
                         <div className="text-center py-12">
@@ -69,4 +69,4 @@ const RedeemVoucher: React.FC = () => {
     );
 };
 
-export default RedeemVoucher;
+export default RedeemVoucherPage;
