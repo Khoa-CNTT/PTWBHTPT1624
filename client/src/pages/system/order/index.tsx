@@ -13,6 +13,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import { INotification } from '../../../interfaces/notification.interfaces';
 import { sendNotificationToUser } from '../../../services/notification.service';
+import useSocketStore from '../../../store/socketStore';
 
 const OrderManage: React.FC = () => {
     const SELL_TAB = [
@@ -35,7 +36,11 @@ const OrderManage: React.FC = () => {
     const [loading, setLoading] = useState<boolean>(false);
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
+    const { socket, isConnected, connect } = useSocketStore();
 
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
     // Hàm fetch API đã được khai báo bên ngoài useEffect
     const fetchOrders = async () => {
         setLoading(true);
@@ -95,7 +100,10 @@ const OrderManage: React.FC = () => {
                 'https://png.pngtree.com/png-clipart/20240619/original/pngtree-delivery-icon-with-scooter-and-boy-vector-png-image_15370581.png',
             notification_link: `/nguoi-dung/chi-tiet-don-hang/${id}`,
         };
-        await sendNotificationToUser(res?.data?.order_user, notification);
+        const response = await sendNotificationToUser(res?.data?.order_user, notification);
+        socket.emit('sendNotificationToUser', {
+            ...response.data,
+        });
         showNotification('Cập nhật thành công', true);
     };
 

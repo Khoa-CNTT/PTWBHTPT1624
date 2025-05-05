@@ -16,6 +16,7 @@ import { Rating } from '@mui/material';
 import { IReview } from '../../interfaces/review.interfaces';
 import { INotification } from '../../interfaces/notification.interfaces';
 import { sendNotificationToAdmin } from '../../services/notification.service';
+import useSocketStore from '../../store/socketStore';
 
 interface FormReviewsProps {
     setReviews?: React.Dispatch<React.SetStateAction<IReview[]>>;
@@ -51,6 +52,8 @@ const FormReviews: React.FC<FormReviewsProps> = ({
     const { isUserLoggedIn } = useAuthStore();
     const { setIsLoading, setOpenFeatureAuth } = useActionStore();
     const { purchasedProducts, setIsReviewedPurchasedProduct } = usePurchasedStore();
+    const { socket } = useSocketStore();
+
     useEffect(() => {
         if (isEdit && reviewEdit) {
             setImagesUrl(reviewEdit.review_images);
@@ -101,7 +104,10 @@ const FormReviews: React.FC<FormReviewsProps> = ({
             notification_imageUrl: productReview?.product_thumb,
             notification_link: '/quan-ly/danh-gia',
         };
-        await sendNotificationToAdmin(notification);
+        const response = await sendNotificationToAdmin(notification);
+        socket.emit('sendMessageForAdminOnline', {
+            ...response.data,
+        });
         if (res.review.isApproved) {
             setReviews?.((prev) => [{ ...res.review, review_user: user }, ...prev]);
             setRatings?.(

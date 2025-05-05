@@ -24,6 +24,7 @@ import PaymentMethods from './PaymentMethods';
 import OrderSummary from './OrderSummary';
 import Header from './Header';
 import ProductList from './ProductList';
+import useSocketStore from '../../../store/socketStore';
 
 const PaymentPage: React.FC = () => {
     const navigate = useNavigate();
@@ -36,6 +37,7 @@ const PaymentPage: React.FC = () => {
     const [selectedVoucher, setSelectedVoucher] = useState<IVoucher | null>(null);
     const [deliveryMethod, setDeliveryMethod] = useState('');
     const [paymentMethod, setPaymentMethod] = useState('CASH');
+    const { socket } = useSocketStore();
 
     // Tính toán giá tiền
     const totalProductPrice = selectedProducts.reduce((total, product) => total + product.product_discounted_price * (product.quantity || 1), 0);
@@ -50,7 +52,11 @@ const PaymentPage: React.FC = () => {
         : 0;
 
     const totalPayment = totalProductPrice + shippingFee - voucherDiscount;
+    const { isConnected, connect } = useSocketStore();
 
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
     // Lấy danh sách đơn vị giao hàng
     useEffect(() => {
         const fetchShippingCompanies = async () => {
@@ -108,7 +114,10 @@ const PaymentPage: React.FC = () => {
                 notification_imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuxPDt8O4FtLGH2odJdU8Udg6KJpdvQ1fGMw&s',
                 notification_link: '/quan-ly/don-hang',
             };
-            await sendNotificationToAdmin(notification);
+            const response = await sendNotificationToAdmin(notification);
+            socket.emit('sendMessageForAdminOnline', {
+                ...response.data,
+            });
             await Promise.all(selectedProducts.map((e) => setRemoveProductInCart(e.productId)));
             navigate(PATH.PAGE_ORDER);
         } else {

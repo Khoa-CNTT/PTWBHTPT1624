@@ -20,7 +20,7 @@ const ChatManage: React.FC = () => {
     const [conversations, setConversations] = useState<IConversation[]>([]);
     const [userOnline, setUserOnline] = useState<UserOnline[]>([]);
 
-    const { socket, isConnected } = useSocketStore();
+    const { socket, connect, isConnected } = useSocketStore();
     const { isAdminLoggedIn } = useAuthStore();
 
     // Fetch all conversations on component mount
@@ -34,6 +34,9 @@ const ChatManage: React.FC = () => {
         fetchConversations();
     }, []);
 
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
     // Handle selecting a conversation
     const handleSelectChat = async (conversation: IConversation) => {
         await apiMarkMessagesAsSeenByAdmin(conversation._id);
@@ -63,7 +66,12 @@ const ChatManage: React.FC = () => {
             <PageBreadcrumb pageTitle="Nhắn tin" />
             <div className="h-[calc(100vh-186px)] overflow-hidden sm:h-[calc(100vh-174px)]">
                 <div className="flex h-full flex-col gap-6 xl:flex-row xl:gap-5">
-                    <Sidebar userOnline={userOnline} conversations={conversations} onSelectChat={handleSelectChat} />
+                    <Sidebar
+                        userOnline={userOnline}
+                        conversations={conversations}
+                        selectedConversation={selectedConversation}
+                        onSelectChat={handleSelectChat}
+                    />
                     <ChatWindow userOnline={userOnline} selectedConversation={selectedConversation} />
                 </div>
             </div>
