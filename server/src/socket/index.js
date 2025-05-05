@@ -61,14 +61,31 @@ const createSocket = (httpServer) => {
 
         // === Gửi thông báo đến người dùng cụ thể ===
         socket.on('sendNotification', (data) => {
-            const user = getUserById(data.shopId);
+            const user = getUserById(data.userId);
             if (user) {
                 socket.to(user.socketId).emit('getNotification', data, (ack) => {
                     console.log(ack ? `✅ Notification sent to socket ${user.socketId}` : `❌ Failed to send notification to socket ${user.socketId}`);
                 });
             }
         });
-
+        socket.on('sendNotificationUserOnline', async (data) => {
+            if (onlineUsers.length === 0) return;
+            console.log('📨 Gửi tin nhắn đến các user online...');
+            const sendPromises = onlineUsers.map(
+                (user) =>
+                    new Promise((resolve) => {
+                        socket.to(user.socketId).emit('getNotificationUserOnline', data, (ack) => {
+                            if (ack) {
+                                resolve(`✅ Sent to user ${user.socketId}`);
+                            } else {
+                                resolve(`❌ Failed to send to admin ${user.socketId}`);
+                            }
+                        });
+                    }),
+            );
+            const results = await Promise.all(sendPromises);
+            results.forEach((result) => console.log(result));
+        });
         // === Gửi tin nhắn đến người dùng cụ thể ===
         socket.on('sendMessage', (data) => {
             const user = getUserById(data.receiver);
@@ -85,6 +102,25 @@ const createSocket = (httpServer) => {
                 (admin) =>
                     new Promise((resolve) => {
                         socket.to(admin.socketId).emit('getMessageByAdmin', data, (ack) => {
+                            if (ack) {
+                                resolve(`✅ Sent to admin ${admin.socketId}`);
+                            } else {
+                                resolve(`❌ Failed to send to admin ${admin.socketId}`);
+                            }
+                        });
+                    }),
+            );
+            const results = await Promise.all(sendPromises);
+            results.forEach((result) => console.log(result));
+        });
+
+        socket.on('sendNotificationForAdminOnline', async (data) => {
+            if (onlineAdmins.length === 0) return;
+            console.log('📨 Gửi tin nhắn đến các admin online...');
+            const sendPromises = onlineAdmins.map(
+                (admin) =>
+                    new Promise((resolve) => {
+                        socket.to(admin.socketId).emit('getNotificationByAdmin', data, (ack) => {
                             if (ack) {
                                 resolve(`✅ Sent to admin ${admin.socketId}`);
                             } else {

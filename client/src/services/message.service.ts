@@ -1,7 +1,7 @@
 import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả người dùng
-export const apiSendMessageByUSer = async (body: { conversationId: string; text: string; image?: string }) => {
+export const apiSendMessageByUSer = async (body: { conversationId: string; text?: string; image?: string }) => {
     try {
         const res = await authClient.post('/v1/api/message/by-user', body);
         return res.data;
@@ -46,7 +46,7 @@ export const apiGetUnreadMessagesCount = async (id: string) => {
     }
 };
 
-export const apiSendMessageByAdmin = async (body: { conversationId: string; text: string; image?: string }) => {
+export const apiSendMessageByAdmin = async (body: { conversationId: string; text?: string; image?: string }) => {
     try {
         const res = await adminClient.post('/v1/api/message/by-admin', body);
         return res.data;

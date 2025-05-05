@@ -34,12 +34,13 @@ const ReviewsProduct: React.FC<{ productDetail: IProductDetail }> = ({ productDe
     const { isUserLoggedIn } = useAuthStore();
     const { setOpenFeatureAuth } = useActionStore();
     const { purchasedProducts } = usePurchasedStore();
+
     // const socketRef = useRef<Socket | null>(null);
-    useEffect(() => {
-        //ws <=> http
-        // socketRef.current = io(import.meta.env.VITE_REACT_API_URL_BACKEND_SOCKET);
-        // dispatch(setSocketRef(socketRef.current));
-    }, []);
+    // useEffect(() => {
+    //ws <=> http
+    // socketRef.current = io(import.meta.env.VITE_REACT_API_URL_BACKEND_SOCKET);
+    // dispatch(setSocketRef(socketRef.current));
+    // }, []);
 
     useEffect(() => {
         const fetchApiReview = async () => {

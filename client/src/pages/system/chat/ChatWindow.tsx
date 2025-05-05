@@ -24,12 +24,16 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [value, setValue] = useState<string>('');
     const scroll = useRef<any>(null);
-    const [image, setImage] = useState<string>('');
     const { setIsLoading } = useActionStore();
 
-    const { socket, isConnected } = useSocketStore();
+    const { socket, connect, isConnected } = useSocketStore();
     const { isAdminLoggedIn } = useAuthStore();
     const { admin } = useAdminStore();
+
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
+
     useEffect(() => {
         if (!isConnected || !isAdminLoggedIn || !socket) return;
         // Handle 'getMessageByAdmin' event
@@ -73,14 +77,12 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
         );
     }
     const handleOnClick = async () => {
-        if (value || image) {
+        if (value) {
             const res = await apiSendMessageByAdmin({
                 conversationId: selectedConversation?._id,
                 text: value,
-                image: image,
             });
             setValue('');
-            setImage('');
             if (res.success) {
                 setMessages((prev) => [...prev, res.data]);
                 socket.emit('sendMessage', {
@@ -100,8 +102,19 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
         const response = await apiUploadImage(formData);
         const uploadedUrl = response.url;
-        setImage(uploadedUrl);
+        const res = await apiSendMessageByAdmin({
+            conversationId: selectedConversation?._id,
+            image: uploadedUrl,
+        });
         setIsLoading(false);
+        if (res.success) {
+            setMessages((prev) => [...prev, res.data]);
+            socket.emit('sendMessage', {
+                ...res.data,
+                sender: admin,
+                receiver: selectedConversation?.user._id,
+            });
+        }
     };
 
     return (
@@ -154,12 +167,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
             </div>
 
             <div className="sticky bottom-0 border-t border-gray-200 p-3 dark:border-gray-800">
-                <div className="relative flex items-center justify-between">
-                    {image && (
-                        <div>
-                            <img className="absolute w-[150px] bottom-[50px] left-0 " src={image} />
-                        </div>
-                    )}
+                <div className="flex items-center justify-between">
                     <div className="w-full">
                         <div className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90 sm:left-3">
                             <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

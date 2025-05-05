@@ -17,13 +17,13 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [isOpenBox, setIsOpenBox] = useState<boolean>(false);
     const [value, setValue] = useState<string>('');
-    const [image, setImage] = useState<string>('');
     const { user } = useUserStore();
     const { isOpenChat, setIsOpenChat, mobile_ui, setIsLoading } = useActionStore();
     const navigate = useNavigate();
-    const { socket, isConnected } = useSocketStore();
+    const { socket, isConnected, connect } = useSocketStore();
 
     // const { socketRef } = useAppSelector((state) => state.action);
+    const { isUserLoggedIn } = useAuthStore();
 
     useEffect(() => {
         if (isOpenChat) {
@@ -33,7 +33,9 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
         }
     }, [isOpenChat]);
 
-    const { isUserLoggedIn } = useAuthStore();
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
     useEffect(() => {
         if (!isConnected || !isUserLoggedIn || !socket) return;
         // Handle 'getMessageByAdmin' event
@@ -67,14 +69,12 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
     }, [messages]);
 
     const handleOnClick = async () => {
-        if (value || image) {
+        if (value) {
             const message = await apiSendMessageByUSer({
                 conversationId: conversationId,
                 text: value,
-                image: image,
             });
             setValue('');
-            setImage('');
             if (message.success) {
                 setMessages((prev) => [...prev, { ...message.data, sender: user }]);
                 socket.emit('sendMessageForAdminOnline', {
@@ -95,8 +95,19 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
         const response = await apiUploadImage(formData);
         const uploadedUrl = response.url;
-        setImage(uploadedUrl);
+        const message = await apiSendMessageByUSer({
+            conversationId: conversationId,
+            image: uploadedUrl,
+        });
         setIsLoading(false);
+        if (message.success) {
+            setMessages((prev) => [...prev, { ...message.data, sender: user }]);
+            socket.emit('sendMessageForAdminOnline', {
+                ...message.data,
+                sender: user,
+            });
+            setValue('');
+        }
     };
 
     if (!isOpenBox) return <></>;
@@ -146,12 +157,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                 </div>
 
                 <div className="sticky bottom-0 border-t border-gray-200 p-3 dark:border-gray-800">
-                    <div className="relative flex items-center justify-between">
-                        {image && (
-                            <div>
-                                <img className="absolute w-[150px] bottom-[50px] left-0" src={image} alt="Uploaded preview" />
-                            </div>
-                        )}
+                    <div className="flex items-center justify-between">
                         <div className="w-full">
                             <div className="absolute left-1 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90 sm:left-3">
                                 <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">

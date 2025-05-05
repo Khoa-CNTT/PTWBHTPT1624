@@ -13,6 +13,7 @@ import { INotification } from '../../../interfaces/notification.interfaces';
 import { sendNotificationToAdmin } from '../../../services/notification.service';
 import { useCartStore } from '../../../store/cartStore';
 import { showNotification } from '../../../components';
+import useSocketStore from '../../../store/socketStore';
 
 // Định nghĩa kiểu cho các tham số query
 interface VnpParams {
@@ -27,7 +28,11 @@ const PaymentConfirmPage: React.FC = () => {
     const vnp_HashSecret = ENV.vnp_HashSecret || '';
     const navigate = useNavigate();
     const { selectedProducts, setRemoveProductInCart } = useCartStore();
+    const { socket, isConnected, connect } = useSocketStore();
 
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
     const verifyPayment = async () => {
         const { vnp_SecureHash, ...vnp_Params } = queries;
         const sortedParams = sortObject(vnp_Params)
@@ -43,7 +48,7 @@ const PaymentConfirmPage: React.FC = () => {
                 setIsLoading(false);
                 showNotification(res.message, res.success);
                 if (!res.success) {
-                    // navigate(PATH.PAGE_PAYMENT);
+                    navigate(PATH.PAGE_PAYMENT);
                     return;
                 }
                 clearOrder();
@@ -53,7 +58,10 @@ const PaymentConfirmPage: React.FC = () => {
                     notification_imageUrl: 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQuxPDt8O4FtLGH2odJdU8Udg6KJpdvQ1fGMw&s',
                     notification_link: '/quan-ly/don-hang',
                 };
-                await sendNotificationToAdmin(notification);
+                const response = await sendNotificationToAdmin(notification);
+                socket.emit('sendMessageForAdminOnline', {
+                    ...response.data,
+                });
                 await Promise.all(selectedProducts.map((e) => setRemoveProductInCart(e.productId)));
                 navigate(PATH.PAGE_ORDER);
             } else {

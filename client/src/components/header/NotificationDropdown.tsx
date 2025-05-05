@@ -3,11 +3,14 @@ import { Dropdown } from '../ui/dropdown/Dropdown';
 import { getAdminNotifications, markAllAdminNotificationsAsRead } from '../../services/notification.service';
 import { INotification } from '../../interfaces/notification.interfaces';
 import { Link } from 'react-router';
+import useSocketStore from '../../store/socketStore';
+import useAuthStore from '../../store/authStore';
+import { notificationAudio } from '../../assets';
 
 export default function NotificationDropdown() {
     const [isOpen, setIsOpen] = useState(false);
     const [unreadCount, setUnreadCount] = useState<number>(0);
-    const [notification, setNotifications] = useState<INotification[]>();
+    const [notification, setNotifications] = useState<INotification[]>([]);
 
     function toggleDropdown() {
         setIsOpen(!isOpen);
@@ -20,6 +23,29 @@ export default function NotificationDropdown() {
     const handleClick = () => {
         toggleDropdown();
     };
+    const { socket, connect, isConnected } = useSocketStore();
+    const { isAdminLoggedIn } = useAuthStore();
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
+
+    useEffect(() => {
+        if (!isConnected || !isAdminLoggedIn || !socket) return;
+        const handleGetNotificationByAdmin = (data: INotification) => {
+            setNotifications((prev) => [...prev, data]);
+            setUnreadCount((prev) => prev + 1);
+            const audio = new Audio(notificationAudio);
+            audio.play().catch((err) => {
+                console.warn('🔇 Không thể phát âm thanh:', err);
+            });
+        };
+        // Register socket event listeners
+        socket.on('getNotificationByAdmin', handleGetNotificationByAdmin);
+        // Cleanup: Remove event listeners on unmount or dependency change
+        return () => {
+            socket.off('getNotificationByAdmin', handleGetNotificationByAdmin);
+        };
+    }, [isConnected, isAdminLoggedIn, socket]);
 
     useEffect(() => {
         const fetchApi = async () => {
@@ -39,6 +65,7 @@ export default function NotificationDropdown() {
         };
         fetchApi();
     }, [isOpen, unreadCount]);
+
     return (
         <div className="relative">
             <button

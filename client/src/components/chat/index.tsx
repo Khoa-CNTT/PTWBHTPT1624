@@ -16,10 +16,12 @@ const Chat: React.FC = () => {
     const [unreadMessages, SetUnreadMessages] = useState<number>(0);
     const { setIsOpenChat, setOpenFeatureAuth } = useActionStore();
 
-    const { socket, isConnected } = useSocketStore();
-
+    const { socket, connect, isConnected } = useSocketStore();
     useEffect(() => {
-        if (!isConnected || !isUserLoggedIn || !socket) return;
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
+    useEffect(() => {
+        if (!isConnected || !isUserLoggedIn) return;
 
         // Handle 'getMessage' event to increment unread messages
         const handleSetUnreadMessages = () => {
@@ -29,10 +31,8 @@ const Chat: React.FC = () => {
                 console.warn('🔇 Không thể phát âm thanh:', err);
             });
         };
-
         // Register socket event listener
         socket.on('getMessage', handleSetUnreadMessages);
-
         // Cleanup: Remove event listener on unmount or dependency change
         return () => {
             socket.off('getMessage', handleSetUnreadMessages);

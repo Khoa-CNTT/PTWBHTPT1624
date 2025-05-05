@@ -21,6 +21,7 @@ import NotExit from '../../../components/common/NotExit';
 import { INotification } from '../../../interfaces/notification.interfaces';
 import { sendNotificationToAll } from '../../../services/notification.service';
 import { useActionStore } from '../../../store/actionStore';
+import useSocketStore from '../../../store/socketStore';
 
 export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -32,6 +33,7 @@ export default function ProductManage() {
     const { openModal, isOpen, closeModal } = useModal();
     const [loading, setLoading] = useState<boolean>(false);
     const { setIsLoading } = useActionStore();
+    const { socket } = useSocketStore();
     // Tab lọc sản phẩm
     const PRODUCT_TAB = [
         { tab: '', title: 'Tất cả sản phẩm' },
@@ -95,7 +97,10 @@ export default function ProductManage() {
                     notification_imageUrl: product.product_thumb, // Hình ảnh cảnh báo hết hàng
                     notification_link: `/${product.product_slug}/${product._id}`, // Liên kết đến sản phẩm
                 };
-                await sendNotificationToAll(notification);
+                const response = await sendNotificationToAll(notification);
+                socket.emit('sendNotificationUserOnline', {
+                    ...response.data,
+                });
             }
         }
         setIsLoading(false);

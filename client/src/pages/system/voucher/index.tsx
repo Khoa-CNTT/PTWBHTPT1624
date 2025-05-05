@@ -13,6 +13,7 @@ import NotExit from '../../../components/common/NotExit'; // Import component No
 import { useActionStore } from '../../../store/actionStore';
 import { sendNotificationToAll } from '../../../services/notification.service';
 import { INotification } from '../../../interfaces/notification.interfaces';
+import useSocketStore from '../../../store/socketStore';
 
 export default function VoucherManage(): JSX.Element {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -24,6 +25,7 @@ export default function VoucherManage(): JSX.Element {
     const [loading, setLoading] = useState<boolean>(false);
     const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
+    const { socket } = useSocketStore();
 
     useEffect(() => {
         // Khi không tìm kiếm, fetch tất cả vouchers
@@ -64,7 +66,11 @@ export default function VoucherManage(): JSX.Element {
                     notification_link: `/voucher`,
                 };
 
-                await sendNotificationToAll(notification);
+                const response = await sendNotificationToAll(notification);
+
+                socket.emit('sendNotificationUserOnline', {
+                    ...response.data,
+                });
             }
         }
         setIsLoading(false);
