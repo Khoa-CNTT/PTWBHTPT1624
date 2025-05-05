@@ -32,7 +32,7 @@ export default function CategoryManage() {
 
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllCategories({ limit: 5, page: currentPage });
+        const res = await apiGetAllCategories({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setCategories(data.categories);
@@ -103,12 +103,12 @@ export default function CategoryManage() {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
             return; // Dừng lại, không gọi API
         }
-    
+
         setIsUploading(true); // Bắt đầu loading
-    
+
         // Gửi request API tìm kiếm
         const res = await apiSearchCategory(searchQuery.trim());
-        
+
         // Xử lý kết quả trả về
         if (res.success) {
             setCategories(res.data); // Cập nhật danh sách danh mục từ API
@@ -117,10 +117,9 @@ export default function CategoryManage() {
         } else {
             showNotification(res.message || 'Không tìm thấy danh mục nào', false);
         }
-    
+
         setIsUploading(false); // Kết thúc loading
     };
-    
 
     if (isUploading) return <TableSkeleton />;
 
@@ -149,7 +148,7 @@ export default function CategoryManage() {
                 )}
 
                 {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa */}

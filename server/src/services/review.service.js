@@ -119,7 +119,7 @@ class ReviewService {
 
         return {
             totalPage: Math.ceil(totalReview / limit),
-            currentPage: page,
+            currentPage: Number(page),
             totalReview,
             reviews,
         };

@@ -5,27 +5,28 @@ import DefaultLayout from '../layout/user/DefaultLayout';
 import { PATH } from '../utils/const';
 import useAuthStore from '../store/authStore';
 import { AdminLogin, DashboardManage } from '../pages/system';
-import { ROUTES } from '../config/route';
+import { ADMIN_ROUTES } from '../config/route';
 import PermissionMiddleware from '../middleware/PermissionMiddleware';
 import { NoPermission } from '../components';
 import AdminProfile from '../pages/system/profile';
 import HomePage from '../pages/user/HomePage';
 import DetailPage from '../pages/user/detailPage';
-import SearchPage from '../pages/user/searchPage';
+import SearchPage from '../pages/user/SearchPage';
 import FilterPage from '../pages/user/filterPage';
 import ForgotPassword from '../feature/forgotPassword';
-import CartPage from '../pages/user/cartPage';
-import UserProfile from '../pages/user/userPage/profile/UserProfile';
-import VoucherPage from '../pages/user/voucherPage';
+import CartPage from '../pages/user/CartPage';
+import VoucherPage from '../pages/user/VoucherPage';
 import UserPage from '../pages/user/userPage';
 import FavoritePage from '../pages/user/userPage/FavoritePage';
 import RecentViewPage from '../pages/user/userPage/RecentViewPage';
 import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage';
 import OrderPage from '../pages/user/userPage/orderPage';
 import UserVoucherPage from '../pages/user/userPage/UserVoucherPage';
-import RedeemVoucher from '../pages/user/userPage/RedeemVoucher';
-import PaymentPage from '../pages/user/paymentPage';
-import PaymentConfirm from '../pages/user/PaymentConfirm';
+import PaymentPage from '../pages/user/PaymentPage';
+import UserProfilePage from '../pages/user/userPage/UserProfilePage';
+import RedeemVoucherPage from '../pages/user/userPage/RedeemVoucherPage';
+import OrderDetailPage from '../pages/user/userPage/orderDetailPage';
+import PaymentConfirmPage from '../pages/user/PaymentConfirmPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
@@ -44,18 +45,19 @@ const RouterPage = () => {
                 <Route path={PATH.FORGET_PASSWORD} element={<ForgotPassword />} />
                 <Route path={PATH.VOUCHER} element={<VoucherPage />} />
                 <Route path={PATH.PAGE_PAYMENT} element={<PaymentPage />}></Route>
-                <Route path={PATH.PAGE_PAYMENT_CONFIRM} element={<PaymentConfirm />} />
+                <Route path={PATH.PAGE_PAYMENT_CONFIRM} element={<PaymentConfirmPage />} />
                 {/* Các trang bên dưới vẫn được bọc trong DefaultLayout */}
                 {/* <Route path="*" element={<Navigate to={PATH.HOME} />} /> */}
                 <Route path={PATH.PAGE_USER} element={isUserLoggedIn ? <UserPage /> : <Navigate to="/" />}>
                     <Route path={''} element={<Navigate to={PATH.PAGE_PROFILE} />} />
-                    <Route path={PATH.PAGE_PROFILE} element={<UserProfile />} />
+                    <Route path={PATH.PAGE_PROFILE} element={<UserProfilePage />} />
                     <Route path={PATH.PAGE_FAVORITE} element={<FavoritePage />} />
                     <Route path={PATH.PAGE_RECENT_VIEW} element={<RecentViewPage />} />
                     <Route path={PATH.PAGE_PURCHASED} element={<PurchasedProductsPage />} />
                     <Route path={PATH.PAGE_ORDER} element={<OrderPage />} />
                     <Route path={PATH.PAGE_USER_VOUCHER} element={<UserVoucherPage />} />
-                    <Route path={PATH.PAGE_REDEEM_VOUCHER} element={<RedeemVoucher />} />
+                    <Route path={PATH.PAGE_REDEEM_VOUCHER} element={<RedeemVoucherPage />} />
+                    <Route path={PATH.PAGE_ORDER_DETAIL} element={<OrderDetailPage />} />
                 </Route>
             </Route>
 
@@ -73,7 +75,7 @@ const RouterPage = () => {
                 <Route index element={<DashboardManage />} />
                 <Route path={PATH.MANAGE_DASHBOARD} element={<DashboardManage />} />
                 {/* Lặp qua các route có phân quyền */}
-                {ROUTES.map((route) => (
+                {ADMIN_ROUTES.map((route) => (
                     <Route
                         key={route.path}
                         path={route.path}

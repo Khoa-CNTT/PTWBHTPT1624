@@ -205,7 +205,7 @@ const ReviewsProduct: React.FC<{ productDetail: IProductDetail }> = ({ productDe
                 />
             )}
 
-            {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+            {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
         </div>
     );
 };

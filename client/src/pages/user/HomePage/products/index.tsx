@@ -30,6 +30,7 @@ const Products: React.FC = () => {
         // Định nghĩa queries cho các tab khác
         const queries = optionTab === 2 ? { 'product_price[lte]': 99000 } : optionTab === 3 ? { 'product_price[lte]': 20000 } : {};
         const res = await apiGetAllProducts({ limit: 30, page, ...queries });
+        setIsLoading(false);
         if (res.success) {
             const { data } = res;
             // Kiểm tra nếu đã đến trang cuối
@@ -37,7 +38,6 @@ const Products: React.FC = () => {
             // Cập nhật danh sách sản phẩm
             setProducts((prev) => [...prev, ...data.products]);
         }
-        setIsLoading(false);
     }, [page, optionTab]);
     // Reset products và page khi optionTab thay đổi
     useEffect(() => {

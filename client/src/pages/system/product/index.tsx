@@ -202,7 +202,7 @@ export default function ProductManage() {
                 {products.length > 0 ? (
                     <>
                         <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
-                        {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                        {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 ) : (
                     <NotExit label="Không có sản phẩm nào" />

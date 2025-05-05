@@ -20,6 +20,7 @@ export const PATH = {
     PAGE_PURCHASED: '/nguoi-dung/san-pham-da-mua',
     PAGE_USER_VOUCHER: '/nguoi-dung/voucher-cua-ban',
     PAGE_REDEEM_VOUCHER: '/nguoi-dung/doi-phieu-mua-hang',
+    PAGE_ORDER_DETAIL: '/nguoi-dung/chi-tiet-don-hang/:oid',
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
     MANAGE_DASHBOARD: '/quan-ly/dashboard',

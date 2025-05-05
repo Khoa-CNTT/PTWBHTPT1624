@@ -76,7 +76,7 @@ const RenderListProducts: React.FC = () => {
                                 <ProductItem key={uuidv4()} props={p} />
                             ))}
                         </div>
-                        {totalPage > 0 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPage={totalPage} />}
+                        {totalPage > 1 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPage={totalPage - 1} />}
                     </>
                 ) : (
                     <div className="px-4 pt-6">

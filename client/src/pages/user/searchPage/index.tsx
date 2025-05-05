@@ -96,7 +96,7 @@ const SearchPage: React.FC = () => {
                                         <ProductItem key={p._id} props={p} scrollIntoView={index === 0} />
                                     ))}
                                 </div>
-                                {totalPage > 0 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPage={totalPage} />}
+                                {totalPage > 1 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPage={totalPage - 1} />}
                             </>
                         ) : (
                             <div className="px-4 pt-6">

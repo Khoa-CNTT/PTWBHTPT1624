@@ -28,7 +28,7 @@ export default function BrandManage() {
 
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllBrands({ limit: 5, page: currentPage });
+        const res = await apiGetAllBrands({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setBrands(data.brands);
@@ -60,6 +60,8 @@ export default function BrandManage() {
         } else {
             res = await apiCreateBrand(data);
         }
+        setIsLoading(false);
+
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
@@ -69,7 +71,6 @@ export default function BrandManage() {
         } else {
             setBrands((prev) => [res.data, ...prev]);
         }
-        setIsLoading(false);
     };
 
     const handleDelete = async (id: string) => {
@@ -77,13 +78,12 @@ export default function BrandManage() {
         if (!confirm('Bạn có muốn xóa không?')) return;
         setIsLoading(true);
         const res = await apiDeleteBrand(id);
+        setIsLoading(false);
+        showNotification(res?.message, res?.success);
         if (!res?.success) {
-            showNotification(res?.message, false);
             return;
         }
         setBrands((prev) => prev.filter((item) => item._id !== id));
-        setIsLoading(true);
-        showNotification('Xóa thành công', true);
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -102,6 +102,7 @@ export default function BrandManage() {
         }
         setIsLoading(true);
         const res = await apiSearchBrand(searchQuery.trim());
+        setIsLoading(false);
         if (res.success) {
             setBrands(res.data); // vì API trả về dạng mảng
             setTotalPage(0); // không phân trang khi tìm kiếm
@@ -109,7 +110,6 @@ export default function BrandManage() {
         } else {
             showNotification(res.message || 'Không tìm thấy thương hiệu', false);
         }
-        setIsLoading(false);
     };
 
     if (isUploading) return <TableSkeleton />;
@@ -138,7 +138,7 @@ export default function BrandManage() {
                 ) : (
                     <>
                         <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
-                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                        {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 )}
             </div>

@@ -19,7 +19,7 @@ interface VnpParams {
     [key: string]: string | undefined;
 }
 
-const PaymentConfirm: React.FC = () => {
+const PaymentConfirmPage: React.FC = () => {
     const location = useLocation();
     const { order, clearOrder } = useOrderStore();
     const { setIsLoading } = useActionStore();
@@ -34,6 +34,7 @@ const PaymentConfirm: React.FC = () => {
             .map((key: string) => `${key}=${encodeURIComponent(vnp_Params[key] as string)}`)
             .join('&');
         const signed = calculateVnpSecureHash(sortedParams, vnp_HashSecret);
+        console.log('order', order);
         if (vnp_SecureHash === signed) {
             const { vnp_TransactionStatus } = vnp_Params;
             if (vnp_TransactionStatus === '00') {
@@ -42,7 +43,7 @@ const PaymentConfirm: React.FC = () => {
                 setIsLoading(false);
                 showNotification(res.message, res.success);
                 if (!res.success) {
-                    navigate(PATH.PAGE_PAYMENT);
+                    // navigate(PATH.PAGE_PAYMENT);
                     return;
                 }
                 clearOrder();
@@ -57,11 +58,11 @@ const PaymentConfirm: React.FC = () => {
                 navigate(PATH.PAGE_ORDER);
             } else {
                 showNotification('Thanh toán không thành công', false);
-                navigate(PATH.PAGE_PAYMENT);
+                // navigate(PATH.PAGE_PAYMENT);
             }
         } else {
             showNotification('Xác thực thanh toán thất bại', false);
-            navigate(PATH.PAGE_PAYMENT);
+            // navigate(PATH.PAGE_PAYMENT);
         }
     };
 
@@ -82,4 +83,4 @@ const PaymentConfirm: React.FC = () => {
     );
 };
 
-export default PaymentConfirm;
+export default PaymentConfirmPage;

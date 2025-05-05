@@ -24,18 +24,14 @@ const Forgot: React.FC = () => {
         }
 
         setIsLoading(true);
-
         // Gọi API để gửi email quên mật khẩu
         const res = await sendForgotPasswordEmail({ email: emailValue });
-
+        setIsLoading(false);
         if (!res.success) {
             showNotification(res.message, false);
-            setIsLoading(false);
             return;
         }
-
         setOpenFeatureAuth(false);
-        setIsLoading(false);
         showNotification('Vui lòng kiểm tra gmail của bạn!', true);
     };
 

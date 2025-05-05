@@ -6,7 +6,6 @@ import { IUserDetail } from '../interfaces/user.interfaces';
 interface UserState {
     user: IUserDetail;
     setUser: (user: IUserDetail) => void;
-    clearUser: () => void;
     addRewardPoints: (points?: number) => void;
     subtractRewardPoints: (points?: number) => void; // Trừ điểm
     setUserRewardPoints: (points: number) => void; // Cập nhật điểm
@@ -33,18 +32,6 @@ const useUserStore = create<UserState>((set, get) => ({
         localStorage.setItem('user', JSON.stringify(user));
         set({ user });
     },
-    clearUser: () => {
-        localStorage.removeItem('user');
-        set({
-            user: {
-                user_reward_points: 0,
-                createdAt: '',
-                _id: '',
-                user_name: '',
-                user_email: '',
-            },
-        });
-    },
     addRewardPoints: (points: number = 5000) => {
         const currentUser = get().user;
         const updatedUser = {
@@ -64,7 +51,8 @@ const useUserStore = create<UserState>((set, get) => ({
         localStorage.setItem('user', JSON.stringify(updatedUser));
         set({ user: updatedUser });
     },
-    setUserRewardPoints: (points: number) => { // Thêm hành động cập nhật điểm
+    setUserRewardPoints: (points: number) => {
+        // Thêm hành động cập nhật điểm
         const currentUser = get().user;
         const updatedUser = {
             ...currentUser,
@@ -72,7 +60,7 @@ const useUserStore = create<UserState>((set, get) => ({
         };
         localStorage.setItem('user', JSON.stringify(updatedUser));
         set({ user: updatedUser });
-    }
+    },
 }));
 
 export default useUserStore;

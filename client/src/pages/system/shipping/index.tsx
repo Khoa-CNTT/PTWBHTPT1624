@@ -33,7 +33,7 @@ export default function ShippingManage() {
 
     // Hàm gọi API lấy tất cả công ty vận chuyển
     const fetchApi = async () => {
-        const res = await apiGetAllShippingCompanies({ limit: 5, page: currentPage });
+        const res = await apiGetAllShippingCompanies({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setShippings(data.ShippingCompanies);
@@ -135,7 +135,7 @@ export default function ShippingManage() {
                 ) : (
                     <>
                         <ShippingTable shippings={shippings} onEdit={handleEdit} onDelete={handleDelete} />
-                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                        {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 )}
             </div>

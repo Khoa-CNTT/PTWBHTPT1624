@@ -24,6 +24,7 @@ const Login: React.FC = () => {
         }
         setIsLoading(true);
         const res = await apiLogin(email, password);
+        setIsLoading(false);
         if (res?.success) {
             console.log(res);
             localStorage.setItem('access_token', JSON.stringify(res?.data.accessToken));
@@ -37,7 +38,6 @@ const Login: React.FC = () => {
         } else {
             setError(res.message);
         }
-        setIsLoading(false);
     };
 
     return (

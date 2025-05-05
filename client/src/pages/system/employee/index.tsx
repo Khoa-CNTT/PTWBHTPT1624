@@ -21,7 +21,7 @@ export default function EmployeeManage() {
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
     const { setIsLoading } = useActionStore();
-    
+
     // Fetch dữ liệu người dùng
     const fetchApi = async () => {
         const res = await apiGetAllAdmin();
@@ -72,13 +72,13 @@ export default function EmployeeManage() {
         if (!id || !confirm('Bạn có muốn xóa không?')) return;
         setIsLoading(true);
         const res = await apiDeleteAdmin(id);
+        setIsLoading(false);
         if (res?.success) {
             setEmployees((prev) => prev.filter((item) => item._id !== id));
             showNotification('Xóa thành công', true);
         } else {
             showNotification(res?.message || 'Xóa thất bại', false);
         }
-        setIsLoading(false);
     };
 
     // Xử lý thay đổi ô tìm kiếm
@@ -110,7 +110,7 @@ export default function EmployeeManage() {
     };
 
     if (employees.length === 0 && !isSearching) return <TableSkeleton />;
-    
+
     return (
         <>
             <PageMeta title="Quản lý Nhân viên" />
@@ -134,7 +134,7 @@ export default function EmployeeManage() {
                 ) : (
                     <>
                         <EmployeeTable employees={employees} onEdit={handleEdit} onDelete={handleDelete} />
-                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                        {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 )}
             </div>

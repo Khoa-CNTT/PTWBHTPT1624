@@ -53,15 +53,8 @@ class UserService {
         };
     }
     static async toggleBlockUser(uid, isBlocked) {
-        if (typeof isBlocked !== 'boolean') {
-            if (isBlocked === 'true') isBlocked = true;
-            else if (isBlocked === 'false') isBlocked = false;
-            else throw new RequestError('Trạng thái chặn không hợp lệ!', 400);
-        }
-
         const user = await UserModel.findById(uid);
         if (!user) throw new RequestError('Người dùng không tồn tại!', 404);
-
         user.user_isBlocked = isBlocked;
         await user.save();
         return isBlocked ? 'Đã chặn người dùng thành công!' : 'Đã mở chặn người dùng!';
@@ -87,7 +80,6 @@ class UserService {
     }
 
     static async getProfile(userid) {
-        console.log('hihi');
         return await UserModel.findById(userid).select('_id user_name user_reward_points user_email user_isBlocked user_address user_mobile user_avatar_url');
     }
     static async updateProfile(uid, payload) {

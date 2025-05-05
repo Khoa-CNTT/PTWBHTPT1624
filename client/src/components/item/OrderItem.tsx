@@ -7,6 +7,7 @@ import { statusOrder } from '../../utils/statusOrder';
 import { IOrder } from '../../interfaces/order.interfaces';
 import { formatShippingDate } from '../../utils/format/formatShippingDate';
 import ButtonOutline from '../buttonOutline';
+import { useNavigate } from 'react-router';
 
 interface OrderItemProps {
     order: IOrder;
@@ -19,7 +20,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancel
     const shippingFrom = formatShippingDate(order?.order_date_shipping?.from || 0);
     const shippingTo = formatShippingDate(order?.order_date_shipping?.to || 0);
     const status = statusOrder(order);
-
+    const navigate = useNavigate();
     return (
         <div className="flex flex-col py-3 px-4 bg-white rounded-md overflow-hidden">
             {/* Trạng thái và ngày giao hàng */}
@@ -67,23 +68,18 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancel
                 </div>
             </div>
 
-            {/* Hành động */}
-            {!view && order.order_payment_method === 'VNPAY' && (
-                <div className="flex justify-end mt-2 gap-2">
-                    {order?.order_status !== 'delivered' && (
-                        <>
-                            {order?.order_status === 'cancelled' ? (
-                                <ButtonOutline onClick={() => handleBuy?.(order?._id)}>Mua lại đơn hàng</ButtonOutline>
-                            ) : (
-                                order?.order_status === 'pending' && <ButtonOutline onClick={() => handleCancelOrder?.(order?._id)}>Hủy đơn hàng</ButtonOutline>
-                            )}
-                        </>
-                    )}
-                    {/* <ButtonOutline onClick={() => navigate(`${path.PAGE_USER}/view/${order?._id}`)}>
-            Xem chi tiết
-          </ButtonOutline> */}
-                </div>
-            )}
+            <div className="flex justify-end mt-2 gap-2">
+                {!view && order?.order_payment_method !== 'VNPAY' && order?.order_status !== 'delivered' && (
+                    <>
+                        {order?.order_status === 'cancelled' ? (
+                            <ButtonOutline onClick={() => handleBuy?.(order?._id)}>Mua lại đơn hàng</ButtonOutline>
+                        ) : (
+                            order?.order_status === 'pending' && <ButtonOutline onClick={() => handleCancelOrder?.(order?._id)}>Hủy đơn hàng</ButtonOutline>
+                        )}
+                    </>
+                )}
+                {!view && <ButtonOutline onClick={() => navigate(`/nguoi-dung/chi-tiet-don-hang/${order?._id}`)}>Xem chi tiết</ButtonOutline>}
+            </div>
         </div>
     );
 };

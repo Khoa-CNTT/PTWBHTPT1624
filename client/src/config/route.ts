@@ -18,7 +18,7 @@ import OfflineOrderListManage from '../pages/system/offlineOrderList';
 import OrderDetail from '../pages/system/order/OrderDetail';
 import { PATH } from '../utils/const';
 
-export const ROUTES = [
+export const ADMIN_ROUTES = [
     { path: PATH.MANAGE_CATEGORY, component: CategoryManage, permissions: 'category_manage' },
     { path: PATH.MANAGE_ORDER, component: OrderManage, permissions: 'order_manage' },
     { path: PATH.MANAGE_OFFLINE_ORDER, component: OfflineOrder, permissions: 'offline_order' },

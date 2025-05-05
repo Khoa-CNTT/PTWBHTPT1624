@@ -29,7 +29,7 @@ export default function VoucherManage(): JSX.Element {
         // Khi không tìm kiếm, fetch tất cả vouchers
         const fetchVouchers = async () => {
             setLoading(true);
-            const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
+            const res = await apiGetAllVouchers({ limit: 10, page: currentPage });
             if (!res.success) return;
             setVouchers(res.data.vouchers);
             setTotalPage(res.data.totalPage);
@@ -102,7 +102,7 @@ export default function VoucherManage(): JSX.Element {
         if (value === '') {
             // Khi ô tìm kiếm trống, gọi lại API lấy tất cả sản phẩm
             const fetchVouchers = async () => {
-                const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
+                const res = await apiGetAllVouchers({ limit: 10, page: currentPage });
                 if (!res.success) return;
                 setVouchers(res.data.vouchers);
                 setTotalPage(res.data.totalPage);
@@ -150,11 +150,11 @@ export default function VoucherManage(): JSX.Element {
                 {vouchers.length === 0 ? (
                     <NotExit label="Không có voucher nào" />
                 ) : (
-                    <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 )}
-
-                {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa voucher */}

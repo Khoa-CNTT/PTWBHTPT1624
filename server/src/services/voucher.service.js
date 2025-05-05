@@ -48,7 +48,13 @@ class VoucherService {
         const limitNum = parseInt(limit, 10); // Mặc định limit = 10
         const pageNum = parseInt(page, 10); // Mặc định page = 0
         const skipNum = pageNum * limitNum;
-        const vouchers = await voucherModel.find().sort({ createdAt: -1 }).skip(skipNum).select(' -createdAt -updatedAt -__v').limit(limitNum).lean();
+        const vouchers = await voucherModel
+            .find({ voucher_is_active: true })
+            .sort({ createdAt: -1 })
+            .skip(skipNum)
+            .select(' -createdAt -updatedAt -__v')
+            .limit(limitNum)
+            .lean();
         const totalVoucher = await voucherModel.countDocuments();
         return {
             totalPage: Math.ceil(totalVoucher / limitNum) || 0, // Tổng số trang (0-based)
@@ -65,6 +71,7 @@ class VoucherService {
         const vouchers = await voucherModel
             .find({
                 voucher_type: 'system',
+                voucher_is_active: true,
                 voucher_start_date: { $lte: now }, // voucher đã bắt đầu
                 voucher_end_date: { $gte: now }, // voucher chưa hết hạn
             })
@@ -76,6 +83,7 @@ class VoucherService {
 
         const totalVoucher = await voucherModel.countDocuments({
             voucher_type: 'system',
+            voucher_is_active: true,
             voucher_start_date: { $lte: now },
             voucher_end_date: { $gte: now },
         });
@@ -96,6 +104,7 @@ class VoucherService {
         const vouchers = await voucherModel
             .find({
                 voucher_type: 'user',
+                voucher_is_active: true,
                 voucher_start_date: { $lte: currentDate }, // voucher đã bắt đầu
                 voucher_end_date: { $gte: currentDate },
             })
@@ -119,7 +128,7 @@ class VoucherService {
 
     // Lấy voucher theo ID
     static async getVoucherByCode(code) {
-        const voucher = await voucherModel.findOne({ voucher_code: code });
+        const voucher = await voucherModel.findOne({ voucher_is_active: true, voucher_code: code });
         if (!voucher) throw new RequestError('Voucher không tồn tại!');
         return voucher;
     }

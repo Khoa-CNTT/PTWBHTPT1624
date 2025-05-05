@@ -35,7 +35,7 @@ export default function UserManage() {
     // Fetch danh sách người dùng
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllUser({ limit: 5, page: currentPage });
+        const res = await apiGetAllUser({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setUsers(data.users);
@@ -110,19 +110,14 @@ export default function UserManage() {
         setIsUploading(false); // Kết thúc loading
     };
 
-    const handleBlock = (id: string, isBlocked: boolean) => {
-        const toggleBlock = async () => {
-            setIsLoading(true);
-            const res = await apiToggleBlockUser(id, isBlocked);
-            setIsLoading(false);
-            if (res.success) {
-                setUsers((prevUsers) => prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user)));
-                showNotification(isBlocked ? 'Chặn người dùng thành công' : 'Bỏ chặn người dùng thành công', true);
-            } else {
-                showNotification(res.message || 'Không thể thay đổi trạng thái chặn', false);
-            }
-        };
-        toggleBlock();
+    const handleBlock = async (id: string, isBlocked: boolean) => {
+        setIsLoading(true);
+        const res = await apiToggleBlockUser(id, isBlocked);
+        setIsLoading(false);
+        showNotification(res.message, res.success);
+        if (res.success) {
+            setUsers((prevUsers) => prevUsers.map((user) => (user._id === id ? { ...user, user_isBlocked: isBlocked } : user)));
+        }
     };
 
     const handleDelete = async (id: string) => {
@@ -167,7 +162,7 @@ export default function UserManage() {
                             onBlock={handleBlock}
                             onDelete={handleDelete} // Pass the handleDelete function
                         />
-                        {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                        {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 )}
             </div>

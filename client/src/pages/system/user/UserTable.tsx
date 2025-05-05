@@ -49,7 +49,7 @@ const UserTable = ({ users, onEdit, onBlock, onDelete }: UserTableProps) => {
                                                             ? `Bạn có chắc chắn muốn **CHẶN** người dùng "${user.user_name || 'này'}"?`
                                                             : `Bạn có chắc chắn muốn **BỎ CHẶN** người dùng "${user.user_name || 'này'}"?`;
 
-                                                        if (window.confirm(confirmMsg)) {
+                                                        if (confirm(confirmMsg)) {
                                                             onBlock(user._id, isChecked);
                                                         }
                                                     }}
