@@ -36,28 +36,21 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
             showNotification('Vui lòng đăng nhập để thích sản phẩm', false);
             return;
         }
-    
-        try {
-            if (favoriteProducts.some((i) => i._id === productDetail._id)) {
-                removeFavorite(productDetail._id);
-                await removeFavoriteProduct(productDetail._id);
-                showNotification('Đã xoá sản phẩm khỏi danh sách yêu thích', true);
-            } else {
-                setFavorite(productDetail);
-                await addFavoriteProduct(productDetail._id);
-                showNotification('Đã thêm sản phẩm vào danh sách yêu thích', true);
-            }
-        } catch (error) {
-            showNotification('Đã xảy ra lỗi. Vui lòng thử lại.', false);
+        if (favoriteProducts.some((i) => i._id === productDetail._id)) {
+            removeFavorite(productDetail._id);
+            await removeFavoriteProduct(productDetail._id);
+            showNotification('Đã xoá sản phẩm khỏi danh sách yêu thích', true);
+        } else {
+            setFavorite(productDetail);
+            await addFavoriteProduct(productDetail._id);
+            showNotification('Đã thêm sản phẩm vào danh sách yêu thích', true);
         }
     }, [isUserLoggedIn, favoriteProducts, productDetail, setOpenFeatureAuth]);
-    
 
     // Handle Add to Cart
     const handleAddToCart = async (isBuy: boolean) => {
         if (!isUserLoggedIn) {
             setOpenFeatureAuth(true);
-            showNotification('Vui lòng đăng nhập để thêm vào giỏ hàng', false);
             return;
         }
         setIsLoading(true);
@@ -103,7 +96,7 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
                                 {productDetail.product_discount && <div className="text-sm font-semibold">-{productDetail.product_discount}%</div>}
                             </div>
 
-                            {user && (
+                            {isUserLoggedIn && (
                                 <div className="flex gap-1 text-sm">
                                     Giao đến
                                     <span className="text-[15px] font-medium underline text-primary">{user.user_address?.detail}</span>

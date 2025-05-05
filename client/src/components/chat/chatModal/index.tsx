@@ -10,6 +10,8 @@ import { useActionStore } from '../../../store/actionStore';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
+import useSocketStore from '../../../store/socketStore';
+import useAuthStore from '../../../store/authStore';
 
 const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: number) => void }> = ({ conversationId, SetUnreadMessages }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
@@ -19,6 +21,8 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
     const { user } = useUserStore();
     const { isOpenChat, setIsOpenChat, mobile_ui, setIsLoading } = useActionStore();
     const navigate = useNavigate();
+    const { socket, isConnected } = useSocketStore();
+
     // const { socketRef } = useAppSelector((state) => state.action);
 
     useEffect(() => {
@@ -29,12 +33,20 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
         }
     }, [isOpenChat]);
 
-    // get message from socket.io
-    // useEffect(() => {
-    //     socketRef?.on('getMessage', (data) => {
-    //         setMessages((prev) => [...prev, data]);
-    //     });
-    // }, [socketRef]);
+    const { isUserLoggedIn } = useAuthStore();
+    useEffect(() => {
+        if (!isConnected || !isUserLoggedIn || !socket) return;
+        // Handle 'getMessageByAdmin' event
+        const handleGetMessageByAdmin = (data: IMessage) => {
+            setMessages((prev) => [...prev, data]);
+        };
+        // Register socket event listeners
+        socket.on('getMessage', handleGetMessageByAdmin);
+        // Cleanup: Remove event listeners on unmount or dependency change
+        return () => {
+            socket.off('getMessage', handleGetMessageByAdmin);
+        };
+    }, [isConnected, isUserLoggedIn, socket]);
 
     useEffect(() => {
         if (!conversationId || !isOpenBox) return;
@@ -65,10 +77,10 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
             setImage('');
             if (message.success) {
                 setMessages((prev) => [...prev, { ...message.data, sender: user }]);
-                // socketRef?.emit('sendMessage', {
-                //     ...message.data,
-                //     receiver,
-                // });
+                socket.emit('sendMessageForAdminOnline', {
+                    ...message.data,
+                    sender: user,
+                });
                 setValue('');
             }
         }

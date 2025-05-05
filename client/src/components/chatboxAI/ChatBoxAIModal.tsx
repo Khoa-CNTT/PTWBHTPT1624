@@ -1,8 +1,9 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import { TypeAnimation } from 'react-type-animation';
 import { generateGeminiResponse } from '../../services/gemini.service';
-
+import ReactLoading from 'react-loading';
 interface ChatMessage {
     id: string;
     role: 'user' | 'bot';
@@ -16,7 +17,8 @@ interface ChatBoxAIModalProps {
 
 const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox }) => {
     const [prompt, setPrompt] = useState('');
-    const [close, setClose] = useState<boolean>(false);
+    const [isVisible, setIsVisible] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [messages, setMessages] = useState<ChatMessage[]>([
         {
             id: crypto.randomUUID(),
@@ -26,31 +28,31 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
     ]);
     const scrollRef = useRef<HTMLDivElement>(null);
 
-    // Scroll to latest message
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
-    }, [messages]);
+    }, [messages, isLoading]);
 
-    // Handle open/close animation
     useEffect(() => {
         if (isOpenBox) {
-            setClose(true);
+            setIsVisible(true);
         } else {
-            setTimeout(() => setClose(false), 299);
+            setTimeout(() => setIsVisible(false), 299);
         }
     }, [isOpenBox]);
 
     const handleSubmit = async (e: React.FormEvent | React.KeyboardEvent) => {
         e.preventDefault();
-        if (!prompt.trim()) return;
+        if (!prompt.trim() || isLoading) return;
 
         const userMessage: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'user',
             content: prompt.trim(),
         };
+
         setMessages((prev) => [...prev, userMessage]);
         setPrompt('');
+        setIsLoading(true);
 
         try {
             const reply = await generateGeminiResponse(prompt);
@@ -60,7 +62,8 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
                 content: reply,
             };
             setMessages((prev) => [...prev, botMessage]);
-        } catch (err) {
+        } catch (error) {
+            console.error(error);
             setMessages((prev) => [
                 ...prev,
                 {
@@ -69,11 +72,12 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
                     content: 'Đã xảy ra lỗi khi gửi yêu cầu!',
                 },
             ]);
-            console.error(err);
+        } finally {
+            setIsLoading(false);
         }
     };
 
-    if (!close) return null;
+    if (!isVisible) return null;
 
     return (
         <div
@@ -94,12 +98,12 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
                         </div>
                         <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400">Trợ lý AI</h5>
                     </div>
-                    <button className="text-secondary" onClick={() => setIsOpenBox(!isOpenBox)}>
+                    <button className="text-secondary" onClick={() => setIsOpenBox(false)}>
                         <ExpandMoreIcon fontSize="large" />
                     </button>
                 </div>
 
-                {/* Chat messages */}
+                {/* Messages */}
                 <div className="custom-scrollbar flex-1 overflow-auto p-5 space-y-6 xl:p-6 xl:space-y-8">
                     {messages.map((msg, idx) => (
                         <div
@@ -120,40 +124,60 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
                                             ? 'bg-gradient-to-br from-brand-500 to-brand-600 text-white rounded-tr-none'
                                             : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white/90 rounded-tl-none'
                                     }`}>
-                                    <p>{msg.content}</p>
+                                    {msg.role === 'user' || msg.id !== messages[messages.length - 1]?.id ? (
+                                        <p>{msg.content}</p>
+                                    ) : (
+                                        <TypeAnimation sequence={[msg.content]} speed={1} cursor={true} wrapper="span" repeat={0} />
+                                    )}
                                 </div>
                             </div>
                         </div>
                     ))}
+
+                    {isLoading && (
+                        <div className="flex items-center gap-4 text-sm text-gray-600 dark:text-white/80">
+                            <img
+                                src="https://photo.salekit.com/uploads/fchat_5b4872d13803896dd77125af/logo1.png"
+                                alt="Bot"
+                                className="h-8 w-8 rounded-full object-cover"
+                            />
+                            <div className="flex items-center gap-2 bg-gray-100 dark:bg-gray-800 p-3 rounded-full shadow-md">
+                                <p className="text-gray-500 dark:text-white text-xs">Đang nhập</p>
+                                <ReactLoading type="bubbles" color="#4CAF50" height={20} width={20} />
+                            </div>
+                        </div>
+                    )}
                 </div>
 
-                {/* Input box */}
+                {/* Input */}
                 <div className="sticky bottom-0 border-t border-gray-200 p-3 dark:border-gray-800">
                     <form onSubmit={handleSubmit} className="relative flex items-center">
-                        <div className="w-full relative">
-                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400">
-                                <svg className="fill-current" width="24" height="24" viewBox="0 0 24 24">
-                                    <path
-                                        fillRule="evenodd"
-                                        clipRule="evenodd"
-                                        d="M12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2ZM3.5 12C3.5 7.30558 7.30558 3.5 12 3.5C16.6944 3.5 20.5 7.30558 20.5 12C20.5 16.6944 16.6944 20.5 12 20.5C7.30558 20.5 3.5 16.6944 3.5 12ZM10.0001 9.23256C10.0001 8.5422 9.44042 7.98256 8.75007 7.98256C8.05971 7.98256 7.50007 8.5422 7.50007 9.23256C7.50007 9.92301 8.05971 10.4827 8.75007 10.4827C9.44042 10.4827 10.0001 9.92301 10.0001 9.23256ZM15.2499 7.98256C15.9403 7.98256 16.4999 8.5422 16.4999 9.23256C16.4999 9.92301 15.9403 10.4827 15.2499 10.4827C14.5596 10.4827 13.9999 9.92301 13.9999 9.23256C13.9999 8.5422 14.5596 7.98256 15.2499 7.98256ZM9.23014 13.7116C8.97215 13.3876 8.5003 13.334 8.17625 13.592C7.8522 13.85 7.79865 14.3219 8.05665 14.6459C8.97846 15.8037 10.4026 16.5481 12 16.5481C13.5975 16.5481 15.0216 15.8037 15.9434 14.6459C16.2014 14.3219 16.1479 13.85 15.8238 13.592C15.4998 13.334 15.0279 13.3876 14.7699 13.7116C14.1205 14.5274 13.1213 15.0481 12 15.0481C10.8788 15.0481 9.87961 14.5274 9.23014 13.7116Z"
-                                    />
-                                </svg>
-                            </span>
-                            <input
-                                type="text"
-                                value={prompt}
-                                onChange={(e) => setPrompt(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter' && !e.shiftKey) {
-                                        handleSubmit(e);
-                                    }
-                                }}
-                                placeholder="Nhập tin nhắn"
-                                className="h-9 w-full bg-transparent pl-12 pr-5 text-sm text-gray-800 dark:text-white/90 placeholder:text-gray-400 outline-none"
-                            />
-                        </div>
-                        <button type="submit" className="ml-3 flex h-9 w-9 items-center justify-center rounded-lg bg-brand-500 text-white hover:bg-brand-600">
+                        <input
+                            type="text"
+                            value={prompt}
+                            onChange={(e) => setPrompt(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    handleSubmit(e);
+                                }
+                            }}
+                            placeholder="Nhập tin nhắn"
+                            disabled={isLoading}
+                            className="h-9 w-full bg-transparent pl-10 pr-10 text-sm border rounded-full px-4 py-2 border-gray-300 dark:border-gray-700 focus:outline-none"
+                        />
+                        <span className="absolute left-3 text-gray-400">
+                            <svg className="fill-current" width="20" height="20" viewBox="0 0 24 24">
+                                <path
+                                    fillRule="evenodd"
+                                    clipRule="evenodd"
+                                    d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zM8.75 7.98A1.25 1.25 0 1 0 10 9.23a1.25 1.25 0 0 0-1.25-1.25zm6.5 0a1.25 1.25 0 1 1-1.25 1.25c0-.69.56-1.25 1.25-1.25zM8.18 13.59a.75.75 0 0 1 1.05.14 3.79 3.79 0 0 0 6.54 0 .75.75 0 0 1 1.2.91 5.29 5.29 0 0 1-8.94 0 .75.75 0 0 1 .14-1.05z"
+                                />
+                            </svg>
+                        </span>
+                        <button
+                            type="submit"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 p-1 text-brand-600 hover:text-brand-700"
+                            disabled={isLoading}>
                             <SendIcon />
                         </button>
                     </form>
