@@ -19,14 +19,14 @@ import RecentViewPage from '../pages/user/userPage/RecentViewPage';
 import PurchasedProductsPage from '../pages/user/userPage/PurchasedProductsPage';
 import OrderPage from '../pages/user/userPage/orderPage';
 import UserVoucherPage from '../pages/user/userPage/UserVoucherPage';
-import PaymentPage from '../pages/user/paymentPage';
 import UserProfilePage from '../pages/user/userPage/UserProfilePage';
 import RedeemVoucherPage from '../pages/user/userPage/RedeemVoucherPage';
 import OrderDetailPage from '../pages/user/userPage/orderDetailPage';
-import PaymentConfirmPage from '../pages/user/paymentConfirmPage';
 import SearchPage from '../pages/user/searchPage';
 import CartPage from '../pages/user/cartPage';
 import VoucherPage from '../pages/user/voucherPage';
+import PaymentPage from '../pages/user/paymentPage';
+import PaymentConfirmPage from '../pages/user/paymentConfirmPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
