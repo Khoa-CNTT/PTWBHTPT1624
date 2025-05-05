@@ -96,12 +96,23 @@ const ChatBoxAIModel: React.FC<ChatBoxAIModelProps> = ({ isOpenBox, setIsOpenBox
                 </div>
 
                 <div className="custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6">
-                    {messages.map((msg, index) => (
+                    {messages?.map((msg, index) => (
                         <div
-                            key={msg.id} // Use unique ID as key
+                            key={msg.id}
                             className={`flex w-full max-w-[400px] gap-3 ${msg.role === 'user' ? 'ml-auto flex-row-reverse' : 'mr-auto'} mb-4`}
-                            ref={index === messages.length - 1 ? scrollRef : null} // Apply ref only to the last message
-                        >
+                            ref={index === messages.length - 1 ? scrollRef : null}>
+                            {/* Avatar cho bot và user */}
+                            {msg.role === 'bot' && (
+                                <img
+                                    src={
+                                        'https://photo.salekit.com/uploads/fchat_5b4872d13803896dd77125af/logo1.png' // Avatar người dùng
+                                    }
+                                    alt="avatar"
+                                    className="h-8 w-8 rounded-full object-cover"
+                                />
+                            )}
+
+                            {/* Nội dung tin nhắn */}
                             <div className={`flex max-w-[300px] flex-col gap-1 ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
                                 <div
                                     className={`rounded-2xl px-4 py-2 text-sm shadow-sm transition-all duration-200 ${
@@ -111,7 +122,6 @@ const ChatBoxAIModel: React.FC<ChatBoxAIModelProps> = ({ isOpenBox, setIsOpenBox
                                     }`}>
                                     <p>{msg.content}</p>
                                 </div>
-                                <p className={`text-xs text-gray-500 dark:text-gray-400 ${msg.role === 'user' ? 'text-right' : 'text-left'}`}></p>
                             </div>
                         </div>
                     ))}
