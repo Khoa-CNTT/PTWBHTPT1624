@@ -15,6 +15,10 @@ interface SocketStore {
 const URL = ENV.API_URL_BACKEND_SOCKET;
 const socket: any = io(URL, {
     autoConnect: false, // 👉 Ngăn tự động kết nối khi khởi tạo
+    reconnection: true, // tự động reconnect nếu bị ngắt
+    reconnectionAttempts: Infinity, // thử lại vô hạn
+    reconnectionDelay: 2000, // chờ 2s giữa mỗi lần thử
+    timeout: 20000, // timeout sau 20s nếu không kết nối được
 });
 // Định nghĩa kiểu cho mảng userOnline (giống như trong socketStore)
 

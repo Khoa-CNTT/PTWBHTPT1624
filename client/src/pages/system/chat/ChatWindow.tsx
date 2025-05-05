@@ -51,13 +51,15 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
     useEffect(() => {
         if (!selectedConversation?._id) return;
         const fetchApi = async () => {
+            setIsLoading(true);
             const res = await apiGetMessagesByConversation(selectedConversation?._id);
+            setIsLoading(false);
             if (!res.success) return;
             const data = res.data;
             setMessages(data);
         };
         fetchApi();
-    }, [selectedConversation]);
+    }, [selectedConversation, setIsLoading]);
     useEffect(() => {
         scroll.current?.scrollIntoView({
             behavior: 'smooth',
