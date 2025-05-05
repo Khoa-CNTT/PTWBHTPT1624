@@ -16,7 +16,7 @@ interface UserOnline {
     socketId: string;
 }
 interface ChatWindowProps {
-    selectedConversation: IConversation;
+    selectedConversation: IConversation | any;
     userOnline: UserOnline[];
 }
 
