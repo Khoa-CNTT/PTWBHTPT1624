@@ -1,6 +1,6 @@
-import 'react-toastify/dist/ReactToastify.css';
+/* eslint-disable react-hooks/exhaustive-deps */
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Outlet } from 'react-router';
-import { ToastContainer } from 'react-toastify';
 import Header from './Header';
 import Footer from './Footer';
 import { Auth } from '../../feature';
@@ -8,6 +8,7 @@ import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
 import Chat from '../../components/chat';
 import ChatBoxAI from '../../components/chatboxAI';
+import ToastComponent from '../../components/toastComponent';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
@@ -19,21 +20,6 @@ import ChatBoxAI from '../../components/chatboxAI';
 // import Chat from '../component/chat';
 const DefaultLayout = () => {
     useFetchUser();
-    const toastContainer = (
-        <ToastContainer
-            position="top-center"
-            autoClose={5000}
-            hideProgressBar={false}
-            newestOnTop={false}
-            closeOnClick
-            rtl={false}
-            pauseOnFocusLoss
-            draggable
-            pauseOnHover
-            theme="light"
-        />
-    );
-
     // const { mobile_ui } = useAppSelector((state) => state.action);
     return (
         <>
@@ -55,7 +41,7 @@ const DefaultLayout = () => {
              
                 <BottomNavigate /> */}
             </div>
-            {toastContainer}
+            <ToastComponent />
         </>
     );
 };

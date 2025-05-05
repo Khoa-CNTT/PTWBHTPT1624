@@ -6,6 +6,8 @@ import ChatModal from './chatModal';
 import { apiCreateConversation } from '../../services/conversation';
 import { apiGetUnreadMessagesCount } from '../../services/message.service';
 import MessageIcon from '@mui/icons-material/Message';
+import useSocketStore from '../../store/socketStore';
+import { cuoiAudio } from '../../assets';
 
 const Chat: React.FC = () => {
     // const { socketRef } = useAppSelector((state) => state.action);
@@ -14,6 +16,28 @@ const Chat: React.FC = () => {
     const [unreadMessages, SetUnreadMessages] = useState<number>(0);
     const { setIsOpenChat, setOpenFeatureAuth } = useActionStore();
 
+    const { socket, isConnected } = useSocketStore();
+
+    useEffect(() => {
+        if (!isConnected || !isUserLoggedIn || !socket) return;
+
+        // Handle 'getMessage' event to increment unread messages
+        const handleSetUnreadMessages = () => {
+            SetUnreadMessages((prev) => prev + 1);
+            const audio = new Audio(cuoiAudio);
+            audio.play().catch((err) => {
+                console.warn('🔇 Không thể phát âm thanh:', err);
+            });
+        };
+
+        // Register socket event listener
+        socket.on('getMessage', handleSetUnreadMessages);
+
+        // Cleanup: Remove event listener on unmount or dependency change
+        return () => {
+            socket.off('getMessage', handleSetUnreadMessages);
+        };
+    }, [isConnected, isUserLoggedIn, socket]);
     useEffect(() => {
         if (!conversationId) return;
         const fetchApi = async () => {

@@ -3,14 +3,18 @@ import { IConversation } from '../../../interfaces/conversation.interfaces';
 import { timeAgo } from '../../../utils/format/timeAgo';
 import { userAvatar } from '../../../assets';
 
+interface UserOnline {
+    userId: string;
+    socketId: string;
+}
 interface SidebarProps {
     conversations: IConversation[];
     onSelectChat: (conversation: IConversation) => void;
+    userOnline: UserOnline[];
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ conversations, onSelectChat }) => {
+const Sidebar: React.FC<SidebarProps> = ({ conversations, onSelectChat, userOnline }) => {
     const [isMobile, setIsMobile] = useState<boolean>(false);
-
     return (
         <div
             className="flex-col rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03] xl:flex xl:w-1/3"
@@ -99,12 +103,10 @@ const Sidebar: React.FC<SidebarProps> = ({ conversations, onSelectChat }) => {
                                         alt="profile"
                                         className="h-full w-full overflow-hidden rounded-full object-cover object-center"
                                     />
-                                    {/* <span
-                                        className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 ${
-                                            user.status === 'online' ? 'bg-success-500' : 'bg-warning-500'
-                                        }`}></span> */}
-                                    <span
-                                        className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 ${'bg-success-500'}`}></span>
+                                    {userOnline?.some((user) => user.userId === c?.user?._id) && (
+                                        <span
+                                            className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white bg-success-500 dark:border-gray-900`}></span>
+                                    )}
                                 </div>
                                 <div className="w-full">
                                     <div className="flex items-start justify-between">

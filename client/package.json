@@ -83,6 +83,7 @@
         "react-spring": "^9.7.5",
         "react-to-print": "^3.0.5",
         "react-toastify": "^11.0.5",
+        "react-type-animation": "^3.2.0",
         "react-weblineindia-qrcode-scanner": "^1.0.2",
         "reactjs-otp-input": "^2.0.10",
         "recharts": "^2.15.2",

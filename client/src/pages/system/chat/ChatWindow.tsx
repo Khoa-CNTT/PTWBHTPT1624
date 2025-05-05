@@ -8,19 +8,46 @@ import ChatMessage from '../../../components/ChatMessage';
 import SendIcon from '@mui/icons-material/Send';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
 import { useActionStore } from '../../../store/actionStore';
+import useSocketStore from '../../../store/socketStore';
+import useAuthStore from '../../../store/authStore';
+import useAdminStore from '../../../store/adminStore';
+interface UserOnline {
+    userId: string;
+    socketId: string;
+}
 interface ChatWindowProps {
     selectedConversation: IConversation | any;
+    userOnline: UserOnline[];
 }
 
-const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
+const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnline }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [value, setValue] = useState<string>('');
     const scroll = useRef<any>(null);
     const [image, setImage] = useState<string>('');
     const { setIsLoading } = useActionStore();
+
+    const { socket, isConnected } = useSocketStore();
+    const { isAdminLoggedIn } = useAuthStore();
+    const { admin } = useAdminStore();
     useEffect(() => {
+        if (!isConnected || !isAdminLoggedIn || !socket) return;
+        // Handle 'getMessageByAdmin' event
+        const handleGetMessageByAdmin = (data: IMessage) => {
+            setMessages((prev) => [...prev, data]);
+        };
+        // Register socket event listeners
+        socket.on('getMessageByAdmin', handleGetMessageByAdmin);
+        // Cleanup: Remove event listeners on unmount or dependency change
+        return () => {
+            socket.off('getMessageByAdmin', handleGetMessageByAdmin);
+        };
+    }, [isConnected, isAdminLoggedIn, socket]);
+
+    useEffect(() => {
+        if (!selectedConversation?._id) return;
         const fetchApi = async () => {
-            const res = await apiGetMessagesByConversation(selectedConversation._id);
+            const res = await apiGetMessagesByConversation(selectedConversation?._id);
             if (!res.success) return;
             const data = res.data;
             setMessages(data);
@@ -35,14 +62,14 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
     if (!selectedConversation) {
         return (
             <div className="flex-1 flex items-center justify-center bg-gray-50 dark:bg-gray-900">
-                <p className="text-gray-500 dark:text-gray-400">Select a chat to start messaging</p>
+                <p className="text-gray-500 dark:text-gray-400">Chọn một cuộc trò chuyện để bắt đầu nhắn tin</p>
             </div>
         );
     }
     const handleOnClick = async () => {
         if (value || image) {
             const res = await apiSendMessageByAdmin({
-                conversationId: selectedConversation._id,
+                conversationId: selectedConversation?._id,
                 text: value,
                 image: image,
             });
@@ -50,6 +77,11 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
             setImage('');
             if (res.success) {
                 setMessages((prev) => [...prev, res.data]);
+                socket.emit('sendMessage', {
+                    ...res.data,
+                    sender: admin,
+                    receiver: selectedConversation?.user._id,
+                });
             }
         }
     };
@@ -72,18 +104,17 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation }) => {
                 <div className="flex w-full items-center gap-3">
                     <div className="relative h-12 w-full max-w-[48px] rounded-full">
                         <img
-                            src={selectedConversation.user.user_avatar_url || userAvatar}
+                            src={selectedConversation?.user.user_avatar_url || userAvatar}
                             alt="profile"
                             className="h-full w-full overflow-hidden rounded-full object-cover object-center"
                         />
-                        {/* <span
-                            className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 ${
-                                selectedConversation.user.status === 'online' ? 'bg-success-500' : 'bg-warning-500'
-                            }`}></span> */}
-                        <span
-                            className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 ${'bg-success-500'}`}></span>
+                        {userOnline?.some((user) => user.userId === selectedConversation?.user?._id) && (
+                            <span
+                                className={`absolute bottom-0 right-0 block h-3 w-3 rounded-full border-[1.5px] border-white dark:border-gray-900 bg-success-500
+                            }`}></span>
+                        )}
                     </div>
-                    <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400">{selectedConversation.user.user_name}</h5>
+                    <h5 className="text-sm font-medium text-gray-500 dark:text-gray-400">{selectedConversation?.user.user_name}</h5>
                 </div>
                 <div className="flex items-center gap-3">
                     <button className="text-gray-700 hover:text-gray-800 dark:text-gray-400 dark:hover:text-white/90">
