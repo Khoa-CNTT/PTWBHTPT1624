@@ -25,8 +25,8 @@ import OrderDetailPage from '../pages/user/userPage/orderDetailPage';
 import SearchPage from '../pages/user/searchPage';
 import CartPage from '../pages/user/cartPage';
 import VoucherPage from '../pages/user/voucherPage';
-import PaymentPage from '../pages/user/paymentPage';
-import PaymentConfirmPage from '../pages/user/paymentConfirmPage';
+import PaymentPage from '../pages/user/PaymentPage';
+import PaymentConfirmPage from '../pages/user/PaymentConfirmPage';
 
 const RouterPage = () => {
     const { isAdminLoggedIn, isUserLoggedIn } = useAuthStore();
