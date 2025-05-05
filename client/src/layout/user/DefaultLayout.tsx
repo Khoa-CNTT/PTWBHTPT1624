@@ -7,7 +7,7 @@ import { Auth } from '../../feature';
 import useFetchUser from '../../hooks/useFetchUser';
 import Loading from '../../components/common/Loading';
 import Chat from '../../components/chat';
-import ChatBoxAI from '../../components/chatboxAI';
+import ChatBoxAI from '../../components/chatBoxAI';
 // import { Auth } from '../feature';
 // import { apiGetDetailUser } from '../services/apiUser';
 // import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
