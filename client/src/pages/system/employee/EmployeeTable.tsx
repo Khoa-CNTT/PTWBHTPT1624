@@ -46,7 +46,7 @@ const EmployeeTable: React.FC<EmployeeListProps> = ({ employees, onEdit, onDelet
                                 <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">{c.admin_name}</TableCell>
                                 <TableCell className="px-5 py-3">
                                     <div className="w-12 flex items-center justify-center">
-                                        <img src={c.admin_avatar_url || LogoAdmin} alt={c.admin_name} className="w-full h-full object-cover" />
+                                        <img src={c?.admin_avatar_url || LogoAdmin} alt={c.admin_name} className="w-full h-full object-cover" />
                                     </div>
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 dark:text-gray-300">

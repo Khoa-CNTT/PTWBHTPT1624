@@ -15,7 +15,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isSentByUser }) => {
             {!isSentByUser && (
                 <div className="h-10 w-10 flex-shrink-0">
                     <img
-                        src={message.sender.admin_avatar_url || message.sender.user_avatar_url || userAvatar}
+                        src={message?.sender?.admin_avatar_url || message?.sender?.user_avatar_url || userAvatar}
                         alt="profile"
                         className="h-full w-full rounded-full object-cover object-center transition-transform duration-200 hover:scale-105"
                     />
@@ -45,7 +45,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isSentByUser }) => {
 
                 {/* Sender Info and Timestamp */}
                 <p className={`text-xs text-gray-500 dark:text-gray-400 ${isSentByUser ? 'text-right' : 'text-left'}`}>
-                    {!isSentByUser && (message.sender.user_name || message.sender.admin_name) + ', '}
+                    {!isSentByUser && (message?.sender?.user_name || message?.sender?.admin_name) + ', '}
                     {timeAgo(message.createdAt)}
                 </p>
             </div>

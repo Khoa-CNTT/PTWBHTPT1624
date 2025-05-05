@@ -31,7 +31,10 @@ export default function NotificationDropdown() {
 
     useEffect(() => {
         if (!isConnected || !isAdminLoggedIn || !socket) return;
+        console.log('getNotificationByAdmin');
+
         const handleGetNotificationByAdmin = (data: INotification) => {
+            console.log('data', data);
             setNotifications((prev) => [...prev, data]);
             setUnreadCount((prev) => prev + 1);
             const audio = new Audio(notificationAudio);
