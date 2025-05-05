@@ -23,5 +23,12 @@ const userSchema = mongoose.Schema(
         timestamps: true,
     },
 );
+userSchema.index(
+    { user_mobile: 1 },
+    {
+        unique: true,
+        partialFilterExpression: { user_mobile: { $ne: '' } },
+    },
+);
 
 module.exports = mongoose.model('User', userSchema);
