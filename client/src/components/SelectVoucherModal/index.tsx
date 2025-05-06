@@ -21,11 +21,10 @@ const SelectVoucherModal: React.FC<SelectVoucherModalProps> = ({ setIsOpen, setV
 
     const priceMemo = useMemo(() => {
         const result = selectedProducts.reduce((total, e) => {
-            return total + e.product_discounted_price;
+            return total + e.product_discounted_price * e.quantity;
         }, 0);
         return result;
-    }, [selectedProducts]);
-
+    }, [selectedProducts]); 
     const handleClose = (e: React.MouseEvent) => {
         e.stopPropagation();
         setIsOpen?.(false);
