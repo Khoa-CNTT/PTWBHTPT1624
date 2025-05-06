@@ -57,6 +57,10 @@ const SelectVoucherModal: React.FC<SelectVoucherModalProps> = ({ setIsOpen, setV
             showNotification('Voucher đã hết hạn, vui lòng chọn mã khác!', false);
             return;
         }
+        if (priceMemo < voucher.voucher_min_order_value) {
+            showNotification(`Đơn hàng chưa đạt ${formatMoney(voucher.voucher_min_order_value)} để áp dụng voucher này!`, false);
+            return;
+        }
     
         showNotification(res.message, true);
         setVoucher(voucher);
