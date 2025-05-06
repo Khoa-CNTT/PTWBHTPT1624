@@ -4,6 +4,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import Overlay from '../common/Overlay';
 import { dpnAudio, spinAudio, votayAudio } from '../../assets';
+import { apiPlayLuckyBox } from '../../services/user.service';
+import useUserStore from '../../store/userStore';
 
 const PRIZES = [
     { option: '💵 10.000 xu' },
@@ -24,7 +26,8 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
     const [isSpinning, setIsSpinning] = useState(false);
     const [prizeIndex, setPrizeIndex] = useState(0);
     const [showPrize, setShowPrize] = useState(false);
-
+    const { addRewardPoints, addTicket, user, subtractTicket } = useUserStore();
+    const [titleVoucher, setTitleVoucher] = useState<string>('');
     const handleSpin = () => {
         if (isSpinning) return;
         const audio = new Audio(spinAudio);
@@ -58,38 +61,37 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
 
     useEffect(() => {
         if (!showPrize) return;
-        const currentPrize = PRIZES[prizeIndex].option;
-        // Nếu không phải "May mắn lần sau"
-        if (currentPrize == '🙁 May mắn lần sau') {
-            const audio = new Audio(dpnAudio);
+
+        const handlePrize = async () => {
+            const currentPrize = PRIZES[prizeIndex].option;
+            if (currentPrize === '🙁 May mắn lần sau') {
+                const audio = new Audio(dpnAudio);
+                audio.play();
+                return;
+            }
+
+            fireConfetti();
+
+            const audio = new Audio(votayAudio);
             audio.play();
-            return;
-        }
-        fireConfetti();
-        const audio = new Audio(votayAudio);
-        audio.play();
-        // 👉 Xử lý phần thưởng dựa vào index
-        switch (prizeIndex) {
-            case 0:
-                console.log('Trúng 10.000 xu');
-                break;
-            case 2:
-                console.log('Trúng phiếu giảm giá');
-                break;
-            case 3:
-                console.log('Trúng 1 lượt quay');
-                break;
-            case 5:
-                console.log('Trúng 50.000 xu');
-                break;
-            case 7:
-                console.log('Trúng 2 lượt quay');
-                break;
-            default:
-                console.log('Không trúng thưởng');
-                break;
-        }
-    }, [showPrize, prizeIndex]);
+            const res = await apiPlayLuckyBox(prizeIndex);
+            if (!res.success) return;
+            subtractTicket();
+
+            const data = res.data;
+            if (data.type === 'point') {
+                addRewardPoints(data.point);
+            } else if (data.type === 'ticket') {
+                addTicket(data.ticket);
+            } else if (data.type === 'voucher') {
+                setTitleVoucher(data?.voucher.voucher_name);
+            }
+            // TODO: Xử lý response nếu cần, ví dụ:
+            console.log('Kết quả nhận thưởng:', res);
+        };
+
+        handlePrize();
+    }, [showPrize, prizeIndex, addRewardPoints, addTicket]);
 
     return (
         <>
@@ -97,7 +99,7 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
                 <Overlay
                     onClick={() => setGameModalOpen(false)}
                     className="z-50 flex items-center justify-center min-h-screen font-[Poppins] bg-black bg-opacity-70">
-                    <div className="relative text-center">
+                    <div onClick={(e) => e.stopPropagation()} className="relative text-center">
                         <Wheel
                             mustStartSpinning={isSpinning}
                             prizeNumber={prizeIndex}
@@ -117,13 +119,17 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleSpin();
+                                if (user.user_spin_turns > 0 && !isSpinning) {
+                                    handleSpin();
+                                }
                             }}
-                            disabled={isSpinning}
+                            disabled={isSpinning || user.user_spin_turns === 0}
                             className={`mt-6 px-6 py-3 text-lg font-bold rounded-full text-white shadow-md transition-transform duration-300 ${
-                                isSpinning ? 'bg-gray-400 cursor-not-allowed' : 'bg-gradient-to-r from-pink-500 via-yellow-400 to-purple-600 hover:scale-105'
+                                user.user_spin_turns === 0 || isSpinning
+                                    ? 'bg-gray-400 cursor-not-allowed'
+                                    : 'bg-gradient-to-r from-pink-500 via-yellow-400 to-purple-600 hover:scale-105'
                             }`}>
-                            🎯 Quay Ngay
+                            {user.user_spin_turns > 0 ? `🎯 Quay Ngay! (${user.user_spin_turns} lượt còn lại) ` : '😔 Hết lượt quay rồi!'}
                         </button>
                     </div>
                 </Overlay>
@@ -147,7 +153,7 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
                             <p className="text-xl font-semibold mb-4 break-words">
                                 {PRIZES[prizeIndex].option === '🙁 May mắn lần sau'
                                     ? 'Chúc bạn may mắn lần sau!'
-                                    : `Bạn đã trúng: ${PRIZES[prizeIndex].option}`}
+                                    : `Bạn đã trúng: ${titleVoucher ? titleVoucher : PRIZES[prizeIndex].option}`}
                             </p>
                             <button onClick={() => setShowPrize(false)} className="mt-4 px-6 py-2 text-white bg-blue-600 hover:bg-blue-700 rounded-lg">
                                 Đóng

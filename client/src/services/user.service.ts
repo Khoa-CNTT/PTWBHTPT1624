@@ -124,9 +124,9 @@ const apiUpdateProfile = async (data: any) => {
 import { AxiosError } from 'axios'; // Đảm bảo bạn đã import AxiosError từ axios
 
 // API gọi để chơi Lucky Box
-const apiPlayLuckyBox = async (userId: string) => {
+const apiPlayLuckyBox = async (prizeIndex: number) => {
     try {
-        const res = await authClient.post('/v1/api/user/luckbox', { userId });
+        const res = await authClient.post('/v1/api/user/luckbox', { prizeIndex });
         return res.data;
     } catch (error) {
         // Kiểm tra nếu lỗi là một instance của AxiosError

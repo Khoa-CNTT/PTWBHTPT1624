@@ -36,6 +36,17 @@ class AuthUserController {
             message: 'Đăng nhập thành công!',
         });
     }
+    static async loginGoogle(req, res) {
+        const { credential } = req.body;
+        console.log('req.body', req.body);
+        const data = await AuthUserService.loginGoogle(credential, res);
+        return res.status(200).json({
+            success: true,
+            data,
+            message: 'Đăng nhập thành công!',
+        });
+    }
+
     static async userLogout(req, res) {
         await AuthUserService.userLogout(res);
         return res.status(200).json({

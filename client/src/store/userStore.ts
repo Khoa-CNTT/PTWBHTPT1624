@@ -7,59 +7,84 @@ interface UserState {
     user: IUserDetail;
     setUser: (user: IUserDetail) => void;
     addRewardPoints: (points?: number) => void;
-    subtractRewardPoints: (points?: number) => void; // Trừ điểm
-    setUserRewardPoints: (points: number) => void; // Cập nhật điểm
+    subtractRewardPoints: (points?: number) => void;
+    addTicket: (tickets?: number) => void;
+    subtractTicket: (tickets?: number) => void;
+    setUserRewardPoints: (points: number) => void;
 }
 
-// Lấy dữ liệu từ localStorage
+// Hàm lấy user từ localStorage
 const getStoredUser = (): IUserDetail => {
-    const storedUser = localStorage.getItem('user');
-    return storedUser
-        ? JSON.parse(storedUser)
-        : {
-              user_reward_points: 0,
-              createdAt: '',
-              _id: '',
-              user_name: '',
-              user_email: '',
-          };
+    try {
+        const stored = localStorage.getItem('user');
+        if (stored) {
+            return JSON.parse(stored);
+        }
+    } catch (err) {
+        console.error('Lỗi khi parse localStorage:', err);
+    }
+
+    return {
+        _id: '',
+        user_name: '',
+        user_email: '',
+        user_spin_turns: 0,
+        user_reward_points: 0,
+        createdAt: '',
+    };
 };
 
-// Tạo Zustand store với localStorage
+// Tạo Zustand store
 const useUserStore = create<UserState>((set, get) => ({
     user: getStoredUser(),
+
     setUser: (user) => {
         localStorage.setItem('user', JSON.stringify(user));
         set({ user });
     },
-    addRewardPoints: (points: number = 5000) => {
-        const currentUser = get().user;
-        const updatedUser = {
-            ...currentUser,
-            user_reward_points: currentUser.user_reward_points + points,
+
+    addRewardPoints: (points = 5000) => {
+        const { user } = get();
+        const updated = {
+            ...user,
+            user_reward_points: (user.user_reward_points || 0) + points,
         };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        set({ user: updatedUser });
+        localStorage.setItem('user', JSON.stringify(updated));
+        set({ user: updated });
     },
-    subtractRewardPoints: (points: number = 5000) => {
-        const currentUser = get().user;
-        const newPoints = Math.max(currentUser.user_reward_points - points, 0);
-        const updatedUser = {
-            ...currentUser,
-            user_reward_points: newPoints,
-        };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        set({ user: updatedUser });
+
+    subtractRewardPoints: (points = 5000) => {
+        const { user } = get();
+        const newPoints = Math.max((user.user_reward_points || 0) - points, 0);
+        const updated = { ...user, user_reward_points: newPoints };
+        localStorage.setItem('user', JSON.stringify(updated));
+        set({ user: updated });
     },
-    setUserRewardPoints: (points: number) => {
-        // Thêm hành động cập nhật điểm
-        const currentUser = get().user;
-        const updatedUser = {
-            ...currentUser,
-            user_reward_points: points,
+
+    addTicket: (tickets = 1) => {
+        const { user } = get();
+        const updated = {
+            ...user,
+            user_spin_turns: (user.user_spin_turns || 0) + tickets,
         };
-        localStorage.setItem('user', JSON.stringify(updatedUser));
-        set({ user: updatedUser });
+        localStorage.setItem('user', JSON.stringify(updated));
+        set({ user: updated });
+    },
+    subtractTicket: (tickets = 1) => {
+        const { user } = get();
+        const updated = {
+            ...user,
+            user_spin_turns: (user.user_spin_turns || 0) - tickets,
+        };
+        localStorage.setItem('user', JSON.stringify(updated));
+        set({ user: updated });
+    },
+
+    setUserRewardPoints: (points) => {
+        const { user } = get();
+        const updated = { ...user, user_reward_points: points };
+        localStorage.setItem('user', JSON.stringify(updated));
+        set({ user: updated });
     },
 }));
 

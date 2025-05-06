@@ -7,7 +7,7 @@ import { apiCreateConversation } from '../../services/conversation';
 import { apiGetUnreadMessagesCount } from '../../services/message.service';
 import MessageIcon from '@mui/icons-material/Message';
 import useSocketStore from '../../store/socketStore';
-import { cuoiAudio } from '../../assets';
+import { notificationAudio } from '../../assets';
 
 const Chat: React.FC = () => {
     // const { socketRef } = useAppSelector((state) => state.action);
@@ -26,7 +26,7 @@ const Chat: React.FC = () => {
         // Handle 'getMessage' event to increment unread messages
         const handleSetUnreadMessages = () => {
             SetUnreadMessages((prev) => prev + 1);
-            const audio = new Audio(cuoiAudio);
+            const audio = new Audio(notificationAudio);
             audio.play().catch((err) => {
                 console.warn('🔇 Không thể phát âm thanh:', err);
             });

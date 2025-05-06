@@ -129,9 +129,9 @@ const apiChangePassword = async (oldPassword: string, newPassword: string) => {
         };
     }
 };
-const apiLoginWithGoogle = async (token: string) => {
+const apiLoginWithGoogle = async (credential: string) => {
     try {
-        const res = await apiClient.post('auth/login_google', { token });
+        const res = await apiClient.put('/v1/api/auth/login_google', { credential });
         return res.data;
     } catch (error) {
         console.log(error);

@@ -15,6 +15,7 @@ export interface IUserProfile {
 }
 export interface IUserDetail extends IUserProfile {
     user_reward_points: number;
+    user_spin_turns: number;
     user_passwordChangedAt?: Date;
     createdAt: string;
 }
