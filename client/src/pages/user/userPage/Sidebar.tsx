@@ -7,8 +7,7 @@ import { useActionStore } from '../../../store/actionStore';
 import useUserStore from '../../../store/userStore';
 import useAuthStore from '../../../store/authStore';
 import PaidIcon from '@mui/icons-material/Paid';
-import GameWheelModal from '../../../components/WheelSpinModalProps/WheelSpinModalProps';  // Import modal Vòng Quay
-import LuckyBoxModal from '../../../components/LuckyBoxModal/LuckyBoxModal';  // Import modal Lucky Box
+import MyLuckyWheel from '../../../components/MyLuckyWheel';
 
 export const Sidebar: React.FC = () => {
     const location = useLocation();
@@ -16,9 +15,7 @@ export const Sidebar: React.FC = () => {
     const { setOpenFeatureAuth } = useActionStore();
     const { user } = useUserStore();
     const { isUserLoggedIn } = useAuthStore();
-    
-    const [isGameModalOpen, setGameModalOpen] = useState(false);  // State to control modal visibility
-    const [selectedGame, setSelectedGame] = useState<'luckyBox' | 'vongQuay'>('vongQuay');  // Default to "Vòng Quay"
+    const [isGameModalOpen, setGameModalOpen] = useState(false); // State to control modal visibility
 
     useEffect(() => {
         if (location.pathname === PATH.PAGE_USER && !isUserLoggedIn) {
@@ -27,15 +24,6 @@ export const Sidebar: React.FC = () => {
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [location.pathname]);
-
-    const handleOpenGameModal = (game: 'luckyBox' | 'vongQuay') => {
-        setSelectedGame(game);  // Set selected game to either "Lucky Box" or "Vòng Quay"
-        setGameModalOpen(true);  // Open game modal
-    };
-
-    const handleCloseGameModal = () => {
-        setGameModalOpen(false);  // Close the game modal
-    };
 
     return (
         <div className="flex flex-col w-full gap-4 bg-white py-3 rounded-md overflow-hidden">
@@ -55,10 +43,8 @@ export const Sidebar: React.FC = () => {
                     <PaidIcon fontSize="small" />
                 </div>
                 {/* Button to trigger the game selection */}
-                <button
-                    className="mt-4 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600"
-                    onClick={() => handleOpenGameModal('vongQuay')}>
-                    Nhận điểm
+                <button className="mt-4 px-4 py-2 text-white bg-blue-500 rounded-md hover:bg-blue-600" onClick={() => setGameModalOpen(true)}>
+                    Vòng quay may mắn
                 </button>
             </div>
 
@@ -77,8 +63,7 @@ export const Sidebar: React.FC = () => {
             </ul>
 
             {/* Game Modal */}
-            {isGameModalOpen && selectedGame === 'vongQuay' && <GameWheelModal onClose={handleCloseGameModal} userId={user._id} />}
-            {isGameModalOpen && selectedGame === 'luckyBox' && <LuckyBoxModal onClose={handleCloseGameModal} userId={user._id} />}
+            {isGameModalOpen && <MyLuckyWheel setGameModalOpen={setGameModalOpen} />}
         </div>
     );
 };

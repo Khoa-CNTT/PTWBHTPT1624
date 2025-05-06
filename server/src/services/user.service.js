@@ -215,24 +215,54 @@ class UserService {
             message: 'Đổi mật khẩu thành công!',
         };
     }
-    static async playLuckyBox(userId) {
-        const rewards = [1000, 2000, 5000]; // Điểm cho mỗi hộp
-        const randomIndex = Math.floor(Math.random() * rewards.length); // Chọn ngẫu nhiên hộp
-        const rewardPoints = rewards[randomIndex]; // Điểm nhận được từ hộp
-
-        // Cập nhật điểm người dùng
+    static async playLuckyBox(userId, prizeIndex) {
         const user = await UserModel.findById(userId);
         if (!user) {
             throw new RequestError('Người dùng không tồn tại!', 404);
         }
-
-        user.user_reward_points = (user.user_reward_points || 0) + rewardPoints; // Cộng điểm vào tài khoản
-        await user.save();
-
-        return {
-            rewardPoints,
-            totalPoints: user.user_reward_points, // Trả về tổng điểm sau khi cộng thêm
-        };
+        switch (prizeIndex) {
+            case 0:
+                user.user_reward_points = (user.user_reward_points || 0) + 10000; // Cộng điểm vào tài khoản
+                await user.save();
+                return {
+                    type: 'point',
+                    user_total_point: user.user_reward_points, // Trả về tổng điểm sau khi cộng thêm
+                };
+            case 2:
+                console.log('Trúng phiếu giảm giá');
+                break;
+            case 3:
+                user.user_reward_points = (user.user_reward_points || 0) + 10000; // Cộng điểm vào tài khoản
+                await user.save();
+                return {
+                    type: 'point',
+                    user_total_point: user.user_reward_points, // Trả về tổng điểm sau khi cộng thêm
+                };
+                break;
+            case 5:
+                console.log('Trúng 50.000 xu');
+                break;
+            case 7:
+                console.log('Trúng 2 lượt quay');
+                break;
+            default:
+                console.log('Không trúng thưởng');
+                break;
+        }
+        // const rewards = [1000, 2000, 5000]; // Điểm cho mỗi hộp
+        // const randomIndex = Math.floor(Math.random() * rewards.length); // Chọn ngẫu nhiên hộp
+        // const rewardPoints = rewards[randomIndex]; // Điểm nhận được từ hộp
+        // // Cập nhật điểm người dùng
+        // const user = await UserModel.findById(userId);
+        // if (!user) {
+        //     throw new RequestError('Người dùng không tồn tại!', 404);
+        // }
+        // user.user_reward_points = (user.user_reward_points || 0) + rewardPoints; // Cộng điểm vào tài khoản
+        // await user.save();
+        // return {
+        //     rewardPoints,
+        //     totalPoints: user.user_reward_points, // Trả về tổng điểm sau khi cộng thêm
+        // };
     }
 
     // Lấy 3 voucher mới nhất

@@ -49,7 +49,7 @@ const ChatWindow: React.FC<ChatWindowProps> = ({ selectedConversation, userOnlin
         const handleIncomingMessage = (message: IMessage) => {
             setMessages((prev) => [...prev, message]);
             const audio = new Audio(notificationAudio);
-            audio.play().catch((err) => console.warn('🔇 Không thể phát âm thanh:', err));
+            audio.play();
         };
 
         socket.on('getMessageByAdmin', handleIncomingMessage);

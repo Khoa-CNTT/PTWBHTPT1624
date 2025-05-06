@@ -93,20 +93,14 @@ class UserController {
         }
     }
     static async playLuckyBox(req, res) {
-        try {
-            const userId = req.user._id;
-            const result = await UserService.playLuckyBox(userId);
-            res.status(200).json({
-                success: true,
-                message: 'Chúc mừng bạn đã nhận phần thưởng!',
-                data: result,
-            });
-        } catch (error) {
-            res.status(error.statusCode || 500).json({
-                success: false,
-                message: error.message || 'Lỗi hệ thống!',
-            });
-        }
+        const userId = req.user._id;
+        const { prizeIndex } = req.body;
+        const result = await UserService.playLuckyBox(userId, prizeIndex);
+        res.status(200).json({
+            success: true,
+            message: 'Chúc mừng bạn đã nhận phần thưởng!',
+            data: result,
+        });
     }
     // Chơi game Lucky Box
     static async vongquay(req, res) {

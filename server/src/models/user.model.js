@@ -18,6 +18,8 @@ const userSchema = mongoose.Schema(
         user_passwordResetToken: { type: String },
         user_passwordTokenExpires: { type: String },
         user_isBlocked: { type: Boolean, default: false },
+        user_spin_turns: { type: Number, default: 0 }, // Lượt quay hiện tại
+        user_lastSpinIncrement: { type: Date, default: null }, // Ngày cuối cùng cộng thêm lượt quay
     },
     {
         timestamps: true,
