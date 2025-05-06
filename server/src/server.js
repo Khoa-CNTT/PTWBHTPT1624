@@ -34,6 +34,8 @@ const http = require('http'); // Chưa được import ở trên — thêm dòng
 
 // ✅ Kết nối database MongoDB
 require('./dbs/init.mongodb');
+// Cron job sẽ được khởi tạo và chạy hàng ngày lúc 00:00.
+require('./cron/spinScheduler');
 // ✅ Khởi tạo server HTTP (cần để gắn socket vào)
 
 // ✅ Khởi tạo các route

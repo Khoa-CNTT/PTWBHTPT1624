@@ -32,7 +32,7 @@ const DefaultLayout = () => {
 
                 <Auth />
                 <Loading />
-                <div className="fixed bottom-4 right-5 bg-blue-600 rounded-lg shadow-lg p-2 flex flex-col items-center justify-center space-y-2  z-[999] ">
+                <div className="fixed bottom-4 right-5 bg-blue-600 rounded-lg shadow-lg p-2 flex flex-col items-center justify-center space-y-2  z-[900] ">
                     <ChatBoxAI />
                     <Chat />
                 </div>
