@@ -18,7 +18,6 @@ const sessionClient = new dialogflow.SessionsClient();
 const projectId = 'ecommerce-cxlm';
 
 router.post('/chatbot', async (req, res) => {
-    console.log('ded');
     const sessionId = uuid.v4();
     const sessionPath = sessionClient.projectAgentSessionPath(projectId, sessionId); // Cập nhật tại đây
 

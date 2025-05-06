@@ -65,12 +65,8 @@ export default function VoucherManage(): JSX.Element {
                     notification_imageUrl: res?.data?.voucher_thumb,
                     notification_link: `/voucher`,
                 };
-
-                const response = await sendNotificationToAll(notification);
-
-                socket.emit('sendNotificationUserOnline', {
-                    ...response.data,
-                });
+                await sendNotificationToAll(notification);
+                socket.emit('sendNotificationUserOnline', notification);
             }
         }
         setIsLoading(false);

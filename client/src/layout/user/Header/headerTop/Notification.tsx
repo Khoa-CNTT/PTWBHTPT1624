@@ -6,6 +6,8 @@ import useAuthStore from '../../../../store/authStore';
 import { INotification } from '../../../../interfaces/notification.interfaces';
 import NotExit from '../../../../components/common/NotExit';
 import { Link } from 'react-router';
+import useSocketStore from '../../../../store/socketStore';
+import { notificationAudio } from '../../../../assets';
 // import {
 //     setNotifications,
 //     setUnreadNotifications,
@@ -52,6 +54,32 @@ const Notification: React.FC = () => {
         setNotifications((prev) => prev.map((i) => ({ ...i, notification_isWatched: true })));
         setOpen(false);
     };
+
+    const { socket, connect, isConnected } = useSocketStore();
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
+    useEffect(() => {
+        if (!socket || !isConnected || !isUserLoggedIn) return;
+
+        const handleSetNotification = (data: INotification) => {
+            console.log('📩 New notification:', data);
+            setNotifications((prev) => [data, ...prev]);
+            setUnreadNotification((prev) => prev + 1);
+            const audio = new Audio(notificationAudio);
+            audio.play().catch((err) => {
+                console.warn('🔇 Không thể phát âm thanh:', err);
+            });
+        };
+        // Lắng nghe các sự kiện
+        socket.on('getNotificationAdminToUserOnline', handleSetNotification);
+        socket.on('getNotificationUser', handleSetNotification);
+        // Dọn dẹp khi unmount hoặc dependency thay đổi
+        return () => {
+            socket.off('getNotificationAdminToUserOnline', handleSetNotification);
+            socket.off('getNotificationUser', handleSetNotification);
+        };
+    }, [socket, isConnected, isUserLoggedIn]);
 
     return (
         <div

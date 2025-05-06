@@ -115,7 +115,7 @@ const PaymentPage: React.FC = () => {
                 notification_link: '/quan-ly/don-hang',
             };
             const response = await sendNotificationToAdmin(notification);
-            socket.emit('sendMessageForAdminOnline', {
+            socket.emit('sendNotificationForAdminOnline', {
                 ...response.data,
             });
             await Promise.all(selectedProducts.map((e) => setRemoveProductInCart(e.productId)));

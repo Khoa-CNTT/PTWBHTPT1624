@@ -175,7 +175,6 @@ class ProductService {
         // Transform gte, gt, lte, lt to MongoDB operators
         const queriesString = JSON.stringify(queries).replace(/\b(gte|gt|lte|lt)\b/g, (el) => `$${el}`);
         let newQueryString = JSON.parse(queriesString);
-        console.log('newQueryString', newQueryString);
 
         // Add filters for category and brand if provided
         if (query.product_category_id) {

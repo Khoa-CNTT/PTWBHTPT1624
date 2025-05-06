@@ -98,9 +98,9 @@ export default function ProductManage() {
                     notification_link: `/${product.product_slug}/${product._id}`, // Liên kết đến sản phẩm
                 };
                 const response = await sendNotificationToAll(notification);
-                socket.emit('sendNotificationUserOnline', {
-                    ...response.data,
-                });
+                const data = response.data[0];
+                console.log(data);
+                socket.emit('sendNotificationUserOnline', notification);
             }
         }
         setIsLoading(false);
