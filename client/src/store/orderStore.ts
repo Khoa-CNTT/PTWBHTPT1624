@@ -41,7 +41,6 @@ export const useOrderStore = create<OrderState>()(
             },
             // Action to update the entire order or parts of it
             setOrder: (order: Order) => {
-                console.log(order);
                 set({ order });
             },
             // Action to clear all order data

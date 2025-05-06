@@ -2,27 +2,27 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import React, { memo, useEffect, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import useUserStore from '../../../store/userStore';
 import { apiGetMessagesByConversation, apiMarkMessagesAsSeenByUser, apiSendMessageByUSer } from '../../../services/message.service';
 import { IMessage } from '../../../interfaces/messages.interfaces';
 import ChatMessage from '../../ChatMessage';
 import { useActionStore } from '../../../store/actionStore';
-import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { useNavigate } from 'react-router';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
 import useSocketStore from '../../../store/socketStore';
 import useAuthStore from '../../../store/authStore';
+import ReactLoading from 'react-loading';
 
 const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: number) => void }> = ({ conversationId, SetUnreadMessages }) => {
     const [messages, setMessages] = useState<IMessage[]>([]);
     const [isOpenBox, setIsOpenBox] = useState<boolean>(false);
     const [value, setValue] = useState<string>('');
+    const [isScrolling, setIsScrolling] = useState<boolean>(false); // Trạng thái hiệu ứng load
     const { user } = useUserStore();
     const { isOpenChat, setIsOpenChat, mobile_ui, setIsLoading } = useActionStore();
     const navigate = useNavigate();
     const { socket, isConnected, connect } = useSocketStore();
-
-    // const { socketRef } = useAppSelector((state) => state.action);
     const { isUserLoggedIn } = useAuthStore();
 
     useEffect(() => {
@@ -37,14 +37,18 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
         if (!isConnected) connect();
     }, [isConnected, connect]);
     useEffect(() => {
+        if (!isUserLoggedIn) {
+            setMessages([]);
+            setIsOpenChat(false);
+        }
+    }, [isUserLoggedIn]);
+
+    useEffect(() => {
         if (!isConnected || !isUserLoggedIn || !socket) return;
-        // Handle 'getMessageByAdmin' event
         const handleGetMessageByAdmin = (data: IMessage) => {
             setMessages((prev) => [...prev, data]);
         };
-        // Register socket event listeners
         socket.on('getMessage', handleGetMessageByAdmin);
-        // Cleanup: Remove event listeners on unmount or dependency change
         return () => {
             socket.off('getMessage', handleGetMessageByAdmin);
         };
@@ -63,10 +67,21 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
 
     const scroll = useRef<any>(null);
     useEffect(() => {
-        scroll.current?.scrollIntoView({
-            behavior: 'smooth',
+        if (!isOpenBox || !scroll.current) return;
+        // Kích hoạt hiệu ứng load
+        setIsScrolling(true);
+        // Cuộn đến tin nhắn mới nhất
+        scroll.current.scrollIntoView({
+            behavior: 'instant',
+            block: 'end',
         });
-    }, [messages]);
+        // Tắt hiệu ứng load sau khi cuộn hoàn tất (giả lập thời gian cuộn)
+        const timeout = setTimeout(() => {
+            setIsScrolling(false);
+        }, 1000); // Thời gian chờ 500ms, có thể điều chỉnh
+
+        return () => clearTimeout(timeout); // Dọn dẹp timeout
+    }, [messages, isOpenBox]);
 
     const handleOnClick = async () => {
         if (value) {
@@ -148,7 +163,15 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
                     </div>
                 </div>
 
-                <div className="custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6">
+                <div className="relative custom-scrollbar max-h-full flex-1 space-y-6 overflow-auto p-5 xl:space-y-8 xl:p-6">
+                    {/* Hiệu ứng load */}
+                    {isScrolling && (
+                        <div className="absolute inset-0 bg-white flex items-center justify-center">
+                            <div className="w-full flex justify-center h-full items-center">
+                                <ReactLoading type="cylon" color="rgb(0, 136, 72)" />
+                            </div>
+                        </div>
+                    )}
                     {messages?.map((message, index) => (
                         <div ref={scroll} key={index}>
                             <ChatMessage message={message} isSentByUser={message?.sender._id === user?._id} />

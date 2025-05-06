@@ -105,7 +105,7 @@ const FormReviews: React.FC<FormReviewsProps> = ({
             notification_link: '/quan-ly/danh-gia',
         };
         const response = await sendNotificationToAdmin(notification);
-        socket.emit('sendMessageForAdminOnline', {
+        socket.emit('sendNotificationForAdminOnline', {
             ...response.data,
         });
         if (res.review.isApproved) {

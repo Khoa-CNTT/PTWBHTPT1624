@@ -60,11 +60,12 @@ const createSocket = (httpServer) => {
         });
 
         // === Gửi thông báo đến người dùng cụ thể ===
-        socket.on('sendNotification', (data) => {
+
+        socket.on('sendNotificationToUser', (data) => {
             const user = getUserById(data.userId);
             if (user) {
-                socket.to(user.socketId).emit('getNotification', data, (ack) => {
-                    console.log(ack ? `✅ Notification sent to socket ${user.socketId}` : `❌ Failed to send notification to socket ${user.socketId}`);
+                socket.to(user.socketId).emit('getNotificationUser', data, (ack) => {
+                    console.log(ack ? `✅ Message sent to socket ${user.socketId}` : `❌ Failed to send message to socket ${user.socketId}`);
                 });
             }
         });
@@ -74,11 +75,11 @@ const createSocket = (httpServer) => {
             const sendPromises = onlineUsers.map(
                 (user) =>
                     new Promise((resolve) => {
-                        socket.to(user.socketId).emit('getNotificationUserOnline', data, (ack) => {
+                        socket.to(user.socketId).emit('getNotificationAdminToUserOnline', data, (ack) => {
                             if (ack) {
                                 resolve(`✅ Sent to user ${user.socketId}`);
                             } else {
-                                resolve(`❌ Failed to send to admin ${user.socketId}`);
+                                resolve(`❌ Failed getNotificationAdminToUserOnline  send to user ${user.socketId}`);
                             }
                         });
                     }),
@@ -95,6 +96,7 @@ const createSocket = (httpServer) => {
                 });
             }
         });
+
         socket.on('sendMessageForAdminOnline', async (data) => {
             if (onlineAdmins.length === 0) return;
             console.log('📨 Gửi tin nhắn đến các admin online...');

@@ -103,6 +103,7 @@ const OrderManage: React.FC = () => {
         const response = await sendNotificationToUser(res?.data?.order_user, notification);
         socket.emit('sendNotificationToUser', {
             ...response.data,
+            userId: res?.data?.order_user,
         });
         showNotification('Cập nhật thành công', true);
     };

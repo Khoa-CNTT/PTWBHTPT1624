@@ -76,7 +76,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         // Gọi hàm `onSave` với updatedFields
         onSave(voucher ? { _id: voucher._id, ...inputFields } : inputFields);
     };
-    console.log(invalidFields);
 
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev: any) => ({ ...prev, [type]: type == 'voucher_is_active' ? e.target.checked : e.target.value }));
@@ -108,7 +107,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
 
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
-    console.log('inputFields', inputFields);
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">
             <div className="custom-scrollbar relative w-full max-w-[600px] rounded-3xl bg-white p-6 dark:bg-gray-900">

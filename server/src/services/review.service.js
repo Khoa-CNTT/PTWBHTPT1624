@@ -1,7 +1,6 @@
 'use strict';
 
 const { RequestError, NotFoundError } = require('../core/error.response');
-const OnlineOrder = require('../models/OnlineOrder');
 const productModel = require('../models/product.model');
 const PurchasedModel = require('../models/Purchased.model');
 const Review = require('../models/reviews.model');
@@ -26,6 +25,7 @@ class ReviewService {
             hasPurchased.pc_isReviewed = true;
             await hasPurchased.save();
         }
+
         if (review_rating > 0) {
             // Tìm tất cả review của sản phẩm và lấy trường review_rating
             const foundReviews = await Review.find({ review_productId }).select('review_rating');
@@ -42,6 +42,7 @@ class ReviewService {
                 { new: true }, // Trả về document đã cập nhật
             );
         }
+
         const newReview = await Review.create({
             review_user: userId,
             review_productId,
@@ -162,13 +163,19 @@ class ReviewService {
     // ✅ Duyệt đánh giá
     static async approveReview(reviewId) {
         if (!reviewId) throw new RequestError('Thiếu reviewId để duyệt đánh giá');
-
-        const review = await Review.findByIdAndUpdate(reviewId, { isApproved: true }, { new: true });
-
+        // Duyệt đánh giá
+        const review = await Review.findByIdAndUpdate(reviewId, { isApproved: true }, { new: true }).lean(); // Chuyển về plain JS object
         if (!review) throw new NotFoundError('Không tìm thấy đánh giá');
-
-        return review;
+        // Lấy sản phẩm liên quan
+        const product = await productModel.findById(review.review_productId).lean();
+        if (!product) throw new NotFoundError('Không tìm thấy sản phẩm');
+        // Trả về kết quả
+        return {
+            ...review,
+            review_product_slug: product.product_slug,
+        };
     }
+
     static async deleteReview(reviewId) {
         if (!reviewId) throw new RequestError('Thiếu reviewId để xóa đánh giá');
         // Xóa đánh giá

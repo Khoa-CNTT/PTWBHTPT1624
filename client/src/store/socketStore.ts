@@ -29,7 +29,6 @@ const useSocketStore = create<SocketStore>((set, get) => ({
     connect: () => {
         const currentSocket = get().socket;
         if (!get().isConnected) {
-            console.log('sdsdsdssdsdsdsd');
             currentSocket.connect();
             currentSocket.on('connect', () => {
                 set({ isConnected: true });

@@ -42,7 +42,6 @@ const Chat: React.FC = () => {
         if (!conversationId) return;
         const fetchApi = async () => {
             const res = await apiGetUnreadMessagesCount(conversationId);
-            console.log(res);
             if (res?.success) {
                 SetUnreadMessages(res?.data?.unreadCount);
             }
@@ -59,7 +58,7 @@ const Chat: React.FC = () => {
             }
         };
         fetchApi();
-    }, []);
+    }, [isUserLoggedIn]);
     const handleAddConversation = () => {
         setIsOpenChat(true);
     };
