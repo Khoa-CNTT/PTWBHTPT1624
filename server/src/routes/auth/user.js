@@ -15,6 +15,7 @@ router.post('/refreshToken', asyncHandle(AuthUserController.refreshToken));
 // Chức năng quên mật khẩu
 router.post('/email/send-forgot-password', asyncHandle(AuthUserController.forgotPassword)); // Gửi mã
 router.put('/reset_password', asyncHandle(AuthUserController.resetPassword));
+router.put('/login_google', asyncHandle(AuthUserController.loginGoogle));
 
 // Yêu cầu userAuthentication mới có thể logout
 router.use(userAuthentication);

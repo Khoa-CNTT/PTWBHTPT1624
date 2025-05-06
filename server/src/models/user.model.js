@@ -20,6 +20,7 @@ const userSchema = mongoose.Schema(
         user_isBlocked: { type: Boolean, default: false },
         user_spin_turns: { type: Number, default: 0 }, // Lượt quay hiện tại
         user_lastSpinIncrement: { type: Date, default: null }, // Ngày cuối cùng cộng thêm lượt quay
+        user_googleId: { type: String },
     },
     {
         timestamps: true,
