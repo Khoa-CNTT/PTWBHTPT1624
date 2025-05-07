@@ -12,7 +12,7 @@ const userSchema = mongoose.Schema(
             city: { type: String, default: '' },
             detail: { type: String, default: '' },
         },
-        user_mobile: { type: String, unique: true },
+        user_mobile: { type: String, unique: true ,default: ""},
         user_avatar_url: { type: String },
         user_passwordChangedAt: { type: Date },
         user_passwordResetToken: { type: String },
