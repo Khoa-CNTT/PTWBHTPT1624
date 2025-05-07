@@ -142,7 +142,7 @@ export default function SupplierManage() {
                 )}
 
                 {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa */}

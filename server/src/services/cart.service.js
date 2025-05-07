@@ -22,7 +22,7 @@ class CartService {
         const cartData = await redisClient.get(cartKey);
         let cart = cartData ? JSON.parse(cartData) : [];
 
-        const index = cart.findIndex(item => item.productId === productId);
+        const index = cart.findIndex((item) => item.productId === productId);
         if (index > -1) {
             cart[index].quantity += quantity;
         } else {
@@ -42,24 +42,24 @@ class CartService {
         const cart = JSON.parse(cartData);
 
         // Lấy thông tin chi tiết sản phẩm
-        const products = await Product.find({ _id: { $in: cart.map(item => item.productId) } })
+        const products = await Product.find({ _id: { $in: cart.map((item) => item.productId) } })
             .select('product_name product_thumb product_price product_discounted_price product_slug')
             .lean();
 
-        const productMap = new Map(products.map(p => [p._id.toString(), p]));
+        const productMap = new Map(products.map((p) => [p._id.toString(), p]));
 
-        const detailedCart = cart.map(item => {
+        const detailedCart = cart.map((item) => {
             const product = productMap.get(item.productId);
             return {
                 productId: item.productId,
                 quantity: item.quantity,
-                ...product
+                ...product,
             };
         });
 
         return {
             cart_user: userId,
-            cart_products: detailedCart
+            cart_products: detailedCart,
         };
     }
 
@@ -72,7 +72,7 @@ class CartService {
         if (!cartData) throw new NotFoundError('Giỏ hàng không tồn tại.');
 
         const cart = JSON.parse(cartData);
-        const index = cart.findIndex(item => item.productId === productId);
+        const index = cart.findIndex((item) => item.productId === productId);
         if (index === -1) throw new NotFoundError('Sản phẩm không có trong giỏ hàng.');
 
         cart[index].quantity = quantity;
@@ -86,7 +86,7 @@ class CartService {
         const cartData = await redisClient.get(cartKey);
         if (!cartData) throw new NotFoundError('Giỏ hàng không tồn tại.');
 
-        const cart = JSON.parse(cartData).filter(item => item.productId !== productId);
+        const cart = JSON.parse(cartData).filter((item) => item.productId !== productId);
         await redisClient.set(cartKey, JSON.stringify(cart));
         return this.getCartByUserId(userId);
     }
@@ -98,5 +98,4 @@ class CartService {
         return { message: 'Giỏ hàng đã được xóa thành công.' };
     }
 }
-
 module.exports = CartService;
