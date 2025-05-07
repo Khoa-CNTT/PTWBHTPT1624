@@ -75,6 +75,7 @@ const OrderPage: React.FC = () => {
                             <OrderItem
                                 key={item._id}
                                 order={item}
+                                viewDetail
                                 view={displayTab === ''}
                                 handleBuy={() => handleBuy(item._id)}
                                 handleCancelOrder={() => handleCancelOrder(item._id)}

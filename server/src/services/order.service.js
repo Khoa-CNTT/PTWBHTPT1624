@@ -10,6 +10,7 @@ const PurchasedModel = require('../models/Purchased.model');
 const OnlineOrder = require('../models/OnlineOrder');
 const OfflineOrder = require('../models/OfflineOrder');
 const { RequestError } = require('../core/error.response');
+const userModel = require('../models/user.model');
 
 class OrderService {
     static async createOfflineOrder(payload) {
@@ -311,6 +312,10 @@ class OrderService {
 
         // Nếu đơn hàng đã giao thành công => Cập nhật bảng sản phẩm đã mua
         if (newStatus === 'delivered') {
+            // thêm 1 lượt quay cho user
+            const user = await userModel.findById(updatedOrder.order_user);
+            user.user_spin_turns = (user.user_spin_turns || 0) + 1;
+            await user.save();
             const orderItems = updatedOrder.order_products;
             for (const item of orderItems) {
                 const { productId, quantity } = item;

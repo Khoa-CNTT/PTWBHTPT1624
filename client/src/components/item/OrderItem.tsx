@@ -12,11 +12,12 @@ import { useNavigate } from 'react-router';
 interface OrderItemProps {
     order: IOrder;
     view?: boolean;
+    viewDetail?: boolean;
     handleCancelOrder?: (orderId: string) => void;
     handleBuy?: (orderId: string) => void;
 }
 
-const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancelOrder, handleBuy }) => {
+const OrderItem: React.FC<OrderItemProps> = ({ order, viewDetail = false, view = false, handleCancelOrder, handleBuy }) => {
     const shippingFrom = formatShippingDate(order?.order_date_shipping?.from || 0);
     const shippingTo = formatShippingDate(order?.order_date_shipping?.to || 0);
     const status = statusOrder(order);
@@ -78,7 +79,7 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, view = false, handleCancel
                         )}
                     </>
                 )}
-                {!view && <ButtonOutline onClick={() => navigate(`/nguoi-dung/chi-tiet-don-hang/${order?._id}`)}>Xem chi tiết</ButtonOutline>}
+                {viewDetail && <ButtonOutline onClick={() => navigate(`/nguoi-dung/chi-tiet-don-hang/${order?._id}`)}>Xem chi tiết</ButtonOutline>}
             </div>
         </div>
     );

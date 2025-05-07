@@ -11,8 +11,6 @@ const router = express.Router();
 router.put('/profile/update', [userAuthentication], asyncHandle(UserController.updateProfile));
 // Thêm vào router trong user.router.js
 router.post('/luckbox', [userAuthentication], asyncHandle(UserController.playLuckyBox));
-router.get('/wheel/rewards', [userAuthentication], asyncHandle(UserController.getWheelRewards));
-router.post('/vongquay', [userAuthentication], asyncHandle(UserController.vongquay)); // Thêm route chơi game Lucky Box
 // Thêm route đổi mật khẩu
 router.put('/change-password', [userAuthentication], asyncHandle(UserController.changePassword));
 router.get('/profile', [userAuthentication], asyncHandle(UserController.getProfile));

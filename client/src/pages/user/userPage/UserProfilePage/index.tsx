@@ -30,6 +30,18 @@ const UserProfilePage: React.FC = () => {
     };
 
     const handleSubmit = async () => {
+        if (!payload.user_name && !payload.user_mobile) {
+            showNotification('Vui lòng nhập đầy đủ thông tin', false);
+            return;
+        }
+        if (!payload.user_name) {
+            showNotification('Tên không được để trống', false);
+            return;
+        }
+        if (!payload.user_mobile) {
+            showNotification('Vui lòng nhập số điện thoại', false);
+            return;
+        }
         if (payload.user_mobile) {
             const phoneRegex = /^[0-9]{10,11}$/;
             const phonePattern = /^(0[3|5|7|8|9])[0-9]{8}$/;
