@@ -34,8 +34,6 @@ export const useCartStore = create<CartState>((set) => ({
     setSelectedProduct: (product) => {
         set((state) => {
             const isSelected = state.selectedProducts.some((i) => i.productId === product.productId);
-            console.log('isSelected', isSelected);
-            console.log(product);
             const newSelectedProducts = isSelected
                 ? state.selectedProducts.filter((i) => i.productId !== product.productId)
                 : [...state.selectedProducts, product];
