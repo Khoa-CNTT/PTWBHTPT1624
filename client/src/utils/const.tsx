@@ -113,13 +113,9 @@ export const SORT_BAR = [
         },
     },
 ];
-import AutoStoriesIcon from '@mui/icons-material/AutoStories';
-import PersonIcon from '@mui/icons-material/Person';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import SellIcon from '@mui/icons-material/Sell';
+
 import { bachhoa, danhchoban, hangmoi, imgPayInCash, vnpay, revodoi } from '../assets';
-import FavoriteIcon from '@mui/icons-material/Favorite';
-import AccessTimeFilledIcon from '@mui/icons-material/AccessTimeFilled';
+
 export const SIDEBAR_USER = [
     {
         label: 'Thông tin tài khoản',
@@ -145,40 +141,40 @@ export const SIDEBAR_USER = [
     },
     {
         label: 'Sản phẩm đã mua',
-            path_name: PATH.PAGE_PURCHASED,
-            icon: (
+        path_name: PATH.PAGE_PURCHASED,
+        icon: (
             <img
                 src="https://img.icons8.com/?size=100&id=FFL2KkPqXnIL&format=png&color=40C057"
                 alt="purchased-icon"
                 style={{ width: 24, height: 24, objectFit: 'contain' }}
             />
-            ),
-        },
-      
+        ),
+    },
+
     {
         label: 'Sản phẩm yêu thích',
         path_name: PATH.PAGE_FAVORITE,
         icon: (
-          <img
-            src="https://img.icons8.com/?size=100&id=CDX3UwscuB9X&format=png&color=000000"
-            alt="favorite"
-            style={{ width: 24, height: 24, objectFit: 'contain' }}
-          />
+            <img
+                src="https://img.icons8.com/?size=100&id=CDX3UwscuB9X&format=png&color=000000"
+                alt="favorite"
+                style={{ width: 24, height: 24, objectFit: 'contain' }}
+            />
         ),
     },
-      
+
     {
         label: 'Đã xem gần đây',
         path_name: PATH.PAGE_RECENT_VIEW,
         icon: (
-          <img
-            src="https://img.icons8.com/?size=100&id=mnhMRVfDbJdQ&format=png&color=000000"
-            alt="recent"
-            style={{ width: 24, height: 24, objectFit: 'contain' }}
-          />
+            <img
+                src="https://img.icons8.com/?size=100&id=mnhMRVfDbJdQ&format=png&color=000000"
+                alt="recent"
+                style={{ width: 24, height: 24, objectFit: 'contain' }}
+            />
         ),
-      },
-      
+    },
+
     {
         label: 'Kho voucher',
         path_name: PATH.PAGE_USER_VOUCHER,
