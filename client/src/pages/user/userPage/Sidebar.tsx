@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-
 import { NavLink, useLocation, useNavigate } from 'react-router-dom';
 import { noUser } from '../../../assets';
 import { PATH, SIDEBAR_USER } from '../../../utils/const';
@@ -53,9 +52,11 @@ export const Sidebar: React.FC = () => {
                     <NavLink
                         to={e.path_name}
                         key={e.path_name}
-                        className={`flex gap-4 p-2 text-sm text-gray-800 hover:bg-gray-200 cursor-pointer ${
-                            location.pathname?.includes(e.path_name) ? 'bg-gray-200' : ''
-                        }`}>
+                        className={({ isActive }) =>
+                            `flex gap-4 p-2 text-sm cursor-pointer ${
+                                isActive ? 'text-green-500' : 'text-gray-800' // Thêm màu xanh lá cho chữ khi chọn
+                            } hover:bg-gray-200`
+                        }>
                         {e.icon}
                         {e.label}
                     </NavLink>

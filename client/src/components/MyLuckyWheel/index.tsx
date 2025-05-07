@@ -64,6 +64,7 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
 
         const handlePrize = async () => {
             const currentPrize = PRIZES[prizeIndex].option;
+            subtractTicket();
             if (currentPrize === '🙁 May mắn lần sau') {
                 const audio = new Audio(dpnAudio);
                 audio.play();

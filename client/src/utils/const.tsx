@@ -124,37 +124,82 @@ export const SIDEBAR_USER = [
     {
         label: 'Thông tin tài khoản',
         path_name: PATH.PAGE_PROFILE,
-        icon: <PersonIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/ba61750a46794d8847c3f463c5e71cc4"
+                alt="Thông tin tài khoản"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
     {
         label: 'Danh sách đơn hàng',
         path_name: PATH.PAGE_ORDER,
-        icon: <ShoppingBasketIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/f0049e9df4e536bc3e7f140d071e9078"
+                alt="Danh sách đơn hàng"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
     {
         label: 'Sản phẩm đã mua',
-        path_name: PATH.PAGE_PURCHASED,
-        icon: <SellIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
-    },
+            path_name: PATH.PAGE_PURCHASED,
+            icon: (
+            <img
+                src="https://img.icons8.com/?size=100&id=FFL2KkPqXnIL&format=png&color=40C057"
+                alt="purchased-icon"
+                style={{ width: 24, height: 24, objectFit: 'contain' }}
+            />
+            ),
+        },
+      
     {
         label: 'Sản phẩm yêu thích',
         path_name: PATH.PAGE_FAVORITE,
-        icon: <FavoriteIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: (
+          <img
+            src="https://img.icons8.com/?size=100&id=CDX3UwscuB9X&format=png&color=000000"
+            alt="favorite"
+            style={{ width: 24, height: 24, objectFit: 'contain' }}
+          />
+        ),
     },
+      
     {
         label: 'Đã xem gần đây',
         path_name: PATH.PAGE_RECENT_VIEW,
-        icon: <AccessTimeFilledIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
-    },
+        icon: (
+          <img
+            src="https://img.icons8.com/?size=100&id=mnhMRVfDbJdQ&format=png&color=000000"
+            alt="recent"
+            style={{ width: 24, height: 24, objectFit: 'contain' }}
+          />
+        ),
+      },
+      
     {
         label: 'Kho voucher',
         path_name: PATH.PAGE_USER_VOUCHER,
-        icon: <AutoStoriesIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/84feaa363ce325071c0a66d3c9a88748"
+                alt="Kho voucher"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
     {
         label: 'Đổi voucher',
         path_name: PATH.PAGE_REDEEM_VOUCHER,
-        icon: <AutoStoriesIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/a0ef4bd8e16e481b4253bd0eb563f784"
+                alt="Đổi voucher"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
 ];
 
