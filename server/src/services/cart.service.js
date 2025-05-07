@@ -41,7 +41,7 @@ class CartService {
             })
             .lean();
 
-        if (!cart) throw new NotFoundError('Giỏ hàng trống.');
+        if (!cart) throw new RequestError('Giỏ hàng trống.');
 
         return {
             cart_user: cart.cart_user,

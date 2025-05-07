@@ -7,6 +7,8 @@ const { default: mongoose } = require('mongoose');
 const createConversation = async (req, res) => {
     // Lấy ID người dùng từ request
     const userId = req.user._id;
+    console.log({ userId }); // Ghi log ID người dùng để debug
+
     // Kiểm tra tính hợp lệ của userId
     if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
@@ -15,12 +17,16 @@ const createConversation = async (req, res) => {
         });
     }
 
-    // Tìm tất cả admin có quyền message_manage
-    const admins = await Admin.find() // Lấy danh sách admin từ database
+    // Tìm tất cả admin không bị chặn
+    const admins = await Admin.find({ admin_isBlocked: false }) // Lấy danh sách admin không bị chặn
         .populate('admin_roles') // Lấy thông tin chi tiết của admin_roles
         .lean() // Chuyển đổi sang object JavaScript để tối ưu hiệu suất
-        .then(
-            (admins) => admins.filter((admin) => admin.admin_roles.some((role) => role.role_permissions.includes('message_manage'))), // Lọc admin có quyền message_manage
+        .then((admins) =>
+            admins.filter(
+                (admin) =>
+                    // Lọc admin có quyền message_manage hoặc admin_type là "admin"
+                    admin.admin_roles.some((role) => role.role_permissions.includes('message_manage')) || admin.admin_type === 'admin',
+            ),
         );
     console.log({ admins: admins.map((admin) => admin._id) }); // Ghi log ID các admin để debug
 
@@ -54,6 +60,7 @@ const createConversation = async (req, res) => {
         (min, current) => (current.count < min.count ? current : min), // So sánh và chọn admin có count thấp nhất
     );
     console.log({ selectedAdmin: selectedAdmin.adminId, conversationCount: selectedAdmin.count }); // Ghi log admin được chọn
+
     // Kiểm tra xem có chọn được admin không
     if (!selectedAdmin || !selectedAdmin.adminId) {
         return res.status(500).json({
@@ -61,12 +68,14 @@ const createConversation = async (req, res) => {
             message: 'Không thể chọn admin để gán cuộc trò chuyện',
         });
     }
+
     // Tạo cuộc trò chuyện mới
     const newConversation = new conversationModel({
         user: userId, // Gán người dùng
         admin: selectedAdmin.adminId, // Gán admin có ít cuộc trò chuyện nhất
         seen: true, // Đặt trạng thái đã xem
     });
+
     // Lưu cuộc trò chuyện vào database
     const savedConversation = await newConversation.save();
     if (!savedConversation) {
@@ -76,6 +85,7 @@ const createConversation = async (req, res) => {
             message: 'Đã xảy ra lỗi khi tạo cuộc trò chuyện',
         });
     }
+
     // Trả về kết quả thành công
     return res.status(201).json({
         success: true,

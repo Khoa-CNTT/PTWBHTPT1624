@@ -135,7 +135,7 @@ export default function ShippingManage() {
                 ) : (
                     <>
                         <ShippingTable shippings={shippings} onEdit={handleEdit} onDelete={handleDelete} />
-                        {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                        {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 )}
             </div>

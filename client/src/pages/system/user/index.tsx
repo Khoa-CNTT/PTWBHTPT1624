@@ -162,7 +162,7 @@ export default function UserManage() {
                             onBlock={handleBlock}
                             onDelete={handleDelete} // Pass the handleDelete function
                         />
-                        {!isSearching && totalPage >= 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                        {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
                     </>
                 )}
             </div>
