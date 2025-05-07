@@ -25,11 +25,11 @@ const Chat: React.FC = () => {
 
         // Handle 'getMessage' event to increment unread messages
         const handleSetUnreadMessages = () => {
-            SetUnreadMessages((prev) => prev + 1);
             const audio = new Audio(notificationAudio);
             audio.play().catch((err) => {
                 console.warn('🔇 Không thể phát âm thanh:', err);
             });
+            SetUnreadMessages((prev) => prev + 1);
         };
         // Register socket event listener
         socket.on('getMessage', handleSetUnreadMessages);
