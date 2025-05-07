@@ -165,7 +165,8 @@ export default function ProductManage() {
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
         if (!searchQuery.trim()) {
-            return; // Không làm gì nếu ô tìm kiếm trống
+            showNotification('Vui lòng nhập từ khóa tìm kiếm', false);
+            return;
         }
         const res = await apiSearchProduct(searchQuery.trim());
         if (res.success) {

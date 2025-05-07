@@ -115,6 +115,10 @@ export default function VoucherManage(): JSX.Element {
 
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
+        if (!searchQuery.trim()) {
+            showNotification('Vui lòng nhập từ khóa tìm kiếm', false);
+            return;
+        }
         if (!searchQuery.trim()) return;
         setIsLoading(true);
         const res = await apiSearchVoucherByName(searchQuery.trim());
