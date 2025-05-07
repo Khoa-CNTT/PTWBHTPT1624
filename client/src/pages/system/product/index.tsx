@@ -99,7 +99,6 @@ export default function ProductManage() {
                 };
                 const response = await sendNotificationToAll(notification);
                 const data = response.data[0];
-                console.log(data);
                 socket.emit('sendNotificationUserOnline', notification);
             }
         }

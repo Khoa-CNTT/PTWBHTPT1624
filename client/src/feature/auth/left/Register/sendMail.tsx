@@ -7,6 +7,7 @@ import { apiLoginWithGoogle, apiSendVerificationEmail } from '../../../../servic
 import useAuthStore from '../../../../store/authStore';
 import { showNotification } from '../../../../components';
 import { useActionStore } from '../../../../store/actionStore';
+import useUserStore from '../../../../store/userStore';
 interface ModeRegister {
     setModeRegister: React.Dispatch<React.SetStateAction<number>>;
 }
@@ -17,6 +18,7 @@ const sendMail: React.FC<ModeRegister> = (props) => {
     const { setEmailToConfirm } = useAuthStore();
     const { setIsLoading } = useActionStore();
     const { loginUser } = useAuthStore();
+    const { setUser } = useUserStore();
     const { setOpenFeatureAuth, setFeatureAuth } = useActionStore();
     const handleSummit = async (e: { preventDefault: () => void }) => {
         e.preventDefault();
@@ -54,11 +56,14 @@ const sendMail: React.FC<ModeRegister> = (props) => {
         const res = await apiLoginWithGoogle(credential);
         setIsLoading(false);
         if (res.success) {
-            localStorage.setItem('access_token', JSON.stringify(res.access_token));
-            showNotification('Đăng nhập thành công!', true);
+            localStorage.setItem('access_token', JSON.stringify(res.data.accessToken));
+            showNotification(res.message, true);
             setOpenFeatureAuth(false);
             loginUser();
-            window.location.reload();
+            setUser(res.data.user);
+            // 👉 Thêm để hiển thị lại banner voucher khi vừa đăng nhập
+            localStorage.setItem('justLoggedIn', 'true');
+            sessionStorage.removeItem('voucherBannerShown');
         } else {
             showNotification('Đăng nhập không thành công!', false);
             return;
