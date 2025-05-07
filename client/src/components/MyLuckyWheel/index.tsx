@@ -30,6 +30,7 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
     const [titleVoucher, setTitleVoucher] = useState<string>('');
     const handleSpin = () => {
         if (isSpinning) return;
+        subtractTicket();
         const audio = new Audio(spinAudio);
         audio.play();
         const newPrizeIndex = Math.floor(Math.random() * PRIZES.length);
@@ -61,7 +62,6 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
 
     useEffect(() => {
         if (!showPrize) return;
-
         const handlePrize = async () => {
             const currentPrize = PRIZES[prizeIndex].option;
             if (currentPrize === '🙁 May mắn lần sau') {
@@ -69,15 +69,11 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
                 audio.play();
                 return;
             }
-
             fireConfetti();
-
             const audio = new Audio(votayAudio);
             audio.play();
             const res = await apiPlayLuckyBox(prizeIndex);
             if (!res.success) return;
-            subtractTicket();
-
             const data = res.data;
             if (data.type === 'point') {
                 addRewardPoints(data.point);
@@ -86,12 +82,10 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
             } else if (data.type === 'voucher') {
                 setTitleVoucher(data?.voucher.voucher_name);
             }
-            // TODO: Xử lý response nếu cần, ví dụ:
-            console.log('Kết quả nhận thưởng:', res);
         };
 
         handlePrize();
-    }, [showPrize, prizeIndex, addRewardPoints, addTicket]);
+    }, [showPrize, prizeIndex, addRewardPoints, addTicket, subtractTicket]);
 
     return (
         <>

@@ -59,9 +59,10 @@ export const statusOrderNotification = (orderStatus: string) => {
         case 'delivered':
             return {
                 title: 'Giao hàng thành công! 🎁',
-                subtitle: '🏠 Đơn hàng đã đến tay bạn! ✅',
-                message: '🌟 Đơn hàng của bạn đã được giao thành công! Hãy tận hưởng sản phẩm và đừng quên để lại đánh giá nhé. ⭐',
+                subtitle: 'Đơn hàng đã đến tay bạn ✅',
+                message: 'Cảm ơn bạn đã mua hàng! Bạn vừa nhận được 1 lượt quay may mắn 🎉 Hãy vào Vòng quay may mắn để thử vận may nhé!',
             };
+
         case 'cancelled':
             return {
                 title: 'Đơn hàng đã bị hủy 😔',

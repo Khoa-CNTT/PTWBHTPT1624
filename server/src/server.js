@@ -5,7 +5,6 @@ const { default: helmet } = require('helmet'); // Bảo vệ app khỏi các l�
 const morgan = require('morgan'); // Ghi log request ra console
 const cors = require('cors'); // Cho phép client khác domain truy cập API
 const cookieParser = require('cookie-parser'); // Phân tích cookie từ request
-const createSocket = require('./socket/index'); // Import socket custom (WebSocket)
 require('dotenv').config(); // Load biến môi trường từ file .env
 
 const app = express(); // Khởi tạo ứng dụng Express
@@ -31,6 +30,7 @@ app.use(express.json()); // Phân tích JSON từ request body
 app.use(express.urlencoded({ extended: true })); // Phân tích dữ liệu URL-encoded
 app.use(bodyParser.json()); // Phân tích JSON cho body (tương tự express.json)
 const http = require('http'); // Chưa được import ở trên — thêm dòng này nếu chưa có
+const { createSocket } = require('./socket');
 
 // ✅ Kết nối database MongoDB
 require('./dbs/init.mongodb');

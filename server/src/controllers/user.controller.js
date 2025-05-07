@@ -102,47 +102,6 @@ class UserController {
             data: result,
         });
     }
-    // Chơi game Lucky Box
-    static async vongquay(req, res) {
-        try {
-            const userId = req.user._id;
-            const result = await UserService.vongquay(userId);
-
-            let message = 'Chúc mừng bạn đã nhận phần thưởng!';
-            if (result.type === 'points') {
-                message = `Bạn đã nhận ${result.value} điểm thưởng!`;
-            } else if (result.type === 'voucher') {
-                message = `Bạn đã nhận voucher: ${result.voucher.voucher_name}`;
-            }
-
-            res.status(200).json({
-                success: true,
-                message,
-                data: result,
-            });
-        } catch (error) {
-            res.status(error.statusCode || 500).json({
-                success: false,
-                message: error.message || 'Lỗi hệ thống!',
-            });
-        }
-    }
-
-    static async getWheelRewards(req, res) {
-        try {
-            const rewards = await UserService.getWheelRewards();
-            res.status(200).json({
-                success: true,
-                message: 'Lấy phần thưởng thành công!',
-                data: rewards,
-            });
-        } catch (error) {
-            res.status(500).json({
-                success: false,
-                message: error.message || 'Không thể lấy danh sách phần quà',
-            });
-        }
-    }
 }
 
 module.exports = UserController;
