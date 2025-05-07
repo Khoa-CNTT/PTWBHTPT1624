@@ -1,15 +1,3 @@
-import AutoStoriesOutlinedIcon from '@mui/icons-material/AutoStoriesOutlined';
-import CategoryOutlinedIcon from '@mui/icons-material/CategoryOutlined';
-import AgricultureOutlinedIcon from '@mui/icons-material/AgricultureOutlined';
-import WarehouseOutlinedIcon from '@mui/icons-material/WarehouseOutlined';
-import AutoAwesomeOutlinedIcon from '@mui/icons-material/AutoAwesomeOutlined';
-import RedeemOutlinedIcon from '@mui/icons-material/RedeemOutlined';
-import BadgeOutlinedIcon from '@mui/icons-material/BadgeOutlined';
-import BackupTableIcon from '@mui/icons-material/BackupTable';
-import ProductionQuantityLimitsOutlinedIcon from '@mui/icons-material/ProductionQuantityLimitsOutlined';
-import LocalPostOfficeOutlinedIcon from '@mui/icons-material/LocalPostOfficeOutlined';
-import TextsmsOutlinedIcon from '@mui/icons-material/TextsmsOutlined';
-import { UserCircleIcon } from '../icons';
 import { PATH } from '../utils/const';
 
 export type NavItem = {
@@ -48,7 +36,7 @@ export const navItems: NavItem[] = [
         ],
         permission: 'offline_order',
     },
-    
+
     {
         icon: <img src="https://img.icons8.com/?size=100&id=zKZc2LIdmO4A&format=png&color=000000" alt="icon" className="w-8 h-8" />,
         name: 'Banner',
