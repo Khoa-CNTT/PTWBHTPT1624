@@ -51,7 +51,6 @@ class ProductService {
     static async getProductById(productId) {
         // Fetch product without lean() to retain Mongoose model instance
         const product = await Product.findById(productId).populate(['product_category_id', 'product_brand_id']);
-
         if (!product) {
             throw new NotFoundError('Không tìm thấy sản phẩm');
         }

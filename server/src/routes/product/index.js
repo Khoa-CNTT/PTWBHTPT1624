@@ -3,6 +3,7 @@ const ProductController = require('../../controllers/product.controller');
 const asyncHandle = require('../../helper/asyncHandle');
 const { adminAuthentication, restrictTo } = require('../../middlewares/auth.admin.middleware');
 const PERMISSIONS = require('../../config/permissions');
+const { userAuthentication } = require('../../middlewares/auth.user.middleware');
 
 const router = express.Router();
 
@@ -26,7 +27,8 @@ router.get('/new-product', asyncHandle(ProductController.getNewProducts));
 router.get('/:id/similar', asyncHandle(ProductController.getSimilarProducts));
 router.get('/suggestion/:keySearch', asyncHandle(ProductController.getProductSuggestions));
 router.get('/top-viewed', asyncHandle(ProductController.getTopViewedProduct));
-
+router.post('/track-view', [userAuthentication], asyncHandle(ProductController.trackCategoryView));
+router.get('/recommendations', [userAuthentication], asyncHandle(ProductController.recommendByTopCategories));
 /* ================================
    🛡️ API Dành cho Admin (Quản lý Sản Phẩm)
    ================================ */

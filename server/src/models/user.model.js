@@ -11,26 +11,19 @@ const userSchema = mongoose.Schema(
             district: { type: String, default: '' },
             city: { type: String, default: '' },
             detail: { type: String, default: '' },
-        },
-        user_mobile: { type: String, unique: true ,default: ""},
+        }, 
+        user_mobile: { type: String, default: ''  
         user_avatar_url: { type: String },
         user_passwordChangedAt: { type: Date },
         user_passwordResetToken: { type: String },
         user_passwordTokenExpires: { type: String },
         user_isBlocked: { type: Boolean, default: false },
-        user_spin_turns: { type: Number, default: 0 }, // Lượt quay hiện tại
+        user_spin_turns: { type: Number, default: 3 }, // Lượt quay hiện tại
         user_lastSpinIncrement: { type: Date, default: null }, // Ngày cuối cùng cộng thêm lượt quay
         user_googleId: { type: String },
     },
     {
         timestamps: true,
-    },
-);
-userSchema.index(
-    { user_mobile: 1 },
-    {
-        unique: true,
-        partialFilterExpression: { user_mobile: { $ne: '' } },
     },
 );
 

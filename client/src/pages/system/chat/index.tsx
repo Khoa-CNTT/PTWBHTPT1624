@@ -5,7 +5,7 @@ import PageMeta from '../../../components/common/PageMeta';
 import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
 
-import { getAllConversations } from '../../../services/conversation';
+import { getAllConversationsByAdmin } from '../../../services/conversation';
 import { apiMarkMessagesAsSeenByAdmin } from '../../../services/message.service';
 
 import useSocketStore from '../../../store/socketStore';
@@ -13,6 +13,7 @@ import useAuthStore from '../../../store/authStore';
 
 import { IConversation } from '../../../interfaces/conversation.interfaces';
 import { IMessage } from '../../../interfaces/messages.interfaces';
+import NotExit from '../../../components/common/NotExit';
 
 interface UserOnline {
     userId: string;
@@ -29,7 +30,7 @@ const ChatManage: React.FC = () => {
     // Fetch initial conversations
     useEffect(() => {
         const fetchConversations = async () => {
-            const res = await getAllConversations();
+            const res = await getAllConversationsByAdmin();
             if (res.success) {
                 setConversations(res.data);
             }
@@ -91,16 +92,22 @@ const ChatManage: React.FC = () => {
         <div className="mx-auto md:p-6">
             <PageMeta title="Quản lý nhắn tin" />
             <PageBreadcrumb pageTitle="Nhắn tin" />
-
             <div className="h-[calc(100vh-186px)] overflow-hidden sm:h-[calc(100vh-174px)]">
                 <div className="flex h-full flex-col gap-6 xl:flex-row xl:gap-5">
-                    <Sidebar
-                        conversations={conversations}
-                        onSelectChat={handleSelectChat}
-                        selectedConversation={selectedConversation}
-                        userOnline={userOnline}
-                    />
-                    <ChatWindow selectedConversation={selectedConversation} userOnline={userOnline} />
+                    {conversations.length > 0 ? (
+                        <>
+                            {' '}
+                            <Sidebar
+                                conversations={conversations}
+                                onSelectChat={handleSelectChat}
+                                selectedConversation={selectedConversation}
+                                userOnline={userOnline}
+                            />
+                            <ChatWindow selectedConversation={selectedConversation} userOnline={userOnline} />
+                        </>
+                    ) : (
+                        <NotExit label="Chưa có tin nhắn nào" />
+                    )}
                 </div>
             </div>
         </div>

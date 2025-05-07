@@ -1,11 +1,5 @@
 const express = require('express');
-const {
-    createConversation,
-    getAllConversations,
-    deleteConversation,
-    addAdminToConversation,
-    getConversationByUserName,
-} = require('../../controllers/conversation.controller');
+const { createConversation, getAllConversationsByAdmin, deleteConversation, getConversationByUserName } = require('../../controllers/conversation.controller');
 const { adminAuthentication, restrictTo } = require('../../middlewares/auth.admin.middleware');
 const PERMISSIONS = require('../../config/permissions');
 const { userAuthentication } = require('../../middlewares/auth.user.middleware');
@@ -19,9 +13,7 @@ router.post('/create', [userAuthentication], createConversation);
 router.use(adminAuthentication);
 router.use(restrictTo(PERMISSIONS.MESSAGE_MANAGE));
 // lấy tất cả cuộc hội thoại
-router.get('/', getAllConversations);
-// Route thêm admin tham gia vào cuộc trò chuyện
-router.put('/:conversationId/add-admin', addAdminToConversation);
+router.get('/', getAllConversationsByAdmin);
 // Route xóa cuộc trò chuyện
 router.delete('/:conversationId', deleteConversation);
 router.get('/search', getConversationByUserName);

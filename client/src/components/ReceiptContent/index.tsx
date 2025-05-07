@@ -39,7 +39,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     const renderPaymentInfo = () => (
         <div className="mb-4 space-y-1">
             <p>
-                <span className="font-medium">Thanh toán:</span> {paymentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'}
+                <span className="font-medium">Thanh toán:</span> {paymentMethod === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'}
             </p>
             <p>
                 <span className="font-medium">Voucher đã áp dụng:</span> {appliedDiscount ? 'Đã áp dụng' : 'Không sử dụng'}
@@ -89,9 +89,9 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                     <span className="font-medium">Thành tiền:</span> {formatMoney(calculateSubtotal - (calculateDiscountFromProducts + appliedDiscount))}
                 </p>
                 <p>
-                    <span className="font-medium">Phương thức mua hàng:</span> {paymentMethod === 'cash' ? 'Trực tiếp' : 'Chuyển khoản'}
+                    <span className="font-medium">Phương thức mua hàng:</span> {paymentMethod === 'CASH' ? 'Trực tiếp' : 'Chuyển khoản'}
                 </p>
-                {paymentMethod === 'cash' && (
+                {paymentMethod === 'CASH' && (
                     <>
                         <p>
                             <span className="font-medium">Tiền nhận:</span> {formatMoney(Number(cashReceived))}
@@ -102,7 +102,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                     </>
                 )}
             </div>
-            {paymentMethod !== 'cash' && <img src={qrUrl} alt="QR chuyển khoản Agribank" className="w-60 mx-auto" />}
+            {paymentMethod !== 'CASH' && <img src={qrUrl} alt="QR chuyển khoản Agribank" className="w-60 mx-auto" />}
         </div>
     );
 

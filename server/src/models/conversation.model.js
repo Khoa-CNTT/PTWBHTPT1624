@@ -9,16 +9,12 @@ const conversationSchema = new Schema(
             required: true,
             unique: true, // Một người dùng chỉ có một cuộc hội thoại duy nhất
         },
-        participants: [
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'User', // Người dùng tham gia cuộc trò chuyện
-            },
-            {
-                type: Schema.Types.ObjectId,
-                ref: 'Admin', // Admin tham gia cuộc trò chuyện
-            },
-        ],
+        admin: {
+            type: Schema.Types.ObjectId,
+            ref: 'Admin',
+            required: true,
+            unique: true, // Một người dùng chỉ có một cuộc hội thoại duy nhất
+        },
         seen: {
             type: Boolean,
             default: false,

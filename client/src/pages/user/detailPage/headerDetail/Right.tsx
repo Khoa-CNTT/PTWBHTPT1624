@@ -74,7 +74,7 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
                 <div className="flex flex-col w-full h-auto gap-1">
                     <p className="flex gap-1 text-[13px]">
                         Thương hiệu:
-                        <a href={`/thuong-hieu/${productDetail.product_brand_id.brand_slug}`} className="text-primary">
+                        <a href={`/thuong-hieu/${productDetail.product_brand_id._id}`} className="text-primary">
                             {productDetail.product_brand_id.brand_name}
                         </a>
                     </p>

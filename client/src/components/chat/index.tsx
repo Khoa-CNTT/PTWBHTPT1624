@@ -15,7 +15,6 @@ const Chat: React.FC = () => {
     const [conversationId, setConversationId] = useState<string>('');
     const [unreadMessages, SetUnreadMessages] = useState<number>(0);
     const { setIsOpenChat, setOpenFeatureAuth } = useActionStore();
-
     const { socket, connect, isConnected } = useSocketStore();
     useEffect(() => {
         if (!isConnected) connect();
@@ -49,18 +48,12 @@ const Chat: React.FC = () => {
         fetchApi();
     }, [conversationId]);
 
-    useEffect(() => {
-        if (!isUserLoggedIn) return;
-        const fetchApi = async () => {
-            const res = await apiCreateConversation();
-            if (res?.success) {
-                setConversationId(res?.data?._id);
-            }
-        };
-        fetchApi();
-    }, [isUserLoggedIn]);
-    const handleAddConversation = () => {
+    const handleAddConversation = async () => {
+        const res = await apiCreateConversation();
         setIsOpenChat(true);
+        if (res?.success) {
+            setConversationId(res?.data?._id);
+        }
     };
     return (
         // fixed bottom-1 right-5
