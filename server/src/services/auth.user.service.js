@@ -156,16 +156,12 @@ class AuthUserService {
     }
 
     static async loginGoogle(credential, res) {
-        console.log('credential', credential);
-        // Gửi request đến Google để xác thực và lấy profile người dùng
         const googleUser = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
         const { email, name, picture, googleId } = googleUser.data;
-
         // Tìm người dùng theo email
         let user = await userModel.findOne({ user_email: email });
 
         if (!user) {
-            // Nếu chưa có, tạo mới người dùng
             user = await userModel.create({
                 user_email: email,
                 user_name: name,
@@ -173,22 +169,25 @@ class AuthUserService {
                 user_googleId: googleId,
             });
         } else if (!user.user_googleId) {
-            // Nếu đã có user nhưng chưa có googleId, cập nhật
             user.user_googleId = googleId;
             await user.save();
         }
 
-        // Tạo JWT token
-        const tokens = await createTokenPairs(user);
+        // Chuyển user về dạng plain object
+        const userObject = user.toObject();
+
+        // Tạo JWT token từ plain object
+        const tokens = await createTokenPairs(userObject);
         const { accessToken, refreshToken } = tokens;
 
-        res.cookie('refresh_token', `${refreshToken}`, {
+        res.cookie('refresh_token', refreshToken, {
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,
         });
+
         return {
             accessToken,
-            user: foundUser,
+            user: userObject,
         };
     }
 

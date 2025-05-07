@@ -39,7 +39,6 @@ const PaymentConfirmPage: React.FC = () => {
             .map((key: string) => `${key}=${encodeURIComponent(vnp_Params[key] as string)}`)
             .join('&');
         const signed = calculateVnpSecureHash(sortedParams, vnp_HashSecret);
-        console.log('order', order);
         if (vnp_SecureHash === signed) {
             const { vnp_TransactionStatus } = vnp_Params;
             if (vnp_TransactionStatus === '00') {

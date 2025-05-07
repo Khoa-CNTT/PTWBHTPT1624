@@ -37,7 +37,7 @@ class AuthUserController {
         });
     }
     static async loginGoogle(req, res) {
-        const { credential } = req.body; 
+        const { credential } = req.body;
         const data = await AuthUserService.loginGoogle(credential, res);
         return res.status(200).json({
             success: true,

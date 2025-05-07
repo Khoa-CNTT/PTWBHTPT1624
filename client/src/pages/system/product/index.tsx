@@ -97,9 +97,7 @@ export default function ProductManage() {
                     notification_imageUrl: product.product_thumb, // Hình ảnh cảnh báo hết hàng
                     notification_link: `/${product.product_slug}/${product._id}`, // Liên kết đến sản phẩm
                 };
-                const response = await sendNotificationToAll(notification);
-                const data = response.data[0];
-                console.log(data);
+                await sendNotificationToAll(notification);
                 socket.emit('sendNotificationUserOnline', notification);
             }
         }
