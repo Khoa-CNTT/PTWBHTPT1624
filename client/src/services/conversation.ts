@@ -12,7 +12,7 @@ export const apiCreateConversation = async () => {
         };
     }
 };
-export const getAllConversations = async () => {
+export const getAllConversationsByAdmin = async () => {
     try {
         const res = await adminClient.get('/v1/api/conversation');
         return res.data;
@@ -23,17 +23,7 @@ export const getAllConversations = async () => {
         };
     }
 };
-export const addAdminToConversation = async (conversationId: string) => {
-    try {
-        const res = await adminClient.put(`/v1/api/conversation/${conversationId}/add-admin`);
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
+
 export const deleteConversation = async (conversationId: string) => {
     try {
         const res = await adminClient.delete(`/v1/api/conversation/${conversationId}`);

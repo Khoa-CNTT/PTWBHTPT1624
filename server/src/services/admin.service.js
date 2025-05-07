@@ -54,18 +54,6 @@ class AdminService {
         };
     }
 
-    static async toggleBlockAdmin(uid, isBlocked) {
-        if (typeof isBlocked !== 'boolean') {
-            if (isBlocked === 'true') isBlocked = true;
-            else if (isBlocked === 'false') isBlocked = false;
-            else throw new RequestError('Trạng thái chặn không hợp lệ!');
-        }
-        const admin = await AdminModel.findById(uid);
-        if (!admin) throw new RequestError('Người dùng không tồn tại!', 404);
-        admin.admin_isBlocked = isBlocked;
-        await admin.save();
-        return isBlocked ? 'Đã chặn người dùng thành công!' : 'Đã mở chặn người dùng!';
-    }
     static async getAllAdmins({ admin_id, limit, page }) {
         const limitNum = parseInt(limit, 10) || 10; // Mặc định limit = 10 nếu không hợp lệ
         const pageNum = parseInt(page, 10) || 0; // Mặc định page = 0 nếu không hợp lệ

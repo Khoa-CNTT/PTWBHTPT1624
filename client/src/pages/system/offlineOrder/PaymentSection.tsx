@@ -51,11 +51,11 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
                                 setPaymentMethod(e.target.value);
                                 setCashReceived('');
                             }}>
-                            <FormControlLabel value="online" control={<Radio />} label="Chuyển khoản" />
-                            <FormControlLabel value="cash" control={<Radio />} label="Tiền mặt" />
+                            <FormControlLabel value="ONLINE" control={<Radio />} label="Chuyển khoản" />
+                            <FormControlLabel value="CASH" control={<Radio />} label="Tiền mặt" />
                         </RadioGroup>
                     </FormControl>
-                    {paymentMethod === 'cash' && (
+                    {paymentMethod === 'CASH' && (
                         <div className="mt-2 flex gap-2">
                             <input
                                 type="number"
@@ -86,24 +86,20 @@ export const PaymentSection: React.FC<PaymentSectionProps> = ({
                 </div>
                 <div className="flex justify-between">
                     <span className="text-gray-600">Giảm giá:</span>
-                    <span className="font-semibold">
-                        -{formatMoney(calculateDiscountFromProducts )}
-                    </span>
+                    <span className="font-semibold">-{formatMoney(calculateDiscountFromProducts)}</span>
                 </div>
-                {appliedDiscount>0&& <div className="flex justify-between">
-                    <span className="text-gray-600">Voucher</span>
-                    <span className="font-semibold">
-                        -{formatMoney(appliedDiscount)}
-                    </span>
-                </div>}
+                {appliedDiscount > 0 && (
+                    <div className="flex justify-between">
+                        <span className="text-gray-600">Voucher</span>
+                        <span className="font-semibold">-{formatMoney(appliedDiscount)}</span>
+                    </div>
+                )}
                 <div className="flex justify-between text-lg font-bold">
                     <span>Thanh toán:</span>
                     <span>{formatMoney(calculateTotal)}</span>
                 </div>
 
-
-
-                {paymentMethod === 'cash' && cashReceived !== '' && (
+                {paymentMethod === 'CASH' && cashReceived !== '' && (
                     <div className="flex justify-between text-lg">
                         <span className="text-gray-600">Số dư trả lại:</span>
                         <span className="font-semibold text-green-600">{formatMoney(calculateChange)}</span>

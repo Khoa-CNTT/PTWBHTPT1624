@@ -76,11 +76,7 @@ const ChatModal: React.FC<{ conversationId: string; SetUnreadMessages: (count: n
             block: 'end',
         });
         // Tắt hiệu ứng load sau khi cuộn hoàn tất (giả lập thời gian cuộn)
-        const timeout = setTimeout(() => {
-            setIsScrolling(false);
-        }, 1000); // Thời gian chờ 500ms, có thể điều chỉnh
-
-        return () => clearTimeout(timeout); // Dọn dẹp timeout
+        setIsScrolling(false);
     }, [messages, isOpenBox]);
 
     const handleOnClick = async () => {

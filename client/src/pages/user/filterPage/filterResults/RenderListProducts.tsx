@@ -10,6 +10,7 @@ import { useCategoriesStore } from '../../../../store/categoryStore';
 import ProductItem from '../../../../components/item/ProductItem';
 import Pagination from '../../../../components/pagination';
 import { NotFound, SkeletonProducts } from '../../../../components';
+import { useBrandsStore } from '../../../../store/brandStore';
 
 const RenderListProducts: React.FC = () => {
     const location = useLocation();
@@ -33,7 +34,7 @@ const RenderListProducts: React.FC = () => {
                 'product_discounted_price[lte]': priceto,
                 'product_discounted_price[gte]': pricefrom,
                 product_category_id: categories.filter((c) => c.category_code === params.category_code)[0]?._id,
-                product_brand_id: brand,
+                product_brand_id: params.brand_id ? params.brand_id : brand,
             });
             setIsLoading(false);
             if (!res.success) return;
@@ -42,7 +43,7 @@ const RenderListProducts: React.FC = () => {
             setProduct(data.products);
         };
         fetchProducts();
-    }, [currentPage, params.category_code, location.search, params.brand_slug]);
+    }, [currentPage, params.category_code, location.search, params.brand_id]);
 
     useEffect(() => {
         setCurrentPage(0);

@@ -9,7 +9,6 @@ const adminSchema = mongoose.Schema(
         admin_password: { type: String },
         admin_mobile: { type: String, unique: true },
         admin_avatar_url: { type: String },
-        admin_isBlocked: { type: Boolean, default: false },
     },
     {
         timestamps: true,

@@ -60,7 +60,7 @@ const EmployeeModal: React.FC<EmployeeModalProps> = ({ isOpen, closeModal, onSav
         fetchApi();
     }, []);
     const handleSave = () => {
-        const { _id, admin_isBlocked, admin_password, ...data } = inputFields;
+        const { _id, admin_password, ...data } = inputFields;
         const check = employee ? validate(data, setInvalidFields) : validate({ ...data }, setInvalidFields);
         if (!check) {
             showNotification('Vui lòng nhập đầy đủ thông tin');

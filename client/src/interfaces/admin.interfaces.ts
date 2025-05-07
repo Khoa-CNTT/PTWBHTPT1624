@@ -9,6 +9,5 @@ export interface IAdmin {
     admin_mobile: string;
     admin_avatar_url?: string;
     admin_password?: string;
-    admin_isBlocked?: boolean;
     permissions?: string[];
 }

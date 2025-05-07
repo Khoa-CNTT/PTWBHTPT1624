@@ -13,7 +13,7 @@ const ChatMessage: React.FC<ChatMessageProps> = ({ message, isSentByUser }) => {
         <div className={`flex w-full max-w-[400px] gap-3 ${isSentByUser ? 'ml-auto flex-row-reverse' : 'mr-auto'} mb-4`}>
             {/* Avatar (only for non-user messages) */}
             {!isSentByUser && (
-                <div className="h-10 w-10 flex-shrink-0">
+                <div className="h-6 w-6 flex-shrink-0">
                     <img
                         src={message?.sender?.admin_avatar_url || message?.sender?.user_avatar_url || userAvatar}
                         alt="profile"

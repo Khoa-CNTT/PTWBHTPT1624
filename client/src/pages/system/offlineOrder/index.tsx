@@ -15,7 +15,7 @@ const OfflineOrder: React.FC = () => {
     const [carts, setCarts] = useState<IProductInCart[][]>([[]]);
     const [currentTab, setCurrentTab] = useState<number>(0);
     const [qrResult, setQrResult] = useState<string>('');
-    const [paymentMethod, setPaymentMethod] = useState<string>('online');
+    const [paymentMethod, setPaymentMethod] = useState<string>('ONLINE');
     const [discountCode, setDiscountCode] = useState<string>('');
     const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
     const [voucherId, setVoucherId] = useState<string>('');
@@ -39,7 +39,7 @@ const OfflineOrder: React.FC = () => {
         return subtotal - additionalDiscount;
     }, [subtotal, discountFromProducts, appliedDiscount]);
     const change = useMemo(() => {
-        if (paymentMethod !== 'cash' || cashReceived === '') return 0;
+        if (paymentMethod !== 'CASH' || cashReceived === '') return 0;
         return Math.max(0, Number(cashReceived) - total);
     }, [paymentMethod, cashReceived, total]);
 
@@ -146,7 +146,7 @@ const OfflineOrder: React.FC = () => {
             showNotification('Giỏ hàng trống, không thể thanh toán!', false);
             return;
         }
-        if (paymentMethod === 'cash') {
+        if (paymentMethod === 'CASH') {
             if (cashReceived === '' || Number(cashReceived) < total) {
                 showNotification('Số tiền nhận không đủ để thanh toán!', false);
                 return;
