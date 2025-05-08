@@ -16,20 +16,22 @@ module.exports = {
               - Giá: ${item.price || 0}
               - Giảm giá: ${item.discount || 0}
               - URL Hình ảnh: ${item.productId?.product_thumb || 'Chưa có ảnh'}
-              - URL Liên kết sản phẩm: /${item.productId?.product_slug || '#'}/${item.productId?._id || '#'}
+              - URL Liên kết sản phẩm: /${item.productId?.product_slug}/${item.productId?._id || '#'}
             `,
                     )
                     .join('');
                 return `
-          Đơn hàng của người dùng ${index + 1}:
-          - Tên: ${order.sc_name || 'Chưa có tên'}
+          Đơn hàng của người dùng đang hỏi ${index + 1}: 
+            
           - Danh sách sản phẩm: ${productsText || 'Chưa có sản phẩm'}
           - Địa chỉ: ${order.order_shipping_address?.detailAddress || 'Chưa có địa chỉ'}
           - Phí giao hàng: ${order.order_shipping_price || 0}
           - Thời gian vận chuyển: từ ${formatDate(order.order_date_shipping?.from) || 'N/A'} đến ${formatDate(order.order_date_shipping?.to) || 'N/A'} ngày
           - Trạng thái đơn hàng: ${order.order_status || 'N/A'}
-          - URL Liên kết đơn hàng: /nguoi-dung/don-hang
-        `;
+          - URL Liên kết đơn hàng: /nguoi-dung/don-hang    
+          - Ngày đặt: ${formatDate(order.updateAt)}
+          - mã sản phẩm: ${order.order_code || 'Chưa có tên'}
+          `;
             })
             .join('');
     },

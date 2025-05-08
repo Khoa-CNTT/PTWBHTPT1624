@@ -7,10 +7,12 @@ const shippingCompanyModel = require('../models/shippingCompany.model');
 const userModel = require('../models/user.model');
 const textConverter = require('../utils/textConverter');
 const redisClient = require('../config/redisClient'); // Sử dụng redisClient từ file cấu hình
+const OnlineOrder = require('../models/OnlineOrder');
 
 class ChatbotPromptController {
     static async getPrompt(req, res) {
-        const { userId } = req.params;
+        const { userId } = req.query;
+        console.log({ userId });
         const { page = 1, limit = 50 } = req.query;
         const skip = (page - 1) * limit;
         // Hàm lấy dữ liệu từ cache
