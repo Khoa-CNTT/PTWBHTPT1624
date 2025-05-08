@@ -413,7 +413,7 @@ if (cartData) {
         }
     
         // Nếu phương thức thanh toán là VNPAY, hoàn tiền vào tài khoản người dùng
-        if (order.order_payment_method === 'VNPAY') {
+        if (order.order_payment_method === 'VNPAY','COIN') {
             const user = await userModel.findById(userId); // Thay thế User bằng userModel
             if (!user) {
                 throw new RequestError(`Người dùng không tồn tại`);
@@ -449,16 +449,40 @@ if (cartData) {
         if (!userId || !orderId) {
             throw new RequestError('Thiếu thông tin userId hoặc orderId');
         }
+    
         // Find the cancelled order
         const cancelledOrder = await OnlineOrder.findOne({
             _id: orderId,
             order_user: userId,
             order_status: 'cancelled',
         });
-
+    
         if (!cancelledOrder) {
             throw new RequestError('Đơn hàng không tồn tại hoặc không phải đơn hàng đã hủy');
         }
+    
+        // Check if user exists and get the user data
+        const user = await userModel.findById(userId); // Changed from User to userModel
+        if (!user) {
+            throw new RequestError('Người dùng không tồn tại');
+        }
+    
+        // Calculate total order price
+        const totalOrderPrice = cancelledOrder.order_total_price;
+    
+        // Check if user has enough balance to pay using COIN
+        if (user.user_balance >= totalOrderPrice) {
+            // If enough balance, set payment method to COIN
+            cancelledOrder.order_payment_method = 'COIN';
+            user.user_balance -= totalOrderPrice; // Deduct the balance
+        } else {
+            // If not enough balance, set payment method to CASH
+            cancelledOrder.order_payment_method = 'CASH';
+        }
+    
+        // Update user balance
+        await user.save();
+    
         const productUpdates = cancelledOrder.order_products.map(async (item) => {
             const product = await Product.findById(item.productId);
             if (!product) {
@@ -474,32 +498,27 @@ if (cartData) {
                 },
             });
         });
+    
         await Promise.all(productUpdates);
-        // Create a new order
-        // const newOrder = new OnlineOrder({
-        //     order_user: UserId,
-        //     order_products: cancelledOrder.order_products, // Reuse products from cancelled order
-        //     order_shipping_address: cancelledOrder.order_shipping_address, // Reuse shipping address
-        //     order_shipping_price: cancelledOrder.order_shipping_price, // Reuse shipping price
-        //     order_total_price: cancelledOrder.order_total_price, // Reuse total price
-        //     order_status: '', // Set new order to pending
-        //     order_date_shipping: cancelledOrder.order_date_shipping, // Reuse shipping date
-        //     createdAt: new Date(),
-        //     updatedAt: new Date(),
-        // });
-        // Bước 4: Thêm phí vận chuyển
-        const shipping = await shippingCompany.findById(cancelledOrder.order_shipping_company); // Tìm công ty vận chuyển
-        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
-        // Tạo đơn hàng mới trong DB
+    
+        // Fetch the shipping company
+        const shipping = await shippingCompany.findById(cancelledOrder.order_shipping_company);
+        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển');
+    
+        // Calculate shipping date
         const order_date_shipping = {
-            from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000), // Thời gian hiện tại
+            from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000),
             to: new Date(Date.now() + shipping.sc_delivery_time.to * 24 * 60 * 60 * 1000),
         };
+    
         cancelledOrder.order_status = 'pending';
         cancelledOrder.order_date_shipping = order_date_shipping;
+    
         // Save the new order
         await cancelledOrder.save();
     }
+    
+    
 }
 
 module.exports = OrderService;
