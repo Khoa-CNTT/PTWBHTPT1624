@@ -32,6 +32,7 @@ const onlineOrderSchema = new Schema(
             enum: ['pending', 'confirm', 'shipped', 'delivered', 'cancelled'],
             default: 'pending',
         },
+        order_refunded: { type: Boolean, default: false }, // ✅ Đã hoàn tiền hay chưa
     },
     { timestamps: true },
 );

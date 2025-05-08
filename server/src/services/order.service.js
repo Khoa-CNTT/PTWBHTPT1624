@@ -394,6 +394,21 @@ if (cartData) {
         if (!order) {
             throw new RequestError(`Đơn hàng không tồn tại`);
         }
+    
+        // Nếu phương thức thanh toán là VNPAY, hoàn tiền vào tài khoản người dùng
+        if (order.order_payment_method === 'VNPAY') {
+            const user = await userModel.findById(userId); // Thay thế User bằng userModel
+            if (!user) {
+                throw new RequestError(`Người dùng không tồn tại`);
+            }
+    
+            // Cộng lại số tiền vào user_balance
+            user.user_balance += order.order_total_price;
+            await user.save();
+        }
+        order.order_refunded = true;
+    
+        // Cập nhật lại số lượng tồn kho và số lượng đã bán của sản phẩm
         await Promise.all(
             order.order_products.map((item) =>
                 Product.findByIdAndUpdate(item.productId, {
@@ -404,9 +419,13 @@ if (cartData) {
                 }),
             ),
         );
+    
+        // Cập nhật trạng thái đơn hàng thành "cancelled"
         order.order_status = 'cancelled';
         await order.save();
     }
+    
+    
 
     static async reorder({ userId, orderId }) {
         // Validate inputs

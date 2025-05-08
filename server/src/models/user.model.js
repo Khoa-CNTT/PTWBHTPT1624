@@ -21,6 +21,7 @@ const userSchema = mongoose.Schema(
         user_spin_turns: { type: Number, default: 3 }, // Lượt quay hiện tại
         user_lastSpinIncrement: { type: Date, default: null }, // Ngày cuối cùng cộng thêm lượt quay
         user_googleId: { type: String },
+        user_balance: { type: Number, default: 0 },
     },
     {
         timestamps: true,
