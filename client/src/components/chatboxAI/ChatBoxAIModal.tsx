@@ -1,9 +1,11 @@
 import React, { memo, useEffect, useRef, useState } from 'react';
 import SendIcon from '@mui/icons-material/Send';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { TypeAnimation } from 'react-type-animation';
+// import { TypeAnimation } from 'react-type-animation';
 import { generateGeminiResponse } from '../../services/gemini.service';
 import ReactLoading from 'react-loading';
+import parse from 'html-react-parser';
+
 interface ChatMessage {
     id: string;
     role: 'user' | 'bot';
@@ -11,11 +13,12 @@ interface ChatMessage {
 }
 
 interface ChatBoxAIModalProps {
+    context: string;
     isOpenBox: boolean;
     setIsOpenBox: (open: boolean) => void;
 }
 
-const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox }) => {
+const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ context, isOpenBox, setIsOpenBox }) => {
     const [prompt, setPrompt] = useState('');
     const [isVisible, setIsVisible] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
@@ -53,35 +56,22 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
         setMessages((prev) => [...prev, userMessage]);
         setPrompt('');
         setIsLoading(true);
-
-        try {
-            const reply = await generateGeminiResponse(prompt);
-            const botMessage: ChatMessage = {
-                id: crypto.randomUUID(),
-                role: 'bot',
-                content: reply,
-            };
-            setMessages((prev) => [...prev, botMessage]);
-        } catch (error) {
-            console.error(error);
-            setMessages((prev) => [
-                ...prev,
-                {
-                    id: crypto.randomUUID(),
-                    role: 'bot',
-                    content: 'Đã xảy ra lỗi khi gửi yêu cầu!',
-                },
-            ]);
-        } finally {
-            setIsLoading(false);
-        }
+        const fullPrompt = `${context}\n\nCâu hỏi: ${prompt}`;
+        const reply = await generateGeminiResponse(fullPrompt);
+        const botMessage: ChatMessage = {
+            id: crypto.randomUUID(),
+            role: 'bot',
+            content: reply,
+        };
+        setMessages((prev) => [...prev, botMessage]);
+        setIsLoading(false);
     };
 
     if (!isVisible) return null;
 
     return (
         <div
-            className={`tablet:fixed tablet:top-0 tablet:right-0 tablet:left-0 tablet:w-full tablet:h-full absolute bottom-0 right-0 w-auto h-[460px] bg-white shadow-search rounded-md duration-1000 origin-bottom-right z-[1000] ${
+            className={`tablet:fixed tablet:top-0 tablet:right-0 tablet:left-0 tablet:w-full tablet:h-full absolute bottom-0 right-0 w-auto h-[500px] bg-white shadow-search rounded-md duration-1000 origin-bottom-right z-[1000] ${
                 isOpenBox ? 'laptop:animate-active-openChat' : 'laptop:animate-active-openChatOff'
             }`}>
             <div className="flex h-full w-[400px] flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white dark:border-gray-800 dark:bg-white/[0.03]">
@@ -124,11 +114,12 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ isOpenBox, setIsOpenBox
                                             ? 'bg-gradient-to-br from-brand-500 to-brand-600 text-white rounded-tr-none'
                                             : 'bg-gray-100 text-gray-800 dark:bg-gray-800 dark:text-white/90 rounded-tl-none'
                                     }`}>
-                                    {msg.role === 'user' || msg.id !== messages[messages.length - 1]?.id ? (
-                                        <p>{msg.content}</p>
-                                    ) : (
+                                    {/* {msg.role === 'user' || msg.id !== messages[messages.length - 1]?.id ? ( */}
+                                    {msg.role === 'user' ? <p>{msg.content}</p> : parse(msg.content)}
+
+                                    {/* ) : (
                                         <TypeAnimation sequence={[msg.content]} speed={1} cursor={true} wrapper="span" repeat={0} />
-                                    )}
+                                    )} */}
                                 </div>
                             </div>
                         </div>
