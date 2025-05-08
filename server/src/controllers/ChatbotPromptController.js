@@ -81,6 +81,7 @@ class ChatbotPromptController {
             👉 Chính xác  
             👉 Dễ thương, hài hước  
             👉 Gần gũi và thân thiện 🥰  
+            Viết toàn bộ bằng tiếng việt
             🎨 <strong>Yêu cầu định dạng câu trả lời:</strong>  
             - Mỗi câu trả lời phải được trình bày bằng <strong>HTML</strong>, sử dụng các thẻ như <code><div></code>, <code><p></code>, <code><ul></code>, <code><strong></code>, <code><img></code>, v.v.  
             - Hãy style nhẹ nhàng cho màu sắc, kích thước chữ nếu cần, giúp hiển thị đẹp mắt và rõ ràng.

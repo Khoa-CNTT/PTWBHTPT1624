@@ -227,6 +227,23 @@ class OrderService {
         const shipping = await shippingCompany.findById(order_shipping_company); // Tìm công ty vận chuyển
         if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
         const shippingPrice = shipping.sc_shipping_price; // Lấy phí vận chuyển, mặc định là 0 nếu không có
+        // Bước 5: Nếu thanh toán bằng Coin thì trừ vào số dư người dùng
+if (order_payment_method === 'COIN') {
+    const user = await userModel.findById(userId);
+    if (!user) throw new RequestError('Không tìm thấy người dùng');
+
+    const amountToPay = totalPrice - totalApplyDiscount + shippingPrice;
+
+    if (user.user_balance < amountToPay) {
+        throw new RequestError('Số dư không đủ để thanh toán đơn hàng');
+    }
+
+    // Trừ số dư
+    await userModel.findByIdAndUpdate(userId, {
+        $inc: { user_balance: -amountToPay },
+    });
+}
+
         // Tạo đơn hàng mới trong DB
         const order_date_shipping = {
             from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000), // Thời gian hiện tại

@@ -1,6 +1,7 @@
 'use strict';
 
-const { formatDate } = require('./formatDate');
+const formatDate = require("./formatDate");
+
 
 module.exports = {
     convertOrderToText: (orders = []) => {

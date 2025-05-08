@@ -55,6 +55,7 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ context, isOpenBox, set
         setMessages((prev) => [...prev, userMessage]);
         setPrompt('');
         setIsLoading(true);
+        console.log({context})
         const fullPrompt = `${context}\n\nCâu hỏi: ${prompt}`;
         const reply = await generateGeminiResponse(fullPrompt);
         const botMessage: ChatMessage = {

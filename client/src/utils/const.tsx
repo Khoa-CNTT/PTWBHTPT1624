@@ -212,6 +212,10 @@ export const PAYMENT_METHOD = {
             label: 'Thanh toán bằng VNPAY',
             img: vnpay,
         },
+        {
+            code: 'COIN',
+            label: 'Thanh toán bằng số dư',
+        },
     ],
 };
 export const DELIVERY_METHOD = {
