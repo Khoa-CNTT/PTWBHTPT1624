@@ -30,7 +30,6 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ context, isOpenBox, set
         },
     ]);
     const scrollRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         scrollRef.current?.scrollIntoView({ behavior: 'smooth' });
     }, [messages, isLoading]);

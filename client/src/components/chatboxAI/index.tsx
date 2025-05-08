@@ -2,17 +2,19 @@
 import React, { useEffect, useState } from 'react';
 import ChatBoxAIModal from './ChatBoxAIModal';
 import { apiGetPrompt } from '../../services/chatbot.service';
+import useUserStore from '../../store/userStore';
 
 const ChatBoxAI: React.FC = () => {
     const [isOpenBox, setIsOpenBox] = useState<boolean>(false);
     const [prompt, setPrompt] = useState<string>('');
+    const { user } = useUserStore();
     useEffect(() => {
         const fetchApi = async () => {
-            const res = await apiGetPrompt();
+            const res = await apiGetPrompt(user ? user._id : '');
             setPrompt(res.context);
         };
         fetchApi();
-    }, []);
+    }, [user._id]);
 
     return (
         // fixed bottom-1 right-5
