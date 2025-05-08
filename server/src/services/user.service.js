@@ -219,22 +219,24 @@ class UserService {
             message: 'Đổi mật khẩu thành công!',
         };
     }
-
     static async playLuckyBox(userId, prizeIndex) {
         const user = await UserModel.findById(userId);
         if (!user) {
+            console.error(`User not found: ${userId}`);
             throw new RequestError('Người dùng không tồn tại!', 404);
         }
         if ((user.user_spin_turns || 0) <= 0) {
+            console.error(`User ${userId} has no spin turns`);
             throw new RequestError('Bạn đã hết lượt quay!', 400);
         }
-        // Trừ lượt quay
-        user.user_spin_turns = (user.user_spin_turns || 0) - 1;
+
+        console.log(`User ${userId} spun with prizeIndex: ${prizeIndex}`);
         const currentDate = new Date();
         let response = {
             type: 'none',
             message: 'Phần thưởng không hợp lệ.',
         };
+
         switch (prizeIndex) {
             case 0: // +10,000 điểm
                 user.user_reward_points = (user.user_reward_points || 0) + 10000;
@@ -251,7 +253,11 @@ class UserService {
                     voucher_end_date: { $gte: currentDate },
                 });
                 if (!vouchers.length) {
-                    throw new RequestError('Hiện không có voucher nào khả dụng.', 400);
+                    response = {
+                        type: 'none',
+                        message: 'Hiện không có voucher nào khả dụng, thử lại sau!',
+                    };
+                    break;
                 }
                 const randomVoucher = vouchers[Math.floor(Math.random() * vouchers.length)];
                 let userVouchers = await userVoucherModel.findOne({ vc_user_id: userId });
@@ -266,7 +272,6 @@ class UserService {
                         userVouchers.vc_vouchers.push(randomVoucher._id);
                         await userVouchers.save();
                     }
-                    // Nếu đã có thì không thêm nữa nhưng vẫn trả về như thường
                 }
                 response = {
                     type: 'voucher',
@@ -296,8 +301,13 @@ class UserService {
                     ticket: 2,
                 };
                 break;
+            default:
+                console.error(`Invalid prizeIndex: ${prizeIndex} for user ${userId}`);
+                throw new RequestError('Giá trị prizeIndex không hợp lệ!', 400);
         }
-        // Lưu user sau khi cập nhật
+
+        // Trừ lượt quay sau khi xác nhận phần thưởng
+        user.user_spin_turns -= 1;
         await user.save();
         return response;
     }

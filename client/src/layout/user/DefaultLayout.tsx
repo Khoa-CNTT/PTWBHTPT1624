@@ -9,15 +9,6 @@ import Loading from '../../components/common/Loading';
 import Chat from '../../components/chat';
 import ChatBoxAI from '../../components/chatboxAI';
 import ToastComponent from '../../components/toastComponent';
-// import { Auth } from '../feature';
-// import { apiGetDetailUser } from '../services/apiUser';
-// import { setIsLoginSuccess } from '../redux/features/auth/authSlice';
-// import { setDetailUser } from '../redux/features/user/userSlice';
-// import { Footer, Header, Loading } from '../component';
-// import { useLocation } from 'react-router-dom';
-// import { path } from '../utils/const';
-// import { BottomNavigate } from '../component/mobile/BottomNavigate';
-// import Chat from '../component/chat';
 const DefaultLayout = () => {
     useFetchUser();
     // const { mobile_ui } = useAppSelector((state) => state.action);

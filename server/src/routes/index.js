@@ -26,5 +26,6 @@ router.use('/v1/api/dashboard', require('./dashboard/index'));
 router.use('/v1/api/purchased', require('./purchased/index'));
 router.use('/v1/api/conversation', require('./conversation/index'));
 router.use('/v1/api/message', require('./message/index'));
+router.use('/v1/api/chatbot', require('./chatbotPrompt/index'));
 
 module.exports = router;

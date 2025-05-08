@@ -19,10 +19,8 @@ class ProductController {
                 message: 'Invalid category ID',
             });
         }
-
         // Increment category score in Redis sorted set
         const key = `user:${req.user._id}:categories`;
-
         // Tăng điểm danh mục
         const result = await redis.zincrby(key, 1, categoryId);
         // Đặt thời gian hết hạn 7 ngày (chỉ khi key mới được tạo hoặc chưa có TTL)
@@ -77,7 +75,7 @@ class ProductController {
             .find({
                 product_category_id: { $in: categoryIds },
             })
-            .select('product_thumb product_price product_name product_discounted_price product_discount product_code product_sold')
+            .select('product_thumb product_price product_ratings product_name product_discounted_price product_discount product_code product_sold')
             .sort({ product_sold: -1 }) // Sắp xếp giảm dần theo số lượt bán
             .limit(20)
             .lean();
