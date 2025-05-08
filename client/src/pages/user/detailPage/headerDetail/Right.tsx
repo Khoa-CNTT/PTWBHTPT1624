@@ -51,22 +51,41 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
             setOpenFeatureAuth(true);
             return;
         }
+    
+        // ✅ Kiểm tra số lượng hàng còn lại trước khi gọi API
+        if (quantity > (productDetail?.product_quantity || 0)) {
+            showNotification('Số lượng sản phẩm không đủ trong kho.', false);
+            return;
+        }
+    
         setIsLoading(true);
-        const res = await apiAddToCart({ quantity, productId: productDetail?._id });
-        setIsLoading(false);
-        if (res?.success) {
-            setAddProductInCartFromApi(res.data.cart_products);
-            if (!selectedProducts.some((p) => p.productId?._id === productDetail?._id)) {
-                const selected = res.data.cart_products.find((p: IProductInCart) => p.productId === productDetail._id);
-                setSelectedProduct(selected);
-            }
-            if (isBuy) {
-                navigate(PATH.PAGE_CART);
+    
+        try {
+            const res = await apiAddToCart({ quantity, productId: productDetail?._id });
+            setIsLoading(false);
+    
+            if (res?.success) {
+                setAddProductInCartFromApi(res.data.cart_products);
+    
+                if (!selectedProducts.some((p) => p.productId?._id === productDetail?._id)) {
+                    const selected = res.data.cart_products.find((p: IProductInCart) => p.productId === productDetail._id);
+                    setSelectedProduct(selected);
+                }
+    
+                if (isBuy) {
+                    navigate(PATH.PAGE_CART);
+                } else {
+                    showNotification(res?.message, true);
+                }
             } else {
-                showNotification(res?.message, res?.success);
+                showNotification(res?.message || 'Thêm vào giỏ thất bại', false);
             }
+        } catch (error) {
+            setIsLoading(false);
+            showNotification('Đã xảy ra lỗi. Vui lòng thử lại.', false);
         }
     };
+    
 
     return (
         <div className="flex h-full flex-1">

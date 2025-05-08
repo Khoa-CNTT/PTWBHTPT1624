@@ -70,17 +70,20 @@ const OrderItem: React.FC<OrderItemProps> = ({ order, viewDetail = false, view =
             </div>
 
             <div className="flex justify-end mt-2 gap-2">
-                {!view && order?.order_payment_method !== 'VNPAY' && order?.order_status !== 'delivered' && (
-                    <>
-                        {order?.order_status === 'cancelled' ? (
-                            <ButtonOutline onClick={() => handleBuy?.(order?._id)}>Mua lại đơn hàng</ButtonOutline>
-                        ) : (
-                            order?.order_status === 'pending' && <ButtonOutline onClick={() => handleCancelOrder?.(order?._id)}>Hủy đơn hàng</ButtonOutline>
-                        )}
-                    </>
-                )}
-                {viewDetail && <ButtonOutline onClick={() => navigate(`/nguoi-dung/chi-tiet-don-hang/${order?._id}`)}>Xem chi tiết</ButtonOutline>}
-            </div>
+  {!view && order?.order_status !== 'delivered' && (
+    <>
+      {order?.order_status === 'cancelled' ? (
+        <ButtonOutline onClick={() => handleBuy?.(order?._id)}>Mua lại đơn hàng</ButtonOutline>
+      ) : (
+        order?.order_status === 'pending' && (
+          <ButtonOutline onClick={() => handleCancelOrder?.(order?._id)}>Hủy đơn hàng</ButtonOutline>
+        )
+      )}
+    </>
+  )}
+  {viewDetail && <ButtonOutline onClick={() => navigate(`/nguoi-dung/chi-tiet-don-hang/${order?._id}`)}>Xem chi tiết</ButtonOutline>}
+</div>
+
         </div>
     );
 };

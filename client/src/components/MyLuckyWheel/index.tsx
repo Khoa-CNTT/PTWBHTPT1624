@@ -90,7 +90,6 @@ const LuckyWheel: React.FC<LuckyWheelProps> = ({ setGameModalOpen }) => {
     };
     // Lưu tiêu đề phiếu giảm giá
     const [titleVoucher, setTitleVoucher] = useState<string>('');
-
     // Xử lý sự kiện bắt đầu quay
     const handleSpin = (): void => {
         // Không cho quay nếu đang quay hoặc hết lượt

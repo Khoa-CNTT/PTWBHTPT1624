@@ -1,10 +1,10 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
-/* eslint-disable react-hooks/rules-of-hooks */
 import React, { useRef } from 'react';
 import { ReceiptContent } from '../../../components/ReceiptContent';
 import { apiCreateOfflineOrders } from '../../../services/order.service';
 import { showNotification } from '../../../components';
 import { IProductInCart } from '../../../interfaces/cart.interfaces';
+import { apiGetProductById } from '../../../services/product.service';
+import { IProductDetail } from '../../../interfaces/product.interfaces';
 
 interface ConfirmationModalProps {
     open: boolean;
@@ -40,20 +40,45 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
     if (!open) return null;
 
     const handleConfirmAndPrint = async () => {
+        // Kiểm tra tồn kho trước khi tạo đơn
+        for (const item of cart) {
+            // Đảm bảo lấy đúng ID sản phẩm
+            const productId = typeof item.productId === 'string' ? item.productId : item.productId._id;
+            console.log('Product ID:', productId);
+
+            // Gọi API lấy thông tin sản phẩm
+            const res = await apiGetProductById(productId);
+
+            // Kiểm tra xem API có trả về dữ liệu thành công không
+            if (!res || !res.success || !res.data) {
+                showNotification('Không thể kiểm tra tồn kho sản phẩm.', false);
+                return;
+            }
+
+            const product: IProductDetail = res.data;
+
+            // Kiểm tra số lượng tồn kho có đủ không
+            if (item.quantity > product.product_quantity) {
+                showNotification(`❌ Sản phẩm "${product.product_name}" chỉ còn lại ${product.product_quantity} trong kho.`, false);
+                return;
+            }
+        }
+
+        // Nếu đủ tồn kho, tiến hành tạo đơn hàng
         const data = {
             order_products: cart,
             order_payment_method: paymentMethod,
             voucherId,
         };
+
         const res = await apiCreateOfflineOrders(data);
         showNotification(res.message, res.success);
         if (!res.success) return;
+
         const printContent = printRef.current?.innerHTML;
         if (printContent) {
-            // Mở tab mới
             const newWindow = window.open('', '_blank');
             if (newWindow) {
-                // Ghi nội dung HTML vào tab mới
                 newWindow.document.write(`
                     <html>
                         <head>
@@ -74,7 +99,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                                         font-family: Arial, sans-serif;
                                     }
                                 }
-                                /* Thêm các style khác nếu cần */
                                 .receipt-content {
                                     padding: 20px;
                                     font-size: 14px;
@@ -111,7 +135,6 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                                 window.onload = function() {
                                     window.print();
                                     window.onafterprint = function() {
-                                        // Gọi hàm handlePrintSuccess từ tab chính
                                         if (window.opener && window.opener.handlePrintSuccess) {
                                             window.opener.handlePrintSuccess();
                                         }
@@ -125,8 +148,8 @@ export const ConfirmationModal: React.FC<ConfirmationModalProps> = ({
                 newWindow.document.close();
             }
         }
-        // handlePrintSuccess sẽ được gọi từ tab mới sau khi in thành công
     };
+
     // Đảm bảo handlePrintSuccess có thể được truy cập từ tab mới
     (window as any).handlePrintSuccess = handlePrintSuccess;
 

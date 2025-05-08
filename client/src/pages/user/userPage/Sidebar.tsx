@@ -35,6 +35,14 @@ export const Sidebar: React.FC = () => {
                     <span className="text-base font-normal text-black ">{user.user_name}</span>
                 </div>
             </div>
+            {/* Display user balance */}
+            <div className="flex flex-col items-center text-center mx-4 justify-center py-2 px-3 bg-blue-50 rounded-xl border border-blue-400 shadow-sm mt-4">
+                <span className="text-[14px] text-gray-900">Số dư tài khoản</span>
+                <div className="flex items-center gap-1 text-blue-500 font-semibold text-sm mt-1">
+                    {user.user_balance?.toLocaleString('vi-VN')} VNĐ
+                    <PaidIcon fontSize="small" />
+                </div>
+            </div>
             <div className="flex flex-col items-center text-center mx-4 justify-center py-2 px-3 bg-yellow-50 rounded-xl border border-yellow-400 shadow-sm">
                 <span className="text-[14px] text-gray-900">Điểm hiện có</span>
                 <div className="flex items-center gap-1 text-amber-500 font-semibold text-sm mt-1">
