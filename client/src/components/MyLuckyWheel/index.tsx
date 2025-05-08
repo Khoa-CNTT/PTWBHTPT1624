@@ -30,7 +30,6 @@ const LuckyWheel: React.FC<{ setGameModalOpen: React.Dispatch<React.SetStateActi
     const [titleVoucher, setTitleVoucher] = useState<string>('');
     const handleSpin = () => {
         if (isSpinning) return;
-        subtractTicket();
         const audio = new Audio(spinAudio);
         audio.play();
         const newPrizeIndex = Math.floor(Math.random() * PRIZES.length);
