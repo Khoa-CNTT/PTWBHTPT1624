@@ -1,16 +1,26 @@
 export const PATH = {
     HOME: '/',
     DETAIL_PRODUCT: '/:slug/:pid',
-    PAGE_CATEGORY: '/danh-muc/:category_slug/:cid',
+    PAGE_CATEGORY: '/danh-muc/:category_slug/:category_code',
     PAGE_LIST_CATEGORY: 'danh-sach-danh-muc',
-    PAGE_BRAND: '/thuong-hieu/:brand_slug',
+    PAGE_BRAND: '/thuong-hieu/:brand_id',
     PAGE_SEARCH: '/tim-kiem/:keySearch',
-    PAGE_USER: '/nguoi-dung/tai-khoan',
+    PAGE_IMAGE_SEARCH: '/tim-kiem-hinh-anh',
     PAGE_CART: '/gio-hang',
-    PAGE_PAYMENT: '/payment',
-    PAGE_PAYPAL: '/payment/paypal',
+    PAGE_PAYMENT: '/thanh-toan',
+    PAGE_PAYMENT_CONFIRM: '/xac-nhan-thanh-toan',
+    VOUCHER: '/voucher',
     FORGET_PASSWORD: '/reset_password/:token',
     MESSAGE: 'message',
+    PAGE_USER: '/nguoi-dung',
+    PAGE_ORDER: '/nguoi-dung/don-hang',
+    PAGE_PROFILE: '/nguoi-dung/thong-tin-tai-khoan',
+    PAGE_FAVORITE: '/nguoi-dung/san-pham-yeu-thich',
+    PAGE_RECENT_VIEW: '/nguoi-dung/da-xem-gan-day',
+    PAGE_PURCHASED: '/nguoi-dung/san-pham-da-mua',
+    PAGE_USER_VOUCHER: '/nguoi-dung/voucher-cua-ban',
+    PAGE_REDEEM_VOUCHER: '/nguoi-dung/doi-phieu-mua-hang',
+    PAGE_ORDER_DETAIL: '/nguoi-dung/chi-tiet-don-hang/:oid',
     // =========== ADMIN ==============
     ADMIN_DASHBOARD: '/quan-ly',
     MANAGE_DASHBOARD: '/quan-ly/dashboard',
@@ -54,7 +64,7 @@ export const SEARCH_UTILITY = [
     {
         id: 3,
         image: revodoi,
-        title: 'Rẽ vô đối',
+        title: 'Rẻ vô đối',
     },
 ];
 
@@ -104,32 +114,88 @@ export const SORT_BAR = [
     },
 ];
 
-import PersonIcon from '@mui/icons-material/Person';
-import ShoppingBasketIcon from '@mui/icons-material/ShoppingBasket';
-import SellIcon from '@mui/icons-material/Sell';
-import { bachhoa, danhchoban, hangmoi, imgPayInCash, paypal, revodoi } from '../assets';
-import ProductionQuantityLimitsIcon from '@mui/icons-material/ProductionQuantityLimits';
+import { bachhoa, danhchoban, hangmoi, imgPayInCash, vnpay, revodoi } from '../assets';
 
 export const SIDEBAR_USER = [
     {
         label: 'Thông tin tài khoản',
-        path_name: 'profile',
-        icon: <PersonIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        path_name: PATH.PAGE_PROFILE,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/ba61750a46794d8847c3f463c5e71cc4"
+                alt="Thông tin tài khoản"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
     {
-        label: 'Đơn mua',
-        path_name: 'purchase',
-        icon: <ShoppingBasketIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        label: 'Danh sách đơn hàng',
+        path_name: PATH.PAGE_ORDER,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/f0049e9df4e536bc3e7f140d071e9078"
+                alt="Danh sách đơn hàng"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
     {
-        label: 'Quản lý bán hàng',
-        path_name: 'sell',
-        icon: <SellIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        label: 'Sản phẩm đã mua',
+        path_name: PATH.PAGE_PURCHASED,
+        icon: (
+            <img
+                src="https://img.icons8.com/?size=100&id=FFL2KkPqXnIL&format=png&color=40C057"
+                alt="purchased-icon"
+                style={{ width: 24, height: 24, objectFit: 'contain' }}
+            />
+        ),
+    },
+
+    {
+        label: 'Sản phẩm yêu thích',
+        path_name: PATH.PAGE_FAVORITE,
+        icon: (
+            <img
+                src="https://img.icons8.com/?size=100&id=CDX3UwscuB9X&format=png&color=000000"
+                alt="favorite"
+                style={{ width: 24, height: 24, objectFit: 'contain' }}
+            />
+        ),
+    },
+
+    {
+        label: 'Đã xem gần đây',
+        path_name: PATH.PAGE_RECENT_VIEW,
+        icon: (
+            <img
+                src="https://img.icons8.com/?size=100&id=mnhMRVfDbJdQ&format=png&color=000000"
+                alt="recent"
+                style={{ width: 24, height: 24, objectFit: 'contain' }}
+            />
+        ),
+    },
+
+    {
+        label: 'Kho voucher',
+        path_name: PATH.PAGE_USER_VOUCHER,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/84feaa363ce325071c0a66d3c9a88748"
+                alt="Kho voucher"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
     {
-        label: 'Quản lý sản phẩm',
-        path_name: 'product',
-        icon: <ProductionQuantityLimitsIcon fontSize="medium" style={{ color: 'rgb(155,155,155)' }} />,
+        label: 'Đổi voucher',
+        path_name: PATH.PAGE_REDEEM_VOUCHER,
+        icon: (
+            <img
+                src="https://down-vn.img.susercontent.com/file/a0ef4bd8e16e481b4253bd0eb563f784"
+                alt="Đổi voucher"
+                style={{ width: '24px', height: '24px', objectFit: 'contain' }} // Điều chỉnh kích thước cho phù hợp
+            />
+        ),
     },
 ];
 
@@ -142,9 +208,13 @@ export const PAYMENT_METHOD = {
             img: imgPayInCash,
         },
         {
-            code: 'PAYPAL',
-            label: 'Thanh toán bằng PAYPAL',
-            img: paypal,
+            code: 'VNPAY',
+            label: 'Thanh toán bằng VNPAY',
+            img: vnpay,
+        },
+        {
+            code: 'COIN',
+            label: 'Thanh toán bằng số dư',
         },
     ],
 };

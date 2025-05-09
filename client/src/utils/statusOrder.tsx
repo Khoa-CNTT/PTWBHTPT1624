@@ -40,3 +40,40 @@ export const statusOrder = (order: IOrder) => {
             };
     }
 };
+
+export const statusOrderNotification = (orderStatus: string) => {
+    switch (orderStatus) {
+        case 'confirm':
+            return {
+                title: 'Đơn hàng được xác nhận! 🎉',
+                subtitle: '📦 Đơn hàng của bạn đã sẵn sàng! ✅',
+                message:
+                    '🙌 Cảm ơn bạn đã đặt hàng! Đơn hàng của bạn đã được xác nhận và đang được đóng gói cẩn thận. 📦 Chúng tôi sẽ thông báo khi hàng được gửi đi. 🚚',
+            };
+        case 'shipped':
+            return {
+                title: 'Hàng đang trên đường! 🚚',
+                subtitle: '📍 Đơn hàng của bạn đang di chuyển! ✅',
+                message: '🚛 Đơn hàng của bạn đã rời kho và đang được vận chuyển nhanh chóng. 🌍 Theo dõi trạng thái để biết thời gian giao hàng dự kiến! ⏰',
+            };
+        case 'delivered':
+            return {
+                title: 'Giao hàng thành công! 🎁',
+                subtitle: 'Đơn hàng đã đến tay bạn ✅',
+                message: 'Cảm ơn bạn đã mua hàng! Bạn vừa nhận được 1 lượt quay may mắn 🎉 Hãy vào Vòng quay may mắn để thử vận may nhé!',
+            };
+
+        case 'cancelled':
+            return {
+                title: 'Đơn hàng đã bị hủy 😔',
+                subtitle: '❌ Đơn hàng của bạn đã bị hủy ✅',
+                message: '🚫 Rất tiếc, đơn hàng của bạn đã bị hủy. 📞 Liên hệ với chúng tôi nếu bạn cần hỗ trợ hoặc muốn đặt lại đơn hàng. 🤝',
+            };
+        default:
+            return {
+                title: 'Trạng thái không xác định ❓',
+                subtitle: '⚠️ Không rõ trạng thái đơn hàng ✅',
+                message: '🔍 Chúng tôi không thể xác định trạng thái đơn hàng. 📧 Vui lòng liên hệ bộ phận hỗ trợ để được giải quyết nhanh chóng. 🛠️',
+            };
+    }
+};

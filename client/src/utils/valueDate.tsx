@@ -3,7 +3,6 @@ const validate = (valueForm: Record<string, any>, setInvalidFields: (fields: Arr
     let isValid = true;
     const invalidFields: Array<{ name: string; message: string }> = [];
     Object.entries(valueForm).forEach(([key, value]) => {
-        console.log(key);
         if (value === '' || value === 0) {
             invalidFields.push({
                 name: key,
@@ -44,10 +43,12 @@ const validate = (valueForm: Record<string, any>, setInvalidFields: (fields: Arr
         // Kiểm tra số điện thoại (10 hoặc 11 số)
         if (key.includes('phone') || key.includes('mobile')) {
             const phoneRegex = /^[0-9]{10,11}$/;
-            if (!phoneRegex.test(value)) {
+            const phonePattern = /^(0[3|5|7|8|9])[0-9]{8}$/;
+
+            if (!phoneRegex.test(value) || phonePattern.test(value)) {
                 invalidFields.push({
                     name: key,
-                    message: 'Số điện thoại phải có 10 hoặc 11 số và chỉ chứa chữ số',
+                    message: 'Số điện thoại không hợp lệ. Vui lòng kiểm tra lại.',
                 });
                 isValid = false;
             }
