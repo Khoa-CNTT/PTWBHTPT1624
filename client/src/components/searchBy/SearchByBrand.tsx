@@ -1,0 +1,85 @@
+import React, { useEffect, useState } from 'react';
+import { useLocation, useNavigate, useParams } from 'react-router-dom';
+import queryString from 'query-string';
+import { apiGetBrandsInCategory } from '../../services/brand.service';
+import { IBrand } from '../../interfaces/brand.interfaces';
+
+const SearchByBrand: React.FC = () => {
+    const [brands, setBrands] = useState<IBrand[]>([]);
+    const [optionBrands, setOptionBrands] = useState<string[]>([]);
+    const [quantityDisplayBrand, setQuantityDisplayBrand] = useState<number>(5);
+    const location = useLocation();
+    const params = useParams();
+    useEffect(() => {
+        setOptionBrands([]);
+        const fetchApi = async () => {
+            const res = await apiGetBrandsInCategory(params?.category_code);
+            if (res.success) setBrands(res.data);
+        };
+        fetchApi();
+    }, [params.category_code, params.brand_slug]);
+    const navigate = useNavigate();
+
+    useEffect(() => {
+        const queryParams = queryString.parse(location.search);
+        if (!queryParams.brand) {
+            setOptionBrands([]);
+        }
+    }, [location.search]);
+    // cập nhật lại query
+    useEffect(() => {
+        const queryParams = queryString.parse(location.search);
+        const updatedQueryParams = {
+            ...queryParams,
+            brand: optionBrands,
+        };
+        const newQuery = queryString.stringify(updatedQueryParams);
+        navigate(`?${newQuery}`);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [optionBrands]);
+
+    return (
+        <>
+            {brands?.length > 0 && (
+                <div className="flex flex-col gap-3 border-b-[1px] border-solid border-b-slate-200 py-6">
+                    <h3 className="text-sm font-medium">Nhãn hàng</h3>
+                    <div className={`flex flex-col gap-2 ${brands?.length > 50 && quantityDisplayBrand !== 5 ? 'overflow-scroll h-[800px]' : ''}`}>
+                        {brands.map(
+                            (b, index) =>
+                                index <= quantityDisplayBrand && (
+                                    <label className="flex w-full h-full items-center gap-2">
+                                        <input
+                                            onClick={() => {
+                                                if (params.brand_slug) return;
+                                                if (optionBrands?.includes(b._id)) {
+                                                    setOptionBrands((prevOptionBrands) => prevOptionBrands.filter((i) => i !== b._id));
+                                                } else {
+                                                    setOptionBrands((prevOptionBrands) => [...prevOptionBrands, b._id]);
+                                                }
+                                            }}
+                                            type="checkbox"
+                                            checked={optionBrands?.includes(b._id) || !!params.brand_slug}
+                                        />
+                                        <span className="text-sm">{b.brand_name}</span>
+                                    </label>
+                                ),
+                        )}
+                    </div>
+                    {brands?.length >= 5 && (
+                        <button
+                            className="text-sm text-primary"
+                            onClick={() => {
+                                if (quantityDisplayBrand === 5) {
+                                    setQuantityDisplayBrand(brands?.length);
+                                } else setQuantityDisplayBrand(5);
+                            }}>
+                            {quantityDisplayBrand === 5 ? 'Xem thêm' : 'Rút gọn'}
+                        </button>
+                    )}
+                </div>
+            )}
+        </>
+    );
+};
+
+export default SearchByBrand;
