@@ -11,8 +11,8 @@ const router = express.Router();
    ================================ */
 router.post('/add', [userAuthentication], asyncHandle(ReviewController.createReview)); // 📝 Tạo đánh giá
 router.put('/:id/update', [userAuthentication], asyncHandle(ReviewController.updateReview)); // 📝 Tạo đánh giá
-router.get('/:productId/search', asyncHandle(ReviewController.getReviews)); // 📖 Lấy đánh giá đã duyệt theo sản phẩm
-
+router.get('/:productId/all', asyncHandle(ReviewController.getReviews)); // 📖 Lấy đánh giá đã duyệt theo sản phẩm
+router.get('/:pid/ratings_product', asyncHandle(ReviewController.getRatingsProduct));
 /* ================================
    🛡️ API Dành cho Admin
    ================================ */
