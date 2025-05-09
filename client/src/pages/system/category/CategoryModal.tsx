@@ -8,6 +8,7 @@ import { InputForm, showNotification } from '../../../components';
 import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import ImageCropper from '../../../components/ImageCropper';
+import { useActionStore } from '../../../store/actionStore';
 
 interface CategoryModalProps {
     isOpen: boolean;
@@ -21,7 +22,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSav
         category_name: '',
         category_thumb: '',
     });
-    const [isUploading, setIsUploading] = useState(false);
+    const { setIsLoading } = useActionStore();
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
         if (category) {
@@ -45,7 +46,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSav
 
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
         try {
-            setIsUploading(true);
+            setIsLoading(true);
             const formData: any = new FormData();
             formData.append('file', image);
             formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
@@ -55,7 +56,7 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSav
         } catch (error) {
             console.error('Lỗi upload ảnh:', error);
         } finally {
-            setIsUploading(false);
+            setIsLoading(false);
         }
     };
 
@@ -77,7 +78,6 @@ const CategoryModal: React.FC<CategoryModalProps> = ({ isOpen, closeModal, onSav
                     <div className="flex w-full items-center text-secondary text-sm  ">
                         <ImageCropper width={239} height={239} label="Thêm hình ảnh" onCropComplete={handleImageUpload} idName="category_thumb" />
                     </div>
-                    {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                     {inputFields.category_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.category_thumb} />}
                     {invalidFields?.some((i) => i.name === 'category_thumb') && (
                         <div className="flex w-full justify-start text-xs text-red_custom">Vui lòng chọn hình ảnh</div>

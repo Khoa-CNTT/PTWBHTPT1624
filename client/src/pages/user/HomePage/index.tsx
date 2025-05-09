@@ -1,33 +1,27 @@
+// HomePage.tsx
 import React from 'react';
-import Banner from './Banner';
 import Categories from './categories';
 import ShockDiscount from './shockDiscount';
 import ProductsFeatured from './productsFeatured';
 import ProductsNew from './productsNew';
 import Products from './products';
-// import Categories from './categories';
-// import ShockDiscount from './shockDiscount';
-// import Products from './products';
-// import ProductFollowings from './productsFollowings';
-// import { useAppSelector } from '../../../redux/hooks';
-// import Banner from './banner';
-// import Seo from '../../../component/seo';
-
+import VoucherBanner from '../../../components/VoucherBanner/VoucherBanner';
+import Banner from './Banner';
+import ProductRecommendation from './ProductRecommendation';
 const HomePage: React.FC = () => {
-    // const { isLoginSuccess } = useAppSelector((state) => state.auth);
     return (
-        <div className="flex flex-col gap-5">
-            {/* <Seo description='Shop bách hóa' title='D P S H O P V N' key={2} /> */}
+        <div className="flex flex-col">
+            {/* Hiển thị banner voucher */}
             <Banner />
             <div className="flex flex-col gap-8">
                 <Categories />
+                <ProductRecommendation />
                 <ProductsNew />
                 <ShockDiscount />
                 <ProductsFeatured />
             </div>
             <Products />
-            {/*  {isLoginSuccess && <ProductFollowings />}
-            <Products /> */}
+            <VoucherBanner />
         </div>
     );
 };

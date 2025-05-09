@@ -1,3 +1,4 @@
+/* eslint-disable react-hooks/exhaustive-deps */
 import { useEffect, useState } from 'react';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -10,8 +11,9 @@ import BrandModal from './BrandModal';
 import { Pagination, showNotification, TableSkeleton } from '../../../components';
 import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
-import InputSearch from '../../../components/inputSearch';
-import NotExit from '../../../components/common/NotExit';  // Import component NotExit
+import InputSearch from '../../../components/item/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import { useActionStore } from '../../../store/actionStore';
 
 export default function BrandManage() {
     const [brands, setBrands] = useState<IBrand[]>([]);
@@ -21,12 +23,12 @@ export default function BrandManage() {
     const [searchQuery, setSearchQuery] = useState<string>('');
     const [isSearching, setIsSearching] = useState<boolean>(false);
     const [isUploading, setIsUploading] = useState(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
 
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllBrands({ limit: 5, page: currentPage });
+        const res = await apiGetAllBrands({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setBrands(data.brands);
@@ -52,11 +54,14 @@ export default function BrandManage() {
 
     const handleSave = async (data: IBrand) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateBrand(data._id, data);
         } else {
             res = await apiCreateBrand(data);
         }
+        setIsLoading(false);
+
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
@@ -71,13 +76,14 @@ export default function BrandManage() {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteBrand(id);
+        setIsLoading(false);
+        showNotification(res?.message, res?.success);
         if (!res?.success) {
-            showNotification(res?.message, false);
             return;
         }
         setBrands((prev) => prev.filter((item) => item._id !== id));
-        showNotification('Xóa thành công', true);
     };
 
     const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -94,7 +100,9 @@ export default function BrandManage() {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
             return;
         }
+        setIsLoading(true);
         const res = await apiSearchBrand(searchQuery.trim());
+        setIsLoading(false);
         if (res.success) {
             setBrands(res.data); // vì API trả về dạng mảng
             setTotalPage(0); // không phân trang khi tìm kiếm
@@ -128,10 +136,11 @@ export default function BrandManage() {
                 {brands.length === 0 ? (
                     <NotExit label="Không có thương hiệu nào" />
                 ) : (
-                    <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <BrandTable brands={brands} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 )}
-
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa thương hiệu */}

@@ -7,6 +7,7 @@ import { Modal } from '../../../components/ui/modal';
 import Button from '../../../components/ui/button/Button';
 import { IBrand } from '../../../interfaces/brand.interfaces';
 import ImageCropper from '../../../components/ImageCropper';
+import { useActionStore } from '../../../store/actionStore';
 
 interface BrandModalProps {
     isOpen: boolean;
@@ -20,7 +21,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
         brand_banner: '',
         brand_name: '',
     });
-    const [isUploading, setIsUploading] = useState(false);
+    const { setIsLoading } = useActionStore();
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
     useEffect(() => {
         if (brand) {
@@ -48,7 +49,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
     };
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
         try {
-            setIsUploading(true);
+            setIsLoading(true);
             const formData: any = new FormData();
             formData.append('file', image);
             formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
@@ -58,7 +59,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
         } catch (error) {
             console.error('Lỗi upload ảnh:', error);
         } finally {
-            setIsUploading(false);
+            setIsLoading(false);
         }
     };
     return (
@@ -75,8 +76,7 @@ const BrandModal: React.FC<BrandModalProps> = ({ isOpen, closeModal, onSave, bra
                 />
                 <div className="flex my-2">
                     <div className="w-full">
-                        <ImageCropper width={310} height={274} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />
-                        {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                        <ImageCropper width={1080} height={360} label="Thêm banner" idName="brand_banner" onCropComplete={handleImageUpload} />
                         {inputFields.brand_banner && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.brand_banner} alt="Brand Thumbnail" />}
                         {invalidFields.some((i) => i.name === 'brand_banner') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
                     </div>

@@ -10,6 +10,7 @@ import ImageCropper from '../../../components/ImageCropper';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
 import { Checkbox, FormControl, FormControlLabel, FormLabel, Radio, RadioGroup, Typography } from '@mui/material';
 import DateComponent from '../../../components/DateFilterComponent';
+import { useActionStore } from '../../../store/actionStore';
 
 interface VoucherModalProps {
     isOpen: boolean;
@@ -34,9 +35,10 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         voucher_uses_count: 0,
         voucher_value: 0,
         voucher_thumb: '',
+        voucher_is_active: true,
     });
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-    const [isUploading, setIsUploading] = useState(false);
+    const { setIsLoading } = useActionStore();
 
     useEffect(() => {
         if (voucher) {
@@ -72,23 +74,22 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
         }));
 
         // Gọi hàm `onSave` với updatedFields
-        onSave(voucher ? { _id: voucher._id, ...updatedFields } : updatedFields);
+        onSave(voucher ? { _id: voucher._id, ...inputFields } : inputFields);
     };
-    console.log(invalidFields);
 
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         setInputFields((prev: any) => ({ ...prev, [type]: type == 'voucher_is_active' ? e.target.checked : e.target.value }));
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
-        setIsUploading(true);
+        setIsLoading(true);
         const formData: any = new FormData();
         formData.append('file', image);
         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
         const response = await apiUploadImage(formData);
         setInputFields((prev) => ({ ...prev, [type]: response.url }));
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-        setIsUploading(false);
+        setIsLoading(false);
     };
     const handleDate = (value: string, type: string) => {
         setInputFields((prev: any) => {
@@ -106,7 +107,6 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
 
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
     };
-
     return (
         <Modal isOpen={isOpen} onClose={closeModal} className="max-w-[600px] m-4">
             <div className="custom-scrollbar relative w-full max-w-[600px] rounded-3xl bg-white p-6 dark:bg-gray-900">
@@ -224,16 +224,14 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
                         </div>
                     </div>
 
-                    <div className="flex w-full gap-2">
+                    <div className="flex w-full gap-2 mb-2">
                         <div className="w-1/2">
                             <ImageCropper width={128} height={128} label="Thêm hình ảnh" idName="voucher_thumb" onCropComplete={handleImageUpload} />
-                            {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                             {inputFields.voucher_thumb && <img className="h-[200px] mt-2 rounded-sm" src={inputFields.voucher_thumb} alt="Brand Thumbnail" />}
                             {invalidFields.some((i) => i.name === 'voucher_thumb') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
                         </div>
                         <div className="w-1/2">
                             <ImageCropper width={382} height={506} label="Thêm banner" idName="voucher_banner_image" onCropComplete={handleImageUpload} />
-                            {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                             {inputFields.voucher_banner_image && (
                                 <img className="h-[200px] mt-2 rounded-sm" src={inputFields.voucher_banner_image} alt="Brand banner" />
                             )}
@@ -245,7 +243,7 @@ const VoucherModal: React.FC<VoucherModalProps> = ({ isOpen, closeModal, onSave,
                         <FormControlLabel
                             control={
                                 <Checkbox
-                                    checked={inputFields.voucher_is_active} // true hoặc false
+                                    checked={inputFields?.voucher_is_active} // true hoặc false
                                     onChange={(e) => handleInputField(e, 'voucher_is_active')}
                                 />
                             }

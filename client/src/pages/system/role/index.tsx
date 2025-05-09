@@ -10,6 +10,7 @@ import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
 import { IRole } from '../../../interfaces/role.interfaces';
+import { useActionStore } from '../../../store/actionStore';
 
 export default function RoleManage() {
     const [roles, setRoles] = useState<IRole[]>([]);
@@ -18,10 +19,12 @@ export default function RoleManage() {
     const [selectedRole, setSelectedRole] = useState<IRole | null>(null);
     const { openModal, isOpen, closeModal } = useModal();
     const [loading, setLoading] = useState<boolean>(false);
+    const { setIsLoading } = useActionStore();
+
     useEffect(() => {
         const fetchApi = async () => {
             setLoading(true);
-            const res = await apiGetAllRoles({ limit: 5, page: currentPage });
+            const res = await apiGetAllRoles({ limit: 10, page: currentPage });
             if (!res.success) return;
             const data = res.data;
             setRoles(data.roles);
@@ -42,11 +45,13 @@ export default function RoleManage() {
     };
     const handleSave = async (data: IRole) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateRole(data._id, data);
         } else {
             res = await apiCreateRole(data);
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
@@ -61,7 +66,9 @@ export default function RoleManage() {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteRole(id);
+        setIsLoading(false);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
@@ -87,7 +94,7 @@ export default function RoleManage() {
                     </button>
                 </div>
                 <RoleTable roles={roles} onEdit={handleEdit} onDelete={handleDelete} />
-                {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
             </div>
             {isOpen && <RoleModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} role={selectedRole} />}
         </>

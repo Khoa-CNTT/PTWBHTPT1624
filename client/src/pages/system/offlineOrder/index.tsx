@@ -3,48 +3,52 @@ import QRScanner from '../../../components/QRScanner';
 import { apiGetScanProduct } from '../../../services/product.service';
 import { apiApplyVoucher } from '../../../services/voucher.service';
 import { showNotification } from '../../../components';
-import { IProduct, IProductInCart } from '../../../interfaces/product.interfaces';
+import { IProduct } from '../../../interfaces/product.interfaces';
 import { ConfirmationModal } from './ConfirmationModal';
 import { CartTabs } from './CartTable';
 import { CartTable } from './CartTabs';
 import { PaymentSection } from './PaymentSection';
+import { IProductInCart } from '../../../interfaces/cart.interfaces';
+import { useActionStore } from '../../../store/actionStore';
 
 const OfflineOrder: React.FC = () => {
     const [carts, setCarts] = useState<IProductInCart[][]>([[]]);
     const [currentTab, setCurrentTab] = useState<number>(0);
     const [qrResult, setQrResult] = useState<string>('');
-    const [paymentMethod, setPaymentMethod] = useState<string>('online');
+    const [paymentMethod, setPaymentMethod] = useState<string>('ONLINE');
     const [discountCode, setDiscountCode] = useState<string>('');
     const [appliedDiscount, setAppliedDiscount] = useState<number>(0);
-    const [voucherId, setVoucherId] = useState<string>("");
-    const [cashReceived, setCashReceived] = useState<number | ''>(''); 
+    const [voucherId, setVoucherId] = useState<string>('');
+    const [cashReceived, setCashReceived] = useState<number | ''>('');
     const [openModal, setOpenModal] = useState<boolean>(false);
-
+    const { setIsLoading } = useActionStore();
     // Sử dụng useMemo để tính toán các giá trị
     const subtotal = useMemo(() => {
-        return carts[currentTab].reduce((sum, item) => sum + item.price * item.quantity, 0);
+        return carts[currentTab].reduce((sum, item) => sum + item.product_price * item.quantity, 0);
     }, [carts, currentTab]);
 
     const discountFromProducts = useMemo(() => {
         return carts[currentTab].reduce((sum, item) => {
-            const discountAmount = (item.price * item.discount) / 100;
+            const discountAmount = (item.product_price * item.product_discount) / 100;
             return sum + discountAmount * item.quantity;
         }, 0);
     }, [carts, currentTab]);
 
     const total = useMemo(() => {
-        const additionalDiscount = discountFromProducts+appliedDiscount  ;
+        const additionalDiscount = discountFromProducts + appliedDiscount;
         return subtotal - additionalDiscount;
     }, [subtotal, discountFromProducts, appliedDiscount]);
     const change = useMemo(() => {
-        if (paymentMethod !== 'cash' || cashReceived === '') return 0;
+        if (paymentMethod !== 'CASH' || cashReceived === '') return 0;
         return Math.max(0, Number(cashReceived) - total);
     }, [paymentMethod, cashReceived, total]);
 
     useEffect(() => {
         const handleScanResult = async () => {
             if (!qrResult) return;
+            setIsLoading(true);
             const res = await apiGetScanProduct(qrResult);
+            setIsLoading(false);
             showNotification(res.message, res.success);
             if (res.success && res.data) {
                 const newProduct: IProduct = res.data;
@@ -63,21 +67,21 @@ const OfflineOrder: React.FC = () => {
         const updatedCarts = [...carts];
         const currentCart = [...updatedCarts[currentTab]];
         const existingProductIndex = currentCart.findIndex((item) => item.productId === newProduct._id);
-
         if (existingProductIndex >= 0) {
             currentCart[existingProductIndex].quantity += 1;
         } else {
             currentCart.push({
-                image: newProduct.product_thumb,
+                product_thumb: newProduct.product_thumb,
                 productId: newProduct._id,
                 quantity: 1,
-                price: newProduct.product_price,
-                discount: newProduct.product_discount,
-                name: newProduct.product_name,
+                product_discounted_price: newProduct.product_discounted_price,
+                product_price: newProduct.product_price,
+                product_discount: newProduct.product_discount,
+                product_name: newProduct.product_name,
             });
         }
         updatedCarts[currentTab] = currentCart;
-        setAppliedDiscount(0)
+        setAppliedDiscount(0);
         setCarts(updatedCarts);
     };
 
@@ -86,7 +90,7 @@ const OfflineOrder: React.FC = () => {
         const currentCart = [...updatedCarts[currentTab]];
         currentCart[index].quantity = Math.max(1, currentCart[index].quantity + delta);
         updatedCarts[currentTab] = currentCart;
-        setAppliedDiscount(0)
+        setAppliedDiscount(0);
         setCarts(updatedCarts);
     };
 
@@ -122,14 +126,14 @@ const OfflineOrder: React.FC = () => {
             showNotification('Vui lòng nhập mã giảm giá!', false);
             return;
         }
-        const voucherData = { code: discountCode, orderValue: subtotal- discountFromProducts};
+        const voucherData = { code: discountCode, orderValue: subtotal - discountFromProducts };
         const res = await apiApplyVoucher(voucherData);
         showNotification(res?.message, res?.success);
         if (res?.success) {
-            setAppliedDiscount(res?.data.discount); // Áp dụng discount từ API 
-            setVoucherId(res?.data.voucherId)
+            setAppliedDiscount(res?.data.discount); // Áp dụng discount từ API
+            setVoucherId(res?.data.voucherId);
         } else {
-            setAppliedDiscount(0); // Đặt lại discount nếu không thành công 
+            setAppliedDiscount(0); // Đặt lại discount nếu không thành công
         }
     };
 
@@ -142,7 +146,7 @@ const OfflineOrder: React.FC = () => {
             showNotification('Giỏ hàng trống, không thể thanh toán!', false);
             return;
         }
-        if (paymentMethod === 'cash') {
+        if (paymentMethod === 'CASH') {
             if (cashReceived === '' || Number(cashReceived) < total) {
                 showNotification('Số tiền nhận không đủ để thanh toán!', false);
                 return;
@@ -163,7 +167,7 @@ const OfflineOrder: React.FC = () => {
 
     return (
         <div className="min-h-screen bg-gradient-to-br from-blue-50 to-teal-50 p-8 font-sans">
-            <h1 className="mb-6 text-3xl tracking-tight text-gray-900">Hóa Đơn Bán Hàng</h1>
+            <h1 className="mb-6 text-3xl tracking-tight text-gray-900">Hóa Đơn Bán Hàng Tại Quầy</h1>
             <CartTabs
                 carts={carts}
                 currentTab={currentTab}

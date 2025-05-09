@@ -4,12 +4,17 @@ import { SimilarProducts } from './similarProducts';
 import HeaderDetail from './headerDetail';
 import ProductDescription from './productDescription';
 import Breadcrumbs from './breadcrumbs';
-import { apiGetProductById } from '../../../services/product.service';
+import { apiGetProductById, apiTrackCategoryView } from '../../../services/product.service';
 import { SkeLetonDetailPage } from '../../../components';
 import Seo from '../../../components/seo';
 import { IProductDetail } from '../../../interfaces/product.interfaces';
+import useRecentViewStore from '../../../store/recentViewStore';
+import ReviewsProduct from './reviewsProduct';
+import useAuthStore from '../../../store/authStore';
 const DetailPage: React.FC = () => {
     const [productDetail, setProductDetail] = useState<IProductDetail>();
+    const { addRecentView } = useRecentViewStore();
+    const { isUserLoggedIn } = useAuthStore();
     const pid = useParams().pid;
     useEffect(() => {
         if (!pid) return;
@@ -17,6 +22,10 @@ const DetailPage: React.FC = () => {
             const res = await apiGetProductById(pid);
             if (res.success) {
                 setProductDetail(res.data);
+                addRecentView(res.data);
+                if (isUserLoggedIn) {
+                    await apiTrackCategoryView(res.data.product_category_id._id);
+                }
             }
         };
         fetchDetail();
@@ -36,7 +45,7 @@ const DetailPage: React.FC = () => {
             <HeaderDetail productDetail={productDetail} />
             <SimilarProducts productId={productDetail._id} />
             <ProductDescription productDetail={productDetail} />
-            {/* <ReviewsProduct productDetail={productDetail} userBought={productDetail.userBought} /> */}
+            <ReviewsProduct productDetail={productDetail} />
         </>
     ) : (
         <SkeLetonDetailPage />

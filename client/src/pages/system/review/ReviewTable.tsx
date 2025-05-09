@@ -3,10 +3,11 @@ import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../../com
 import DoneIcon from '@mui/icons-material/Done';
 import DeleteIcon from '@mui/icons-material/Delete';
 import { IReview } from '../../../interfaces/review.interfaces';
+
 interface ReviewListProps {
     Reviews: IReview[];
-    onDelete: (id: string) => void;
-    onApprove: (id: string) => void;
+    onDelete: (id: string | any) => void;
+    onApprove: (id: string | any) => void;
 }
 
 const ReviewTable: React.FC<ReviewListProps> = ({ Reviews, onDelete, onApprove }) => {
@@ -50,7 +51,11 @@ const ReviewTable: React.FC<ReviewListProps> = ({ Reviews, onDelete, onApprove }
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">
                                     {review?.review_images?.length > 0
-                                        ? review?.review_images.map((i: string) => <img src={i} key={i} alt="Review image" />)
+                                        ? review?.review_images.map((i: string) => (
+                                            <div key={i} className="w-20 h-20 m-auto overflow-hidden rounded-lg border-2 border-gray-200 dark:border-gray-700 flex items-center justify-center shadow-lg">
+                                                <img src={i} alt="Review image" className="w-full h-full object-cover" />
+                                            </div>
+                                        ))
                                         : 'Không có ảnh'}
                                 </TableCell>
                                 <TableCell className="px-5 py-3 text-gray-700 text-center dark:text-gray-300">

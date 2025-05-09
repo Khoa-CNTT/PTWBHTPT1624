@@ -5,11 +5,13 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom';
 import Seo from '../../../components/seo';
 import SortBar from '../../../components/sortBar';
 import queryString from 'query-string';
-import { apiSearchProduct } from '../../../services/product.service';
+import { apiSearchProduct, apiSearchProductByImage } from '../../../services/product.service';
 import { IProductItem } from '../../../interfaces/product.interfaces';
 import { NotFound, SkeletonProducts } from '../../../components';
 import Pagination from '../../../components/pagination';
 import ProductItem from '../../../components/item/ProductItem';
+import { useActionStore } from '../../../store/actionStore';
+import { PATH } from '../../../utils/const';
 
 const SearchPage: React.FC = () => {
     const location = useLocation();
@@ -22,7 +24,6 @@ const SearchPage: React.FC = () => {
     const navigate = useNavigate();
     useEffect(() => {
         if (!params.keySearch) return;
-        console.log('queries', queries);
         const fetchProducts = async () => {
             setIsLoading(true);
             const res = await apiSearchProduct(params?.keySearch, {
@@ -55,25 +56,47 @@ const SearchPage: React.FC = () => {
         navigate(`?${newQuery}`);
         // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [currentPage]);
+    const { searchImage } = useActionStore();
 
+    useEffect(() => {
+        if (!(searchImage || params?.keySearch)) {
+            navigate(PATH.HOME);
+            return;
+        }
+        const fetchProducts = async () => {
+            setIsLoading(true);
+            const res = await apiSearchProductByImage(searchImage);
+            setIsLoading(false);
+            if (!res.success) return;
+            setProduct(res?.data);
+        };
+        fetchProducts();
+    }, [searchImage]);
     return (
         <div>
             <Seo description={params?.keySearch || ''} title={params.keySearch || ''} key={2} />
-            <div className="flex text-2xl p-4 items-center ">
-                Kết quả tìm kiếm <h1 className="ml-2 text-3xl text-primary"> "{params.keySearch}"</h1>
-            </div>
+            {searchImage ? (
+                <div className="flex flex-col items-center justify-center p-2 rounded-lg max-w-md mx-auto">
+                    <h2 className="text-xl font-semibold mb-4 text-gray-700">Hình ảnh tìm kiếm</h2>
+                    <img className="w-32 h-32 object-cover rounded-md border border-gray-200 shadow-sm" src={searchImage} alt="Hình ảnh tìm kiếm" />
+                </div>
+            ) : (
+                <div className="flex text-2xl p-4 items-center ">
+                    Kết quả tìm kiếm <h1 className="ml-2 text-3xl text-primary"> "{params.keySearch}"</h1>
+                </div>
+            )}
             <div className="flex flex-col w-full h-full gap-2">
-                <SortBar />
-                <div className="flex flex-col bg-white pb-8 gap-10">
+                {searchImage ? <div className="flex text-2xl p-4 items-center ">Kết quả tìm kiếm</div> : <SortBar />}
+                <div className="flex flex-col bg-white  p-4 gap-10">
                     {!isLoading ? (
                         products?.length !== 0 ? (
                             <>
-                                <div className="grid mobile:grid-cols-2  tablet:grid-cols-4  laptop:grid-cols-6 ">
+                                <div className="grid mobile:grid-cols-2  tablet:grid-cols-2  laptop:grid-cols-6 ">
                                     {products?.map((p, index) => (
                                         <ProductItem key={p._id} props={p} scrollIntoView={index === 0} />
                                     ))}
                                 </div>
-                                {totalPage > 0 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPage={totalPage} />}
+                                {totalPage > 1 && <Pagination currentPage={currentPage} setCurrentPage={setCurrentPage} totalPage={totalPage - 1} />}
                             </>
                         ) : (
                             <div className="px-4 pt-6">

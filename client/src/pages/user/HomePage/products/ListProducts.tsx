@@ -12,7 +12,7 @@ interface props {
 const ListProducts: React.FC<props> = ({ products, hiddenButton, setPage }) => {
     return (
         <div className="flex flex-col bg-white pb-8 gap-10">
-            <div className="grid mobile:grid-cols-2 tablet:grid-cols-4 grid-cols-6 ">
+            <div className="grid mobile:grid-cols-2 tablet:grid-cols-2 grid-cols-6 ">
                 {products.map((p) => (
                     <ProductItem key={uuidv4()} props={p} />
                 ))}

@@ -8,6 +8,7 @@ import ImageCropper from '../../../components/ImageCropper';
 import { IBanner } from '../../../interfaces/banner.interfaces';
 import { apiUploadImage } from '../../../services/uploadPicture.service';
 import DateComponent from '../../../components/DateFilterComponent';
+import { useActionStore } from '../../../store/actionStore';
 
 interface BannerModalProps {
     isOpen: boolean;
@@ -25,9 +26,8 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
         banner_startDate: '',
         banner_title: '',
     });
-    const [isUploading, setIsUploading] = useState(false);
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-
+    const { setIsLoading } = useActionStore();
     useEffect(() => {
         if (banner) {
             setInputFields(banner);
@@ -56,7 +56,7 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
 
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
         try {
-            setIsUploading(true);
+            setIsLoading(true);
             const formData: any = new FormData();
             formData.append('file', image);
             formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
@@ -66,7 +66,7 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
         } catch (error) {
             console.error('Lỗi upload ảnh:', error);
         } finally {
-            setIsUploading(false);
+            setIsLoading(false);
         }
     };
 
@@ -128,8 +128,7 @@ const BannerModal: React.FC<BannerModalProps> = ({ isOpen, closeModal, onSave, b
                     </div>
 
                     <div className="w-full">
-                        <ImageCropper width={900} height={270} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
-                        {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
+                        <ImageCropper width={1080} height={360} label="Thêm hình ảnh" idName="banner_imageUrl" onCropComplete={handleImageUpload} />
                         {inputFields?.banner_imageUrl && <img className="my-2 w-full rounded-sm" src={inputFields.banner_imageUrl} alt="" />}
                         {invalidFields.some((i) => i.name === 'banner_imageUrl') && <p className="text-xs text-red_custom">Vui lòng chọn hình ảnh</p>}
                     </div>

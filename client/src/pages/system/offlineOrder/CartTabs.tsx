@@ -2,7 +2,7 @@ import React from 'react';
 import DeleteIcon from '@mui/icons-material/Delete';
 import NotExit from '../../../components/common/NotExit';
 import { Table, TableBody, TableCell, TableHeader, TableRow } from '../../../components/ui/table';
-import { IProductInCart } from '../../../interfaces/product.interfaces';
+import { IProductInCart } from '../../../interfaces/cart.interfaces';
 
 interface CartTableProps {
     cart: IProductInCart[];
@@ -44,9 +44,13 @@ export const CartTable: React.FC<CartTableProps> = ({ cart, calculateSubtotal, h
                     {cart.map((item, index) => (
                         <TableRow key={item.productId} className="hover:bg-gray-50 dark:hover:bg-gray-800">
                             <TableCell className="px-2 py-3 text-gray-700 text-center dark:text-gray-300">{index + 1}</TableCell>
-                            <TableCell className="px-2 py-3 text-gray-800 dark:text-gray-300 min-w-[200px]">{item.name || 'Sản phẩm không tên'}</TableCell>
+                            <TableCell className="px-2 py-3 text-gray-800 dark:text-gray-300 min-w-[200px]">
+                                {item.product_name || 'Sản phẩm không tên'}
+                            </TableCell>
                             <TableCell className="px-2 py-3">
-                                {item.image && <img src={item.image} alt={item.name} className="h-14 w-14 rounded-lg object-cover shadow-sm" />}
+                                {item.product_thumb && (
+                                    <img src={item.product_thumb} alt={item.product_name} className="h-14 w-14 rounded-lg object-cover shadow-sm" />
+                                )}
                             </TableCell>
                             <TableCell className="px-2 py-3 text-center">
                                 <div className="flex items-center justify-center gap-1">
@@ -63,8 +67,8 @@ export const CartTable: React.FC<CartTableProps> = ({ cart, calculateSubtotal, h
                                     </button>
                                 </div>
                             </TableCell>
-                            <TableCell className="px-2 py-3 text-gray-800 text-center dark:text-gray-300">{item.price.toLocaleString()}</TableCell>
-                            <TableCell className="px-2 py-3 text-gray-800 text-center dark:text-gray-300">{item.discount}%</TableCell>
+                            <TableCell className="px-2 py-3 text-gray-800 text-center dark:text-gray-300">{item.product_price}</TableCell>
+                            <TableCell className="px-2 py-3 text-gray-800 text-center dark:text-gray-300">{item.product_discount}%</TableCell>
                             <TableCell className="px-2 py-3 flex gap-3 justify-center">
                                 <button onClick={() => handleRemoveProduct(index)} className="text-red-500 hover:text-red-700 transition">
                                     <DeleteIcon />

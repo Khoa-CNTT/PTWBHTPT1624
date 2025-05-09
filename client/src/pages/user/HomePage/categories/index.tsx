@@ -1,25 +1,16 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import { Swiper, SwiperSlide } from 'swiper/react';
 import 'swiper/css';
 import 'swiper/css/navigation';
 import 'swiper/css/pagination';
-
 import { Autoplay, Navigation, Pagination } from 'swiper/modules';
-import { ICategory } from '../../../../interfaces/category.interfaces';
-import { apiGetAllCategories } from '../../../../services/category.service';
 import CategoryItem from '../../../../components/item/CategoryItem';
 import { SkeletonCategory } from '../../../../components';
+import { useCategoriesStore } from '../../../../store/categoryStore';
 const Categories: React.FC = () => {
-    const [categories, setCategories] = useState<ICategory[]>([]);
     // const { mobile_ui } = useAppSelector((state) => state.action);
-    useEffect(() => {
-        const fetchCategory = async () => {
-            const res = await apiGetAllCategories();
-            if (res.success) setCategories(res.data);
-        };
-        fetchCategory();
-    }, []);
+    const { categories } = useCategoriesStore();
     return (
         <div className="flex w-full h-full bg-white py-3 rounded-md overflow-hidden ">
             {categories?.length > 0 ? (

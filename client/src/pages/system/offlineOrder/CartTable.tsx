@@ -2,7 +2,7 @@ import React from 'react';
 import { ButtonOutline } from '../../../components';
 import DeleteIcon from '@mui/icons-material/Delete';
 import AddIcon from '@mui/icons-material/Add';
-import { IProductInCart } from '../../../interfaces/product.interfaces';
+import { IProductInCart } from '../../../interfaces/cart.interfaces';
 
 interface CartTabsProps {
     carts: IProductInCart[][];

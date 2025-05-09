@@ -15,7 +15,9 @@ import { showNotification, TableSkeleton } from '../../../components';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import Pagination from '../../../components/pagination';
 import PageMeta from '../../../components/common/PageMeta';
-import InputSearch from '../../../components/inputSearch';
+import InputSearch from '../../../components/item/inputSearch';
+import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import { useActionStore } from '../../../store/actionStore';
 
 export default function CategoryManage() {
     const [categories, setCategories] = useState<ICategory[]>([]);
@@ -25,12 +27,12 @@ export default function CategoryManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // ✅ ô tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // ✅ trạng thái tìm kiếm
     const [isUploading, setIsUploading] = useState(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
 
     const fetchApi = async () => {
         setIsUploading(true);
-        const res = await apiGetAllCategories({ limit: 5, page: currentPage });
+        const res = await apiGetAllCategories({ limit: 10, page: currentPage });
         if (!res.success) return;
         const data = res.data;
         setCategories(data.categories);
@@ -57,12 +59,14 @@ export default function CategoryManage() {
 
     const handleSave = async (data: ICategory) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateCategory(data._id, data);
         } else {
             res = await apiCreateCategory(data);
         }
         showNotification(res?.message, res?.success);
+        setIsLoading(false);
         if (!res?.success) return;
         closeModal();
         setCategories((prev) => (data._id ? prev.map((item) => (item._id === data._id ? res.data : item)) : [res.data, ...prev]));
@@ -71,13 +75,14 @@ export default function CategoryManage() {
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteCategory(id);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
         }
-
         setCategories((prev) => prev.filter((item) => item._id !== id));
+        setIsLoading(false);
         showNotification('Xóa thành công', true);
     };
 
@@ -93,20 +98,27 @@ export default function CategoryManage() {
 
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
-        setIsUploading(true);
+        // Nếu từ khoá tìm kiếm trống, hiển thị thông báo lỗi mà không làm lại cuộc gọi API
         if (!searchQuery.trim()) {
             showNotification('Vui lòng nhập từ khoá tìm kiếm', false);
-            return;
+            return; // Dừng lại, không gọi API
         }
+
+        setIsUploading(true); // Bắt đầu loading
+
+        // Gửi request API tìm kiếm
         const res = await apiSearchCategory(searchQuery.trim());
+
+        // Xử lý kết quả trả về
         if (res.success) {
-            setCategories(res.data); // API trả về danh sách danh mục
-            setTotalPage(0);
-            setIsSearching(true);
+            setCategories(res.data); // Cập nhật danh sách danh mục từ API
+            setTotalPage(0); // Không phân trang khi tìm kiếm
+            setIsSearching(true); // Đánh dấu đang tìm kiếm
         } else {
             showNotification(res.message || 'Không tìm thấy danh mục nào', false);
         }
-        setIsUploading(false);
+
+        setIsUploading(false); // Kết thúc loading
     };
 
     if (isUploading) return <TableSkeleton />;
@@ -115,7 +127,6 @@ export default function CategoryManage() {
         <>
             <PageMeta title="Quản lý danh mục" />
             <PageBreadcrumb pageTitle="Danh mục" />
-
             <div className="rounded-2xl border border-gray-200 bg-white px-5 py-2 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                 <div className="flex justify-between items-center mb-4">
                     {/* ✅ Ô tìm kiếm */}
@@ -130,10 +141,14 @@ export default function CategoryManage() {
                 </div>
 
                 {/* Bảng danh mục */}
-                <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
+                {categories.length === 0 ? (
+                    <NotExit label="Không có danh mục nào" /> // Hiển thị khi không có danh mục
+                ) : (
+                    <CategoryTable categories={categories} onEdit={handleEdit} onDelete={handleDelete} />
+                )}
 
                 {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
+                {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa */}

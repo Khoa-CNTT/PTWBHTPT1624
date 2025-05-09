@@ -16,8 +16,12 @@ import {
 import { IProduct } from '../../../interfaces/product.interfaces';
 import ProductModal from './ProductModal';
 import TableSkeleton from '../../../components/skeleton/TableSkeleton';
-import InputSearch from '../../../components/inputSearch';
+import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit';
+import { INotification } from '../../../interfaces/notification.interfaces';
+import { sendNotificationToAll } from '../../../services/notification.service';
+import { useActionStore } from '../../../store/actionStore';
+import useSocketStore from '../../../store/socketStore';
 
 export default function ProductManage() {
     const [products, setProducts] = useState<IProduct[]>([]);
@@ -28,13 +32,14 @@ export default function ProductManage() {
     const [searchQuery, setSearchQuery] = useState<string>(''); // State tìm kiếm
     const { openModal, isOpen, closeModal } = useModal();
     const [loading, setLoading] = useState<boolean>(false);
-
+    const { setIsLoading } = useActionStore();
+    const { socket } = useSocketStore();
     // Tab lọc sản phẩm
     const PRODUCT_TAB = [
         { tab: '', title: 'Tất cả sản phẩm' },
         { tab: 'expired', title: 'Sản phẩm hết hạn' },
         { tab: 'near-expired', title: 'Sản phẩm cận hết hạn' },
-        { tab: 'low-stock', title: 'Sản phẩm sắp hết hàng' },  // Thêm tab "Sản phẩm sắp hết hàng"
+        { tab: 'low-stock', title: 'Sản phẩm sắp hết hàng' }, // Thêm tab "Sản phẩm sắp hết hàng"
     ];
 
     useEffect(() => {
@@ -79,11 +84,24 @@ export default function ProductManage() {
 
     const handleSave = async (data: Partial<IProduct>) => {
         let res;
+        setIsLoading(true);
         if (data?._id) {
             res = await apiUpdateProduct(data?._id, data);
         } else {
             res = await apiCreateProduct(data);
+            if (res.success) {
+                const product = res?.data;
+                const notification: INotification = {
+                    notification_title: '🔥 Sản phẩm mới sắp hết hàng!',
+                    notification_subtitle: `⏰ Nhanh tay mua ngay trước khi hết hàng! Số lượng có hạn ⚡`,
+                    notification_imageUrl: product.product_thumb, // Hình ảnh cảnh báo hết hàng
+                    notification_link: `/${product.product_slug}/${product._id}`, // Liên kết đến sản phẩm
+                };
+                await sendNotificationToAll(notification);
+                socket.emit('sendNotificationUserOnline', notification);
+            }
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
@@ -145,14 +163,16 @@ export default function ProductManage() {
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
         if (!searchQuery.trim()) {
-            return; // Không làm gì nếu ô tìm kiếm trống
+            showNotification('Vui lòng nhập từ khóa tìm kiếm', false);
+            return;
         }
         const res = await apiSearchProduct(searchQuery.trim());
         if (res.success) {
             setProducts(res.data.products);
             setTotalPage(res.data.totalPage);
         }
-        setSearchQuery('');
+        // Xóa dòng này để không làm mất từ khóa tìm kiếm sau khi bấm tìm kiếm
+        // setSearchQuery('');
     };
 
     if (loading) return <TableSkeleton />;
@@ -184,11 +204,13 @@ export default function ProductManage() {
                     ))}
                 </div>
                 {products.length > 0 ? (
-                    <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <ProductTable products={products} onEdit={handleEdit} onDelete={handleDelete} />
+                        {totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 ) : (
                     <NotExit label="Không có sản phẩm nào" />
                 )}
-                {totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {isOpen && <ProductModal isOpen={isOpen} closeModal={closeModal} onSave={handleSave} product={selectedProduct} />}

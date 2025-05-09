@@ -19,6 +19,7 @@ import InsertPhotoIcon from '@mui/icons-material/InsertPhoto';
 import { CloseIcon } from '../../../icons';
 import validate from '../../../utils/valueDate';
 import DateComponent from '../../../components/DateFilterComponent';
+import { useActionStore } from '../../../store/actionStore';
 
 interface ProductModalProps {
     isOpen: boolean;
@@ -42,7 +43,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
         product_price: 0,
         product_thumb: '',
     });
-    const [isUploading, setIsUploading] = useState(false);
     const [brands, setBrands] = useState<IBrand[]>([]);
     const [categories, setCategories] = useState<ICategory[]>([]);
     const [suppliers, setSuppliers] = useState<ISupplier[]>([]);
@@ -50,7 +50,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
     const [selectBrand, setSelectBrand] = useState<string>('');
     const [selectSupplier, setSelectSupplier] = useState<string>('');
     const [invalidFields, setInvalidFields] = useState<Array<{ name: string; message: string }>>([]);
-
+    const { setIsLoading } = useActionStore();
     // Fetch brands and categories on mount
     useEffect(() => {
         const fetchData = async () => {
@@ -107,20 +107,20 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
     }, [selectSupplier]);
 
     const handleImageUpload = async (image: string, type: string): Promise<void> => {
-        setIsUploading(true);
+        setIsLoading(true);
         const formData = new FormData();
         formData.append('file', image);
         formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
         const response = await apiUploadImage(formData);
         setInputFields((prev) => ({ ...prev, [type]: response.url }));
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-        setIsUploading(false);
+        setIsLoading(false);
     };
     const handleImageUploadMany = async (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
         const uploadedUrls: string[] = [];
         const files = e.target.files;
         if (!files) return;
-        setIsUploading(true);
+        setIsLoading(true);
         for (const file of files) {
             const formData = new FormData();
             formData.append('file', file);
@@ -130,7 +130,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
         }
         setInputFields((prev) => ({ ...prev, [type]: uploadedUrls }));
         setInvalidFields((prev) => prev.filter((field) => field.name !== type));
-        setIsUploading(false);
+        setIsLoading(false);
     };
     const handleSave = () => {
         const {
@@ -166,7 +166,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
             return;
         }
         onSave(product ? { _id: product._id, ...inputFields } : inputFields);
-        
     };
     // Handlers
     const handleInputField = (e: React.ChangeEvent<HTMLInputElement>, type: string) => {
@@ -247,7 +246,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                                 value={inputFields.product_discount || ''}
                                 invalidFields={invalidFields}
                             />
-                        </div> 
+                        </div>
                         <div>
                             <div className="w-1/2">
                                 <DateComponent
@@ -260,7 +259,7 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                                     type="product_expiry_date"
                                 />
                             </div>
-                        </div> 
+                        </div>
                         <div className=" gap-4">
                             <h2 className=" text-sm text-secondary text-center">Thông tin chi tiết</h2>
                             {invalidFields.some((i) => i.name === 'product_attribute') && (
@@ -287,7 +286,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                         <div className="flex w-full gap-2 my-2">
                             <div className="w-1/3">
                                 <ImageCropper width={550} height={550} label="Ảnh thumbnail" idName="product_thumb" onCropComplete={handleImageUpload} />
-                                {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                                 {inputFields.product_thumb && (
                                     <img className="h-[200px] mt-2 rounded-sm" src={inputFields.product_thumb} alt="Product Thumbnail" />
                                 )}
@@ -302,7 +300,6 @@ const ProductModal: React.FC<ProductModalProps> = ({ isOpen, closeModal, onSave,
                                         <InsertPhotoIcon fontSize="medium" style={{ color: 'green' }} />
                                     </label>
                                 </div>
-                                {isUploading && <p className="text-sm text-gray-500">Đang tải ảnh...</p>}
                                 {inputFields.product_images && (
                                     <ul className="grid grid-cols-6 gap-2 px-4">
                                         {inputFields.product_images?.map((image, index) => (

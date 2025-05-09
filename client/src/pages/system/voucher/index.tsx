@@ -10,6 +10,10 @@ import PageMeta from '../../../components/common/PageMeta';
 import PageBreadcrumb from '../../../components/common/PageBreadCrumb';
 import InputSearch from '../../../components/item/inputSearch';
 import NotExit from '../../../components/common/NotExit'; // Import component NotExit
+import { useActionStore } from '../../../store/actionStore';
+import { sendNotificationToAll } from '../../../services/notification.service';
+import { INotification } from '../../../interfaces/notification.interfaces';
+import useSocketStore from '../../../store/socketStore';
 
 export default function VoucherManage(): JSX.Element {
     const [vouchers, setVouchers] = useState<IVoucher[]>([]);
@@ -19,14 +23,15 @@ export default function VoucherManage(): JSX.Element {
     const [searchQuery, setSearchQuery] = useState<string>(''); // Tìm kiếm
     const [isSearching, setIsSearching] = useState<boolean>(false); // Trạng thái tìm kiếm
     const [loading, setLoading] = useState<boolean>(false);
-
+    const { setIsLoading } = useActionStore();
     const { openModal, isOpen, closeModal } = useModal();
+    const { socket } = useSocketStore();
 
     useEffect(() => {
         // Khi không tìm kiếm, fetch tất cả vouchers
         const fetchVouchers = async () => {
             setLoading(true);
-            const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
+            const res = await apiGetAllVouchers({ limit: 10, page: currentPage });
             if (!res.success) return;
             setVouchers(res.data.vouchers);
             setTotalPage(res.data.totalPage);
@@ -48,32 +53,42 @@ export default function VoucherManage(): JSX.Element {
 
     const handleSave = async (data: IVoucher) => {
         let res;
+        setIsLoading(true);
         if (data._id) {
             res = await apiUpdateVoucher(data._id, data);
         } else {
             res = await apiAddVoucher(data);
+            if (res?.data?.voucher_type === 'system') {
+                const notification: INotification = {
+                    notification_title: '🎁 Ưu đãi độc quyền sắp hết hạn!🔥', // Thêm nhiều icon vào tiêu đề
+                    notification_subtitle: `${res?.data?.voucher_name} ⏳ Nhanh tay nhận voucher trước khi hết! Số lượng giới hạn 🌟🚀`,
+                    notification_imageUrl: res?.data?.voucher_thumb,
+                    notification_link: `/voucher`,
+                };
+                await sendNotificationToAll(notification);
+                socket.emit('sendNotificationUserOnline', notification);
+            }
         }
+        setIsLoading(false);
         showNotification(res?.message, res?.success);
         if (!res?.success) return;
         closeModal();
-    
         // Nếu update thành công, update lại voucher trong state mà không cần F5
         if (data._id) {
             // Nếu có _id, thay thế voucher cũ bằng voucher mới (được cập nhật)
-            setVouchers((prev) =>
-                prev.map((item) => (item._id === data._id ? { ...item, ...data } : item))
-            );
+            setVouchers((prev) => prev.map((item) => (item._id === data._id ? { ...item, ...data } : item)));
         } else {
             // Nếu là tạo mới, thêm voucher vào đầu danh sách
             setVouchers((prev) => [res.data, ...prev]);
         }
     };
-    
 
     const handleDelete = async (id: string) => {
         if (!id) return;
         if (!confirm('Bạn có muốn xóa không?')) return;
+        setIsLoading(true);
         const res = await apiDeleteVoucher(id);
+        setIsLoading(false);
         if (!res?.success) {
             showNotification(res?.message, false);
             return;
@@ -89,7 +104,7 @@ export default function VoucherManage(): JSX.Element {
         if (value === '') {
             // Khi ô tìm kiếm trống, gọi lại API lấy tất cả sản phẩm
             const fetchVouchers = async () => {
-                const res = await apiGetAllVouchers({ limit: 5, page: currentPage });
+                const res = await apiGetAllVouchers({ limit: 10, page: currentPage });
                 if (!res.success) return;
                 setVouchers(res.data.vouchers);
                 setTotalPage(res.data.totalPage);
@@ -100,8 +115,14 @@ export default function VoucherManage(): JSX.Element {
 
     // ✅ Gửi API tìm kiếm
     const handleSearch = async () => {
+        if (!searchQuery.trim()) {
+            showNotification('Vui lòng nhập từ khóa tìm kiếm', false);
+            return;
+        }
         if (!searchQuery.trim()) return;
+        setIsLoading(true);
         const res = await apiSearchVoucherByName(searchQuery.trim());
+        setIsLoading(false);
         if (res.success) {
             setVouchers(res.data);
             setTotalPage(0); // Không phân trang khi tìm kiếm
@@ -135,11 +156,11 @@ export default function VoucherManage(): JSX.Element {
                 {vouchers.length === 0 ? (
                     <NotExit label="Không có voucher nào" />
                 ) : (
-                    <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                    <>
+                        <VoucherTable vouchers={vouchers} onEdit={handleEdit} onDelete={handleDelete} />
+                        {!isSearching && totalPage > 1 && <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />}
+                    </>
                 )}
-
-                {/* Phân trang nếu không tìm kiếm */}
-                {!isSearching && totalPage > 0 && <Pagination currentPage={currentPage} totalPage={totalPage} setCurrentPage={setCurrentPage} />}
             </div>
 
             {/* Modal thêm/sửa voucher */}
