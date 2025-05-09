@@ -9,7 +9,6 @@ const MessageSchema = new mongoose.Schema(
         },
         sender: {
             type: mongoose.Schema.Types.ObjectId,
-            required: true,
             refPath: 'senderRole', // Dynamic reference based on senderRole
         },
         senderRole: {
@@ -23,7 +22,7 @@ const MessageSchema = new mongoose.Schema(
         },
         text: {
             type: String,
-            required: true,
+            default: '',
         },
         seen: {
             type: Boolean,
