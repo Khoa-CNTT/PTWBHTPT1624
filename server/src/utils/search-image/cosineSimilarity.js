@@ -1,4 +1,4 @@
-const tf = require("@tensorflow/tfjs"); // Sử dụng phiên bản Web
+const tf = require('@tensorflow/tfjs'); // Sử dụng phiên bản Web
 
 /** Tính cosine similarity giữa hai vector */
 function cosineSimilarity(vecA, vecB) {
@@ -9,4 +9,4 @@ function cosineSimilarity(vecA, vecB) {
         return dotProduct.div(magnitudeA.mul(magnitudeB)).dataSync()[0];
     });
 }
-module.exports = cosineSimilarity
+module.exports = cosineSimilarity;
