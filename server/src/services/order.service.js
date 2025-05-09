@@ -150,47 +150,46 @@ class OrderService {
             order_voucherId, // ID mã giảm giá (nếu có)
             order_products, // Danh sách sản phẩm trong đơn hàng
         } = payload;
+    
         // Bước 1: Kiểm tra sản phẩm
-        // Kiểm tra tất cả sản phẩm trong danh sách order_products
         const productChecks = await Promise.all(
             order_products.map(async (item) => {
-                const product = await Product.findById(item.productId); // Tìm sản phẩm trong DB theo ID
-                if (!product) throw new RequestError('Không tìm thấy sản phẩm'); // Nếu không tìm thấy, báo lỗi
+                const product = await Product.findById(item.productId);
+                if (!product) throw new RequestError('Không tìm thấy sản phẩm');
                 return {
-                    name: product.product_name, // Tên sản phẩm
-                    available: product.product_quantity >= item.quantity, // Kiểm tra số lượng đủ hay không
+                    name: product.product_name,
+                    available: product.product_quantity >= item.quantity,
                 };
             }),
         );
-
-        // Lọc ra các sản phẩm hết hàng
+    
         const outOfStockProducts = productChecks
-            .filter((check) => !check.available) // Lấy các sản phẩm không đủ số lượng
-            .map((check) => check.name); // Lấy tên của các sản phẩm đó
-        // Kiểm tra nếu có sản phẩm hết hàng thì báo lỗi với danh sách tên
+            .filter((check) => !check.available)
+            .map((check) => check.name);
+    
         if (outOfStockProducts.length > 0) {
-            throw new RequestError(`Các sản phẩm đã hết hàng: ${outOfStockProducts.join(', ')}`); // Báo lỗi với danh sách sản phẩm hết hàng
+            throw new RequestError(`Các sản phẩm đã hết hàng: ${outOfStockProducts.join(', ')}`);
         }
+    
         // Bước 2: Tính tổng tiền đơn hàng và bổ sung thông tin product list
         let totalPrice = 0;
         let totalApplyDiscount = 0;
         const productsToOrder = await Promise.all(
             order_products.map(async (item) => {
-                const product = await Product.findById(item.productId); // Lấy thông tin sản phẩm
-                // Tính giá sau khi áp dụng giảm giá (nếu có)
+                const product = await Product.findById(item.productId);
                 totalApplyDiscount += (product.product_price * (product.product_discount || 0)) / 100;
-                totalPrice += product.product_price * item.quantity; // Cộng dồn vào tổng giá trị
+                totalPrice += product.product_price * item.quantity;
                 return {
-                    productId: product._id, // ID sản phẩm
-                    price: product.product_price, // Giá gốc
-                    quantity: item.quantity, // Số lượng đặt mua
+                    productId: product._id,
+                    price: product.product_price,
+                    quantity: item.quantity,
                     discount: product.product_discount,
                 };
             }),
         );
+    
         // Bước 3: Xử lý mã giảm giá (nếu có)
         if (order_voucherId) {
-            // Kiểm tra xem user đã sở hữu voucher chưa
             const userVoucher = await userVoucherModel.findOne({
                 vc_user_id: userId,
                 vc_vouchers: { $in: [order_voucherId] },
@@ -198,105 +197,111 @@ class OrderService {
             if (!userVoucher) {
                 throw new RequestError('Bạn không sở hữu voucher này');
             }
-            // Tìm mã giảm giá trong DB
             const voucher = await Voucher.findById(order_voucherId);
             if (!voucher) {
                 throw new RequestError('Không tìm thấy voucher');
             }
-            // Kiểm tra xem user đã sử dụng voucher này chưa
             const hasUserUsedVoucher = voucher.voucher_users_used.some((userUsedId) => userUsedId.toString() === userId.toString());
             if (hasUserUsedVoucher) {
                 throw new RequestError('Bạn đã đạt giới hạn số lần sử dụng voucher này');
             }
-            // Giá trị đơn hàng tối thiểu để áp dụng voucher
             if (totalPrice < voucher.voucher_min_order_value) {
                 throw new RequestError(`Giá trị đơn hàng tối thiểu ${voucher.voucher_min_order_value}`);
             }
             if (voucher.voucher_method === 'percent') {
-                // Nếu giảm giá theo phần trăm
-                const discount = (totalPrice * voucher.voucher_value) / 100; // Tính số tiền giảm
-                // Áp dụng giảm giá, nhưng không vượt quá giá trị tối đa của voucher
+                const discount = (totalPrice * voucher.voucher_value) / 100;
                 totalApplyDiscount += Math.min(discount, voucher.voucher_max_price || Infinity);
             } else {
-                // Nếu giảm giá theo số tiền cố định
-                totalApplyDiscount += voucher.voucher_value; //
+                totalApplyDiscount += voucher.voucher_value;
             }
             await userVoucherModel.findOneAndUpdate({ vc_user_id: userId }, { $pull: { vc_vouchers: order_voucherId } }, { new: true, upsert: true });
         }
+    
         // Bước 4: Thêm phí vận chuyển
-        const shipping = await shippingCompany.findById(order_shipping_company); // Tìm công ty vận chuyển
-        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển'); // Nếu không tìm thấy, báo lỗi
-        const shippingPrice = shipping.sc_shipping_price; // Lấy phí vận chuyển, mặc định là 0 nếu không có
+        const shipping = await shippingCompany.findById(order_shipping_company);
+        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển');
+        const shippingPrice = shipping.sc_shipping_price;
+    
         // Bước 5: Nếu thanh toán bằng Coin thì trừ vào số dư người dùng
-if (order_payment_method === 'COIN') {
-    const user = await userModel.findById(userId);
-    if (!user) throw new RequestError('Không tìm thấy người dùng');
-
-    const amountToPay = totalPrice - totalApplyDiscount + shippingPrice;
-
-    if (user.user_balance < amountToPay) {
-        throw new RequestError('Số dư không đủ để thanh toán đơn hàng');
-    }
-
-    // Trừ số dư
-    await userModel.findByIdAndUpdate(userId, {
-        $inc: { user_balance: -amountToPay },
-    });
-}
-
+        let message = 'Đặt hàng thành công';
+        if (order_payment_method === 'COIN') {
+            const user = await userModel.findById(userId);
+            if (!user) throw new RequestError('Không tìm thấy người dùng');
+    
+            const amountToPay = totalPrice - totalApplyDiscount + shippingPrice;
+    
+            if (user.user_balance < amountToPay) {
+                throw new RequestError('Số dư không đủ để thanh toán đơn hàng');
+            }
+    
+            // Trừ số dư
+            await userModel.findByIdAndUpdate(userId, {
+                $inc: { user_balance: -amountToPay },
+            });
+    
+            // Gán thông báo khi thanh toán bằng COIN
+            message = `Đặt hàng thành công, số dư của bạn đã bị - ${amountToPay.toLocaleString()} đ`;
+        }
+    
         // Tạo đơn hàng mới trong DB
         const order_date_shipping = {
-            from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000), // Thời gian hiện tại
+            from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000),
             to: new Date(Date.now() + shipping.sc_delivery_time.to * 24 * 60 * 60 * 1000),
         };
-        //Ngày giao hàng dự kiến (có thể để trống)
-        const newOrder = await OnlineOrder.create([
-            {
-                order_user: userId, // Người đặt hàng
-                order_products: productsToOrder, // Danh sách sản phẩm
-                order_voucher: order_voucherId, // Mã giảm giá (nếu có)
-                order_total_price: totalPrice, // Tổng giá trị đơn hàng
-                order_total_apply_discount: totalApplyDiscount, // tổng discount
-                order_date_shipping,
-                order_payment_method, // Phương thức thanh toán
-                order_shipping_address, // Địa chỉ giao hàng
-                order_shipping_price: shippingPrice, // Phí vận chuyển
-                order_shipping_company, // Công ty vận chuyển
-            },
-        ]);
+    
+        const newOrder = await OnlineOrder.create([{
+            order_user: userId,
+            order_products: productsToOrder,
+            order_voucher: order_voucherId,
+            order_total_price: totalPrice,
+            order_total_apply_discount: totalApplyDiscount,
+            order_date_shipping,
+            order_payment_method,
+            order_shipping_address,
+            order_shipping_price: shippingPrice,
+            order_shipping_company,
+        }]);
+    
         if (newOrder) {
             // Cập nhật số lượng sản phẩm trong kho
             await Promise.all(
                 order_products.map((item) =>
                     Product.findByIdAndUpdate(item.productId, {
                         $inc: {
-                            product_quantity: -item.quantity, // Giảm số lượng tồn kho
-                            product_sold: item.quantity, // Tăng số lượng đã bán
+                            product_quantity: -item.quantity,
+                            product_sold: item.quantity,
                         },
                     }),
                 ),
             );
+    
             // Cập nhật thông tin mã giảm giá (nếu có)
             if (order_voucherId) {
                 await Voucher.findByIdAndUpdate(
                     order_voucherId,
-                    { $push: { voucher_users_used: userId } }, // Thêm userId vào danh sách người đã dùng voucher
+                    { $push: { voucher_users_used: userId } },
                 );
             }
-const cartKey = `cart:${userId}`;
-const cartData = await redisClient.get(cartKey);
-
-if (cartData) {
-    const currentCart = JSON.parse(cartData);
-    const updatedCart = currentCart.filter(
-        item => !order_products.some(op => op.productId.toString() === item.productId.toString())
-    );
-    await redisClient.set(cartKey, JSON.stringify(updatedCart));
-}
-
+    
+            // Cập nhật giỏ hàng trong Redis (nếu có)
+            const cartKey = `cart:${userId}`;
+            const cartData = await redisClient.get(cartKey);
+    
+            if (cartData) {
+                const currentCart = JSON.parse(cartData);
+                const updatedCart = currentCart.filter(
+                    item => !order_products.some(op => op.productId.toString() === item.productId.toString())
+                );
+                await redisClient.set(cartKey, JSON.stringify(updatedCart));
+            }
         }
-        return newOrder;
+    
+        return {
+            order: newOrder,
+            message,
+        };
     }
+    
 
     static async getAllOrdersByUser({ userId, status }) {
         const fillter = { order_user: userId };
@@ -406,117 +411,125 @@ if (cartData) {
         if (!userId || !orderId) {
             throw new RequestError('Thiếu thông tin bắt buộc');
         }
-        // Find the order by ID
+    
         const order = await OnlineOrder.findOne({ _id: orderId, order_user: userId });
         if (!order) {
             throw new RequestError(`Đơn hàng không tồn tại`);
         }
     
-        // Nếu phương thức thanh toán là VNPAY, hoàn tiền vào tài khoản người dùng
-        if (order.order_payment_method === 'VNPAY','COIN') {
-            const user = await userModel.findById(userId); // Thay thế User bằng userModel
+        let refundedAmount = 0;
+    
+        if (['VNPAY', 'COIN'].includes(order.order_payment_method)) {
+            const user = await userModel.findById(userId);
             if (!user) {
                 throw new RequestError(`Người dùng không tồn tại`);
             }
     
-            // Cộng lại số tiền vào user_balance
-            user.user_balance += order.order_total_price;
+            refundedAmount = order.order_total_price;
+            user.user_balance += refundedAmount;
             await user.save();
         }
+    
         order.order_refunded = true;
     
-        // Cập nhật lại số lượng tồn kho và số lượng đã bán của sản phẩm
         await Promise.all(
             order.order_products.map((item) =>
                 Product.findByIdAndUpdate(item.productId, {
                     $inc: {
-                        product_quantity: +item.quantity, // Giảm số lượng tồn kho
-                        product_sold: -item.quantity, // Tăng số lượng đã bán
+                        product_quantity: +item.quantity,
+                        product_sold: -item.quantity,
                     },
                 }),
             ),
         );
     
-        // Cập nhật trạng thái đơn hàng thành "cancelled"
         order.order_status = 'cancelled';
         await order.save();
-    }
+    
+        return {
+            refundedAmount,
+            paymentMethod: order.order_payment_method, // Thêm cái này để controller biết phương thức
+        }}
+    
     
     
 
-    static async reorder({ userId, orderId }) {
-        // Validate inputs
-        if (!userId || !orderId) {
-            throw new RequestError('Thiếu thông tin userId hoặc orderId');
-        }
-    
-        // Find the cancelled order
-        const cancelledOrder = await OnlineOrder.findOne({
-            _id: orderId,
-            order_user: userId,
-            order_status: 'cancelled',
-        });
-    
-        if (!cancelledOrder) {
-            throw new RequestError('Đơn hàng không tồn tại hoặc không phải đơn hàng đã hủy');
-        }
-    
-        // Check if user exists and get the user data
-        const user = await userModel.findById(userId); // Changed from User to userModel
-        if (!user) {
-            throw new RequestError('Người dùng không tồn tại');
-        }
-    
-        // Calculate total order price
-        const totalOrderPrice = cancelledOrder.order_total_price;
-    
-        // Check if user has enough balance to pay using COIN
-        if (user.user_balance >= totalOrderPrice) {
-            // If enough balance, set payment method to COIN
-            cancelledOrder.order_payment_method = 'COIN';
-            user.user_balance -= totalOrderPrice; // Deduct the balance
-        } else {
-            // If not enough balance, set payment method to CASH
-            cancelledOrder.order_payment_method = 'CASH';
-        }
-    
-        // Update user balance
-        await user.save();
-    
-        const productUpdates = cancelledOrder.order_products.map(async (item) => {
-            const product = await Product.findById(item.productId);
-            if (!product) {
-                throw new RequestError(`Sản phẩm ${item.productId} không tồn tại`);
+        static async reorder({ userId, orderId }) {
+            // Validate inputs
+            if (!userId || !orderId) {
+                throw new RequestError('Thiếu thông tin userId hoặc orderId');
             }
-            if (product.product_quantity < item.quantity) {
-                throw new RequestError(`Sản phẩm ${product.product_name} không đủ số lượng tồn kho`);
-            }
-            await Product.findByIdAndUpdate(item.productId, {
-                $inc: {
-                    product_quantity: -item.quantity, // Decrease stock
-                    product_sold: item.quantity, // Increase sold count
-                },
+        
+            // Find the cancelled order
+            const cancelledOrder = await OnlineOrder.findOne({
+                _id: orderId,
+                order_user: userId,
+                order_status: 'cancelled',
             });
-        });
-    
-        await Promise.all(productUpdates);
-    
-        // Fetch the shipping company
-        const shipping = await shippingCompany.findById(cancelledOrder.order_shipping_company);
-        if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển');
-    
-        // Calculate shipping date
-        const order_date_shipping = {
-            from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000),
-            to: new Date(Date.now() + shipping.sc_delivery_time.to * 24 * 60 * 60 * 1000),
-        };
-    
-        cancelledOrder.order_status = 'pending';
-        cancelledOrder.order_date_shipping = order_date_shipping;
-    
-        // Save the new order
-        await cancelledOrder.save();
-    }
+        
+            if (!cancelledOrder) {
+                throw new RequestError('Đơn hàng không tồn tại hoặc không phải đơn hàng đã hủy');
+            }
+        
+            // Check if user exists
+            const user = await userModel.findById(userId);
+            if (!user) {
+                throw new RequestError('Người dùng không tồn tại');
+            }
+        
+            // Calculate total order price
+            const totalOrderPrice = cancelledOrder.order_total_price;
+        
+            // Xác định phương thức thanh toán và cập nhật số dư nếu cần
+            if (user.user_balance >= totalOrderPrice) {
+                cancelledOrder.order_payment_method = 'COIN';
+                user.user_balance -= totalOrderPrice;
+            } else {
+                cancelledOrder.order_payment_method = 'CASH';
+            }
+        
+            await user.save();
+        
+            // Cập nhật tồn kho sản phẩm
+            const productUpdates = cancelledOrder.order_products.map(async (item) => {
+                const product = await Product.findById(item.productId);
+                if (!product) {
+                    throw new RequestError(`Sản phẩm ${item.productId} không tồn tại`);
+                }
+                if (product.product_quantity < item.quantity) {
+                    throw new RequestError(`Sản phẩm ${product.product_name} không đủ số lượng tồn kho`);
+                }
+                await Product.findByIdAndUpdate(item.productId, {
+                    $inc: {
+                        product_quantity: -item.quantity,
+                        product_sold: item.quantity,
+                    },
+                });
+            });
+        
+            await Promise.all(productUpdates);
+        
+            // Xử lý thời gian giao hàng
+            const shipping = await shippingCompany.findById(cancelledOrder.order_shipping_company);
+            if (!shipping) throw new RequestError('Không tìm thấy công ty vận chuyển');
+        
+            const order_date_shipping = {
+                from: new Date(Date.now() + shipping.sc_delivery_time.from * 24 * 60 * 60 * 1000),
+                to: new Date(Date.now() + shipping.sc_delivery_time.to * 24 * 60 * 60 * 1000),
+            };
+        
+            cancelledOrder.order_status = 'pending';
+            cancelledOrder.order_date_shipping = order_date_shipping;
+        
+            await cancelledOrder.save();
+        
+            // Trả về thông tin cần thiết để controller hiển thị message
+            return {
+                paymentMethod: cancelledOrder.order_payment_method,
+                totalOrderPrice: totalOrderPrice,
+            };
+        }
+        
     
     
 }

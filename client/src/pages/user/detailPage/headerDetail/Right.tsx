@@ -39,9 +39,11 @@ const Right: React.FC<{ productDetail: IProductDetail }> = ({ productDetail }) =
         if (favoriteProducts.some((i) => i._id === productDetail._id)) {
             removeFavorite(productDetail._id);
             await removeFavoriteProduct(productDetail._id);
+            showNotification('Đã hủy yêu thích sản phẩm', true);
         } else {
             setFavorite(productDetail);
             await addFavoriteProduct(productDetail._id);
+            showNotification('Yêu thích sản phẩm thành công', true);
         }
     }, [isUserLoggedIn, favoriteProducts, productDetail, setOpenFeatureAuth]);
 
