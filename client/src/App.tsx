@@ -1,10 +1,30 @@
-import { BrowserRouter } from "react-router";
-import RouterPage from "./routes/RouterPage";
+/* eslint-disable react-hooks/exhaustive-deps */
+import { BrowserRouter } from 'react-router-dom';
+import RouterPage from './routes/RouterPage';
+import { useEffect } from 'react';
+import useSocketStore from './store/socketStore';
+import useUserStore from './store/userStore';
 
 export default function App() {
-  return (
-    <BrowserRouter>
-         <RouterPage />
-    </BrowserRouter>
-  );
+    const { socket, isConnected, connect } = useSocketStore();
+    const { user } = useUserStore();
+
+    // Kết nối socket khi ứng dụng tải
+    useEffect(() => {
+        if (!isConnected) connect();
+    }, [isConnected, connect]);
+
+    // Gửi sự kiện addUser hoặc addAdmin nếu có ID hợp lệ
+    useEffect(() => {
+        if (!isConnected || !socket) return;
+        if (user?._id) {
+            socket.emit('addUser', user._id);
+        }
+    }, [isConnected, user?._id, socket]);
+
+    return (
+        <BrowserRouter>
+            <RouterPage />
+        </BrowserRouter>
+    );
 }
