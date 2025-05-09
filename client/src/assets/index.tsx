@@ -18,7 +18,7 @@ export { default as logoFb } from './logo/logoFb.png';
 export { default as imgLoading } from './image/hinh-anh-dong-de-thuong-cho-be.gif';
 export { default as bgHeaderShop } from './image/bgHeaderShop.png';
 export { default as iconLogo } from './logo/icon_logo.png';
-export { default as paypal } from './logo/paypal.svg';
+export { default as vnpay } from './logo/vnpay.svg';
 // -------------
 export { default as loading2 } from './image/hinh-anh-dong-de-thuong-cho-be.gif';
 export { default as imgBanner1 } from './imgBanner/bb7e0249b87b60809490575fa3938fa5.png.webp';
@@ -29,6 +29,11 @@ export { default as imgFreeShip } from './image/freeship.png';
 export { default as imgCartEmpty } from './image/cartEmpty.png';
 export { default as header_mobile } from './image/header_mobile.png';
 export { default as notExit } from './image/notExit.png';
+export { default as cuoiAudio } from './audio/cuoi.mp3';
+export { default as notificationAudio } from './audio/notification.wav';
+export { default as votayAudio } from './audio/votayAudio.mp3';
+export { default as dpnAudio } from './audio/dpnAudio.mp3';
+export { default as spinAudio } from './audio/spinAudio.mp3';
 
 export { default as payment } from './image/payment.webp';
 export const IconExcept = (
