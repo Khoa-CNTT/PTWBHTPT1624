@@ -2,12 +2,14 @@
 import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
 import { useEffect, useRef, useState } from 'react';
-import ListCategories from './ListCategories';
 import { Overlay } from '../../../../components';
 import { apiGetFeaturedProducts, getProductSuggestions } from '../../../../services/product.service';
 import useDebounce from '../../../../hooks/useDebounce';
-import { Link } from 'react-router';
-
+import { Link, useNavigate } from 'react-router';
+import ImageCropper from '../../../../components/ImageCropper';
+import { apiUploadImage } from '../../../../services/uploadPicture.service';
+import { useActionStore } from '../../../../store/actionStore';
+import { PATH } from '../../../../utils/const';
 interface search {
     text: string;
     _id: string;
@@ -30,7 +32,9 @@ const Search: React.FC = () => {
     const [searchValue, setSearchValue] = useState<string>('');
     const valueDebounce = useDebounce(searchValue, 200);
     const inputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
 
+    const { setSearchImage, setIsLoading } = useActionStore();
     // Lấy lịch sử tìm kiếm từ localStorage khi component mount
     useEffect(() => {
         const storedHistory = localStorage.getItem('searchHistory');
@@ -56,15 +60,11 @@ const Search: React.FC = () => {
     // Lấy gợi ý sản phẩm
     useEffect(() => {
         const fetchApi = async () => {
-            try {
-                const res = await getProductSuggestions(valueDebounce);
-                if (res?.data?.products?.length === 0) {
-                    setOpenSearchResults(false);
-                }
-                setResultSuggest(res?.data?.products || []);
-            } catch (error) {
-                console.error('Error fetching product suggestions:', error);
+            const res = await getProductSuggestions(valueDebounce);
+            if (res?.data?.products?.length === 0) {
+                setOpenSearchResults(false);
             }
+            setResultSuggest(res?.data?.products || []);
         };
         if (valueDebounce.trim() === '') {
             setResultSuggest([]);
@@ -76,12 +76,8 @@ const Search: React.FC = () => {
     // Lấy sản phẩm nổi bật
     useEffect(() => {
         const fetchApiProductSuggest = async () => {
-            try {
-                const res = await apiGetFeaturedProducts({ limit: 8 });
-                setProductSuggest(res?.data || []);
-            } catch (error) {
-                console.error('Error fetching featured products:', error);
-            }
+            const res = await apiGetFeaturedProducts({ limit: 8 });
+            setProductSuggest(res?.data || []);
         };
         if (openSearchResults) {
             fetchApiProductSuggest();
@@ -98,12 +94,22 @@ const Search: React.FC = () => {
             };
             setSearchHistories((prev) => [newSearch, ...prev].slice(0, 10)); // Giới hạn 10 mục
             // Điều hướng đến trang tìm kiếm
-            window.location.href = `/tim-kiem/${searchValue}`;
+            navigate(`/tim-kiem/${searchValue}`);
         }
         setOpenSearchResults(false);
         setSearchValue('');
     };
-
+    const handleImageUpload = async (image: string): Promise<void> => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const formData: any = new FormData();
+        formData.append('file', image);
+        formData.append('upload_preset', import.meta.env.VITE_REACT_UPLOAD_PRESET as string);
+        setIsLoading(true);
+        const response = await apiUploadImage(formData);
+        setSearchImage(response.url);
+        setIsLoading(false);
+        navigate(PATH.PAGE_IMAGE_SEARCH);
+    };
     // Xử lý phím Enter
     useEffect(() => {
         const handleKeyPress = (event: KeyboardEvent) => {
@@ -164,9 +170,9 @@ const Search: React.FC = () => {
                                             <span className="text-sm">{s?.text}</span>
                                         </div>
                                         <div
-                                            className="text-secondary"
+                                            className="text-secondary w-[50px] text-center"
                                             onClick={(e) => {
-                                                e.stopPropagation();
+                                                e.preventDefault();
                                                 handleDeleteHistory(s._id);
                                             }}>
                                             <CloseIcon fontSize="small" />
@@ -222,16 +228,28 @@ const Search: React.FC = () => {
                             </span>
                         )}
                         {openSearchResults && (
-                            <div className="absolute w-full top-[100%] right-0 bg-white shadow-search py-4">
-                                {resultSuggest?.length > 0 ? suggestResult : searchRecent}
+                            <div className="absolute w-full top-[100%] right-0 bg-white shadow-search   rounded-b-md">
+                                <div className="max-h-[400px] overflow-y-auto p-4 my-2 scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-200 border-gray-200 rounded-md">
+                                    {resultSuggest?.length > 0 ? suggestResult : searchRecent}
+                                </div>
                             </div>
+                        )}
+
+                        {!searchValue && (
+                            <ImageCropper
+                                width={550}
+                                height={550}
+                                type="search"
+                                label="Ảnh thumbnail"
+                                idName="product_thumb"
+                                onCropComplete={handleImageUpload}
+                            />
                         )}
                     </div>
                     <button className="tablet:hidden outline-none bg-[rgb(9,115,69)] w-[150px] h-[40px] text-white rounded-r-[2px]" onClick={handleSummit}>
                         <SearchIcon /> <span>Tìm kiếm</span>
                     </button>
                 </div>
-                <ListCategories />
                 {openSearchResults && <Overlay onClick={() => setOpenSearchResults(false)} className="z-20" />}
             </div>
         </div>
