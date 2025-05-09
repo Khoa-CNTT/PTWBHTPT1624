@@ -5,7 +5,7 @@ const verifyAccessToken = require('../utils/auth/verifyAccessToken');
 const adminAuthentication = asyncHandle(async (req, res, next) => {
     const authHeader = req.headers.authorization;
     if (!authHeader || !authHeader.startsWith('Bearer ')) {
-        return res.status(401).json({
+        return res.status(301).json({
             success: false,
             message: 'Yêu cầu xác thực',
         });
@@ -13,7 +13,7 @@ const adminAuthentication = asyncHandle(async (req, res, next) => {
     const token = authHeader.split(' ')[1];
     const decodedToken = verifyAccessToken(token);
     if (!decodedToken) {
-        return res.status(401).json({
+        return res.status(301).json({
             success: false,
             message: 'Token không hợp lệ',
         });
@@ -23,7 +23,7 @@ const adminAuthentication = asyncHandle(async (req, res, next) => {
         select: 'role_name role_permissions',
     });
     if (!admin) {
-        return res.status(401).json({
+        return res.status(301).json({
             success: false,
             message: 'Token truy cập không hợp lệ',
         });
