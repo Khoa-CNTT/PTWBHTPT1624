@@ -1,9 +1,22 @@
-import { apiClient, adminClient } from '../config/httpRequest';
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { apiClient, adminClient, authClient } from '../config/httpRequest';
+import { IReview } from '../interfaces/review.interfaces';
 
 // 📝 Tạo đánh giá
-const apiCreateReview = async (reviewData: object) => {
+const apiCreateReview = async (reviewData: IReview) => {
     try {
-        const res = await apiClient.post('/v1/api/review/add', reviewData);
+        const res = await authClient.post('/v1/api/review/add', reviewData);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiUpdateReview = async (id: any, reviewData: IReview) => {
+    try {
+        const res = await authClient.put(`/v1/api/review/${id}/update`, reviewData);
         return res.data;
     } catch (error) {
         return {
@@ -14,12 +27,9 @@ const apiCreateReview = async (reviewData: object) => {
 };
 
 // 📖 Lấy danh sách đánh giá của sản phẩm (public)
-const apiGetReviews = async (
-    productId: string,
-    queries?: { limit?: number; page?: number }
-) => {
+const apiGetReviews = async (productId: string, queries?: { limit?: number; page?: number; rating?: number }) => {
     try {
-        const res = await apiClient.get(`/v1/api/review/${productId}/search`, {
+        const res = await apiClient.get(`/v1/api/review/${productId}/all`, {
             params: queries,
         });
         return res.data;
@@ -58,10 +68,7 @@ const apiDeleteReview = async (reviewId: string) => {
 };
 
 // 📖 Lấy danh sách đánh giá theo tab (all / approved / pending)
-const apiGetAdminReviews = async (
-    tab: 'all' | 'approved' | 'pending',
-    queries?: { limit?: number; page?: number }
-) => {
+const apiGetAdminReviews = async (tab: 'all' | 'approved' | 'pending', queries?: { limit?: number; page?: number }) => {
     try {
         const res = await adminClient.get(`/v1/api/review/${tab}`, {
             params: queries,
@@ -74,11 +81,23 @@ const apiGetAdminReviews = async (
         };
     }
 };
-
+const apiRatingsProduct = async (pid: string) => {
+    try {
+        const res = await apiClient.get(`/v1/api/review/${pid}/ratings_product`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 export {
     apiCreateReview,
     apiGetReviews,
     apiApproveReview,
+    apiUpdateReview,
     apiDeleteReview,
+    apiRatingsProduct,
     apiGetAdminReviews, // ✅ dùng cho cả 3 tab: all, approved, pending
 };

@@ -1,6 +1,5 @@
-import { apiClient, authClient } from "../config/httpRequest";
+import { apiClient, authClient } from '../config/httpRequest';
 
- 
 // Xác thực email khi đăng ký
 const apiSendVerificationEmail = async (email: string) => {
     try {
@@ -80,9 +79,9 @@ const verifyResetPasswordCode = async (resetCode: string) => {
 };
 
 // Đặt lại mật khẩu mới
-const resetPassword = async (resetCode: string, newPassword: string) => {
+const resetPassword = async (token: string, password: string) => {
     try {
-        const res = await authClient.put(`/v1/api/auth/reset-password`, { resetCode, newPassword });
+        const res = await authClient.put(`/v1/api/auth/reset_password`, { token, password });
         return res.data;
     } catch (error) {
         return {
@@ -130,7 +129,18 @@ const apiChangePassword = async (oldPassword: string, newPassword: string) => {
         };
     }
 };
-
+const apiLoginWithGoogle = async (credential: string) => {
+    try {
+        const res = await apiClient.put('/v1/api/auth/login_google', { credential });
+        return res.data;
+    } catch (error) {
+        console.log(error);
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 export {
     apiSendVerificationEmail,
     apiConfirmVerificationEmail,
@@ -141,5 +151,6 @@ export {
     resetPassword,
     apiLogout,
     apiRefreshToken,
-    apiChangePassword
+    apiChangePassword,
+    apiLoginWithGoogle,
 };

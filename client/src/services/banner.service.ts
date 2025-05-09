@@ -19,7 +19,7 @@ const apiGetAllBanners = async (queries?: { limit: number; page: number }) => {
 const apiSearchBanner = async (searchQuery: string) => {
     try {
         const res = await adminClient.get(`/v1/api/banner/search`, {
-            params: { search: searchQuery },
+            params: { name: searchQuery },
         });
         return res.data;
     } catch (error) {

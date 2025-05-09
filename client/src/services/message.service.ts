@@ -1,7 +1,7 @@
-import { adminClient, apiClient, authClient } from '../config/httpRequest';
+import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả người dùng
-export const apiSendMessageByUSer = async (body: { conversationId: string; text: string; image?: string }) => {
+export const apiSendMessageByUSer = async (body: { conversationId: string; text?: string; image?: string }) => {
     try {
         const res = await authClient.post('/v1/api/message/by-user', body);
         return res.data;
@@ -23,9 +23,20 @@ export const apiMarkMessagesAsSeenByUser = async (conversationId: string) => {
         };
     }
 };
-export const apiGetMessagesByConversation = async (id: string) => {
+export const apiGetMessagesByConversation = async (cid: string) => {
     try {
-        const res = await apiClient.get(`/v1/api/message/${id}`);
+        const res = await authClient.get(`/v1/api/message/${cid}`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+export const apiGetUnreadMessagesCount = async (id: string) => {
+    try {
+        const res = await authClient.get(`/v1/api/message/${id}/unread`);
         return res.data;
     } catch (error) {
         return {
@@ -35,7 +46,7 @@ export const apiGetMessagesByConversation = async (id: string) => {
     }
 };
 
-export const apiSendMessageByAdmin = async (body: { conversationId: string; text: string; image?: string }) => {
+export const apiSendMessageByAdmin = async (body: { conversationId: string; text?: string; image?: string }) => {
     try {
         const res = await adminClient.post('/v1/api/message/by-admin', body);
         return res.data;

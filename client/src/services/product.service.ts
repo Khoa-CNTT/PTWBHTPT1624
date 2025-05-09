@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { adminClient, apiClient } from '../config/httpRequest';
+import { adminClient, apiClient, authClient } from '../config/httpRequest';
 
 // API tìm kiếm sản phẩm theo từ khóa
 const apiSearchProduct = async (keySearch: string | any, query?: any) => {
@@ -183,8 +183,68 @@ const apiGetProductsByExpiryStatus = async (status: string, queries: { limit: nu
         };
     }
 };
+const getTopViewedProduct = async () => {
+    try {
+        const res = await adminClient.get(`/v1/api/product/top-viewed`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiSearchProductByImage = async (imageUrl: string) => {
+    try {
+        const res = await adminClient.post(`/v1/api/product/search/search-image`, { imageUrl });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiGetPurchasedProduct = async (queries?: { limit: number; page: number }) => {
+    try {
+        const res = await authClient.get(`/v1/api/purchased/all`, {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiTrackCategoryView = async (categoryId: string) => {
+    try {
+        const res = await authClient.post(`/v1/api/product/track-view`, { categoryId });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const apiProductRecommendations = async () => {
+    try {
+        const res = await authClient.get(`/v1/api/product/recommendations`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
 export {
+    apiGetPurchasedProduct,
+    apiSearchProductByImage,
+    getTopViewedProduct,
     apiSearchProduct,
     apiGetAllProducts,
     apiGetAllProductsByAdmin,
@@ -198,5 +258,7 @@ export {
     apiUpdateProduct,
     apiGetScanProduct,
     apiDeleteProduct,
-    apiGetProductsByExpiryStatus, // Thêm vào đây
+    apiGetProductsByExpiryStatus,
+    apiTrackCategoryView,
+    apiProductRecommendations,
 };

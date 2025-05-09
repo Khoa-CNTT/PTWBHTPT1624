@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { adminClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả người dùng
@@ -92,6 +93,116 @@ const apiSearchUsers = async (searchQuery: string) => {
         };
     }
 };
+const apiChangePassword = async (oldPassword: string, newPassword: string) => {
+    try {
+        const res = await authClient.put('/v1/api/user/change-password', {
+            oldPassword,
+            newPassword,
+        });
+        return res.data;
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.response?.data?.message || 'Đã xảy ra lỗi!',
+            code: error?.response?.data?.code || 500,
+        };
+    }
+};
+const apiUpdateProfile = async (data: any) => {
+    try {
+        const res = await authClient.put('/v1/api/user/profile/update', data);
+        return res.data;
+    } catch (error: any) {
+        return {
+            success: false,
+            message: error?.response?.data?.message || 'Đã xảy ra lỗi!',
+            code: error?.response?.data?.code || 500,
+        };
+    }
+};
+// API gọi để chơi Lucky Box
+import { AxiosError } from 'axios'; // Đảm bảo bạn đã import AxiosError từ axios
 
+// API gọi để chơi Lucky Box
+const apiPlayLuckyBox = async (prizeIndex: number) => {
+    try {
+        const res = await authClient.post('/v1/api/user/luckbox', { prizeIndex });
+        return res.data;
+    } catch (error) {
+        // Kiểm tra nếu lỗi là một instance của AxiosError
+        if (error instanceof AxiosError) {
+            // Kiểm tra có response hay không và lấy thông báo lỗi
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi!';
+            return {
+                success: false,
+                message: errorMessage,
+            };
+        } else {
+            // Nếu không phải lỗi từ Axios, trả về lỗi chung
+            return {
+                success: false,
+                message: 'Đã xảy ra lỗi không xác định!',
+            };
+        }
+    }
+};
 
-export {apiSearchUsers, apiGetDetailUser, apiGetAllUser, apiAddUser, apiUpdateUser, apiDeleteUser, apiToggleBlockUser };
+// API gọi để chơi vongquay (Lucky Box)
+const apiPlayVongQuay = async (userId: string) => {
+    try {
+        const res = await authClient.post('/v1/api/user/vongquay', { userId });
+        return res.data;
+    } catch (error) {
+        // Kiểm tra nếu lỗi là một instance của AxiosError
+        if (error instanceof AxiosError) {
+            // Kiểm tra có response hay không và lấy thông báo lỗi
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi!';
+            return {
+                success: false,
+                message: errorMessage,
+            };
+        } else {
+            // Nếu không phải lỗi từ Axios, trả về lỗi chung
+            return {
+                success: false,
+                message: 'Đã xảy ra lỗi không xác định!',
+            };
+        }
+    }
+};
+
+// API lấy phần thưởng vòng quay
+const apiGetWheelRewards = async () => {
+    try {
+        const res = await authClient.get('/v1/api/user/wheel/rewards');
+        return res.data;
+    } catch (error) {
+        if (error instanceof AxiosError) {
+            const errorMessage = error.response?.data?.message || 'Đã xảy ra lỗi!';
+            return {
+                success: false,
+                message: errorMessage,
+            };
+        } else {
+            return {
+                success: false,
+                message: 'Đã xảy ra lỗi không xác định!',
+            };
+        }
+    }
+};
+
+export {
+    apiGetWheelRewards,
+    apiPlayVongQuay,
+    apiPlayLuckyBox,
+    apiChangePassword,
+    apiSearchUsers,
+    apiUpdateProfile,
+    apiGetDetailUser,
+    apiGetAllUser,
+    apiAddUser,
+    apiUpdateUser,
+    apiDeleteUser,
+    apiToggleBlockUser,
+};

@@ -53,18 +53,6 @@ const apiDeleteAdmin = async (uid: string) => {
 };
 
 // API bật/tắt khóa người dùng theo UID
-const apiToggleBlockAdmin = async (uid: string) => {
-    try {
-        const res = await adminClient.put(`/v1/api/admin/${uid}/toggle-block`);
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
-// API bật/tắt khóa người dùng theo UID
 const apiGetDetailAdmin = async () => {
     try {
         const res = await adminClient.get('/v1/api/admin/profile');
@@ -88,4 +76,16 @@ const apiUpdateProfileAmin = async (adminData: object) => {
     }
 };
 
-export { apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiUpdateProfileAmin, apiToggleBlockAdmin };
+const apiSearchAdmin = async (keyword: string) => {
+    try {
+        const res = await adminClient.get(`/v1/api/admin/search?keyword=${keyword}`);
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+
+export { apiSearchAdmin, apiGetDetailAdmin, apiGetAllAdmin, apiAddAdmin, apiUpdateAdmin, apiDeleteAdmin, apiUpdateProfileAmin };

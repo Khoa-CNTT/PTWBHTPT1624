@@ -38,5 +38,17 @@ const apiGetPotentialCustomers = async () => {
         };
     }
 };
+// Lấy thống kê sản phẩm
+const apiGetProductStats = async () => {
+    try {
+        const res = await adminClient.get('/v1/api/dashboard/stats');
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiGetDashboardStats, apiGetNewUsers, apiGetPotentialCustomers };
+export { apiGetProductStats ,apiGetDashboardStats, apiGetNewUsers, apiGetPotentialCustomers };

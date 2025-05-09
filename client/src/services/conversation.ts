@@ -12,18 +12,7 @@ export const apiCreateConversation = async () => {
         };
     }
 };
-export const apiGetConversationUser = async () => {
-    try {
-        const res = await authClient.get('/v1/api/conversation/user');
-        return res.data;
-    } catch (error) {
-        return {
-            success: false,
-            message: error,
-        };
-    }
-};
-export const getAllConversations = async () => {
+export const getAllConversationsByAdmin = async () => {
     try {
         const res = await adminClient.get('/v1/api/conversation');
         return res.data;
@@ -34,9 +23,10 @@ export const getAllConversations = async () => {
         };
     }
 };
-export const addAdminToConversation = async (conversationId: string) => {
+
+export const deleteConversation = async (conversationId: string) => {
     try {
-        const res = await adminClient.put(`/v1/api/conversation/${conversationId}/add-admin`);
+        const res = await adminClient.delete(`/v1/api/conversation/${conversationId}`);
         return res.data;
     } catch (error) {
         return {
@@ -45,9 +35,12 @@ export const addAdminToConversation = async (conversationId: string) => {
         };
     }
 };
-export const deleteConversation = async (conversationId: string) => {
+// API tìm kiếm cuộc hội thoại theo tên người dùng hoặc số điện thoại
+export const apiSearchConversation = async (searchQuery: string) => {
     try {
-        const res = await adminClient.delete(`/v1/api/conversation/${conversationId}`);
+        const res = await adminClient.get(`/v1/api/conversation/search`, {
+            params: { name: searchQuery }, // Hoặc 'phone' nếu bạn muốn tìm theo số điện thoại
+        });
         return res.data;
     } catch (error) {
         return {

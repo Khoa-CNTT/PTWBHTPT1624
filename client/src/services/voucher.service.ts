@@ -1,9 +1,35 @@
-import { adminClient, authClient } from '../config/httpRequest';
+import { adminClient, apiClient, authClient } from '../config/httpRequest';
 
 // API lấy tất cả voucher
 const apiGetAllVouchers = async (queries: { limit: number; page: number }) => {
     try {
         const res = await adminClient.get('/v1/api/voucher/all', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const getAllSystemVouchers = async (queries: { limit: number; page: number }) => {
+    try {
+        const res = await adminClient.get('/v1/api/voucher/system', {
+            params: queries,
+        });
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
+const getAllRedeemVouchers = async (queries: { limit: number; page: number }) => {
+    try {
+        const res = await adminClient.get('/v1/api/voucher/redeem', {
             params: queries,
         });
         return res.data;
@@ -42,9 +68,9 @@ const apiAddVoucher = async (voucherData: object) => {
 };
 
 // API lấy chi tiết voucher theo ID
-const apiGetVoucherById = async (id: string) => {
+const getVoucherByCode = async (code: string) => {
     try {
-        const res = await authClient.get(`/v1/api/voucher/${id}/search`);
+        const res = await apiClient.get(`/v1/api/voucher/${code}`);
         return res.data;
     } catch (error) {
         return {
@@ -80,7 +106,7 @@ const apiDeleteVoucher = async (id: string) => {
     }
 };
 // API áp dụng voucher
-const apiApplyVoucher = async (voucherData: { code: string, orderValue: number }) => {
+const apiApplyVoucher = async (voucherData: { code: string; orderValue: number }) => {
     try {
         const res = await authClient.post('/v1/api/voucher/apply', voucherData);
         return res.data;
@@ -91,5 +117,28 @@ const apiApplyVoucher = async (voucherData: { code: string, orderValue: number }
         };
     }
 };
+// API lấy danh sách voucher đang active cho banner
+const apiGetActiveBannerVouchers = async () => {
+    try {
+        const res = await adminClient.get('/v1/api/voucher/active-banners');
+        return res.data;
+    } catch (error) {
+        return {
+            success: false,
+            message: error,
+        };
+    }
+};
 
-export { apiApplyVoucher,apiGetAllVouchers, apiSearchVoucherByName, apiAddVoucher, apiGetVoucherById, apiUpdateVoucher, apiDeleteVoucher };
+export {
+    getAllSystemVouchers,
+    getAllRedeemVouchers,
+    apiGetActiveBannerVouchers,
+    apiApplyVoucher,
+    apiGetAllVouchers,
+    apiSearchVoucherByName,
+    apiAddVoucher,
+    getVoucherByCode,
+    apiUpdateVoucher,
+    apiDeleteVoucher,
+};
