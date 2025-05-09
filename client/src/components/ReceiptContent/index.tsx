@@ -1,8 +1,8 @@
 import React from 'react';
-import { IProductInCart } from '../../interfaces/product.interfaces';
 import { formatMoney } from '../../utils/formatMoney';
 import { logo } from '../../assets';
 import useAdminStore from '../../store/adminStore';
+import { IProductInCart } from '../../interfaces/cart.interfaces';
 
 // Định nghĩa interface cho props của ReceiptContent
 interface ReceiptContentProps {
@@ -27,7 +27,6 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     calculateChange,
     appliedDiscount,
 }) => {
-     
     const { admin } = useAdminStore();
 
     // Thông tin QR chuyển khoản Agribank theo chuẩn VietQR (NAPAS)
@@ -40,10 +39,10 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     const renderPaymentInfo = () => (
         <div className="mb-4 space-y-1">
             <p>
-                <span className="font-medium">Thanh toán:</span> {paymentMethod === 'cash' ? 'Tiền mặt' : 'Chuyển khoản'}
+                <span className="font-medium">Thanh toán:</span> {paymentMethod === 'CASH' ? 'Tiền mặt' : 'Chuyển khoản'}
             </p>
             <p>
-                <span className="font-medium">Voucher đã áp dụng:</span> {appliedDiscount ?"Đã áp dụng":"Không sử dụng"}
+                <span className="font-medium">Voucher đã áp dụng:</span> {appliedDiscount ? 'Đã áp dụng' : 'Không sử dụng'}
             </p>
         </div>
     );
@@ -63,11 +62,11 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
             <tbody>
                 {cart.map((item) => (
                     <tr key={item.productId}>
-                        <td className="border px-2 py-1">{item.name || 'Không tên'}</td>
-                        <td className="border px-2 py-1">{formatMoney(item.price)}</td>
+                        <td className="border px-2 py-1">{item.product_name || 'Không tên'}</td>
+                        <td className="border px-2 py-1">{formatMoney(item.product_price)}</td>
                         <td className="border px-2 py-1">{item.quantity}</td>
-                        <td className="border px-2 py-1">{item.discount}%</td>
-                        <td className="border px-2 py-1">{formatMoney(item.price * item.quantity * (1 - item.discount / 100))}</td>
+                        <td className="border px-2 py-1">{item.product_discount}%</td>
+                        <td className="border px-2 py-1">{formatMoney(item.product_discounted_price * item.quantity)}</td>
                     </tr>
                 ))}
             </tbody>
@@ -78,19 +77,21 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
     const renderSummaryAndQR = () => (
         <div className="flex justify-between">
             <div className="space-y-1 mb-4">
-                <p>v
+                <p>
                     <span className="font-medium">Giảm giá:</span> -{formatMoney(calculateDiscountFromProducts)}
                 </p>
+                {appliedDiscount > 0 && (
+                    <p>
+                        <span className="font-medium">Voucher:</span> -{formatMoney(appliedDiscount)}
+                    </p>
+                )}
                 <p>
-                    <span className="font-medium">Voucher:</span> -{formatMoney(appliedDiscount)}
+                    <span className="font-medium">Thành tiền:</span> {formatMoney(calculateSubtotal - (calculateDiscountFromProducts + appliedDiscount))}
                 </p>
                 <p>
-                    <span className="font-medium">Thành tiền:</span> {formatMoney(calculateSubtotal-(calculateDiscountFromProducts+appliedDiscount))}
+                    <span className="font-medium">Phương thức mua hàng:</span> {paymentMethod === 'CASH' ? 'Trực tiếp' : 'Chuyển khoản'}
                 </p>
-                <p>
-                    <span className="font-medium">Phương thức mua hàng:</span> {paymentMethod === 'cash' ? 'Trực tiếp' : 'Chuyển khoản'}
-                </p>
-                {paymentMethod === 'cash' && (
+                {paymentMethod === 'CASH' && (
                     <>
                         <p>
                             <span className="font-medium">Tiền nhận:</span> {formatMoney(Number(cashReceived))}
@@ -101,7 +102,7 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                     </>
                 )}
             </div>
-            {paymentMethod !== 'cash' && <img src={qrUrl} alt="QR chuyển khoản Agribank" className="w-60 mx-auto" />}
+            {paymentMethod !== 'CASH' && <img src={qrUrl} alt="QR chuyển khoản Agribank" className="w-60 mx-auto" />}
         </div>
     );
 
@@ -116,22 +117,20 @@ export const ReceiptContent: React.FC<ReceiptContentProps> = ({
                 <p>SĐT: {admin?.admin_mobile}</p>
                 <p>Thời gian: {new Date().toLocaleString()}</p>
             </div>
-    
+
             <h3 className="text-center text-lg font-semibold mb-4 uppercase">Hóa đơn mua hàng</h3>
-    
+
             {/* Thông tin thanh toán */}
             <div className="mb-4 px-2">{renderPaymentInfo()}</div>
-    
+
             {/* Danh sách sản phẩm */}
             <div className="overflow-x-auto">{renderProductList()}</div>
-    
+
             {/* Tổng tiền và QR */}
-            <div className="mt-6 p-4 bg-gray-50 rounded-md border">
-                {renderSummaryAndQR()}
-            </div>
-    
+            <div className="mt-6 p-4 bg-gray-50 rounded-md border">{renderSummaryAndQR()}</div>
+
             {/* Footer */}
             <p className="text-center text-xs text-gray-500 mt-6 italic">Cảm ơn quý khách đã mua hàng!</p>
         </div>
     );
-}   
+};
