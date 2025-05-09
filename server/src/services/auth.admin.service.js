@@ -35,7 +35,6 @@ class AuthAdminService {
         if (!response) throw new RequestError('Verification failed', 201);
         const foundAdmin = await adminModel.findById(response._id).lean();
         const tokens = await createTokenPairs(foundAdmin);
-        console.log('tokens', tokens);
         res.cookie('ad_rf', `${tokens.refreshToken}`, {
             httpOnly: true,
             maxAge: 7 * 24 * 60 * 60 * 1000,

@@ -239,38 +239,22 @@ class DashboardService {
         ]);
     }
     static async getProductStats() {
-        try {
-            // Sản phẩm đã bán (tổng số lượng sản phẩm đã bán)
-            const soldProducts = await Product.aggregate([
-                { $group: { _id: null, totalSold: { $sum: '$product_sold' } } }
-            ]);
-            const sold = soldProducts.length > 0 ? soldProducts[0].totalSold : 0;
-    
-            // Khách hàng hài lòng (tổng số lượng khách hàng không bị khóa)
-            const totalCustomers = await User.countDocuments({ user_isBlocked: false });
-    
-            // Sản phẩm đa dạng (tổng số sản phẩm - bao gồm sản phẩm đã ẩn hoặc không xuất bản)
-            const totalProducts = await Product.countDocuments();
-    
-            // Lượt truy cập (tổng số lượt xem sản phẩm)
-            const totalVisits = await Product.aggregate([
-                { $group: { _id: null, totalVisits: { $sum: '$product_views' } } }
-            ]);
-            const visits = totalVisits.length > 0 ? totalVisits[0].totalVisits : 0;
-    
-    
-            return {
-                sold: sold,
-                customers: totalCustomers,
-                products: totalProducts,
-                visits: visits,
-            };
-        } catch (error) {
-            console.error('Error getting statistics:', error);
-            throw new Error('Failed to fetch statistics');
-        }
+        // Thực hiện các truy vấn song song
+        const [soldProducts, totalCustomers, totalProducts, totalVisits] = await Promise.all([
+            Product.aggregate([{ $group: { _id: null, totalSold: { $sum: '$product_sold' } } }]),
+            User.countDocuments({ user_isBlocked: false }),
+            Product.countDocuments(),
+            Product.aggregate([{ $group: { _id: null, totalVisits: { $sum: '$product_views' } } }]),
+        ]);
+
+        // Trích xuất kết quả với giá trị mặc định
+        return {
+            sold: soldProducts[0]?.totalSold || 0,
+            customers: totalCustomers || 0,
+            products: totalProducts || 0,
+            visits: totalVisits[0]?.totalVisits || 0,
+        };
     }
-    
 }
 
 module.exports = DashboardService;

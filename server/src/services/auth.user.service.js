@@ -2,6 +2,7 @@
 
 const { RequestError } = require('../core/error.response');
 const bcrypt = require('bcrypt');
+const axios = require('axios');
 const crypto = require('crypto');
 const redis = require('../config/redisClient');
 const { findUserByEmail, findUserById } = require('../models/repositories/user.repo');
@@ -153,6 +154,43 @@ class AuthUserService {
             user: foundUser,
         };
     }
+
+    static async loginGoogle(credential, res) {
+        const googleUser = await axios.get(`https://oauth2.googleapis.com/tokeninfo?id_token=${credential}`);
+        const { email, name, picture, googleId } = googleUser.data;
+        // Tìm người dùng theo email
+        let user = await userModel.findOne({ user_email: email });
+
+        if (!user) {
+            user = await userModel.create({
+                user_email: email,
+                user_name: name,
+                user_avatar_url: picture,
+                user_googleId: googleId,
+            });
+        } else if (!user.user_googleId) {
+            user.user_googleId = googleId;
+            await user.save();
+        }
+
+        // Chuyển user về dạng plain object
+        const userObject = user.toObject();
+
+        // Tạo JWT token từ plain object
+        const tokens = await createTokenPairs(userObject);
+        const { accessToken, refreshToken } = tokens;
+
+        res.cookie('refresh_token', refreshToken, {
+            httpOnly: true,
+            maxAge: 7 * 24 * 60 * 60 * 1000,
+        });
+
+        return {
+            accessToken,
+            user: userObject,
+        };
+    }
+
     static async userLogout(res) {
         res.clearCookie('refresh_token');
     }

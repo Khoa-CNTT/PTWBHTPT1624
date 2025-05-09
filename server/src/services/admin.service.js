@@ -54,18 +54,6 @@ class AdminService {
         };
     }
 
-    static async toggleBlockAdmin(uid, isBlocked) {
-        if (typeof isBlocked !== 'boolean') {
-            if (isBlocked === 'true') isBlocked = true;
-            else if (isBlocked === 'false') isBlocked = false;
-            else throw new RequestError('Trạng thái chặn không hợp lệ!');
-        }
-        const admin = await AdminModel.findById(uid);
-        if (!admin) throw new RequestError('Người dùng không tồn tại!', 404);
-        admin.admin_isBlocked = isBlocked;
-        await admin.save();
-        return isBlocked ? 'Đã chặn người dùng thành công!' : 'Đã mở chặn người dùng!';
-    }
     static async getAllAdmins({ admin_id, limit, page }) {
         const limitNum = parseInt(limit, 10) || 10; // Mặc định limit = 10 nếu không hợp lệ
         const pageNum = parseInt(page, 10) || 0; // Mặc định page = 0 nếu không hợp lệ
@@ -79,7 +67,7 @@ class AdminService {
         const totalAdmin = await AdminModel.countDocuments(); // Đếm tổng số admin
 
         return {
-            totalPage: Math.ceil(totalAdmin / limitNum) - 1 || 0, // Tổng số trang (0-based)
+            totalPage: Math.ceil(totalAdmin / limitNum) || 0, // Tổng số trang (0-based)
             currentPage: pageNum, // Trang hiện tại
             totalAdmin, // Tổng số admin
             admins, // Danh sách admin kèm thông tin role và permission
@@ -135,18 +123,17 @@ class AdminService {
 
     static async searchAdminsByNameOrEmail(keyword) {
         if (!keyword || typeof keyword !== 'string') return [];
-    
+
         const regex = new RegExp(keyword.trim(), 'i');
         const results = await AdminModel.find({
-            $or: [{ admin_mobile: regex },{ admin_name: regex }, { admin_email: regex }],
+            $or: [{ admin_mobile: regex }, { admin_name: regex }, { admin_email: regex }],
         })
             .select('-admin_password -__v')
             .sort({ createdAt: -1 })
             .lean();
-    
+
         return results;
     }
-    
 }
 
 module.exports = AdminService;
