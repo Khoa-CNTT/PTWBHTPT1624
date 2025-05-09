@@ -30,18 +30,6 @@ class adminController {
         });
     }
 
-    static async toggleBlockAdmin(req, res) {
-        const { isBlocked } = req.body;
-        if (typeof isBlocked !== 'boolean') {
-            return res.status(400).json({ success: false, message: 'Trạng thái chặn không hợp lệ!' });
-        }
-        const message = await AdminService.toggleBlockAdmin(req.params.uid, isBlocked);
-        res.status(200).json({
-            success: true,
-            message: message,
-        });
-    }
-
     static async getAllAdmins(req, res) {
         const admins = await AdminService.getAllAdmins({ admin_id: req.admin._id, ...req.query });
         res.status(200).json({
@@ -76,7 +64,6 @@ class adminController {
             data: result,
         });
     }
-    
 }
 
 module.exports = adminController;

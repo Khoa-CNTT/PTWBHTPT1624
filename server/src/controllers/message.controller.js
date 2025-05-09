@@ -5,21 +5,16 @@ const messageModel = require('../models/message.model');
  * @desc Gửi tin nhắn mới
  */
 const sendMessageByUSer = async (req, res) => {
-    const { conversationId, text } = req.body;
+    const { conversationId, text, image } = req.body;
     const sender = req.user._id;
     const senderRole = 'User';
-    if (!conversationId || !sender || !senderRole || !text) {
-        return res.status(400).json({
-            success: false,
-            message: 'Thiếu thông tin để gửi tin nhắn',
-        });
-    }
     try {
-        const newMessage = new messageModel({ conversationId, sender, senderRole, text });
+        const newMessage = new messageModel({ conversationId, sender, senderRole, text: text || '', image: image || '' });
         const savedMessage = await newMessage.save();
         // Cập nhật thời gian cập nhật mới nhất cho cuộc trò chuyện
         await conversationModel.findByIdAndUpdate(conversationId, {
             updatedAt: Date.now(),
+            seen: false,
         });
         res.status(201).json({
             success: true,
@@ -35,17 +30,11 @@ const sendMessageByUSer = async (req, res) => {
     }
 };
 const sendMessageByAdmin = async (req, res) => {
-    const { conversationId, text } = req.body;
+    const { conversationId, text, image } = req.body;
     const sender = req.admin._id;
     const senderRole = 'Admin';
-    if (!conversationId || !sender || !senderRole || !text) {
-        return res.status(400).json({
-            success: false,
-            message: 'Thiếu thông tin để gửi tin nhắn',
-        });
-    }
     try {
-        const newMessage = new messageModel({ conversationId, sender, senderRole, text });
+        const newMessage = new messageModel({ conversationId, sender, senderRole, text: text || '', image: image || '' });
         const savedMessage = await newMessage.save();
         // Cập nhật thời gian cập nhật mới nhất cho cuộc trò chuyện
         await conversationModel.findByIdAndUpdate(conversationId, {
@@ -84,7 +73,33 @@ const getMessagesByConversation = async (req, res) => {
         });
     }
 };
+const getUnreadMessagesCount = async (req, res) => {
+    const { conversationId } = req.params;
+    const userId = req.user._id;
 
+    try {
+        const unreadCount = await messageModel.countDocuments({
+            conversationId,
+            sender: { $ne: userId },
+            seen: false,
+        });
+        res.status(200).json({
+            success: true,
+            data: {
+                unreadCount,
+            },
+            message: 'Lấy số lượng tin nhắn chưa đọc thành công',
+        });
+    } catch (err) {
+        console.error('Lỗi khi lấy số lượng tin nhắn chưa đọc:', err);
+        res.status(500).json({
+            success: false,
+            message: 'Đã xảy ra lỗi khi lấy số lượng tin nhắn chưa đọc',
+        });
+    }
+};
+
+module.exports = getUnreadMessagesCount;
 /**
  * @desc Đánh dấu đã đọc tất cả tin nhắn chưa đọc
  */
@@ -92,7 +107,7 @@ const markMessagesAsSeenByUser = async (req, res) => {
     const { conversationId } = req.params;
     const userId = req.user._id;
     try {
-        await Message.updateMany(
+        await messageModel.updateMany(
             {
                 conversationId,
                 sender: { $ne: userId },
@@ -100,7 +115,9 @@ const markMessagesAsSeenByUser = async (req, res) => {
             },
             { seen: true },
         );
-
+        await conversationModel.findByIdAndUpdate(conversationId, {
+            seen: true,
+        });
         res.status(200).json({
             success: true,
             message: 'Đã đánh dấu tất cả tin nhắn là đã đọc',
@@ -117,7 +134,7 @@ const markMessagesAsSeenByAdmin = async (req, res) => {
     const { conversationId } = req.params;
     const userId = req.admin._id;
     try {
-        await Message.updateMany(
+        await messageModel.updateMany(
             {
                 conversationId,
                 sender: { $ne: userId },
@@ -125,7 +142,9 @@ const markMessagesAsSeenByAdmin = async (req, res) => {
             },
             { seen: true },
         );
-
+        await conversationModel.findByIdAndUpdate(conversationId, {
+            seen: true,
+        });
         res.status(200).json({
             success: true,
             message: 'Đã đánh dấu tất cả tin nhắn là đã đọc',
@@ -145,7 +164,7 @@ const deleteMessage = async (req, res) => {
     const { id } = req.params;
 
     try {
-        await Message.findByIdAndDelete(id);
+        await messageModel.findByIdAndDelete(id);
 
         res.status(200).json({
             success: true,
@@ -166,5 +185,6 @@ module.exports = {
     getMessagesByConversation,
     markMessagesAsSeenByUser,
     markMessagesAsSeenByAdmin,
+    getUnreadMessagesCount,
     deleteMessage,
 };

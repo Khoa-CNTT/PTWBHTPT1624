@@ -1,96 +1,105 @@
 const conversationModel = require('../models/conversation.model');
 const User = require('../models/user.model');
+const Admin = require('../models/admin.model');
 const { BadRequestError } = require('../core/error.response');
+const { default: mongoose } = require('mongoose');
 
-/**
- * @desc Tạo cuộc trò chuyện mới
- */
 const createConversation = async (req, res) => {
+    // Lấy ID người dùng từ request
     const userId = req.user._id;
+    console.log({ userId }); // Ghi log ID người dùng để debug
 
-    // Kiểm tra xem userId có hợp lệ không
-    if (!userId) {
+    // Kiểm tra tính hợp lệ của userId
+    if (!userId || !mongoose.Types.ObjectId.isValid(userId)) {
         return res.status(400).json({
             success: false,
             message: 'Người dùng không hợp lệ',
         });
     }
 
-    try {
-        // Kiểm tra xem người dùng đã có cuộc trò chuyện nào chưa
-        const existingConversation = await conversationModel.findOne({ user: userId });
+    // Tìm tất cả admin không bị chặn
+    const admins = await Admin.find({ admin_isBlocked: false }) // Lấy danh sách admin không bị chặn
+        .populate('admin_roles') // Lấy thông tin chi tiết của admin_roles
+        .lean() // Chuyển đổi sang object JavaScript để tối ưu hiệu suất
+        .then((admins) =>
+            admins.filter(
+                (admin) =>
+                    // Lọc admin có quyền message_manage hoặc admin_type là "admin"
+                    admin.admin_roles.some((role) => role.role_permissions.includes('message_manage')) || admin.admin_type === 'admin',
+            ),
+        );
+    console.log({ admins: admins.map((admin) => admin._id) }); // Ghi log ID các admin để debug
 
-        if (existingConversation) {
-            return res.status(400).json({
-                success: false,
-                message: 'Người dùng đã có một cuộc trò chuyện',
-            });
-        }
-
-        // Tạo cuộc trò chuyện mới
-        const newConversation = new conversationModel({
-            user: userId, // người tạo cuộc trò chuyện
-            participants: [userId], // người tham gia cuộc trò chuyện (chỉ có userId ban đầu)
+    // Kiểm tra xem có admin nào hợp lệ không
+    if (!admins || admins.length === 0) {
+        return res.status(400).json({
+            success: false,
+            message: 'Không tìm thấy admin phù hợp',
         });
+    }
 
-        // Lưu cuộc trò chuyện vào cơ sở dữ liệu
-        const savedConversation = await newConversation.save();
-
-        return res.status(201).json({
+    // Kiểm tra xem người dùng đã có cuộc trò chuyện chưa
+    const existingConversation = await conversationModel.findOne({ user: userId }).lean(); // Tìm cuộc trò chuyện hiện có
+    if (existingConversation) {
+        return res.status(200).json({
             success: true,
-            message: 'Tạo cuộc trò chuyện thành công',
-            data: savedConversation,
+            data: existingConversation, // Trả về cuộc trò chuyện hiện có
         });
-    } catch (err) {
-        console.error('Lỗi khi tạo cuộc trò chuyện:', err);
+    }
+
+    // Đếm số cuộc trò chuyện của từng admin
+    const adminConversationCounts = await Promise.all(
+        admins.map(async (admin) => {
+            const count = await conversationModel.countDocuments({ admin: admin._id }); // Đếm số cuộc trò chuyện của admin
+            return { adminId: admin._id, count }; // Trả về ID admin và số lượng
+        }),
+    );
+
+    // Tìm admin có ít cuộc trò chuyện nhất
+    const selectedAdmin = adminConversationCounts.reduce(
+        (min, current) => (current.count < min.count ? current : min), // So sánh và chọn admin có count thấp nhất
+    );
+    console.log({ selectedAdmin: selectedAdmin.adminId, conversationCount: selectedAdmin.count }); // Ghi log admin được chọn
+
+    // Kiểm tra xem có chọn được admin không
+    if (!selectedAdmin || !selectedAdmin.adminId) {
+        return res.status(500).json({
+            success: false,
+            message: 'Không thể chọn admin để gán cuộc trò chuyện',
+        });
+    }
+
+    // Tạo cuộc trò chuyện mới
+    const newConversation = new conversationModel({
+        user: userId, // Gán người dùng
+        admin: selectedAdmin.adminId, // Gán admin có ít cuộc trò chuyện nhất
+        seen: true, // Đặt trạng thái đã xem
+    });
+
+    // Lưu cuộc trò chuyện vào database
+    const savedConversation = await newConversation.save();
+    if (!savedConversation) {
+        console.error('Lỗi khi lưu cuộc trò chuyện:', { userId, adminId: selectedAdmin.adminId }); // Ghi log lỗi
         return res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi tạo cuộc trò chuyện',
         });
     }
-};
 
-/**
- * @desc Lấy tất cả cuộc trò chuyện của người dùng
- */
-const getConversationUser = async (req, res) => {
-    try {
-        // Lấy cuộc trò chuyện của người dùng hiện tại
-        const conversation = await conversationModel
-            .findOne({ user: req.user._id })
-            .populate('participants', 'admin_avatar_url admin_name')
-            .populate('participants', 'user_avatar_url user_name') // Lấy thông tin của admin
-            .sort({ createdAt: -1 });
-        if (!conversation) {
-            return res.status(404).json({
-                success: false,
-                message: 'Không có cuộc trò chuyện nào',
-            });
-        }
-        res.status(200).json({
-            success: true,
-            message: 'Lấy cuộc trò chuyện thành công',
-            data: conversation,
-        });
-    } catch (err) {
-        console.error('Lỗi khi lấy cuộc trò chuyện:', err);
-        res.status(500).json({
-            success: false,
-            message: 'Đã xảy ra lỗi khi lấy cuộc trò chuyện',
-        });
-    }
+    // Trả về kết quả thành công
+    return res.status(201).json({
+        success: true,
+        message: 'Tạo cuộc trò chuyện thành công',
+        data: savedConversation,
+    });
 };
-
 /**
  * @desc Lấy tất cả cuộc trò chuyện
  */
-const getAllConversations = async (req, res) => {
+const getAllConversationsByAdmin = async (req, res) => {
     try {
         // Lấy tất cả cuộc trò chuyện
-        const conversation = await conversationModel
-            .find()
-            .populate('user', 'user_avatar_url user_name')
-            .sort({ createdAt: -1 });
+        const conversation = await conversationModel.find({ admin: req.admin._id }).populate('user', 'user_avatar_url user_name').sort({ updatedAt: -1 });
         if (!conversation) {
             return res.status(404).json({
                 success: false,
@@ -107,44 +116,6 @@ const getAllConversations = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Đã xảy ra lỗi khi lấy cuộc trò chuyện',
-        });
-    }
-};
-
-/**
- * @desc Cập nhật cuộc trò chuyện (thêm người tham gia)
- */
-const addAdminToConversation = async (req, res) => {
-    const { conversationId } = req.params;
-    const adminId = req.admin._id; // người tham gia mới
-    if (!adminId) {
-        return res.status(400).json({
-            success: false,
-            message: 'Người tham gia mới không hợp lệ',
-        });
-    }
-    try {
-        // Cập nhật cuộc trò chuyện, thêm người tham gia
-        const updatedConversation = await conversationModel
-            .findByIdAndUpdate(conversationId, { $push: { participants: adminId } }, { new: true })
-            .populate('participants', 'user_avatar_url user_name')
-            .populate('participants', 'admin_avatar_url admin_name');
-        if (!updatedConversation) {
-            return res.status(404).json({
-                success: false,
-                message: 'Cuộc trò chuyện không tồn tại',
-            });
-        }
-        res.status(200).json({
-            success: true,
-            message: 'Thêm người tham gia vào cuộc trò chuyện thành công',
-            data: updatedConversation,
-        });
-    } catch (err) {
-        console.error('Lỗi khi thêm người tham gia vào cuộc trò chuyện:', err);
-        res.status(500).json({
-            success: false,
-            message: 'Đã xảy ra lỗi khi thêm người tham gia vào cuộc trò chuyện',
         });
     }
 };
@@ -180,18 +151,11 @@ const deleteConversation = async (req, res) => {
  */
 const getConversationByUserName = async (req, res) => {
     const { name } = req.query;
-
     if (!name) throw new BadRequestError('Thiếu tên người dùng');
-
     const user = await User.findOne({ user_name: { $regex: name, $options: 'i' } });
     if (!user) throw new BadRequestError('Không tìm thấy người dùng');
-
-    const conversation = await conversationModel.findOne({ user: user._id })
-        .populate('user', 'user_name user_email')
-        .populate('participants');
-
+    const conversation = await conversationModel.findOne({ user: user._id }).populate('user', 'user_name user_email').populate('participants');
     if (!conversation) throw new BadRequestError('Không tìm thấy cuộc hội thoại');
-
     return res.status(200).json({
         success: true,
         data: conversation,
@@ -201,8 +165,6 @@ const getConversationByUserName = async (req, res) => {
 module.exports = {
     getConversationByUserName,
     createConversation,
-    getAllConversations,
-    getConversationUser,
-    addAdminToConversation,
+    getAllConversationsByAdmin,
     deleteConversation,
 };
