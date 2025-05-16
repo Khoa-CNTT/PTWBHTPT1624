@@ -1,3 +1,4 @@
+// App.tsx
 import React, { useEffect, useState } from 'react';
 import VoucherItem from '../../../components/item/VoucherItem';
 import { IVoucher } from '../../../interfaces/voucher.interfaces';
@@ -7,7 +8,7 @@ import { apiSaveVoucherForUser } from '../../../services/user.voucher.service';
 import { showNotification } from '../../../components';
 import useAuthStore from '../../../store/authStore';
 import { useActionStore } from '../../../store/actionStore';
-import { Sparkles } from 'lucide-react';
+import { Sparkles } from 'lucide-react'; // Icon cho đẹp
 import useUserVoucherStore from '../../../store/userVoucherStore';
 
 const VoucherPage: React.FC = () => {
@@ -41,32 +42,23 @@ const VoucherPage: React.FC = () => {
     };
 
     return (
-        <div className="p-6 sm:p-10 max-w-7xl mx-auto my-8 bg-white shadow-2xl rounded-3xl border border-gray-200">
-            <div className="mb-8">
-                <div className="flex items-center justify-between bg-gradient-to-r from-pink-500 via-red-500 to-yellow-500 text-white px-6 py-4 rounded-xl shadow-lg">
-                    <h3 className="text-2xl md:text-3xl font-bold tracking-wide flex items-center gap-3 animate-pulse">
-                        <Sparkles className="w-7 h-7" /> ƯU ĐÃI VOUCHER HOT NHẤT
+        <div className="p-4 sm:p-6 md:p-8 max-w-6xl mx-auto my-4 bg-white shadow-xl rounded-2xl">
+            <div className="mb-6">
+                <div className="flex items-center justify-between bg-gradient-to-r from-blue-500 to-green-500 text-white p-4 rounded-lg shadow-md">
+                    <h3 className="text-xl font-semibold tracking-wide flex items-center gap-2">
+                        <Sparkles className="w-5 h-5" /> ƯU ĐÃI VOUCHER HOT NHẤT
                     </h3>
                 </div>
             </div>
-
-            <div className="grid gap-6 grid-cols-1 md:grid-cols-2">
+            <div className="grid gap-4 grid-cols-1">
                 {vouchers?.map((v) => (
-                    <div
-                        key={v._id}
-                        className="transform transition-transform hover:scale-[1.02] duration-300 hover:shadow-xl"
-                    >
-                        <VoucherItem
-                            voucher={v}
-                            onSave={handleSave}
-                            userOwnedVouchers={userVouchers?.map((e) => e._id)}
-                        />
+                    <div key={v._id} className="transition-transform hover:scale-[1.02] duration-300">
+                        <VoucherItem voucher={v} onSave={handleSave} userOwnedVouchers={userVouchers?.map((e) => e._id)} />
                     </div>
                 ))}
             </div>
-
             {totalPage > 1 && (
-                <div className="mt-10 flex justify-center">
+                <div className="mt-6">
                     <Pagination currentPage={currentPage} totalPage={totalPage - 1} setCurrentPage={setCurrentPage} />
                 </div>
             )}

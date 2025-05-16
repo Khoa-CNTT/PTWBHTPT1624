@@ -7,10 +7,12 @@ import { Link } from 'react-router';
 import { Skeleton } from '@mui/material';
 import { getTopViewedProduct } from '../../../../services/product.service';
 import { IProduct } from '../../../../interfaces/product.interfaces';
+import { useActionStore } from '../../../../store/actionStore';
 const Banner: React.FC = () => {
-    // const { mobile_ui } = useAppSelector((state) => state.action);
     const [banners, setBanners] = useState<IBanner[]>([]);
     const [products, setProducts] = useState<IProduct[]>([]);
+    const { mobile_ui } = useActionStore();
+
     useEffect(() => {
         const fetchProducts = async () => {
             const resBanner = await apiGetAllBanners();
@@ -58,8 +60,7 @@ const Banner: React.FC = () => {
                         })}
                     </Swiper>
                 ) : (
-                    // <Skeleton variant={'rectangular'} width={'100%'} height={mobile_ui ? '150px' : '304px'} />
-                    <Skeleton variant={'rectangular'} width={'100%'} height={'274px'} />
+                    <Skeleton variant={'rectangular'} width={'100%'} height={mobile_ui ? '150px' : '304px'} />
                 )}
             </div>
             <div className=" tablet:hidden w-[26%] h-full  pl-4">
@@ -76,15 +77,15 @@ const Banner: React.FC = () => {
                         {products?.map((i) => {
                             return (
                                 <SwiperSlide key={i._id}>
-                                    <Link to={`/${i?.product_slug}/${i?._id}`} className="w-full object-fill  overflow-hidden ">
-                                        <img className="w-full object-fill rounded-[4px]" src={i?.product_thumb} />
+                                    <Link to={`/${i?.product_slug}/${i?._id}`} className="w-full h-full object-fill  overflow-hidden ">
+                                        <img className="w-full  h-full  object-fill rounded-[4px]" src={i?.product_thumb} />
                                     </Link>
                                 </SwiperSlide>
                             );
                         })}
                     </Swiper>
                 ) : (
-                    <Skeleton variant={'rectangular'} width={'100%'} height={'274px'} />
+                    <Skeleton variant={'rectangular'} width={'100%'} height={'304px'} />
                 )}
             </div>
         </div>
