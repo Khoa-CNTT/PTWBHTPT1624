@@ -43,7 +43,6 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ context, isOpenBox, set
 
     const sendMessage = async () => {
         if (!prompt.trim() || isLoading) return;
-
         const userMessage: ChatMessage = {
             id: crypto.randomUUID(),
             role: 'user',
@@ -55,7 +54,7 @@ const ChatBoxAIModal: React.FC<ChatBoxAIModalProps> = ({ context, isOpenBox, set
         setIsLoading(true);
 
         try {
-            const promptWithContext = `${context}\n\nCâu hỏi: ${prompt.trim()}`;
+            const promptWithContext = `Câu hỏi: ${prompt.trim()}`;
             const reply = await generateGeminiResponse(promptWithContext);
             const botMessage: ChatMessage = {
                 id: crypto.randomUUID(),
